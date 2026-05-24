@@ -23,7 +23,8 @@ export function setTokenProvider(provider: () => string | null) {
   tokenProvider = provider;
 }
 
-type Body = Record<string, unknown> | FormData | undefined;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Body = Record<string, any> | unknown[] | FormData | undefined;
 
 interface FetchOptions {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";

@@ -1,0 +1,23 @@
+spring:
+  jpa:
+    show-sql: false
+
+tubeshadow:
+  jwt:
+    secret: integration-test-secret-that-is-long-enough-for-hs256-algorithm
+    access-token-ttl-seconds: 3600
+  recording:
+    storage-dir: ./build/integ-storage/recordings
+    max-bytes: 10485760
+  claude:
+    api-key: integ-test-key
+    base-url: http://localhost:65535
+    model: claude-haiku-4-5-20251001
+  youtube:
+    oembed-url: https://www.youtube.com/oembed
+
+logging:
+  level:
+    com.tubeshadow: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
