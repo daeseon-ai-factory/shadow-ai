@@ -19,11 +19,17 @@ collection:
   description: 개발자/엔지니어가 영어 쉐도잉용으로 보기 좋은 강연/인터뷰 모음. 자막 있는 영상만 포함.
 
 videos:
-  # NOTE: This file currently has a starter set. The first administrator should
-  # extend it to ~30 videos before opening signups. Each URL must be verified
-  # to (1) be valid, (2) have English captions.
-  - { url: "https://www.youtube.com/watch?v=PUiPdMdlECg", category: "tech_talk" }    # Bret Victor — Inventing on Principle
-  - { url: "https://www.youtube.com/watch?v=SxdOUGdseq4", category: "tech_talk" }    # Rich Hickey — Simple Made Easy
-  - { url: "https://www.youtube.com/watch?v=o8NPllzkFhE", category: "interview" }    # Linus Torvalds — TED interview
-  - { url: "https://www.youtube.com/watch?v=YQs6IC-vgmo", category: "tech_talk" }    # Joscha Bach — placeholder
-  - { url: "https://www.youtube.com/watch?v=Bo0guUbL5uo", category: "tech_talk" }    # John Ousterhout — A Philosophy of Software Design
+  # NOTE: This is a small starter set verified on 2026-05-24. The first administrator
+  # should extend it to ~30 videos before opening signups. Each URL must be verified
+  # to (1) be valid, (2) have English captions, (3) be developer-relevant.
+  # The seeder logs each failure as a WARN and continues, so a stale URL only
+  # produces one log line — it does not break startup.
+  - url: "https://www.youtube.com/watch?v=SxdOUGdseq4"
+    category: tech_talk      # Rich Hickey — Simple Made Easy (verified)
+  - url: "https://www.youtube.com/watch?v=o8NPllzkFhE"
+    category: interview      # Linus Torvalds — TED (verified)
+  # The IDs below are stale starter ideas — replace with verified URLs.
+  - url: "https://www.youtube.com/watch?v=PUiPdMdlECg"
+    category: tech_talk      # placeholder — verify or replace
+  - url: "https://www.youtube.com/watch?v=Bo0guUbL5uo"
+    category: tech_talk      # placeholder — verify or replace
