@@ -37,7 +37,7 @@ export interface ClipUpdatePayload {
 
 export const clipsApi = {
   create: (payload: ClipCreatePayload) => apiClient.post<ClipResponse>("/api/clips", payload),
-  list: (params: { q?: string; tag?: string; page?: number; size?: number }) =>
+  list: (params: { q?: string; tag?: string; sort?: string; page?: number; size?: number }) =>
     apiClient.get<ClipPageResponse>("/api/clips", { query: { ...params } }),
   tags: () => apiClient.get<string[]>("/api/clips/tags"),
   get: (id: string) => apiClient.get<ClipResponse>(`/api/clips/${id}`),

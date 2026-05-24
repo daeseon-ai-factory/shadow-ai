@@ -52,9 +52,9 @@ public class ClipService {
     }
 
     @Transactional(readOnly = true)
-    public ClipPageResponse list(UUID userId, String query, String tag, int page, int size) {
+    public ClipPageResponse list(UUID userId, String query, String tag, String sort, int page, int size) {
         Page<Clip> result = clipRepository.search(
-                userId, query, tag,
+                userId, query, tag, sort,
                 PageRequest.of(page, size));
 
         // Batch video lookup → avoids N+1

@@ -12,15 +12,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { clipsApi, type ClipResponse } from "@/lib/api/clips";
 import { StreakWidget } from "@/components/StreakWidget";
+import { useAuthStore } from "@/lib/stores/auth-store";
+
+type SortMode = "newest" | "oldest" | "name" | "duration";
 
 export default function LibraryPage() {
   const [search, setSearch] = useState("");
   const [tag, setTag] = useState("");
+  const [sort, setSort] = useState<SortMode>("newest");
   const queryClient = useQueryClient();
 
   const { data, isPending, isError, error } = useQuery({
-    queryKey: ["clips", { q: search, tag }],
-    queryFn: () => clipsApi.list({ q: search, tag, page: 0, size: 50 }),
+    queryKey: ["clips", { q: search, tag, sort }],
+    queryFn: () => clipsApi.list({ q: search, tag, sort, page: 0, size: 50 }),
     placeholderData: (prev) => prev,
   });
 
@@ -64,7 +68,20 @@ export default function LibraryPage() {
         <datalist id="user-tags">
           {userTags?.map((t) => <option key={t} value={t} />)}
         </datalist>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as SortMode)}
+          className="rounded-md border bg-background px-3 py-2 text-sm"
+        >
+          <option value="newest">최신순</option>
+          <option value="oldest">오래된순</option>
+          <option value="name">이름순</option>
+          <option value="duration">긴 클립순</option>
+        </select>
         <Link href="/import" className={buttonVariants({ variant: "outline" })}>+ 영상 임포트</Link>
+        <Button variant="ghost" size="sm" onClick={() => exportLibrary(useAuthStore.getState().token)}>
+          ⬇ 내보내기 (JSON)
+        </Button>
       </div>
 
       {isPending && (
@@ -95,6 +112,32 @@ export default function LibraryPage() {
       )}
     </div>
   );
+}
+
+async function exportLibrary(token: string | null) {
+  if (!token) {
+    toast.error("로그인이 필요합니다");
+    return;
+  }
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/api/clips/export`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    if (!res.ok) throw new Error(`내보내기 실패 (${res.status})`);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tubeshadow-library-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast.success("내보내기 완료");
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : "내보내기 실패");
+  }
 }
 
 function ClipCard({ clip, onDelete }: { clip: ClipResponse; onDelete: () => void }) {

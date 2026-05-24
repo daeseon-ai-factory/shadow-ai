@@ -57,8 +57,7 @@ public class ReviewService {
     @EventListener
     @Transactional
     public void onClipDeleted(ClipDeletedEvent event) {
-        reviewRepository.findByUserIdAndClipId(event.userId(), event.clipId())
-                .ifPresent(reviewRepository::delete);
+        reviewRepository.deleteByClipId(event.clipId());
     }
 
     @Transactional(readOnly = true)

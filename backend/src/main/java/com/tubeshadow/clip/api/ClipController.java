@@ -48,14 +48,15 @@ public class ClipController {
     }
 
     @GetMapping
-    @Operation(summary = "클립 목록 (검색/태그 필터)")
+    @Operation(summary = "클립 목록 (검색/태그/정렬: newest|oldest|name|duration)")
     public ApiResponse<ClipPageResponse> list(
             @CurrentUser AuthenticatedUser user,
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String tag,
+            @RequestParam(required = false, defaultValue = "newest") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ApiResponse.ok(clipService.list(user.id(), q, tag, page, Math.min(size, 100)));
+        return ApiResponse.ok(clipService.list(user.id(), q, tag, sort, page, Math.min(size, 100)));
     }
 
     @GetMapping("/tags")

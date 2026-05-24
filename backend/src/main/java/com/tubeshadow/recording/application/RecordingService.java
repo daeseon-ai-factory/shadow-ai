@@ -99,13 +99,31 @@ public class RecordingService {
         if (!recording.getUserId().equals(userId)) {
             throw new ForbiddenException("RECORDING_NOT_OWNED", "본인 녹음만 삭제 가능합니다");
         }
-        try {
-            storage.delete(recording.getFilePath());
-        } catch (IOException ex) {
-            // Log-and-continue: we still remove the DB row so the user is not stuck with an orphan reference.
-            org.slf4j.LoggerFactory.getLogger(RecordingService.class)
-                    .warn("Failed to delete recording file {}: {}", recording.getFilePath(), ex.getMessage());
-        }
+        deleteFileQuietly(recording.getFilePath());
         recordingRepository.delete(recording);
+    }
+
+    /**
+     * Listener — when a clip is removed the DB cascades the recording rows away,
+     * but the binaries on disk would orphan without this cleanup. We collect the
+     * file paths BEFORE the parent delete is flushed so the rows still exist to read.
+     */
+    @org.springframework.transaction.event.TransactionalEventListener(
+            phase = org.springframework.transaction.event.TransactionPhase.BEFORE_COMMIT)
+    public void onClipDeleted(com.tubeshadow.clip.application.ClipDeletedEvent event) {
+        List<Recording> attached = recordingRepository
+                .findByClipIdAndUserIdOrderByCreatedAtAsc(event.clipId(), event.userId());
+        for (Recording r : attached) {
+            deleteFileQuietly(r.getFilePath());
+        }
+    }
+
+    private void deleteFileQuietly(String filePath) {
+        try {
+            storage.delete(filePath);
+        } catch (IOException ex) {
+            org.slf4j.LoggerFactory.getLogger(RecordingService.class)
+                    .warn("Failed to delete recording file {}: {}", filePath, ex.getMessage());
+        }
     }
 }
