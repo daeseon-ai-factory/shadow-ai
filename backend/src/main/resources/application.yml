@@ -4,6 +4,13 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 
+  servlet:
+    multipart:
+      # Match tubeshadow.recording.max-bytes so service-level validation kicks in
+      # with a clean 413 response instead of Tomcat aborting at the default 1MB.
+      max-file-size: 12MB
+      max-request-size: 12MB
+
   jpa:
     open-in-view: false
     hibernate:
@@ -47,3 +54,7 @@ tubeshadow:
   rate-limit:
     # Simple per-IP+endpoint sliding-window limits on the auth endpoints.
     auth-attempts-per-minute: ${AUTH_RATE_LIMIT:20}
+    # Comma-separated remote-addr prefixes from which X-Forwarded-For is trusted.
+    # Empty (default) → always use Tomcat's remoteAddr, so X-F-F header spoofing
+    # cannot bypass the limiter. Set this to your prod load-balancer CIDR(s).
+    trusted-proxies: ${RATE_LIMIT_TRUSTED_PROXIES:}

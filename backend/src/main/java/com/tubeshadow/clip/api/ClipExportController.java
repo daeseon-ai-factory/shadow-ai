@@ -30,22 +30,27 @@ public class ClipExportController {
         this.clipService = clipService;
     }
 
+    private static final int EXPORT_PAGE_LIMIT = 1000;
+
     @GetMapping
     @Operation(summary = "전체 라이브러리 JSON 다운로드 (envelope 없음 - 파일)")
     public ResponseEntity<Map<String, Object>> export(@CurrentUser AuthenticatedUser user) {
-        // Pull a generous page (up to 1000). For larger libraries we'd stream.
-        var page = clipService.list(user.id(), null, null, "newest", 0, 1000);
+        var page = clipService.list(user.id(), null, null, "newest", 0, EXPORT_PAGE_LIMIT);
+        boolean truncated = page.total() > EXPORT_PAGE_LIMIT;
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("exportedAt", Instant.now().toString());
         body.put("userId", user.id());
         body.put("totalClips", page.total());
+        body.put("returnedClips", page.items().size());
+        body.put("truncated", truncated);
         body.put("clips", page.items());
 
         String filename = "tubeshadow-library-" + LocalDate.now() + ".json";
-        return ResponseEntity.ok()
+        var resp = ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body);
+                .contentType(MediaType.APPLICATION_JSON);
+        if (truncated) resp.header("X-Truncated", "true");
+        return resp.body(body);
     }
 }

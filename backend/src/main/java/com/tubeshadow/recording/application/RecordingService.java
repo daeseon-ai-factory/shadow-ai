@@ -99,8 +99,17 @@ public class RecordingService {
         if (!recording.getUserId().equals(userId)) {
             throw new ForbiddenException("RECORDING_NOT_OWNED", "본인 녹음만 삭제 가능합니다");
         }
-        deleteFileQuietly(recording.getFilePath());
+        // Capture the path now; defer the disk write to AFTER_COMMIT so a tx rollback
+        // can't strand us with a deleted file but a still-present DB row.
+        String filePath = recording.getFilePath();
         recordingRepository.delete(recording);
+        org.springframework.transaction.support.TransactionSynchronizationManager
+                .registerSynchronization(new org.springframework.transaction.support.TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        deleteFileQuietly(filePath);
+                    }
+                });
     }
 
     /**

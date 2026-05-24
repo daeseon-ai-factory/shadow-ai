@@ -14,6 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,6 +25,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * a no-arg constructor we deliberately don't expose.
  *
  * <p>Goal: blunt-force credential stuffing and signup spam. Window resets every minute.
+ *
+ * <p>Proxy handling: {@code X-Forwarded-For} is only honored when the connecting
+ * remoteAddr starts with one of {@code tubeshadow.rate-limit.trusted-proxies}.
+ * Empty list (default) → always use the raw remoteAddr so spoofed headers cannot
+ * defeat the limiter. Production should set this to the load-balancer CIDR prefix.
  */
 @Component
 @ConditionalOnProperty(prefix = "tubeshadow.rate-limit", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -34,18 +40,27 @@ public class AuthRateLimitFilter implements HandlerInterceptor {
     private final int maxAttemptsPerMinute;
     private final ObjectMapper objectMapper;
     private final Clock clock;
+    private final List<String> trustedProxyPrefixes;
     private final ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
 
     @Autowired
     public AuthRateLimitFilter(ObjectMapper objectMapper,
-                               @Value("${tubeshadow.rate-limit.auth-attempts-per-minute:20}") int maxAttempts) {
-        this(objectMapper, maxAttempts, Clock.systemUTC());
+                               @Value("${tubeshadow.rate-limit.auth-attempts-per-minute:20}") int maxAttempts,
+                               @Value("${tubeshadow.rate-limit.trusted-proxies:}") String trustedProxies) {
+        this(objectMapper, maxAttempts, Clock.systemUTC(), trustedProxies);
     }
 
     AuthRateLimitFilter(ObjectMapper objectMapper, int maxAttempts, Clock clock) {
+        this(objectMapper, maxAttempts, clock, "");
+    }
+
+    AuthRateLimitFilter(ObjectMapper objectMapper, int maxAttempts, Clock clock, String trustedProxies) {
         this.objectMapper = objectMapper;
         this.maxAttemptsPerMinute = maxAttempts;
         this.clock = clock;
+        this.trustedProxyPrefixes = trustedProxies == null || trustedProxies.isBlank()
+                ? List.of()
+                : List.of(trustedProxies.split("\\s*,\\s*"));
     }
 
     @Override
@@ -79,12 +94,22 @@ public class AuthRateLimitFilter implements HandlerInterceptor {
                         "요청이 너무 잦습니다. 잠시 후 다시 시도해주세요.")));
     }
 
-    private static String clientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
+    String clientIp(HttpServletRequest request) {
+        String remote = request.getRemoteAddr();
+        if (remote != null && isTrustedProxy(remote)) {
+            String forwarded = request.getHeader("X-Forwarded-For");
+            if (forwarded != null && !forwarded.isBlank()) {
+                return forwarded.split(",")[0].trim();
+            }
         }
-        return request.getRemoteAddr();
+        return remote;
+    }
+
+    private boolean isTrustedProxy(String remoteAddr) {
+        for (String prefix : trustedProxyPrefixes) {
+            if (!prefix.isEmpty() && remoteAddr.startsWith(prefix)) return true;
+        }
+        return false;
     }
 
     private static class Bucket {

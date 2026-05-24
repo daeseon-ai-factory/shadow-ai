@@ -11,10 +11,11 @@ import { toast } from "sonner";
 
 export function AnalysisPanel({ clipId }: { clipId: string }) {
   const queryClient = useQueryClient();
-  const { data, isPending, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["analysis", clipId],
     queryFn: () => analysisApi.get(clipId),
     refetchInterval: (q) => (q.state.data?.status === "PENDING" ? 3000 : false),
+    // 404 = analysis not started yet; don't retry, surface the empty state.
     retry: (count, e) => {
       if (e instanceof ApiError && e.status === 404) return false;
       return count < 2;
@@ -39,7 +40,7 @@ export function AnalysisPanel({ clipId }: { clipId: string }) {
             {data?.status === "READY" && data.model && <>모델: <code className="text-xs">{data.model}</code></>}
             {data?.status === "PENDING" && "분석 진행 중…"}
             {data?.status === "FAILED" && <span className="text-red-600">실패: {data.errorMessage}</span>}
-            {!data && !isPending && "아직 분석이 없습니다"}
+            {!data && !isLoading && "아직 분석이 없습니다"}
           </CardDescription>
         </div>
         <Button
@@ -52,7 +53,7 @@ export function AnalysisPanel({ clipId }: { clipId: string }) {
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isPending && (
+        {isLoading && (
           <div className="space-y-2">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-4/5" />

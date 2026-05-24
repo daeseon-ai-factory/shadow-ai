@@ -51,7 +51,18 @@ public class ReviewService {
         if (reviewRepository.findByUserIdAndClipId(event.userId(), event.clipId()).isPresent()) {
             return;
         }
-        reviewRepository.save(ReviewItem.createNew(event.userId(), event.clipId(), LocalDate.now()));
+        // Guard against the user racing to delete the clip before this listener fires
+        // (AFTER_COMMIT runs on a separate transaction; the clip might already be gone).
+        if (clipRepository.findById(event.clipId()).isEmpty()) {
+            log.debug("Skip ReviewItem seed for clip {} — already deleted", event.clipId());
+            return;
+        }
+        try {
+            reviewRepository.save(ReviewItem.createNew(event.userId(), event.clipId(), LocalDate.now()));
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            // Concurrent clip delete or duplicate event — both safe to ignore.
+            log.debug("Skip ReviewItem seed for clip {}: {}", event.clipId(), ex.getMessage());
+        }
     }
 
     @EventListener

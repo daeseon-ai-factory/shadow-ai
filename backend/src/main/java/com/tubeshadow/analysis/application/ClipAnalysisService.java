@@ -19,6 +19,16 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.UUID;
 
+/**
+ * <p>Async pipeline: when a clip is committed, a background thread runs the Claude
+ * call <em>outside</em> any DB transaction (HTTP can take seconds, we must not
+ * pin a Hikari connection that long). Only the small bookend writes — create
+ * PENDING, then mark READY/FAILED — are wrapped in short transactions.
+ *
+ * <p>Self-invocation note: {@code @Async} and {@code @Transactional} on internal
+ * methods are bypassed when called via {@code this.}. All cross-method calls go
+ * through {@code self} (a self-injected proxy) so the proxy advice runs.
+ */
 @Service
 public class ClipAnalysisService {
 
@@ -27,19 +37,26 @@ public class ClipAnalysisService {
     private final ClipRepository clipRepository;
     private final ClipAnalysisRepository analysisRepository;
     private final ClaudeClient claudeClient;
+    private final org.springframework.beans.factory.ObjectProvider<ClipAnalysisService> selfProvider;
 
     public ClipAnalysisService(ClipRepository clipRepository,
                                ClipAnalysisRepository analysisRepository,
-                               ClaudeClient claudeClient) {
+                               ClaudeClient claudeClient,
+                               org.springframework.beans.factory.ObjectProvider<ClipAnalysisService> selfProvider) {
         this.clipRepository = clipRepository;
         this.analysisRepository = analysisRepository;
         this.claudeClient = claudeClient;
+        this.selfProvider = selfProvider;
+    }
+
+    private ClipAnalysisService self() {
+        return selfProvider.getObject();
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void onClipCreated(ClipCreatedEvent event) {
-        triggerAsync(event.clipId());
+        runAnalysisPipeline(event.clipId());
     }
 
     @EventListener
@@ -48,46 +65,78 @@ public class ClipAnalysisService {
         analysisRepository.deleteByClipId(event.clipId());
     }
 
-    @Transactional
-    public ClipAnalysis triggerAsync(UUID clipId) {
-        ClipAnalysis pending = analysisRepository.findByClipId(clipId)
-                .orElseGet(() -> ClipAnalysis.pending(clipId));
-        if (analysisRepository.findByClipId(clipId).isEmpty()) {
-            analysisRepository.save(pending);
+    /**
+     * Pipeline entrypoint — runs on the @Async pool. Bookends are transactional,
+     * the network call in between is not.
+     */
+    public void runAnalysisPipeline(UUID clipId) {
+        // 1. Load clip + ensure a PENDING row exists (short tx).
+        TranscriptSnapshot snapshot;
+        try {
+            snapshot = self().prepareAnalysis(clipId);
+        } catch (NotFoundException ex) {
+            log.debug("Skip analysis: clip {} no longer exists", clipId);
+            return;
         }
-        runAnalysis(clipId);
-        return pending;
+
+        if (snapshot.transcript == null || snapshot.transcript.isBlank()) {
+            self().completeWithEmptyTranscript(clipId);
+            return;
+        }
+        if (!claudeClient.isConfigured()) {
+            log.info("Claude API key absent — skipping analysis for clip {}", clipId);
+            self().completeAsFailed(clipId, "Claude API key not configured");
+            return;
+        }
+
+        // 2. Call Claude OUTSIDE the transaction. Slow, network-bound.
+        ClaudeClient.AnalysisResult result;
+        try {
+            result = claudeClient.analyzeClip(snapshot.transcript);
+        } catch (Exception ex) {
+            log.warn("Analysis failed for clip {}: {}", clipId, ex.getMessage());
+            self().completeAsFailed(clipId, ex.getMessage());
+            return;
+        }
+
+        // 3. Persist result (short tx).
+        self().completeAsReady(clipId, result);
     }
 
     @Transactional
-    public ClipAnalysis runAnalysis(UUID clipId) {
+    public TranscriptSnapshot prepareAnalysis(UUID clipId) {
         Clip clip = clipRepository.findById(clipId)
                 .orElseThrow(() -> new NotFoundException("CLIP_NOT_FOUND", "Clip not found"));
+        if (analysisRepository.findByClipId(clipId).isEmpty()) {
+            analysisRepository.save(ClipAnalysis.pending(clipId));
+        }
+        return new TranscriptSnapshot(clip.getTranscript());
+    }
+
+    @Transactional
+    public void completeWithEmptyTranscript(UUID clipId) {
         ClipAnalysis analysis = analysisRepository.findByClipId(clipId)
-                .orElseGet(() -> analysisRepository.save(ClipAnalysis.pending(clipId)));
+                .orElseGet(() -> ClipAnalysis.pending(clipId));
+        analysis.markReady(java.util.List.of(), java.util.List.of(), java.util.List.of(),
+                "Transcript unavailable.", claudeClient.model());
+        analysisRepository.save(analysis);
+    }
 
-        String transcript = clip.getTranscript();
-        if (transcript == null || transcript.isBlank()) {
-            analysis.markReady(java.util.List.of(), java.util.List.of(), java.util.List.of(),
-                    "Transcript unavailable.", claudeClient.model());
-            return analysisRepository.save(analysis);
-        }
+    @Transactional
+    public void completeAsFailed(UUID clipId, String message) {
+        analysisRepository.findByClipId(clipId).ifPresent(a -> {
+            a.markFailed(message);
+            analysisRepository.save(a);
+        });
+    }
 
-        if (!claudeClient.isConfigured()) {
-            log.info("Claude API key absent — skipping analysis for clip {}", clipId);
-            analysis.markFailed("Claude API key not configured");
-            return analysisRepository.save(analysis);
-        }
-
-        try {
-            ClaudeClient.AnalysisResult result = claudeClient.analyzeClip(transcript);
-            analysis.markReady(result.grammarNotes(), result.keyExpressions(),
+    @Transactional
+    public void completeAsReady(UUID clipId, ClaudeClient.AnalysisResult result) {
+        analysisRepository.findByClipId(clipId).ifPresent(a -> {
+            a.markReady(result.grammarNotes(), result.keyExpressions(),
                     result.vocabulary(), result.contextSummary(), claudeClient.model());
-        } catch (Exception ex) {
-            log.warn("Analysis failed for clip {}: {}", clipId, ex.getMessage());
-            analysis.markFailed(ex.getMessage());
-        }
-        return analysisRepository.save(analysis);
+            analysisRepository.save(a);
+        });
     }
 
     @Transactional
@@ -97,13 +146,15 @@ public class ClipAnalysisService {
         analysisRepository.deleteByClipId(clipId);
         analysisRepository.flush();
         ClipAnalysis fresh = analysisRepository.save(ClipAnalysis.pending(clip.getId()));
-        triggerAsyncOnly(clipId);
+        // Fire via proxy so @Async kicks in.
+        self().runAnalysisPipelineAsync(clipId);
         return fresh;
     }
 
+    /** Async hop — must be invoked via the proxy ({@link #self()}). */
     @Async
-    public void triggerAsyncOnly(UUID clipId) {
-        runAnalysis(clipId);
+    public void runAnalysisPipelineAsync(UUID clipId) {
+        runAnalysisPipeline(clipId);
     }
 
     @Transactional(readOnly = true)
@@ -113,4 +164,6 @@ public class ClipAnalysisService {
         return analysisRepository.findByClipId(clip.getId())
                 .orElseThrow(() -> new NotFoundException("ANALYSIS_NOT_FOUND", "Analysis not started"));
     }
+
+    record TranscriptSnapshot(String transcript) {}
 }

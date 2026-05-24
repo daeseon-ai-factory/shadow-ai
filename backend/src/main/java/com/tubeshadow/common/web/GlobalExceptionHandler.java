@@ -41,6 +41,27 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail(new ApiResponse.ApiError("BAD_REQUEST", ex.getMessage())));
     }
 
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMaxUploadSize(
+            org.springframework.web.multipart.MaxUploadSizeExceededException ex) {
+        return ResponseEntity
+                .status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(ApiResponse.fail(new ApiResponse.ApiError("FILE_TOO_LARGE",
+                        "업로드 파일 크기가 허용 한도를 초과합니다.")));
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDataIntegrity(
+            org.springframework.dao.DataIntegrityViolationException ex) {
+        // Most common case: unique constraint violation from a concurrent signup race
+        // that lost to the unique index. Surface as 409 instead of a generic 500.
+        log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.fail(new ApiResponse.ApiError("CONFLICT",
+                        "이미 존재하는 데이터입니다.")));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Void>> handleUnexpected(RuntimeException ex) {
         log.error("Unhandled exception", ex);

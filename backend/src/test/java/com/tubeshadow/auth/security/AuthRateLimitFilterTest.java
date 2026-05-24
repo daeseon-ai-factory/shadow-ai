@@ -69,6 +69,30 @@ class AuthRateLimitFilterTest {
         assertThat(res2.getStatus()).isEqualTo(200);
     }
 
+    @Test
+    void xForwardedForIsIgnoredWhenNoTrustedProxyConfigured() {
+        var rate = new AuthRateLimitFilter(objectMapper, 1, Clock.systemUTC(), "");
+        MockHttpServletRequest r = request("/api/auth/login");
+        r.setRemoteAddr("10.0.0.5");
+        r.addHeader("X-Forwarded-For", "1.2.3.4");
+        // Should still see the real remote, not the spoofed header.
+        assertThat(rate.clientIp(r)).isEqualTo("10.0.0.5");
+    }
+
+    @Test
+    void xForwardedForHonoredOnlyFromTrustedProxy() {
+        var rate = new AuthRateLimitFilter(objectMapper, 1, Clock.systemUTC(), "10.");
+        MockHttpServletRequest fromProxy = request("/api/auth/login");
+        fromProxy.setRemoteAddr("10.0.0.5");
+        fromProxy.addHeader("X-Forwarded-For", "1.2.3.4");
+        assertThat(rate.clientIp(fromProxy)).isEqualTo("1.2.3.4");
+
+        MockHttpServletRequest fromOutside = request("/api/auth/login");
+        fromOutside.setRemoteAddr("8.8.8.8");
+        fromOutside.addHeader("X-Forwarded-For", "1.2.3.4");
+        assertThat(rate.clientIp(fromOutside)).isEqualTo("8.8.8.8");
+    }
+
     private MockHttpServletRequest request(String path) {
         MockHttpServletRequest r = new MockHttpServletRequest("POST", path);
         r.setServletPath(path);
