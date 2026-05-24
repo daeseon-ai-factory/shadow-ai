@@ -28,7 +28,9 @@ class VideoImportServiceTest {
     private final VideoRepository repo = mock(VideoRepository.class);
     private final YoutubeMetadataClient meta = mock(YoutubeMetadataClient.class);
     private final YoutubeTranscriptClient transcript = mock(YoutubeTranscriptClient.class);
-    private final VideoImportService service = new VideoImportService(repo, meta, transcript);
+    private final com.tubeshadow.video.infrastructure.YoutubeProbe probe =
+            mock(com.tubeshadow.video.infrastructure.YoutubeProbe.class);
+    private final VideoImportService service = new VideoImportService(repo, meta, transcript, probe);
 
     @Test
     void fetchesAndPersistsNewVideo() {
@@ -54,6 +56,7 @@ class VideoImportServiceTest {
     void existingReadyVideoSkipsAllNetworkCalls() {
         Video existing = Video.createNew("abcdefghijk", "Existing");
         existing.attachTranscript(List.of(new TranscriptSegment(0, 1000, "seeded")));
+        existing.applyDimensions(1920, 1080, 600); // dimensions already known → no probe needed
         when(repo.findByYoutubeId("abcdefghijk")).thenReturn(Optional.of(existing));
 
         Video result = service.importByUrl("https://youtu.be/abcdefghijk");
@@ -61,6 +64,7 @@ class VideoImportServiceTest {
         assertThat(result).isSameAs(existing);
         verify(meta, never()).fetch(any());
         verify(transcript, never()).fetch(any());
+        verify(probe, never()).probe(any());
         verify(repo, never()).save(any());
     }
 

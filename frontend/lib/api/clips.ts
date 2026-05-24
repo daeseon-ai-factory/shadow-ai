@@ -6,6 +6,9 @@ export interface ClipResponse {
   youtubeId: string;
   videoTitle: string;
   thumbnailUrl: string | null;
+  videoOrientation: "PORTRAIT" | "LANDSCAPE" | "UNKNOWN";
+  videoWidthPx: number | null;
+  videoHeightPx: number | null;
   startMs: number;
   endMs: number;
   name: string;

@@ -1,0 +1,2 @@
+ALTER TABLE videos ADD COLUMN width_px  INTEGER;
+ALTER TABLE videos ADD COLUMN height_px INTEGER;

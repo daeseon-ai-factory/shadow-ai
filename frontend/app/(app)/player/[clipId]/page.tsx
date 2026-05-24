@@ -116,6 +116,7 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
         <YoutubePlayer
           ref={playerRef}
           videoId={data.youtubeId}
+          orientation={data.videoOrientation}
           onReady={() => setReady(true)}
           onStateChange={(state) => setPlaying(state === 1)}
         />

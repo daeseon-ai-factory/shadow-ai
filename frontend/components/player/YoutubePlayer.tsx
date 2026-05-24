@@ -67,11 +67,13 @@ interface Props {
   videoId: string;
   onReady?: () => void;
   onStateChange?: (state: YT_PlayerState) => void;
+  /** "PORTRAIT" → 9:16 with max-width cap. Anything else → 16:9. */
+  orientation?: "PORTRAIT" | "LANDSCAPE" | "UNKNOWN";
   className?: string;
 }
 
 export const YoutubePlayer = forwardRef<YoutubePlayerHandle, Props>(function YoutubePlayer(
-  { videoId, onReady, onStateChange, className },
+  { videoId, onReady, onStateChange, orientation, className },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -119,8 +121,15 @@ export const YoutubePlayer = forwardRef<YoutubePlayerHandle, Props>(function You
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoId]);
 
+  // Portrait: cap to a sensible reading width so the iframe doesn't dominate the page.
+  // Landscape (default): full width 16:9 like before.
+  const wrapper = className ??
+    (orientation === "PORTRAIT"
+      ? "aspect-[9/16] mx-auto w-full max-w-sm overflow-hidden rounded-lg bg-black"
+      : "aspect-video w-full overflow-hidden rounded-lg bg-black");
+
   return (
-    <div className={className ?? "aspect-video w-full overflow-hidden rounded-lg bg-black"}>
+    <div className={wrapper}>
       <div ref={containerRef} className="h-full w-full" />
     </div>
   );
