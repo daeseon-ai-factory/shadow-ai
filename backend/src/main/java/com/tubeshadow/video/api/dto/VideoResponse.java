@@ -13,6 +13,9 @@ public record VideoResponse(
         String channelName,
         Integer durationSeconds,
         String thumbnailUrl,
+        Integer widthPx,
+        Integer heightPx,
+        String orientation,
         String transcriptStatus,
         List<TranscriptSegment> transcriptSegments,
         List<TranscriptSegment> sentences
@@ -25,6 +28,9 @@ public record VideoResponse(
                 v.getChannelName(),
                 v.getDurationSeconds(),
                 v.getThumbnailUrl(),
+                v.getWidthPx(),
+                v.getHeightPx(),
+                v.getOrientation(),
                 v.getTranscriptStatus().name(),
                 v.getTranscriptSegments(),
                 v.getSentences()
@@ -39,6 +45,9 @@ public record VideoResponse(
                 v.getChannelName(),
                 v.getDurationSeconds(),
                 v.getThumbnailUrl(),
+                v.getWidthPx(),
+                v.getHeightPx(),
+                v.getOrientation(),
                 v.getTranscriptStatus().name(),
                 List.of(),
                 List.of()

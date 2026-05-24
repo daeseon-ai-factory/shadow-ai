@@ -13,6 +13,9 @@ export interface VideoResponse {
   channelName: string | null;
   durationSeconds: number | null;
   thumbnailUrl: string | null;
+  widthPx: number | null;
+  heightPx: number | null;
+  orientation: "PORTRAIT" | "LANDSCAPE" | "UNKNOWN";
   transcriptStatus: "PENDING" | "READY" | "UNAVAILABLE";
   /** Raw YouTube transcript segments (1~3s chunks). */
   transcriptSegments: TranscriptSegment[];

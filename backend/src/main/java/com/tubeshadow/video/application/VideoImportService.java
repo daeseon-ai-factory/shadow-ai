@@ -5,6 +5,7 @@ import com.tubeshadow.video.domain.TranscriptSegment;
 import com.tubeshadow.video.domain.Video;
 import com.tubeshadow.video.infrastructure.NoTranscriptAvailableException;
 import com.tubeshadow.video.infrastructure.YoutubeMetadataClient;
+import com.tubeshadow.video.infrastructure.YoutubeProbe;
 import com.tubeshadow.video.infrastructure.YoutubeTranscriptClient;
 import com.tubeshadow.video.repository.VideoRepository;
 import com.tubeshadow.video.util.YoutubeUrlParser;
@@ -25,13 +26,16 @@ public class VideoImportService {
     private final VideoRepository videoRepository;
     private final YoutubeMetadataClient metadataClient;
     private final YoutubeTranscriptClient transcriptClient;
+    private final YoutubeProbe probe;
 
     public VideoImportService(VideoRepository videoRepository,
                               YoutubeMetadataClient metadataClient,
-                              YoutubeTranscriptClient transcriptClient) {
+                              YoutubeTranscriptClient transcriptClient,
+                              YoutubeProbe probe) {
         this.videoRepository = videoRepository;
         this.metadataClient = metadataClient;
         this.transcriptClient = transcriptClient;
+        this.probe = probe;
     }
 
     @Transactional
@@ -41,36 +45,51 @@ public class VideoImportService {
                         "INVALID_YOUTUBE_URL", "유효한 YouTube URL이 아닙니다"));
 
         return videoRepository.findByYoutubeId(videoId)
-                .map(this::retryTranscriptIfMissing)
+                .map(this::recoverIfNeeded)
                 .orElseGet(() -> fetchAndPersist(videoId));
     }
 
     /**
-     * If a previously imported video still has no transcript (earlier extractor failed),
-     * try once more on read. Makes "import the same URL again" act as a self-heal button
-     * without forcing the user to add a refresh endpoint.
+     * Same URL re-import = self-heal:
+     *  - missing transcript → try fetch
+     *  - missing dimensions → run probe
+     * Neither call touches metadata (oEmbed) — that's set once at first import.
      */
-    private Video retryTranscriptIfMissing(Video existing) {
-        if (existing.getTranscriptStatus() == Video.TranscriptStatus.READY) {
-            return existing;
-        }
-        try {
-            List<TranscriptSegment> segments = transcriptClient.fetch(existing.getYoutubeId());
-            if (!segments.isEmpty()) {
-                existing.attachTranscript(segments);
-                log.info("Recovered transcript for {} ({} segments)", existing.getYoutubeId(), segments.size());
-                return videoRepository.save(existing);
+    private Video recoverIfNeeded(Video existing) {
+        boolean changed = false;
+        if (existing.getTranscriptStatus() != Video.TranscriptStatus.READY) {
+            try {
+                List<TranscriptSegment> segments = transcriptClient.fetch(existing.getYoutubeId());
+                if (!segments.isEmpty()) {
+                    existing.attachTranscript(segments);
+                    log.info("Recovered transcript for {} ({} segments)", existing.getYoutubeId(), segments.size());
+                    changed = true;
+                }
+            } catch (NoTranscriptAvailableException ex) {
+                log.debug("Re-fetch still has no transcript for {}", existing.getYoutubeId());
             }
-        } catch (NoTranscriptAvailableException ex) {
-            log.debug("Re-fetch still has no transcript for {}", existing.getYoutubeId());
         }
-        return existing;
+        if (existing.getWidthPx() == null || existing.getHeightPx() == null) {
+            var maybeMeta = probe.probe(existing.getYoutubeId());
+            if (maybeMeta.isPresent()) {
+                var meta = maybeMeta.get();
+                existing.applyDimensions(meta.widthPx(), meta.heightPx(), meta.durationSeconds());
+                log.info("Recovered dimensions for {}: {}×{}",
+                        existing.getYoutubeId(), meta.widthPx(), meta.heightPx());
+                changed = true;
+            }
+        }
+        return changed ? videoRepository.save(existing) : existing;
     }
 
     private Video fetchAndPersist(String youtubeId) {
         YoutubeMetadataClient.YoutubeMetadata meta = metadataClient.fetch(youtubeId);
         Video video = Video.createNew(youtubeId, meta.title());
         video.applyMetadata(meta.authorName(), null, meta.thumbnailUrl());
+
+        // Probe is best-effort; if it fails the video still saves with unknown orientation.
+        probe.probe(youtubeId).ifPresent(m ->
+                video.applyDimensions(m.widthPx(), m.heightPx(), m.durationSeconds()));
 
         try {
             List<TranscriptSegment> segments = transcriptClient.fetch(youtubeId);

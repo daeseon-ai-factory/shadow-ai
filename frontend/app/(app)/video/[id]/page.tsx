@@ -67,6 +67,7 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
 
   const sentenceCount = data.sentences?.length ?? 0;
   const rawCount = data.transcriptSegments?.length ?? 0;
+  const isPortrait = data.orientation === "PORTRAIT";
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
@@ -80,10 +81,11 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
             {data.transcriptStatus === "READY" && (
               <Badge variant="secondary">자막 {sentenceCount}문장 (원본 {rawCount}개)</Badge>
             )}
+            {isPortrait && <Badge variant="outline">Shorts (세로)</Badge>}
           </div>
           {data.channelName && <p className="text-sm text-muted-foreground">{data.channelName}</p>}
         </header>
-        <YoutubePlayer ref={playerRef} videoId={data.youtubeId} />
+        <YoutubePlayer ref={playerRef} videoId={data.youtubeId} orientation={data.orientation} />
         <ClipCreatePanel
           videoId={data.id}
           segments={data.sentences ?? data.transcriptSegments}

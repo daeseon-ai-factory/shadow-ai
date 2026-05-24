@@ -40,6 +40,14 @@ public class Video extends BaseEntity {
     @Column(name = "thumbnail_url", length = 500)
     private String thumbnailUrl;
 
+    /** Pixel width as reported by yt-dlp; null if probe failed. */
+    @Column(name = "width_px")
+    private Integer widthPx;
+
+    /** Pixel height as reported by yt-dlp; null if probe failed. */
+    @Column(name = "height_px")
+    private Integer heightPx;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "transcript_status", nullable = false, length = 32)
     private TranscriptStatus transcriptStatus = TranscriptStatus.PENDING;
@@ -70,6 +78,25 @@ public class Video extends BaseEntity {
         this.channelName = channelName;
         this.durationSeconds = durationSeconds;
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public void applyDimensions(Integer widthPx, Integer heightPx, Integer durationSeconds) {
+        if (widthPx != null) this.widthPx = widthPx;
+        if (heightPx != null) this.heightPx = heightPx;
+        if (durationSeconds != null && this.durationSeconds == null) this.durationSeconds = durationSeconds;
+    }
+
+    /** True when the video is taller than it is wide — Shorts and most vertical content. */
+    public boolean isPortrait() {
+        return widthPx != null && heightPx != null && heightPx > widthPx;
+    }
+
+    public Integer getWidthPx() { return widthPx; }
+    public Integer getHeightPx() { return heightPx; }
+
+    public String getOrientation() {
+        if (widthPx == null || heightPx == null) return "UNKNOWN";
+        return heightPx > widthPx ? "PORTRAIT" : "LANDSCAPE";
     }
 
     public void attachTranscript(List<TranscriptSegment> segments) {
