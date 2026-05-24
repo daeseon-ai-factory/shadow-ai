@@ -9,6 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { YoutubePlayer, type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
 import { AnalysisPanel } from "@/components/clip/AnalysisPanel";
+import { RecordingPanel } from "@/components/recording/RecordingPanel";
 import { clipsApi } from "@/lib/api/clips";
 
 export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: string }> }) {
@@ -142,6 +143,13 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
           </CardContent>
         </Card>
         <AnalysisPanel clipId={data.id} />
+        <RecordingPanel
+          clipId={data.id}
+          onPlayOriginal={() => {
+            playerRef.current?.seekTo(data.startMs / 1000);
+            playerRef.current?.play();
+          }}
+        />
         <Link href="/library" className={buttonVariants({ variant: "outline" })}>
           ← 라이브러리
         </Link>
