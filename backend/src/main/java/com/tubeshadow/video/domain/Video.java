@@ -114,6 +114,15 @@ public class Video extends BaseEntity {
         return transcriptSegments == null ? Collections.emptyList() : transcriptSegments;
     }
 
+    /**
+     * Sentence-level view of the transcript, derived on the fly from raw segments.
+     * See {@link SentenceMerger} for the merging rules. Cheap (O(n), no IO),
+     * deterministic — safe to call on every request.
+     */
+    public List<TranscriptSegment> getSentences() {
+        return SentenceMerger.merge(getTranscriptSegments());
+    }
+
     public enum TranscriptStatus {
         PENDING, READY, UNAVAILABLE
     }
