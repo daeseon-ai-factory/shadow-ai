@@ -51,8 +51,9 @@ class VideoImportServiceTest {
     }
 
     @Test
-    void returnsExistingWithoutNetworkCall() {
+    void existingReadyVideoSkipsAllNetworkCalls() {
         Video existing = Video.createNew("abcdefghijk", "Existing");
+        existing.attachTranscript(List.of(new TranscriptSegment(0, 1000, "seeded")));
         when(repo.findByYoutubeId("abcdefghijk")).thenReturn(Optional.of(existing));
 
         Video result = service.importByUrl("https://youtu.be/abcdefghijk");
@@ -61,6 +62,23 @@ class VideoImportServiceTest {
         verify(meta, never()).fetch(any());
         verify(transcript, never()).fetch(any());
         verify(repo, never()).save(any());
+    }
+
+    @Test
+    void existingUnavailableVideoRetriesTranscriptOnImport() {
+        Video existing = Video.createNew("abcdefghijk", "Existing");
+        existing.markTranscriptUnavailable();
+        when(repo.findByYoutubeId("abcdefghijk")).thenReturn(Optional.of(existing));
+        when(transcript.fetch("abcdefghijk")).thenReturn(
+                List.of(new TranscriptSegment(0, 1000, "now-available")));
+        when(repo.save(any(Video.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Video result = service.importByUrl("https://youtu.be/abcdefghijk");
+
+        assertThat(result.getTranscriptStatus()).isEqualTo(Video.TranscriptStatus.READY);
+        assertThat(result.getTranscriptSegments()).hasSize(1);
+        verify(meta, never()).fetch(any()); // metadata is NOT refetched
+        verify(transcript, times(1)).fetch("abcdefghijk");
     }
 
     @Test

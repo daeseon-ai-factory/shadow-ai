@@ -41,7 +41,30 @@ public class VideoImportService {
                         "INVALID_YOUTUBE_URL", "유효한 YouTube URL이 아닙니다"));
 
         return videoRepository.findByYoutubeId(videoId)
+                .map(this::retryTranscriptIfMissing)
                 .orElseGet(() -> fetchAndPersist(videoId));
+    }
+
+    /**
+     * If a previously imported video still has no transcript (earlier extractor failed),
+     * try once more on read. Makes "import the same URL again" act as a self-heal button
+     * without forcing the user to add a refresh endpoint.
+     */
+    private Video retryTranscriptIfMissing(Video existing) {
+        if (existing.getTranscriptStatus() == Video.TranscriptStatus.READY) {
+            return existing;
+        }
+        try {
+            List<TranscriptSegment> segments = transcriptClient.fetch(existing.getYoutubeId());
+            if (!segments.isEmpty()) {
+                existing.attachTranscript(segments);
+                log.info("Recovered transcript for {} ({} segments)", existing.getYoutubeId(), segments.size());
+                return videoRepository.save(existing);
+            }
+        } catch (NoTranscriptAvailableException ex) {
+            log.debug("Re-fetch still has no transcript for {}", existing.getYoutubeId());
+        }
+        return existing;
     }
 
     private Video fetchAndPersist(String youtubeId) {
