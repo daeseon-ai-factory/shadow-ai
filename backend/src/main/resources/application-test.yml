@@ -31,3 +31,5 @@ tubeshadow:
   seed:
     curated:
       enabled: false
+  rate-limit:
+    enabled: false

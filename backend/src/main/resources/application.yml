@@ -41,3 +41,9 @@ tubeshadow:
     model: ${ANTHROPIC_MODEL:claude-haiku-4-5-20251001}
   youtube:
     oembed-url: https://www.youtube.com/oembed
+  cors:
+    # Comma-separated allowed origin patterns. Defaults are good for local dev + Vercel previews.
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:*,https://*.vercel.app}
+  rate-limit:
+    # Simple per-IP+endpoint sliding-window limits on the auth endpoints.
+    auth-attempts-per-minute: ${AUTH_RATE_LIMIT:20}
