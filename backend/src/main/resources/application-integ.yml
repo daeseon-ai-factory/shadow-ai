@@ -15,6 +15,9 @@ tubeshadow:
     model: claude-haiku-4-5-20251001
   youtube:
     oembed-url: https://www.youtube.com/oembed
+  seed:
+    curated:
+      enabled: false
 
 logging:
   level:

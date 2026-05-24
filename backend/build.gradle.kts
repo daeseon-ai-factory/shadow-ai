@@ -41,6 +41,9 @@ dependencies {
     // Anthropic Claude HTTP client uses Spring's RestClient / WebClient
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
+    // YAML reader for curated-videos.yml seed
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
