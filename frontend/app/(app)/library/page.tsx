@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { clipsApi, type ClipResponse } from "@/lib/api/clips";
+import { StreakWidget } from "@/components/StreakWidget";
 
 export default function LibraryPage() {
   const [search, setSearch] = useState("");
@@ -39,6 +40,7 @@ export default function LibraryPage() {
           저장한 클립을 검색하거나 태그로 필터링하세요. 클립을 클릭하면 무한 반복 재생됩니다.
         </p>
       </header>
+      <StreakWidget />
       <div className="flex flex-wrap items-center gap-3">
         <Input
           placeholder="이름 또는 자막 검색"
