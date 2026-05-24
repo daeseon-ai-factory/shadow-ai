@@ -14,7 +14,8 @@ public record VideoResponse(
         Integer durationSeconds,
         String thumbnailUrl,
         String transcriptStatus,
-        List<TranscriptSegment> transcriptSegments
+        List<TranscriptSegment> transcriptSegments,
+        List<TranscriptSegment> sentences
 ) {
     public static VideoResponse from(Video v) {
         return new VideoResponse(
@@ -25,7 +26,8 @@ public record VideoResponse(
                 v.getDurationSeconds(),
                 v.getThumbnailUrl(),
                 v.getTranscriptStatus().name(),
-                v.getTranscriptSegments()
+                v.getTranscriptSegments(),
+                v.getSentences()
         );
     }
 
@@ -38,6 +40,7 @@ public record VideoResponse(
                 v.getDurationSeconds(),
                 v.getThumbnailUrl(),
                 v.getTranscriptStatus().name(),
+                List.of(),
                 List.of()
         );
     }

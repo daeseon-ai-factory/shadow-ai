@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { videosApi } from "@/lib/api/videos";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { videosApi, type TranscriptSegment } from "@/lib/api/videos";
 import { YoutubePlayer, type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
 import { TranscriptPanel } from "@/components/player/TranscriptPanel";
 import { ClipCreatePanel, type SelectedRange } from "@/components/clip/ClipCreatePanel";
@@ -16,6 +16,7 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
   const playerRef = useRef<YoutubePlayerHandle>(null);
   const [currentMs, setCurrentMs] = useState(0);
   const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(null);
+  const [selectionStep, setSelectionStep] = useState<"start" | "end">("start");
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["video", id],
@@ -36,15 +37,36 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
   if (isError) return <p className="text-sm text-red-600">불러오기 실패: {(error as Error).message}</p>;
   if (!data) return null;
 
-  const toggleSegmentInRange = (segment: { startMs: number; endMs: number }) => {
-    setSelectedRange((prev) => {
-      if (!prev) return { startMs: segment.startMs, endMs: segment.endMs };
-      return {
-        startMs: Math.min(prev.startMs, segment.startMs),
-        endMs: Math.max(prev.endMs, segment.endMs),
-      };
-    });
+  /**
+   * Click-to-select state machine:
+   *   "start" step  → set range to this single sentence, advance to "end"
+   *   "end" step    → if click is after the current start, extend endMs;
+   *                   if click is at/before the current start, reset start to this sentence (stay in "end")
+   *   re-click the same start sentence → reset everything
+   */
+  const onSentenceClickForRange = (sentence: TranscriptSegment) => {
+    if (!selectedRange) {
+      setSelectedRange({ startMs: sentence.startMs, endMs: sentence.endMs });
+      setSelectionStep("end");
+      return;
+    }
+    if (sentence.startMs === selectedRange.startMs) {
+      // toggle off — reset
+      setSelectedRange(null);
+      setSelectionStep("start");
+      return;
+    }
+    if (sentence.startMs > selectedRange.startMs) {
+      setSelectedRange({ startMs: selectedRange.startMs, endMs: sentence.endMs });
+      setSelectionStep("start");
+    } else {
+      // clicked above the current start — re-anchor start
+      setSelectedRange({ startMs: sentence.startMs, endMs: selectedRange.endMs });
+    }
   };
+
+  const sentenceCount = data.sentences?.length ?? 0;
+  const rawCount = data.transcriptSegments?.length ?? 0;
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
@@ -56,7 +78,7 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
               <Badge variant="destructive">자막 없음</Badge>
             )}
             {data.transcriptStatus === "READY" && (
-              <Badge variant="secondary">자막 {data.transcriptSegments.length}개</Badge>
+              <Badge variant="secondary">자막 {sentenceCount}문장 (원본 {rawCount}개)</Badge>
             )}
           </div>
           {data.channelName && <p className="text-sm text-muted-foreground">{data.channelName}</p>}
@@ -64,25 +86,34 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
         <YoutubePlayer ref={playerRef} videoId={data.youtubeId} />
         <ClipCreatePanel
           videoId={data.id}
-          segments={data.transcriptSegments}
+          segments={data.sentences ?? data.transcriptSegments}
           currentMs={currentMs}
           selectedRange={selectedRange}
-          setSelectedRange={setSelectedRange}
+          setSelectedRange={(r) => {
+            setSelectedRange(r);
+            setSelectionStep(r ? "end" : "start");
+          }}
           onSeek={(ms) => playerRef.current?.seekTo(ms / 1000)}
         />
       </div>
       <div className="space-y-4">
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle>자막</CardTitle>
+            {selectedRange && (
+              <Button size="sm" variant="ghost" onClick={() => { setSelectedRange(null); setSelectionStep("start"); }}>
+                선택 초기화
+              </Button>
+            )}
           </CardHeader>
           <CardContent className="p-0">
             <TranscriptPanel
-              segments={data.transcriptSegments}
+              segments={data.sentences ?? data.transcriptSegments}
               currentMs={currentMs}
               onSeek={(ms) => playerRef.current?.seekTo(ms / 1000)}
               selectedRange={selectedRange}
-              onToggleSegment={toggleSegmentInRange}
+              onSentenceClickForRange={onSentenceClickForRange}
+              selectionStep={selectionStep}
             />
           </CardContent>
         </Card>

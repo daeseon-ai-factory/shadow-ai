@@ -14,7 +14,10 @@ export interface VideoResponse {
   durationSeconds: number | null;
   thumbnailUrl: string | null;
   transcriptStatus: "PENDING" | "READY" | "UNAVAILABLE";
+  /** Raw YouTube transcript segments (1~3s chunks). */
   transcriptSegments: TranscriptSegment[];
+  /** Server-merged sentence-level view, derived from segments via SentenceMerger. */
+  sentences: TranscriptSegment[];
 }
 
 export const videosApi = {
