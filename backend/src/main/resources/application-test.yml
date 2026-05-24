@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:tubeshadow-test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  flyway:
+    enabled: false
+
+tubeshadow:
+  jwt:
+    secret: test-secret-key-that-is-long-enough-for-hs256-algorithm-do-not-use-in-prod
+    access-token-ttl-seconds: 3600
+  recording:
+    storage-dir: ./build/test-storage/recordings
+    max-bytes: 10485760
+  claude:
+    api-key: test-key
+    base-url: http://localhost:9999
+    model: claude-haiku-4-5-20251001
+  youtube:
+    oembed-url: https://www.youtube.com/oembed

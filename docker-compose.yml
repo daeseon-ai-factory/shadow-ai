@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tubeshadow-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tubeshadow}
+      POSTGRES_USER: ${POSTGRES_USER:-tubeshadow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tubeshadow}
+    ports:
+      # Host port 5434 to avoid collisions with host PostgreSQL on 5432.
+      - "5434:5432"
+    volumes:
+      - tubeshadow-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tubeshadow} -d ${POSTGRES_DB:-tubeshadow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  tubeshadow-pgdata:
