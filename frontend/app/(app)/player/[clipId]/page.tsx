@@ -10,7 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { YoutubePlayer, type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
 import { AnalysisPanel } from "@/components/clip/AnalysisPanel";
 import { RecordingPanel } from "@/components/recording/RecordingPanel";
+import { ShortcutHelp } from "@/components/ShortcutHelp";
+import { useShortcuts } from "@/lib/use-shortcuts";
 import { clipsApi } from "@/lib/api/clips";
+
+const SPEED_STEP = 0.05;
 
 export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: string }> }) {
   const { clipId } = use(params);
@@ -19,13 +23,13 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
   const [loopEnabled, setLoopEnabled] = useState(true);
   const [currentMs, setCurrentMs] = useState(0);
   const [ready, setReady] = useState(false);
+  const [playing, setPlaying] = useState(true);
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["clip", clipId],
     queryFn: () => clipsApi.get(clipId),
   });
 
-  // Once player + data are ready, seek to clip start.
   useEffect(() => {
     if (!ready || !data || !playerRef.current) return;
     playerRef.current.seekTo(data.startMs / 1000);
@@ -34,12 +38,10 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, data?.id]);
 
-  // Apply playback rate changes live.
   useEffect(() => {
     if (ready) playerRef.current?.setPlaybackRate(playbackRate);
   }, [playbackRate, ready]);
 
-  // Polling loop: track position + jump back to start when past endMs.
   useEffect(() => {
     if (!ready || !data) return;
     const handle = setInterval(() => {
@@ -53,6 +55,25 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
     return () => clearInterval(handle);
   }, [ready, data, loopEnabled]);
 
+  const togglePlay = () => {
+    if (playing) {
+      playerRef.current?.pause();
+      setPlaying(false);
+    } else {
+      playerRef.current?.play();
+      setPlaying(true);
+    }
+  };
+
+  useShortcuts([
+    { key: "Space", description: "재생/일시정지", action: togglePlay, when: () => ready },
+    { key: "r", description: "처음부터", action: () => data && playerRef.current?.seekTo(data.startMs / 1000), when: () => ready && !!data },
+    { key: "l", description: "무한 반복 토글", action: () => setLoopEnabled((v) => !v) },
+    { key: ".", description: "재생 속도 +0.05", action: () => setPlaybackRate((v) => Math.min(1.5, +(v + SPEED_STEP).toFixed(2))) },
+    { key: ",", description: "재생 속도 -0.05", action: () => setPlaybackRate((v) => Math.max(0.5, +(v - SPEED_STEP).toFixed(2))) },
+    { key: "0", description: "속도 1.0x로 리셋", action: () => setPlaybackRate(1.0) },
+  ]);
+
   if (isPending) return <p className="text-sm text-muted-foreground">클립 불러오는 중…</p>;
   if (isError) return <p className="text-sm text-red-600">{(error as Error).message}</p>;
   if (!data) return null;
@@ -63,21 +84,39 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
       <div className="space-y-4">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">{data.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            {data.videoTitle} · {duration.toFixed(1)}초
-          </p>
-          <div className="flex flex-wrap gap-1">
-            {data.tags.map((t) => (
-              <Badge key={t} variant="secondary">{t}</Badge>
-            ))}
+        <header className="flex flex-wrap items-start justify-between gap-2">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">{data.name}</h1>
+            <p className="text-sm text-muted-foreground">
+              {data.videoTitle} · {duration.toFixed(1)}초
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {data.tags.map((t) => (
+                <Badge key={t} variant="secondary">{t}</Badge>
+              ))}
+            </div>
           </div>
+          <ShortcutHelp
+            groups={[
+              {
+                title: "재생",
+                items: [
+                  { keys: ["Space"], description: "재생 / 일시정지" },
+                  { keys: ["R"], description: "처음부터" },
+                  { keys: ["L"], description: "무한 반복 토글" },
+                  { keys: [","], description: "속도 -0.05" },
+                  { keys: ["."], description: "속도 +0.05" },
+                  { keys: ["0"], description: "속도 1.0x" },
+                ],
+              },
+            ]}
+          />
         </header>
         <YoutubePlayer
           ref={playerRef}
           videoId={data.youtubeId}
           onReady={() => setReady(true)}
+          onStateChange={(state) => setPlaying(state === 1)}
         />
         <Card>
           <CardHeader>

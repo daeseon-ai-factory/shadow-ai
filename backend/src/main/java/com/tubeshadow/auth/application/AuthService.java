@@ -1,16 +1,21 @@
 package com.tubeshadow.auth.application;
 
 import com.tubeshadow.auth.api.dto.AuthTokenResponse;
+import com.tubeshadow.auth.api.dto.ChangePasswordRequest;
 import com.tubeshadow.auth.api.dto.LoginRequest;
 import com.tubeshadow.auth.api.dto.SignupRequest;
+import com.tubeshadow.auth.api.dto.UpdateProfileRequest;
 import com.tubeshadow.auth.domain.User;
 import com.tubeshadow.auth.repository.UserRepository;
 import com.tubeshadow.auth.security.JwtTokenProvider;
 import com.tubeshadow.common.exception.ConflictException;
+import com.tubeshadow.common.exception.NotFoundException;
 import com.tubeshadow.common.exception.UnauthorizedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -47,6 +52,24 @@ public class AuthService {
             throw new UnauthorizedException("INVALID_CREDENTIALS", "Invalid email or password");
         }
         return issue(user);
+    }
+
+    @Transactional
+    public AuthTokenResponse updateProfile(UUID userId, UpdateProfileRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "User not found"));
+        user.changeDisplayName(request.displayName().trim());
+        return issue(user);
+    }
+
+    @Transactional
+    public void changePassword(UUID userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "User not found"));
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new UnauthorizedException("INVALID_CREDENTIALS", "현재 비밀번호가 일치하지 않습니다");
+        }
+        user.changePasswordHash(passwordEncoder.encode(request.newPassword()));
     }
 
     private AuthTokenResponse issue(User user) {

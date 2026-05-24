@@ -11,6 +11,15 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface UpdateProfilePayload {
+  displayName: string;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface AuthTokenResponse {
   accessToken: string;
   expiresInSeconds: number;
@@ -21,8 +30,19 @@ export interface AuthTokenResponse {
   };
 }
 
+export interface MeResponse {
+  id: string;
+  email: string;
+  displayName: string;
+  createdAt: string;
+}
+
 export const authApi = {
   signup: (payload: SignupPayload) => apiClient.post<AuthTokenResponse>("/api/auth/signup", payload),
   login: (payload: LoginPayload) => apiClient.post<AuthTokenResponse>("/api/auth/login", payload),
-  me: () => apiClient.get<{ id: string; email: string }>("/api/auth/me"),
+  me: () => apiClient.get<MeResponse>("/api/auth/me"),
+  updateProfile: (payload: UpdateProfilePayload) =>
+    apiClient.patch<AuthTokenResponse>("/api/auth/me", payload),
+  changePassword: (payload: ChangePasswordPayload) =>
+    apiClient.post<void>("/api/auth/me/password", payload),
 };

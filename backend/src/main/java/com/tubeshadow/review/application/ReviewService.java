@@ -1,6 +1,5 @@
 package com.tubeshadow.review.application;
 
-import com.tubeshadow.clip.api.dto.ClipResponse;
 import com.tubeshadow.clip.application.ClipCreatedEvent;
 import com.tubeshadow.clip.application.ClipDeletedEvent;
 import com.tubeshadow.clip.domain.Clip;
@@ -64,8 +63,27 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewQueueItem> queue(UUID userId, LocalDate cutoff) {
-        return reviewRepository.findByUserIdAndDueDateLessThanEqualOrderByDueDateAsc(userId, cutoff).stream()
-                .map(item -> ReviewQueueItem.of(item, toClipResponse(item.getClipId())))
+        List<ReviewItem> items = reviewRepository.findByUserIdAndDueDateLessThanEqualOrderByDueDateAsc(userId, cutoff);
+        if (items.isEmpty()) return List.of();
+
+        // Batch fetch clips, then batch fetch videos → avoids N+1 across the queue.
+        List<UUID> clipIds = items.stream().map(ReviewItem::getClipId).distinct().toList();
+        java.util.Map<UUID, Clip> clipsById = clipRepository.findAllById(clipIds).stream()
+                .collect(java.util.stream.Collectors.toMap(Clip::getId, c -> c));
+
+        List<UUID> videoIds = clipsById.values().stream().map(Clip::getVideoId).distinct().toList();
+        java.util.Map<UUID, Video> videosById = videoRepository.findAllById(videoIds).stream()
+                .collect(java.util.stream.Collectors.toMap(Video::getId, v -> v));
+
+        return items.stream()
+                .map(item -> {
+                    Clip clip = clipsById.get(item.getClipId());
+                    if (clip == null) return null;
+                    Video video = videosById.get(clip.getVideoId());
+                    if (video == null) return null;
+                    return ReviewQueueItem.of(item, com.tubeshadow.clip.api.dto.ClipResponse.from(clip, video));
+                })
+                .filter(java.util.Objects::nonNull)
                 .toList();
     }
 
@@ -120,11 +138,4 @@ public class ReviewService {
         return null;
     }
 
-    private ClipResponse toClipResponse(UUID clipId) {
-        Clip clip = clipRepository.findById(clipId)
-                .orElseThrow(() -> new NotFoundException("CLIP_NOT_FOUND", "클립이 없습니다"));
-        Video video = videoRepository.findById(clip.getVideoId())
-                .orElseThrow(() -> new NotFoundException("VIDEO_NOT_FOUND", "영상이 없습니다"));
-        return ClipResponse.from(clip, video);
-    }
 }

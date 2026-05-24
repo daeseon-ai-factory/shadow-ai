@@ -8,6 +8,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { YoutubePlayer, type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
+import { ShortcutHelp } from "@/components/ShortcutHelp";
+import { useShortcuts } from "@/lib/use-shortcuts";
 import { reviewApi, REVIEW_QUALITY, type ReviewQueueItem } from "@/lib/api/review";
 
 export default function ReviewPage() {
@@ -67,7 +69,24 @@ export default function ReviewPage() {
     <div className="flex flex-col gap-4">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">복습</h1>
-        <span className="text-sm text-muted-foreground">{index + 1} / {total}</span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">{index + 1} / {total}</span>
+          <ShortcutHelp
+            groups={[
+              {
+                title: "복습",
+                items: [
+                  { keys: ["Space"], description: "재생 / 일시정지" },
+                  { keys: ["A"], description: "자막 보기" },
+                  { keys: ["1"], description: "다시 (Again)" },
+                  { keys: ["2"], description: "어렵다 (Hard)" },
+                  { keys: ["3"], description: "보통 (Good)" },
+                  { keys: ["4"], description: "쉽다 (Easy)" },
+                ],
+              },
+            ]}
+          />
+        </div>
       </header>
       <ReviewCard
         key={current.id}
@@ -109,6 +128,22 @@ function ReviewCard({
     }, 200);
     return () => clearInterval(handle);
   }, [ready, item.clip.startMs, item.clip.endMs]);
+
+  useShortcuts([
+    { key: "Space", description: "재생/일시정지", action: () => {
+        if (!playerRef.current) return;
+        // Toggling via setPlaybackRate(0) is not ideal; use play/pause directly.
+        playerRef.current.pause();
+        // Restart by seeking
+        setTimeout(() => playerRef.current?.play(), 50);
+      }
+    },
+    { key: "a", description: "자막 보기", action: () => setShowAnswer(true) },
+    { key: "1", description: "다시", action: () => !disabled && onRespond(REVIEW_QUALITY.AGAIN), when: () => !disabled },
+    { key: "2", description: "어렵다", action: () => !disabled && onRespond(REVIEW_QUALITY.HARD), when: () => !disabled },
+    { key: "3", description: "보통", action: () => !disabled && onRespond(REVIEW_QUALITY.GOOD), when: () => !disabled },
+    { key: "4", description: "쉽다", action: () => !disabled && onRespond(REVIEW_QUALITY.EASY), when: () => !disabled },
+  ]);
 
   const duration = useMemo(() => ((item.clip.endMs - item.clip.startMs) / 1000).toFixed(1), [item]);
 

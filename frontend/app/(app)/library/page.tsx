@@ -24,6 +24,12 @@ export default function LibraryPage() {
     placeholderData: (prev) => prev,
   });
 
+  const { data: userTags } = useQuery({
+    queryKey: ["clips", "tags"],
+    queryFn: () => clipsApi.tags(),
+    staleTime: 60_000,
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => clipsApi.delete(id),
     onSuccess: () => {
@@ -52,8 +58,12 @@ export default function LibraryPage() {
           placeholder="태그 (예: interview)"
           value={tag}
           onChange={(e) => setTag(e.target.value)}
+          list="user-tags"
           className="max-w-xs"
         />
+        <datalist id="user-tags">
+          {userTags?.map((t) => <option key={t} value={t} />)}
+        </datalist>
         <Link href="/import" className={buttonVariants({ variant: "outline" })}>+ 영상 임포트</Link>
       </div>
 

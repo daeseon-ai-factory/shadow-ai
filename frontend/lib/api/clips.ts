@@ -29,10 +29,18 @@ export interface ClipCreatePayload {
   tags: string[];
 }
 
+export interface ClipUpdatePayload {
+  name?: string;
+  tags?: string[];
+  transcript?: string;
+}
+
 export const clipsApi = {
   create: (payload: ClipCreatePayload) => apiClient.post<ClipResponse>("/api/clips", payload),
   list: (params: { q?: string; tag?: string; page?: number; size?: number }) =>
     apiClient.get<ClipPageResponse>("/api/clips", { query: { ...params } }),
+  tags: () => apiClient.get<string[]>("/api/clips/tags"),
   get: (id: string) => apiClient.get<ClipResponse>(`/api/clips/${id}`),
+  update: (id: string, payload: ClipUpdatePayload) => apiClient.patch<ClipResponse>(`/api/clips/${id}`, payload),
   delete: (id: string) => apiClient.delete<void>(`/api/clips/${id}`),
 };

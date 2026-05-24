@@ -1,11 +1,16 @@
 package com.tubeshadow.auth.api;
 
 import com.tubeshadow.auth.api.dto.AuthTokenResponse;
+import com.tubeshadow.auth.api.dto.ChangePasswordRequest;
 import com.tubeshadow.auth.api.dto.LoginRequest;
 import com.tubeshadow.auth.api.dto.SignupRequest;
+import com.tubeshadow.auth.api.dto.UpdateProfileRequest;
 import com.tubeshadow.auth.application.AuthService;
+import com.tubeshadow.auth.domain.User;
+import com.tubeshadow.auth.repository.UserRepository;
 import com.tubeshadow.auth.security.AuthenticatedUser;
 import com.tubeshadow.auth.security.CurrentUser;
+import com.tubeshadow.common.exception.NotFoundException;
 import com.tubeshadow.common.web.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -14,6 +19,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +29,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name = "Auth", description = "회원가입 / 로그인 / 현재 사용자")
+@Tag(name = "Auth", description = "회원가입 / 로그인 / 현재 사용자 / 프로필")
 public class AuthController {
 
     private final AuthService authService;
+    private final UserRepository userRepository;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, UserRepository userRepository) {
         this.authService = authService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/signup")
@@ -47,9 +55,28 @@ public class AuthController {
     @GetMapping("/me")
     @Operation(summary = "현재 사용자", security = @SecurityRequirement(name = "bearerAuth"))
     public ApiResponse<Map<String, Object>> me(@CurrentUser AuthenticatedUser user) {
+        User loaded = userRepository.findById(user.id())
+                .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "User not found"));
         return ApiResponse.ok(Map.of(
-                "id", user.id(),
-                "email", user.email()
+                "id", loaded.getId(),
+                "email", loaded.getEmail(),
+                "displayName", loaded.getDisplayName(),
+                "createdAt", loaded.getCreatedAt()
         ));
+    }
+
+    @PatchMapping("/me")
+    @Operation(summary = "프로필 수정 (display name)", security = @SecurityRequirement(name = "bearerAuth"))
+    public ApiResponse<AuthTokenResponse> updateProfile(@Valid @RequestBody UpdateProfileRequest request,
+                                                        @CurrentUser AuthenticatedUser user) {
+        return ApiResponse.ok(authService.updateProfile(user.id(), request));
+    }
+
+    @PostMapping("/me/password")
+    @Operation(summary = "비밀번호 변경", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request,
+                                                @CurrentUser AuthenticatedUser user) {
+        authService.changePassword(user.id(), request);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -5,6 +5,7 @@ import com.tubeshadow.auth.security.CurrentUser;
 import com.tubeshadow.clip.api.dto.ClipCreateRequest;
 import com.tubeshadow.clip.api.dto.ClipPageResponse;
 import com.tubeshadow.clip.api.dto.ClipResponse;
+import com.tubeshadow.clip.api.dto.ClipUpdateRequest;
 import com.tubeshadow.clip.application.ClipService;
 import com.tubeshadow.common.web.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,11 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/clips")
-@Tag(name = "Clip", description = "클립 생성 / 라이브러리 / 조회")
+@Tag(name = "Clip", description = "클립 생성 / 라이브러리 / 조회 / 편집")
 @SecurityRequirement(name = "bearerAuth")
 public class ClipController {
 
@@ -55,11 +58,25 @@ public class ClipController {
         return ApiResponse.ok(clipService.list(user.id(), q, tag, page, Math.min(size, 100)));
     }
 
+    @GetMapping("/tags")
+    @Operation(summary = "사용자 태그 모음 (정렬, 중복 제거)")
+    public ApiResponse<List<String>> tags(@CurrentUser AuthenticatedUser user) {
+        return ApiResponse.ok(clipService.listUserTags(user.id()));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "클립 단건 (자막 포함)")
     public ApiResponse<ClipResponse> get(@PathVariable UUID id,
                                          @CurrentUser AuthenticatedUser user) {
         return ApiResponse.ok(clipService.get(user.id(), id));
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "클립 편집 (name/tags/transcript 부분 업데이트)")
+    public ApiResponse<ClipResponse> update(@PathVariable UUID id,
+                                            @Valid @RequestBody ClipUpdateRequest request,
+                                            @CurrentUser AuthenticatedUser user) {
+        return ApiResponse.ok(clipService.update(user.id(), id, request));
     }
 
     @DeleteMapping("/{id}")

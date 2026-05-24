@@ -47,7 +47,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <NavLink href="/discover" active={pathname?.startsWith("/discover")}>둘러보기</NavLink>
           </nav>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="hidden truncate sm:inline max-w-[140px]">{user?.displayName ?? user?.email}</span>
+            <Link
+              href="/settings"
+              className="hidden truncate sm:inline max-w-[140px] hover:text-foreground hover:underline"
+            >
+              {user?.displayName ?? user?.email}
+            </Link>
             <Button variant="outline" size="sm" onClick={handleLogout}>로그아웃</Button>
           </div>
         </div>
