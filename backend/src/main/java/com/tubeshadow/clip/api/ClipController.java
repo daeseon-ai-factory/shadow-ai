@@ -1,0 +1,72 @@
+package com.tubeshadow.clip.api;
+
+import com.tubeshadow.auth.security.AuthenticatedUser;
+import com.tubeshadow.auth.security.CurrentUser;
+import com.tubeshadow.clip.api.dto.ClipCreateRequest;
+import com.tubeshadow.clip.api.dto.ClipPageResponse;
+import com.tubeshadow.clip.api.dto.ClipResponse;
+import com.tubeshadow.clip.application.ClipService;
+import com.tubeshadow.common.web.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/clips")
+@Tag(name = "Clip", description = "클립 생성 / 라이브러리 / 조회")
+@SecurityRequirement(name = "bearerAuth")
+public class ClipController {
+
+    private final ClipService clipService;
+
+    public ClipController(ClipService clipService) {
+        this.clipService = clipService;
+    }
+
+    @PostMapping
+    @Operation(summary = "클립 저장")
+    public ResponseEntity<ApiResponse<ClipResponse>> create(@Valid @RequestBody ClipCreateRequest request,
+                                                            @CurrentUser AuthenticatedUser user) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok(clipService.create(user.id(), request)));
+    }
+
+    @GetMapping
+    @Operation(summary = "클립 목록 (검색/태그 필터)")
+    public ApiResponse<ClipPageResponse> list(
+            @CurrentUser AuthenticatedUser user,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String tag,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ApiResponse.ok(clipService.list(user.id(), q, tag, page, Math.min(size, 100)));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "클립 단건 (자막 포함)")
+    public ApiResponse<ClipResponse> get(@PathVariable UUID id,
+                                         @CurrentUser AuthenticatedUser user) {
+        return ApiResponse.ok(clipService.get(user.id(), id));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "클립 삭제 (소유자만)")
+    public ResponseEntity<Void> delete(@PathVariable UUID id,
+                                       @CurrentUser AuthenticatedUser user) {
+        clipService.delete(user.id(), id);
+        return ResponseEntity.noContent().build();
+    }
+}

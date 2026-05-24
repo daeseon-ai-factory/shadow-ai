@@ -9,12 +9,13 @@ import { buttonVariants } from "@/components/ui/button";
 import { videosApi } from "@/lib/api/videos";
 import { YoutubePlayer, type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
 import { TranscriptPanel } from "@/components/player/TranscriptPanel";
+import { ClipCreatePanel, type SelectedRange } from "@/components/clip/ClipCreatePanel";
 
 export default function VideoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const playerRef = useRef<YoutubePlayerHandle>(null);
   const [currentMs, setCurrentMs] = useState(0);
-  const [selectedRange, setSelectedRange] = useState<{ startMs: number; endMs: number } | null>(null);
+  const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(null);
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["video", id],
@@ -35,6 +36,16 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
   if (isError) return <p className="text-sm text-red-600">불러오기 실패: {(error as Error).message}</p>;
   if (!data) return null;
 
+  const toggleSegmentInRange = (segment: { startMs: number; endMs: number }) => {
+    setSelectedRange((prev) => {
+      if (!prev) return { startMs: segment.startMs, endMs: segment.endMs };
+      return {
+        startMs: Math.min(prev.startMs, segment.startMs),
+        endMs: Math.max(prev.endMs, segment.endMs),
+      };
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
       <div className="space-y-4">
@@ -51,21 +62,14 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
           {data.channelName && <p className="text-sm text-muted-foreground">{data.channelName}</p>}
         </header>
         <YoutubePlayer ref={playerRef} videoId={data.youtubeId} />
-        <Card>
-          <CardHeader>
-            <CardTitle>현재 위치</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {Math.floor(currentMs / 1000)}초 / 자막 {data.transcriptSegments.length}개
-            </p>
-            {selectedRange && (
-              <p className="text-sm mt-2">
-                선택 범위: {selectedRange.startMs}ms ~ {selectedRange.endMs}ms (STAGE 4에서 클립 저장 UI 추가)
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        <ClipCreatePanel
+          videoId={data.id}
+          segments={data.transcriptSegments}
+          currentMs={currentMs}
+          selectedRange={selectedRange}
+          setSelectedRange={setSelectedRange}
+          onSeek={(ms) => playerRef.current?.seekTo(ms / 1000)}
+        />
       </div>
       <div className="space-y-4">
         <Card>
@@ -78,6 +82,7 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
               currentMs={currentMs}
               onSeek={(ms) => playerRef.current?.seekTo(ms / 1000)}
               selectedRange={selectedRange}
+              onToggleSegment={toggleSegmentInRange}
             />
           </CardContent>
         </Card>
