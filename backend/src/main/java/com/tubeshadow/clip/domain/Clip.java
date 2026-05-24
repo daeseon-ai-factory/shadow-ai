@@ -46,6 +46,10 @@ public class Clip extends BaseEntity {
     @Column(name = "transcript", columnDefinition = "text")
     private String transcript;
 
+    /** User-authored note. Anything — Korean glosses, mnemonics, follow-up questions. */
+    @Column(name = "note", columnDefinition = "text")
+    private String note;
+
     protected Clip() {
     }
 
@@ -69,6 +73,10 @@ public class Clip extends BaseEntity {
 
     public void attachTranscript(String transcript) {
         this.transcript = transcript;
+    }
+
+    public void updateNote(String note) {
+        this.note = note;
     }
 
     public void rename(String name) {
@@ -109,5 +117,9 @@ public class Clip extends BaseEntity {
 
     public String getTranscript() {
         return transcript;
+    }
+
+    public String getNote() {
+        return note;
     }
 }

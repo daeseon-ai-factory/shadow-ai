@@ -11,6 +11,7 @@ export interface ClipResponse {
   name: string;
   tags: string[];
   transcript: string | null;
+  note: string | null;
   createdAt: string;
 }
 
@@ -33,6 +34,7 @@ export interface ClipUpdatePayload {
   name?: string;
   tags?: string[];
   transcript?: string;
+  note?: string;
 }
 
 export const clipsApi = {

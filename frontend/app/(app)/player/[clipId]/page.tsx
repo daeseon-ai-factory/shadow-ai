@@ -9,6 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { YoutubePlayer, type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
 import { AnalysisPanel } from "@/components/clip/AnalysisPanel";
+import { ClipNote } from "@/components/clip/ClipNote";
 import { RecordingPanel } from "@/components/recording/RecordingPanel";
 import { ShortcutHelp } from "@/components/ShortcutHelp";
 import { useShortcuts } from "@/lib/use-shortcuts";
@@ -181,6 +182,7 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
             )}
           </CardContent>
         </Card>
+        <ClipNote clip={data} />
         <AnalysisPanel clipId={data.id} />
         <RecordingPanel
           clipId={data.id}

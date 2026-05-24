@@ -18,6 +18,7 @@ public record ClipResponse(
         String name,
         List<String> tags,
         String transcript,
+        String note,
         Instant createdAt
 ) {
     public static ClipResponse from(Clip clip, Video video) {
@@ -32,6 +33,7 @@ public record ClipResponse(
                 clip.getName(),
                 clip.getTags(),
                 clip.getTranscript(),
+                clip.getNote(),
                 clip.getCreatedAt()
         );
     }

@@ -11,6 +11,7 @@ import java.util.List;
 public record ClipUpdateRequest(
         @Size(max = 200) String name,
         List<@Size(max = 50) String> tags,
-        String transcript
+        String transcript,
+        String note
 ) {
 }

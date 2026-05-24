@@ -94,6 +94,9 @@ public class ClipService {
             clip.attachTranscript(req.transcript());
             transcriptChanged = true;
         }
+        if (req.note() != null) {
+            clip.updateNote(req.note());
+        }
 
         if (transcriptChanged) {
             // User edited the transcript → re-trigger analysis pipeline.
