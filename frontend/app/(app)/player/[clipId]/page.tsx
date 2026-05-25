@@ -172,7 +172,7 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
         </Card>
       </div>
       <div className="space-y-4">
-        {/* 4 panels in tabs — saves vertical scroll on mobile, still scannable on desktop */}
+        {/* 4 panels in tabs (mobile-first) — AnalysisPanel takes the whole clip (byoai) */}
         <Tabs defaultValue="script" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="script">자막</TabsTrigger>
@@ -198,7 +198,7 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
             <ClipNote clip={data} />
           </TabsContent>
           <TabsContent value="ai" className="mt-3">
-            <AnalysisPanel clipId={data.id} />
+            <AnalysisPanel clip={data} />
           </TabsContent>
           <TabsContent value="record" className="mt-3">
             <RecordingPanel
