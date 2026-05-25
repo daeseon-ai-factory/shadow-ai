@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,9 +8,19 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError } from "@/lib/api/client";
 import { analysisApi } from "@/lib/api/analysis";
+import type { ClipResponse } from "@/lib/api/clips";
+import {
+  AI_TOOLS,
+  type AiTool,
+  buildAnalysisPrompt,
+  loadPreferredTool,
+  savePreferredTool,
+  sendToExternalAi,
+} from "@/lib/byoai";
 import { toast } from "sonner";
 
-export function AnalysisPanel({ clipId }: { clipId: string }) {
+export function AnalysisPanel({ clip }: { clip: ClipResponse }) {
+  const clipId = clip.id;
   const queryClient = useQueryClient();
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["analysis", clipId],
@@ -30,6 +41,26 @@ export function AnalysisPanel({ clipId }: { clipId: string }) {
     },
     onError: (e) => toast.error(e instanceof ApiError ? e.message : "재분석 실패"),
   });
+
+  // BYOAI: 사용자가 본인의 ChatGPT/Gemini/Claude 등 외부 도구로 직접 분석
+  const [externalTool, setExternalTool] = useState<AiTool>(() => loadPreferredTool());
+  const transcriptAvailable = !!clip.transcript && clip.transcript.trim().length > 0;
+
+  const handleSendExternal = async () => {
+    if (!transcriptAvailable) {
+      toast.error("자막이 없어 분석 프롬프트를 만들 수 없습니다");
+      return;
+    }
+    savePreferredTool(externalTool);
+    const prompt = buildAnalysisPrompt({
+      transcript: clip.transcript!,
+      videoTitle: clip.videoTitle,
+      channelName: undefined,
+    });
+    const result = await sendToExternalAi(externalTool, prompt);
+    if (result.opened || result.message.includes("복사됨")) toast.success(result.message);
+    else toast.error(result.message);
+  };
 
   return (
     <Card>
@@ -118,6 +149,38 @@ export function AnalysisPanel({ clipId }: { clipId: string }) {
         {data?.status === "FAILED" && (
           <Button size="sm" variant="outline" onClick={() => refetch()}>새로고침</Button>
         )}
+
+        {/* BYOAI — 사용자가 본인 AI 도구로 분석 보내기 (비용 절감 + 더 강한 모델) */}
+        <section className="space-y-2 rounded-md border border-dashed p-3">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-medium">내 AI 도구로 보내기</h3>
+            <span className="text-xs text-muted-foreground">우리 비용 0</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            본인의 ChatGPT/Gemini/Claude/Perplexity로 프롬프트를 보냅니다. 자동 입력이 안 되면 도구
+            안에서 <kbd className="rounded border px-1">⌘V</kbd> 한 번.
+          </p>
+          <div className="flex items-center gap-2">
+            <select
+              className="flex-1 rounded-md border bg-background px-2 py-1.5 text-sm"
+              value={externalTool}
+              onChange={(e) => setExternalTool(e.target.value as AiTool)}
+            >
+              {AI_TOOLS.map((t) => (
+                <option key={t.id} value={t.id}>{t.label}</option>
+              ))}
+            </select>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleSendExternal}
+              disabled={!transcriptAvailable}
+              title={transcriptAvailable ? "" : "자막이 없어 보낼 수 없습니다"}
+            >
+              보내기
+            </Button>
+          </div>
+        </section>
       </CardContent>
     </Card>
   );

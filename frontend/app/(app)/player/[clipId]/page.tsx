@@ -184,7 +184,7 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
           </CardContent>
         </Card>
         <ClipNote clip={data} />
-        <AnalysisPanel clipId={data.id} />
+        <AnalysisPanel clip={data} />
         <RecordingPanel
           clipId={data.id}
           onPlayOriginal={() => {
