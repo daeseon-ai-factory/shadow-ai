@@ -56,8 +56,8 @@ export function TranscriptPanel({
     <div className="flex flex-col gap-2">
       {onSentenceClickForRange && (
         <div className="px-1 text-xs text-muted-foreground">
-          {!selectedRange && "자막을 클릭하면 시작점, 한 번 더 클릭하면 끝점이 됩니다."}
-          {selectedRange && selectionStep === "end" && "끝낼 자막을 한 번 더 클릭하세요. (다시 시작 자막을 누르면 처음부터)"}
+          {!selectedRange && "자막을 클릭해 범위 선택. 한 줄만 저장하려면 클릭 한 번 → ‘이 구간 클립 저장’."}
+          {selectedRange && selectionStep === "end" && "더 추가하려면 아래 자막 클릭. 한 줄만이면 그대로 ‘이 구간 클립 저장’."}
         </div>
       )}
       <div

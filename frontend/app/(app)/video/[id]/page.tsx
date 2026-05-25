@@ -17,6 +17,15 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
   const [currentMs, setCurrentMs] = useState(0);
   const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(null);
   const [selectionStep, setSelectionStep] = useState<"start" | "end">("start");
+  // 사용자가 합친 문장 vs 원본 segment 보기 선택. localStorage 기억.
+  const [scriptMode, setScriptMode] = useState<"sentences" | "raw">("sentences");
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("tubeshadow.scriptMode") : null;
+    if (saved === "raw" || saved === "sentences") setScriptMode(saved);
+  }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") localStorage.setItem("tubeshadow.scriptMode", scriptMode);
+  }, [scriptMode]);
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["video", id],
@@ -88,7 +97,7 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
         <YoutubePlayer ref={playerRef} videoId={data.youtubeId} orientation={data.orientation} />
         <ClipCreatePanel
           videoId={data.id}
-          segments={data.sentences ?? data.transcriptSegments}
+          segments={scriptMode === "sentences" ? (data.sentences ?? data.transcriptSegments) : data.transcriptSegments}
           currentMs={currentMs}
           selectedRange={selectedRange}
           setSelectedRange={(r) => {
@@ -101,7 +110,27 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
       <div className="space-y-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2">
-            <CardTitle>자막</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle>자막</CardTitle>
+              {data.transcriptStatus === "READY" && (
+                <div className="inline-flex rounded-md border p-0.5 text-xs">
+                  <button
+                    type="button"
+                    className={`px-2 py-0.5 rounded ${scriptMode === "sentences" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                    onClick={() => setScriptMode("sentences")}
+                  >
+                    문장 ({sentenceCount})
+                  </button>
+                  <button
+                    type="button"
+                    className={`px-2 py-0.5 rounded ${scriptMode === "raw" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                    onClick={() => setScriptMode("raw")}
+                  >
+                    원본 ({rawCount})
+                  </button>
+                </div>
+              )}
+            </div>
             {selectedRange && (
               <Button size="sm" variant="ghost" onClick={() => { setSelectedRange(null); setSelectionStep("start"); }}>
                 선택 초기화
@@ -110,7 +139,7 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
           </CardHeader>
           <CardContent className="p-0">
             <TranscriptPanel
-              segments={data.sentences ?? data.transcriptSegments}
+              segments={scriptMode === "sentences" ? (data.sentences ?? data.transcriptSegments) : data.transcriptSegments}
               currentMs={currentMs}
               onSeek={(ms) => playerRef.current?.seekTo(ms / 1000)}
               selectedRange={selectedRange}
