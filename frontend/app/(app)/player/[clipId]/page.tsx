@@ -11,6 +11,7 @@ import { YoutubePlayer, type YoutubePlayerHandle } from "@/components/player/You
 import { AnalysisPanel } from "@/components/clip/AnalysisPanel";
 import { ClipNote } from "@/components/clip/ClipNote";
 import { RecordingPanel } from "@/components/recording/RecordingPanel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShortcutHelp } from "@/components/ShortcutHelp";
 import { useShortcuts } from "@/lib/use-shortcuts";
 import { clipsApi } from "@/lib/api/clips";
@@ -171,27 +172,44 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
         </Card>
       </div>
       <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>쉐도잉 자막</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {data.transcript ? (
-              <p className="whitespace-pre-line text-xl leading-relaxed">{data.transcript}</p>
-            ) : (
-              <p className="text-sm text-muted-foreground">자막 없음</p>
-            )}
-          </CardContent>
-        </Card>
-        <ClipNote clip={data} />
-        <AnalysisPanel clipId={data.id} />
-        <RecordingPanel
-          clipId={data.id}
-          onPlayOriginal={() => {
-            playerRef.current?.seekTo(data.startMs / 1000);
-            playerRef.current?.play();
-          }}
-        />
+        {/* 4 panels in tabs — saves vertical scroll on mobile, still scannable on desktop */}
+        <Tabs defaultValue="script" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="script">자막</TabsTrigger>
+            <TabsTrigger value="note">노트</TabsTrigger>
+            <TabsTrigger value="ai">AI</TabsTrigger>
+            <TabsTrigger value="record">녹음</TabsTrigger>
+          </TabsList>
+          <TabsContent value="script" className="mt-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>쉐도잉 자막</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {data.transcript ? (
+                  <p className="whitespace-pre-line text-xl leading-relaxed">{data.transcript}</p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">자막 없음</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="note" className="mt-3">
+            <ClipNote clip={data} />
+          </TabsContent>
+          <TabsContent value="ai" className="mt-3">
+            <AnalysisPanel clipId={data.id} />
+          </TabsContent>
+          <TabsContent value="record" className="mt-3">
+            <RecordingPanel
+              clipId={data.id}
+              onPlayOriginal={() => {
+                playerRef.current?.seekTo(data.startMs / 1000);
+                playerRef.current?.play();
+              }}
+            />
+          </TabsContent>
+        </Tabs>
         <Link href="/library" className={buttonVariants({ variant: "outline" })}>
           ← 라이브러리
         </Link>
