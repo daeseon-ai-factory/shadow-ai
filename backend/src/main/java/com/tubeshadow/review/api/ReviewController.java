@@ -39,12 +39,13 @@ public class ReviewController {
     }
 
     @GetMapping("/queue")
-    @Operation(summary = "오늘 due 복습 큐 (지난 due 우선)")
+    @Operation(summary = "오늘 due 복습 큐 (지난 due 우선, 옵션: deckId 또는 'INBOX')")
     public ApiResponse<List<ReviewQueueItem>> queue(
             @CurrentUser AuthenticatedUser user,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) String deckId) {
         LocalDate cutoff = date == null ? LocalDate.now() : date;
-        return ApiResponse.ok(reviewService.queue(user.id(), cutoff));
+        return ApiResponse.ok(reviewService.queue(user.id(), cutoff, deckId));
     }
 
     @PostMapping("/items/{id}/respond")

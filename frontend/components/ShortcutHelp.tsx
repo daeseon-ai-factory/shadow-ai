@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useShortcuts } from "@/lib/use-shortcuts";
@@ -11,22 +12,23 @@ export interface ShortcutGroup {
 }
 
 export function ShortcutHelp({ groups }: { groups: ShortcutGroup[] }) {
+  const t = useTranslations("shortcuts");
   const [open, setOpen] = useState(false);
 
   useShortcuts([
-    { key: "?", action: () => setOpen((v) => !v), description: "단축키 도움말" },
+    { key: "?", action: () => setOpen((v) => !v), description: t("button") },
   ]);
 
   return (
     <>
       <Button variant="ghost" size="sm" onClick={() => setOpen(true)} className="text-xs">
-        단축키 ?
+        {t("button")}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>키보드 단축키</DialogTitle>
-            <DialogDescription>입력 필드 외 모든 곳에서 동작합니다.</DialogDescription>
+            <DialogTitle>{t("title")}</DialogTitle>
+            <DialogDescription>{t("subtitle")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             {groups.map((g) => (

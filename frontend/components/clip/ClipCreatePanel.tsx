@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ export function ClipCreatePanel({
   setSelectedRange,
   defaultName,
 }: Props) {
+  const t = useTranslations("clipCreate");
   const router = useRouter();
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,7 +47,7 @@ export function ClipCreatePanel({
   const createMutation = useMutation({
     mutationFn: clipsApi.create,
     onSuccess: (clip) => {
-      toast.success("클립 저장 완료");
+      toast.success(t("savedToast"));
       queryClient.invalidateQueries({ queryKey: ["clips"] });
       setSelectedRange(null);
       setModalOpen(false);
@@ -53,7 +55,7 @@ export function ClipCreatePanel({
     },
     onError: (err) => {
       if (err instanceof ApiError) toast.error(err.message);
-      else toast.error("저장 실패");
+      else toast.error(t("saveFailed"));
     },
   });
 
@@ -72,7 +74,7 @@ export function ClipCreatePanel({
 
   const openSaveModal = () => {
     if (!selectedRange || selectedRange.endMs <= selectedRange.startMs) {
-      toast.error("유효한 구간을 먼저 선택하세요");
+      toast.error(t("invalidRange"));
       return;
     }
     const seedName = defaultName ??
@@ -99,53 +101,53 @@ export function ClipCreatePanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>구간 선택 → 클립 저장</CardTitle>
-        <CardDescription>
-          자막을 클릭해 위치로 이동하고, 시작/끝 버튼으로 범위를 정하세요.
-        </CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-          <Button variant="outline" onClick={setStartHere}>시작 ({formatTime(currentMs)})</Button>
-          <Button variant="outline" onClick={setEndHere}>끝 ({formatTime(currentMs)})</Button>
+          <Button variant="outline" onClick={setStartHere}>{t("start", { time: formatTime(currentMs) })}</Button>
+          <Button variant="outline" onClick={setEndHere}>{t("end", { time: formatTime(currentMs) })}</Button>
           <Button variant="ghost" onClick={() => setSelectedRange(null)} disabled={!selectedRange}>
-            초기화
+            {t("reset")}
           </Button>
           <Button onClick={openSaveModal} disabled={!selectedRange}>
-            이 구간 클립 저장
+            {t("save")}
           </Button>
         </div>
         {selectedRange ? (
           <p className="text-sm text-muted-foreground">
-            범위: <strong className="text-foreground">{formatTime(selectedRange.startMs)}</strong> →{" "}
-            <strong className="text-foreground">{formatTime(selectedRange.endMs)}</strong>{" "}
-            ({((selectedRange.endMs - selectedRange.startMs) / 1000).toFixed(1)}초)
+            {t("range", {
+              start: formatTime(selectedRange.startMs),
+              end: formatTime(selectedRange.endMs),
+              duration: ((selectedRange.endMs - selectedRange.startMs) / 1000).toFixed(1),
+            })}
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">아직 범위 미선택</p>
+          <p className="text-sm text-muted-foreground">{t("noRange")}</p>
         )}
       </CardContent>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>클립 저장</DialogTitle>
-            <DialogDescription>이름과 태그를 정하면 라이브러리에 들어갑니다.</DialogDescription>
+            <DialogTitle>{t("modalTitle")}</DialogTitle>
+            <DialogDescription>{t("modalSubtitle")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="clip-name">이름</Label>
+              <Label htmlFor="clip-name">{t("nameLabel")}</Label>
               <Input id="clip-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={200} />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="clip-tags">태그 (쉼표로 구분)</Label>
-              <Input id="clip-tags" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} placeholder="예: interview, react" />
+              <Label htmlFor="clip-tags">{t("tagsLabel")}</Label>
+              <Input id="clip-tags" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} placeholder={t("tagsPlaceholder")} />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setModalOpen(false)}>취소</Button>
+            <Button variant="outline" onClick={() => setModalOpen(false)}>{t("cancel")}</Button>
             <Button onClick={handleSave} disabled={createMutation.isPending || !name.trim()}>
-              {createMutation.isPending ? "저장 중…" : "저장"}
+              {createMutation.isPending ? t("savingClip") : t("modalSave")}
             </Button>
           </DialogFooter>
         </DialogContent>

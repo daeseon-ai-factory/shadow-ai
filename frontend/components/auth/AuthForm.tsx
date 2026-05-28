@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,8 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 type Mode = "signup" | "login";
 
 export function AuthForm({ mode }: { mode: Mode }) {
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const setSession = useAuthStore((s) => s.setSession);
 
@@ -33,13 +36,13 @@ export function AuthForm({ mode }: { mode: Mode }) {
         ? await authApi.signup({ email, password, displayName })
         : await authApi.login({ email, password });
       setSession(response.accessToken, response.user);
-      toast.success(isSignup ? "회원가입 완료" : "환영합니다");
+      toast.success(isSignup ? t("signupSuccess") : t("loginSuccess"));
       router.push("/library");
     } catch (error) {
       if (error instanceof ApiError) {
         toast.error(error.message);
       } else {
-        toast.error("알 수 없는 오류가 발생했습니다");
+        toast.error(tCommon("unknownError"));
       }
     } finally {
       setSubmitting(false);
@@ -50,26 +53,28 @@ export function AuthForm({ mode }: { mode: Mode }) {
     <div className="mx-auto w-full max-w-md py-16">
       <Card>
         <CardHeader>
-          <CardTitle>{isSignup ? "회원가입" : "로그인"}</CardTitle>
-          <CardDescription>TubeShadow에 {isSignup ? "가입" : "로그인"}하고 클립을 모으세요.</CardDescription>
+          <CardTitle>{isSignup ? t("signupTitle") : t("loginTitle")}</CardTitle>
+          <CardDescription>
+            {isSignup ? t("signupDescription") : t("loginDescription")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             {isSignup && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="displayName">이름</Label>
+                <Label htmlFor="displayName">{t("name")}</Label>
                 <Input
                   id="displayName"
                   required
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="홍길동"
+                  placeholder={t("namePlaceholder")}
                   maxLength={80}
                 />
               </div>
             )}
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email">이메일</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -81,7 +86,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="password">비밀번호</Label>
+              <Label htmlFor="password">{t("password")}</Label>
               <Input
                 id="password"
                 type="password"
@@ -89,26 +94,26 @@ export function AuthForm({ mode }: { mode: Mode }) {
                 minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="최소 8자"
+                placeholder={t("passwordPlaceholder")}
                 autoComplete={isSignup ? "new-password" : "current-password"}
               />
             </div>
             <Button type="submit" disabled={submitting}>
-              {submitting ? "처리 중…" : isSignup ? "회원가입" : "로그인"}
+              {submitting ? tCommon("processing") : isSignup ? t("submitSignup") : t("submitLogin")}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
               {isSignup ? (
                 <>
-                  이미 계정이 있나요?{" "}
+                  {t("haveAccount")}{" "}
                   <Link href="/login" className="font-medium text-foreground underline">
-                    로그인
+                    {t("submitLogin")}
                   </Link>
                 </>
               ) : (
                 <>
-                  아직 계정이 없나요?{" "}
+                  {t("noAccount")}{" "}
                   <Link href="/signup" className="font-medium text-foreground underline">
-                    회원가입
+                    {t("submitSignup")}
                   </Link>
                 </>
               )}

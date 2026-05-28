@@ -1,0 +1,53 @@
+{
+  "family": "tubeshadow",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/tubeshadowTaskRole",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "ACCOUNT_ID.dkr.ecr.ca-central-1.amazonaws.com/tubeshadow:latest",
+      "essential": true,
+      "portMappings": [
+        { "containerPort": 8080, "protocol": "tcp" }
+      ],
+      "environment": [
+        { "name": "SPRING_PROFILES_ACTIVE", "value": "prod" },
+        { "name": "RECORDING_STORAGE", "value": "s3" },
+        { "name": "RECORDING_S3_BUCKET", "value": "tubeshadow-recordings-ACCOUNT_ID" },
+        { "name": "AWS_REGION", "value": "ca-central-1" },
+        { "name": "DATABASE_USERNAME", "value": "tubeshadow_admin" },
+        { "name": "CORS_ALLOWED_ORIGINS", "value": "https://YOUR_DOMAIN.com,https://www.YOUR_DOMAIN.com" }
+      ],
+      "secrets": [
+        { "name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:ca-central-1:ACCOUNT_ID:secret:tubeshadow/database-url" },
+        { "name": "DATABASE_PASSWORD", "valueFrom": "arn:aws:secretsmanager:ca-central-1:ACCOUNT_ID:secret:tubeshadow/database-password" },
+        { "name": "JWT_SECRET", "valueFrom": "arn:aws:secretsmanager:ca-central-1:ACCOUNT_ID:secret:tubeshadow/jwt-secret" },
+        { "name": "ANTHROPIC_API_KEY", "valueFrom": "arn:aws:secretsmanager:ca-central-1:ACCOUNT_ID:secret:tubeshadow/anthropic-api-key" }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "wget -qO- http://localhost:8080/api/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/tubeshadow-backend",
+          "awslogs-region": "ca-central-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+}

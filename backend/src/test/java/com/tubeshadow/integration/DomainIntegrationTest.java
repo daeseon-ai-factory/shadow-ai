@@ -59,6 +59,9 @@ class DomainIntegrationTest extends PostgresContainerTest {
                 List.of(new KeyExpression("how are you", "안부 묻기", "casual")),
                 List.of(new Vocabulary("greeting", "인사", "basic")),
                 "Two short greetings.",
+                "안녕, 잘 지내?",
+                List.of(),
+                null,
                 "claude-haiku-4-5-20251001"
         );
         analyses.save(a);

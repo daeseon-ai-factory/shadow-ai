@@ -73,10 +73,19 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewQueueItem> queue(UUID userId, LocalDate cutoff) {
+        return queue(userId, cutoff, null);
+    }
+
+    /**
+     * Same queue, optionally narrowed to a single deck.
+     * {@code deckFilter}: null → all decks; UUID → only that deck;
+     * the literal string "INBOX" → only clips with no deck.
+     */
+    @Transactional(readOnly = true)
+    public List<ReviewQueueItem> queue(UUID userId, LocalDate cutoff, String deckFilter) {
         List<ReviewItem> items = reviewRepository.findByUserIdAndDueDateLessThanEqualOrderByDueDateAsc(userId, cutoff);
         if (items.isEmpty()) return List.of();
 
-        // Batch fetch clips, then batch fetch videos → avoids N+1 across the queue.
         List<UUID> clipIds = items.stream().map(ReviewItem::getClipId).distinct().toList();
         java.util.Map<UUID, Clip> clipsById = clipRepository.findAllById(clipIds).stream()
                 .collect(java.util.stream.Collectors.toMap(Clip::getId, c -> c));
@@ -91,6 +100,20 @@ public class ReviewService {
                     if (clip == null) return null;
                     Video video = videosById.get(clip.getVideoId());
                     if (video == null) return null;
+                    // Deck filter (applied in memory — the queue is bounded by SRS due, small)
+                    if (deckFilter != null) {
+                        if ("INBOX".equalsIgnoreCase(deckFilter)) {
+                            if (clip.getDeckId() != null) return null;
+                        } else {
+                            try {
+                                UUID wanted = UUID.fromString(deckFilter);
+                                if (!wanted.equals(clip.getDeckId())) return null;
+                            } catch (IllegalArgumentException ignored) {
+                                // bad deckId → treat as no match (don't 500)
+                                return null;
+                            }
+                        }
+                    }
                     return ReviewQueueItem.of(item, com.tubeshadow.clip.api.dto.ClipResponse.from(clip, video));
                 })
                 .filter(java.util.Objects::nonNull)

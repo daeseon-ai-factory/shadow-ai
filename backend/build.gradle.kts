@@ -23,6 +23,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
+    // DevTools — hot reload on code change. Stripped from prod jar automatically.
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
     // Persistence (will be activated when DB tasks land)
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.flywaydb:flyway-core")
@@ -43,6 +46,14 @@ dependencies {
 
     // YAML reader for curated-videos.yml seed
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+
+    // AWS SDK v2 — S3 for recordings (prod only via @ConditionalOnProperty)
+    implementation(platform("software.amazon.awssdk:bom:2.28.0"))
+    implementation("software.amazon.awssdk:s3")
+    implementation("software.amazon.awssdk:sts")  // needed for IAM role assumption
+
+    // Structured JSON logging in prod (Logstash encoder for Logback)
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -50,7 +50,10 @@ public class RecordingService {
                     "파일 크기가 " + (maxBytes / 1024 / 1024) + "MB를 초과합니다");
         }
         String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+        // Strip MIME parameters (e.g. ";codecs=opus") — Chrome's MediaRecorder tags the
+        // base type with codecs and the whitelist only checks the base.
+        String baseType = contentType != null ? contentType.split(";", 2)[0].trim() : null;
+        if (baseType == null || !ALLOWED_CONTENT_TYPES.contains(baseType)) {
             throw new BusinessException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "UNSUPPORTED_FORMAT",
                     "지원하지 않는 오디오 형식입니다: " + contentType);
         }

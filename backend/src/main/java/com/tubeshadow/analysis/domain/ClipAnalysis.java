@@ -48,6 +48,24 @@ public class ClipAnalysis extends BaseEntity {
     @Column(name = "context_summary", columnDefinition = "text")
     private String contextSummary;
 
+    /** Natural Korean (or learner's L1) translation of the full transcript. Used as the
+     *  prompt for Quiz Mode 1 (한글 → 영작). One sentence per clip is enough. */
+    @Column(name = "primary_translation", columnDefinition = "text")
+    private String primaryTranslation;
+
+    /** 직독직해 — English chunks paired with Korean meaning in source order. Optional
+     *  visual aid for shadowing; also fed to Quiz Write so the learner can compose in
+     *  English word order instead of mentally re-ordering from natural Korean. */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "chunked_translation", columnDefinition = "jsonb")
+    private List<ChunkPair> chunkedTranslation = Collections.emptyList();
+
+    /** A real-world situation that prompts the learner to use this clip's expression
+     *  in their own words. Generated once at analysis time, reused for every review. */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "practice_scenario", columnDefinition = "jsonb")
+    private PracticeScenario practiceScenario;
+
     @Column(name = "model", length = 100)
     private String model;
 
@@ -74,11 +92,17 @@ public class ClipAnalysis extends BaseEntity {
                           List<KeyExpression> keyExpressions,
                           List<Vocabulary> vocabulary,
                           String contextSummary,
+                          String primaryTranslation,
+                          List<ChunkPair> chunkedTranslation,
+                          PracticeScenario practiceScenario,
                           String model) {
         this.grammarNotes = grammarNotes == null ? Collections.emptyList() : List.copyOf(grammarNotes);
         this.keyExpressions = keyExpressions == null ? Collections.emptyList() : List.copyOf(keyExpressions);
         this.vocabulary = vocabulary == null ? Collections.emptyList() : List.copyOf(vocabulary);
         this.contextSummary = contextSummary;
+        this.primaryTranslation = primaryTranslation;
+        this.chunkedTranslation = chunkedTranslation == null ? Collections.emptyList() : List.copyOf(chunkedTranslation);
+        this.practiceScenario = practiceScenario;
         this.model = model;
         this.generatedAt = Instant.now();
         this.status = AnalysisStatus.READY;
@@ -116,6 +140,18 @@ public class ClipAnalysis extends BaseEntity {
 
     public String getContextSummary() {
         return contextSummary;
+    }
+
+    public String getPrimaryTranslation() {
+        return primaryTranslation;
+    }
+
+    public List<ChunkPair> getChunkedTranslation() {
+        return chunkedTranslation == null ? Collections.emptyList() : chunkedTranslation;
+    }
+
+    public PracticeScenario getPracticeScenario() {
+        return practiceScenario;
     }
 
     public String getModel() {

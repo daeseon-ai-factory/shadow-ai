@@ -15,6 +15,7 @@ export interface ClipResponse {
   tags: string[];
   transcript: string | null;
   note: string | null;
+  deckId: string | null;
   createdAt: string;
 }
 

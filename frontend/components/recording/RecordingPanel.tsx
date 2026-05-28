@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function RecordingPanel({ clipId, onPlayOriginal }: Props) {
+  const t = useTranslations("recording");
   const queryClient = useQueryClient();
   const token = useAuthStore((s) => s.token);
 
@@ -28,16 +30,16 @@ export function RecordingPanel({ clipId, onPlayOriginal }: Props) {
     mutationFn: ({ blob, durationMs }: { blob: Blob; durationMs: number }) =>
       recordingsApi.upload(clipId, blob, durationMs),
     onSuccess: () => {
-      toast.success("녹음 저장됨");
+      toast.success(t("uploadedToast"));
       queryClient.invalidateQueries({ queryKey: ["recordings", clipId] });
     },
-    onError: (e) => toast.error(e instanceof ApiError ? e.message : "업로드 실패"),
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : t("uploadFailed")),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => recordingsApi.delete(id),
     onSuccess: () => {
-      toast.success("녹음 삭제됨");
+      toast.success(t("deletedToast"));
       queryClient.invalidateQueries({ queryKey: ["recordings", clipId] });
     },
   });
@@ -45,19 +47,17 @@ export function RecordingPanel({ clipId, onPlayOriginal }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>녹음 + A/B 비교</CardTitle>
-        <CardDescription>
-          영상을 반복 재생하면서 본인 목소리를 녹음하세요. 저장된 녹음은 원본과 나란히 들어볼 수 있습니다.
-        </CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Recorder
           onComplete={(blob, durationMs) => uploadMutation.mutate({ blob, durationMs })}
           disabled={uploadMutation.isPending}
         />
-        {isPending && <p className="text-sm text-muted-foreground">녹음 목록 로딩…</p>}
+        {isPending && <p className="text-sm text-muted-foreground">{t("listLoading")}</p>}
         {!isPending && recordings.length === 0 && (
-          <p className="text-sm text-muted-foreground">아직 녹음이 없어요.</p>
+          <p className="text-sm text-muted-foreground">{t("listEmpty")}</p>
         )}
         {recordings.length > 0 && (
           <ul className="space-y-3">
@@ -88,18 +88,18 @@ function RecordingRow({
   onPlayOriginal: () => void;
   onDelete: () => void;
 }) {
+  const t = useTranslations("recording");
+  const locale = useLocale();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
 
-  // The audio endpoint requires an Authorization header; <audio src> can't carry one,
-  // so we fetch the bytes with our auth client and turn them into a blob: URL.
   const loadBlob = async () => {
     if (blobUrl || !token) return;
     const res = await fetch(recordingsApi.audioUrl(recording.id), {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) {
-      toast.error("녹음 로드 실패");
+      toast.error(t("loadFailed"));
       return;
     }
     const blob = await res.blob();
@@ -115,13 +115,13 @@ function RecordingRow({
   };
 
   const formattedDate = useMemo(() =>
-    new Date(recording.createdAt).toLocaleString("ko-KR", {
+    new Date(recording.createdAt).toLocaleString(locale, {
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     }),
-    [recording.createdAt],
+    [recording.createdAt, locale],
   );
 
   return (
@@ -130,18 +130,18 @@ function RecordingRow({
         <div className="text-sm">
           <div className="font-medium">{formattedDate}</div>
           <div className="text-xs text-muted-foreground">
-            {(recording.durationMs / 1000).toFixed(1)}초 · {(recording.sizeBytes / 1024).toFixed(0)}KB
+            {(recording.durationMs / 1000).toFixed(1)}s · {(recording.sizeBytes / 1024).toFixed(0)}KB
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button size="sm" variant="outline" onClick={loadBlob} disabled={!!blobUrl}>
-            로드
+            {t("load")}
           </Button>
           <Button size="sm" variant="outline" onClick={playAb}>
-            원본 → 본인
+            {t("abPlay")}
           </Button>
           <Button size="sm" variant="ghost" className="text-destructive" onClick={onDelete}>
-            삭제
+            {t("delete")}
           </Button>
         </div>
       </div>

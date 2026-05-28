@@ -2,7 +2,9 @@ package com.tubeshadow.analysis.infrastructure;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tubeshadow.analysis.domain.ChunkPair;
 import com.tubeshadow.analysis.domain.KeyExpression;
+import com.tubeshadow.analysis.domain.PracticeScenario;
 import com.tubeshadow.analysis.domain.Vocabulary;
 import com.tubeshadow.analysis.prompt.ClipAnalysisPrompt;
 import com.tubeshadow.common.exception.BusinessException;
@@ -19,7 +21,9 @@ import java.util.Map;
 
 @Component
 @EnableConfigurationProperties(ClaudeProperties.class)
-public class ClaudeClient {
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+        name = "tubeshadow.ai.provider", havingValue = "claude")
+public class ClaudeClient implements AiAnalysisClient {
 
     private static final Logger log = LoggerFactory.getLogger(ClaudeClient.class);
 
@@ -113,8 +117,20 @@ public class ClaudeClient {
                         n.path("level").asText("basic")));
             }
             String summary = payload.path("context_summary").asText("");
+            JsonNode trNode = payload.path("primary_translation");
+            String primaryTranslation = trNode.isMissingNode() || trNode.isNull() ? null : trNode.asText();
+            if (primaryTranslation != null && primaryTranslation.isBlank()) primaryTranslation = null;
 
-            return new AnalysisResult(grammar, exprs, vocab, summary);
+            List<ChunkPair> chunked = new ArrayList<>();
+            for (JsonNode n : payload.path("chunked_translation")) {
+                String en = n.path("en").asText("").trim();
+                String ko = n.path("ko").asText("").trim();
+                if (!en.isEmpty() && !ko.isEmpty()) chunked.add(new ChunkPair(en, ko));
+            }
+
+            PracticeScenario scenario = parseScenario(payload.path("practice_scenario"));
+
+            return new AnalysisResult(grammar, exprs, vocab, summary, primaryTranslation, chunked, scenario);
         } catch (Exception ex) {
             log.warn("Claude response parsing failed: {}", ex.getMessage());
             throw new BusinessException(HttpStatus.BAD_GATEWAY, "CLAUDE_PARSE_FAILED",
@@ -152,7 +168,20 @@ public class ClaudeClient {
             List<String> grammarNotes,
             List<KeyExpression> keyExpressions,
             List<Vocabulary> vocabulary,
-            String contextSummary
+            String contextSummary,
+            String primaryTranslation,
+            List<ChunkPair> chunkedTranslation,
+            PracticeScenario practiceScenario
     ) {
+    }
+
+    /** Pull a {@link PracticeScenario} from the JSON node, or null if the LLM omitted it. */
+    static PracticeScenario parseScenario(JsonNode node) {
+        if (node == null || node.isMissingNode() || node.isNull() || !node.isObject()) return null;
+        String situation = node.path("situation").asText("").trim();
+        String hint = node.path("korean_hint").asText("").trim();
+        String sample = node.path("sample_response").asText("").trim();
+        if (situation.isEmpty() || sample.isEmpty()) return null;
+        return new PracticeScenario(situation, hint.isEmpty() ? null : hint, sample);
     }
 }

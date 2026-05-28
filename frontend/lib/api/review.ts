@@ -17,9 +17,10 @@ export interface StreakResponse {
 }
 
 export const reviewApi = {
-  queue: () => apiClient.get<ReviewQueueItem[]>("/api/review/queue"),
+  queue: (deckId?: string) =>
+    apiClient.get<ReviewQueueItem[]>("/api/review/queue", { query: { deckId } }),
   respond: (id: string, quality: number) =>
-    apiClient.post<unknown>(`/api/review/items/${id}/respond`, { quality }),
+    apiClient.post<ReviewQueueItem>(`/api/review/items/${id}/respond`, { quality }),
   streak: () => apiClient.get<StreakResponse>("/api/review/streak"),
 };
 

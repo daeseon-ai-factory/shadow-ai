@@ -77,6 +77,25 @@ class RecordingControllerTest extends SpringIntegrationTest {
     }
 
     @Test
+    void acceptsContentTypeWithCodecParameter() throws Exception {
+        // Chrome's MediaRecorder tags audio as "audio/webm;codecs=opus" — the controller
+        // must strip the codec parameter before checking the whitelist.
+        User u = signupAndLogin();
+        String token = login(u.getEmail(), "passpass1");
+        Video video = videoRepository.save(seededVideo());
+        UUID clipId = createClip(token, video.getId());
+
+        byte[] audio = new byte[]{1, 2, 3, 4};
+        MockMultipartFile filePart = new MockMultipartFile(
+                "file", "rec.webm", "audio/webm;codecs=opus", audio);
+        mockMvc.perform(multipart("/api/clips/" + clipId + "/recordings")
+                        .file(filePart)
+                        .param("durationMs", "1500")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
     void rejectsUnsupportedFormat() throws Exception {
         User u = signupAndLogin();
         String token = login(u.getEmail(), "passpass1");

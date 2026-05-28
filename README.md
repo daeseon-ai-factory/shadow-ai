@@ -138,3 +138,4 @@ cd frontend && npm test
 
 ## 라이선스
 MVP — 개인 학습용.
+# test Mon May 25 14:10:59 EDT 2026

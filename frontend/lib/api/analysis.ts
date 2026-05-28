@@ -12,6 +12,17 @@ export interface VocabularyItem {
   level: "basic" | "intermediate" | "advanced" | string;
 }
 
+export interface ChunkPair {
+  en: string;
+  ko: string;
+}
+
+export interface PracticeScenario {
+  situation: string;
+  koreanHint: string | null;
+  sampleResponse: string;
+}
+
 export interface ClipAnalysis {
   id: string;
   clipId: string;
@@ -20,6 +31,9 @@ export interface ClipAnalysis {
   keyExpressions: KeyExpression[];
   vocabulary: VocabularyItem[];
   contextSummary: string | null;
+  primaryTranslation: string | null;
+  chunkedTranslation: ChunkPair[];
+  practiceScenario: PracticeScenario | null;
   model: string | null;
   generatedAt: string | null;
   errorMessage: string | null;

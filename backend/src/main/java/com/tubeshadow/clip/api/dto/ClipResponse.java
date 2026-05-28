@@ -22,6 +22,7 @@ public record ClipResponse(
         List<String> tags,
         String transcript,
         String note,
+        UUID deckId,
         Instant createdAt
 ) {
     public static ClipResponse from(Clip clip, Video video) {
@@ -40,6 +41,7 @@ public record ClipResponse(
                 clip.getTags(),
                 clip.getTranscript(),
                 clip.getNote(),
+                clip.getDeckId(),
                 clip.getCreatedAt()
         );
     }

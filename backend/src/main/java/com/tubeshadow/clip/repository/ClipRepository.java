@@ -21,6 +21,12 @@ public interface ClipRepository extends JpaRepository<Clip, UUID> {
 
     long countByUserId(UUID userId);
 
+    /** Count clips inside a specific deck. */
+    long countByUserIdAndDeckId(UUID userId, UUID deckId);
+
+    /** Count "Inbox" — clips with no deck assigned. */
+    long countByUserIdAndDeckIdIsNull(UUID userId);
+
     /**
      * Case-insensitive search across clip name + transcript for the given user.
      * Tag filter is applied via JSONB containment when provided.

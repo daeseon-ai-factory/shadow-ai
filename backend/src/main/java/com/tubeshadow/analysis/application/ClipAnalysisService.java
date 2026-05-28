@@ -1,6 +1,7 @@
 package com.tubeshadow.analysis.application;
 
 import com.tubeshadow.analysis.domain.ClipAnalysis;
+import com.tubeshadow.analysis.infrastructure.AiAnalysisClient;
 import com.tubeshadow.analysis.infrastructure.ClaudeClient;
 import com.tubeshadow.analysis.repository.ClipAnalysisRepository;
 import com.tubeshadow.clip.application.ClipCreatedEvent;
@@ -36,12 +37,12 @@ public class ClipAnalysisService {
 
     private final ClipRepository clipRepository;
     private final ClipAnalysisRepository analysisRepository;
-    private final ClaudeClient claudeClient;
+    private final AiAnalysisClient claudeClient;
     private final org.springframework.beans.factory.ObjectProvider<ClipAnalysisService> selfProvider;
 
     public ClipAnalysisService(ClipRepository clipRepository,
                                ClipAnalysisRepository analysisRepository,
-                               ClaudeClient claudeClient,
+                               AiAnalysisClient claudeClient,
                                org.springframework.beans.factory.ObjectProvider<ClipAnalysisService> selfProvider) {
         this.clipRepository = clipRepository;
         this.analysisRepository = analysisRepository;
@@ -118,7 +119,7 @@ public class ClipAnalysisService {
         ClipAnalysis analysis = analysisRepository.findByClipId(clipId)
                 .orElseGet(() -> ClipAnalysis.pending(clipId));
         analysis.markReady(java.util.List.of(), java.util.List.of(), java.util.List.of(),
-                "Transcript unavailable.", claudeClient.model());
+                "Transcript unavailable.", null, java.util.List.of(), null, claudeClient.model());
         analysisRepository.save(analysis);
     }
 
@@ -134,7 +135,9 @@ public class ClipAnalysisService {
     public void completeAsReady(UUID clipId, ClaudeClient.AnalysisResult result) {
         analysisRepository.findByClipId(clipId).ifPresent(a -> {
             a.markReady(result.grammarNotes(), result.keyExpressions(),
-                    result.vocabulary(), result.contextSummary(), claudeClient.model());
+                    result.vocabulary(), result.contextSummary(),
+                    result.primaryTranslation(), result.chunkedTranslation(),
+                    result.practiceScenario(), claudeClient.model());
             analysisRepository.save(a);
         });
     }

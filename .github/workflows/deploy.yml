@@ -1,0 +1,90 @@
+name: Deploy backend to ECS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/deploy.yml"
+      - "infrastructure/ecs-task-definition.json"
+  workflow_dispatch:  # also runnable from the Actions tab
+
+env:
+  AWS_REGION: ca-central-1
+  ECR_REPOSITORY: tubeshadow
+  ECS_CLUSTER: tubeshadow-cluster
+  ECS_SERVICE: tubeshadow-backend
+  TASK_DEF_FAMILY: tubeshadow
+  CONTAINER_NAME: backend
+
+# OIDC: lets GitHub Actions assume an AWS role without static keys.
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+
+      - name: Setup Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
+
+      - name: Build jar
+        working-directory: backend
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bootJar -x test --no-daemon
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsDeploy
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build + push Docker image
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          SHA: ${{ github.sha }}
+        working-directory: backend
+        run: |
+          IMAGE_URI=$REGISTRY/$ECR_REPOSITORY:$SHA
+          docker build --platform linux/amd64 -t $IMAGE_URI -t $REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $IMAGE_URI
+          docker push $REGISTRY/$ECR_REPOSITORY:latest
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      - name: Render new task definition
+        id: render
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: infrastructure/ecs-task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ env.IMAGE_URI }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

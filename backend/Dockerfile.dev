@@ -1,0 +1,21 @@
+# Dev Dockerfile — runs gradle bootRun with JVM debug port open.
+# Use docker-compose.dev.yml for full local stack (postgres + backend + frontend).
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /workspace
+
+RUN apk add --no-cache python3 py3-pip ffmpeg \
+ && pip install --break-system-packages yt-dlp
+
+# Gradle wrapper + deps (cached)
+COPY gradlew settings.gradle.kts build.gradle.kts /workspace/
+COPY gradle /workspace/gradle
+RUN chmod +x gradlew && ./gradlew --no-daemon dependencies > /dev/null 2>&1 || true
+
+# Source mounted as a volume in docker-compose so edits trigger DevTools reload.
+EXPOSE 8080 5005
+
+# suspend=n → app starts immediately. address=*:5005 → host can attach.
+ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+ENV SPRING_PROFILES_ACTIVE=dev
+
+CMD ["./gradlew", "--no-daemon", "bootRun"]

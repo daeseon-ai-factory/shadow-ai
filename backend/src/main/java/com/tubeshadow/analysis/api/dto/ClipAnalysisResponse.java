@@ -1,7 +1,9 @@
 package com.tubeshadow.analysis.api.dto;
 
+import com.tubeshadow.analysis.domain.ChunkPair;
 import com.tubeshadow.analysis.domain.ClipAnalysis;
 import com.tubeshadow.analysis.domain.KeyExpression;
+import com.tubeshadow.analysis.domain.PracticeScenario;
 import com.tubeshadow.analysis.domain.Vocabulary;
 
 import java.time.Instant;
@@ -16,6 +18,9 @@ public record ClipAnalysisResponse(
         List<KeyExpression> keyExpressions,
         List<Vocabulary> vocabulary,
         String contextSummary,
+        String primaryTranslation,
+        List<ChunkPair> chunkedTranslation,
+        PracticeScenario practiceScenario,
         String model,
         Instant generatedAt,
         String errorMessage
@@ -29,6 +34,9 @@ public record ClipAnalysisResponse(
                 a.getKeyExpressions(),
                 a.getVocabulary(),
                 a.getContextSummary(),
+                a.getPrimaryTranslation(),
+                a.getChunkedTranslation(),
+                a.getPracticeScenario(),
                 a.getModel(),
                 a.getGeneratedAt(),
                 a.getErrorMessage()

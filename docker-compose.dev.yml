@@ -1,0 +1,72 @@
+# Full local dev stack — one command brings up DB + backend (debug port) + frontend.
+# Usage:  docker compose -f docker-compose.dev.yml up
+#
+# Backend listens on:
+#   localhost:8080  (HTTP API)
+#   localhost:5005  (JVM debugger — attach via Cursor "Attach to Backend (port 5005)")
+# Frontend on:
+#   localhost:3000
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tubeshadow-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tubeshadow
+      POSTGRES_USER: tubeshadow
+      POSTGRES_PASSWORD: tubeshadow
+    ports:
+      - "5434:5432"
+    volumes:
+      - tubeshadow-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tubeshadow -d tubeshadow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: tubeshadow-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tubeshadow
+      SPRING_DATASOURCE_USERNAME: tubeshadow
+      SPRING_DATASOURCE_PASSWORD: tubeshadow
+      JWT_SECRET: dev-only-secret-please-change-in-prod-this-must-be-long-enough-for-hs256
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:*
+    ports:
+      - "8080:8080"
+      - "5005:5005"  # JVM debugger
+    volumes:
+      # Mount source so DevTools picks up changes without rebuild.
+      - ./backend/src:/workspace/src
+      - ./backend/local-storage:/workspace/local-storage
+      - gradle-cache:/root/.gradle
+
+  frontend:
+    image: node:20-alpine
+    container_name: tubeshadow-frontend
+    working_dir: /app
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    command: sh -c "npm ci && npm run dev"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+
+volumes:
+  tubeshadow-pgdata:
+  gradle-cache:
+  frontend-node-modules:

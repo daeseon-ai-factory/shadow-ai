@@ -1,6 +1,7 @@
 package com.tubeshadow.recording.infrastructure;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.UUID;
  * tries to escape via "../", {@code resolve} normalises against the root.
  */
 @Component
+@ConditionalOnProperty(name = "tubeshadow.recording.storage", havingValue = "local", matchIfMissing = true)
 public class LocalRecordingStorage implements RecordingStorage {
 
     private final Path root;

@@ -70,10 +70,14 @@ interface Props {
   /** "PORTRAIT" → 9:16 with max-width cap. Anything else → 16:9. */
   orientation?: "PORTRAIT" | "LANDSCAPE" | "UNKNOWN";
   className?: string;
+  /** When true, render an opaque overlay over the iframe so the user only hears audio. */
+  audioOnly?: boolean;
+  /** Rendered inside the audio-only overlay (e.g. large caption). */
+  overlayContent?: React.ReactNode;
 }
 
 export const YoutubePlayer = forwardRef<YoutubePlayerHandle, Props>(function YoutubePlayer(
-  { videoId, onReady, onStateChange, orientation, className },
+  { videoId, onReady, onStateChange, orientation, className, audioOnly, overlayContent },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -129,8 +133,16 @@ export const YoutubePlayer = forwardRef<YoutubePlayerHandle, Props>(function You
       : "aspect-video w-full overflow-hidden rounded-lg bg-black");
 
   return (
-    <div className={wrapper}>
+    <div className={`${wrapper} relative`} data-audio-only={audioOnly ? "true" : "false"}>
       <div ref={containerRef} className="h-full w-full" />
+      {audioOnly && (
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black p-6 text-center"
+          data-testid="audio-only-overlay"
+        >
+          {overlayContent ?? <span className="text-sm text-white/60">🎧 Audio only</span>}
+        </div>
+      )}
     </div>
   );
 });

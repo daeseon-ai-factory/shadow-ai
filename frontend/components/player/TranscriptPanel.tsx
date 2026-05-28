@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
+import { useTranslations } from "next-intl";
 import type { TranscriptSegment } from "@/lib/api/videos";
 
 interface Props {
@@ -8,15 +9,7 @@ interface Props {
   currentMs: number;
   onSeek: (startMs: number) => void;
   selectedRange?: { startMs: number; endMs: number } | null;
-  /**
-   * 1-click sets the range start, 2-click sets the end. Click on a sentence at-or-before
-   * the current start resets it. Provide this to enable "click-to-select" UX; omit it
-   * for read-only mode.
-   */
   onSentenceClickForRange?: (sentence: TranscriptSegment) => void;
-  /**
-   * Hint for which click step the user is on. Drives the cursor + caption above.
-   */
   selectionStep?: "start" | "end";
 }
 
@@ -28,6 +21,7 @@ export function TranscriptPanel({
   onSentenceClickForRange,
   selectionStep,
 }: Props) {
+  const t = useTranslations("transcript");
   const containerRef = useRef<HTMLDivElement>(null);
 
   const activeIndex = useMemo(() => {
@@ -47,7 +41,7 @@ export function TranscriptPanel({
   if (segments.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">
-        이 영상에는 자막이 없습니다. 영상 위에서 구간을 만들 수는 있지만 자막은 비어 있습니다.
+        {t("emptyNote")}
       </div>
     );
   }
@@ -56,8 +50,8 @@ export function TranscriptPanel({
     <div className="flex flex-col gap-2">
       {onSentenceClickForRange && (
         <div className="px-1 text-xs text-muted-foreground">
-          {!selectedRange && "자막을 클릭해 범위 선택. 한 줄만 저장하려면 클릭 한 번 → ‘이 구간 클립 저장’."}
-          {selectedRange && selectionStep === "end" && "더 추가하려면 아래 자막 클릭. 한 줄만이면 그대로 ‘이 구간 클립 저장’."}
+          {!selectedRange && t("hintInitial")}
+          {selectedRange && selectionStep === "end" && t("hintAfterFirst")}
         </div>
       )}
       <div
@@ -91,8 +85,8 @@ export function TranscriptPanel({
                 {formatTime(segment.startMs)}
               </span>
               <span className="flex-1 leading-relaxed">
-                {isRangeStart && <span className="mr-1 inline-block rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">시작</span>}
-                {isRangeEnd && !isRangeStart && <span className="mr-1 inline-block rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">끝</span>}
+                {isRangeStart && <span className="mr-1 inline-block rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">{t("markerStart")}</span>}
+                {isRangeEnd && !isRangeStart && <span className="mr-1 inline-block rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">{t("markerEnd")}</span>}
                 {segment.text}
               </span>
             </button>

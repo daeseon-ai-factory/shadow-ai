@@ -50,6 +50,11 @@ public class Clip extends BaseEntity {
     @Column(name = "note", columnDefinition = "text")
     private String note;
 
+    /** Deck membership (Anki-style). NULL = the implicit "Inbox" — no deck assigned.
+     *  Deleting a deck nulls this back to Inbox (DB-level ON DELETE SET NULL). */
+    @Column(name = "deck_id")
+    private UUID deckId;
+
     protected Clip() {
     }
 
@@ -77,6 +82,15 @@ public class Clip extends BaseEntity {
 
     public void updateNote(String note) {
         this.note = note;
+    }
+
+    /** Move to a deck (or null = back to Inbox). */
+    public void moveToDeck(UUID deckId) {
+        this.deckId = deckId;
+    }
+
+    public UUID getDeckId() {
+        return deckId;
     }
 
     public void rename(String name) {
