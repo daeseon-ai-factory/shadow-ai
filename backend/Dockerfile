@@ -27,8 +27,8 @@ COPY --from=build --chown=app:app /workspace/build/libs/*.jar /app/tubeshadow.ja
 VOLUME ["/app/local-storage/recordings"]
 
 ENV SPRING_PROFILES_ACTIVE=prod \
-    SERVER_PORT=8080 \
     JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
+# PORT (Render/Fly/Heroku) or SERVER_PORT (fallback) is read at runtime via application.yml.
 
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
