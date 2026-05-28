@@ -1,0 +1,42 @@
+---
+title: "Rewriting the README for recruiters — and trusting code over my own planning docs"
+date: "2026-05-28"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Rewrote the README for a North American recruiter/interviewer audience. Before writing a word I verified every technical claim against the code — and found my own planning docs (ROADMAP §0.4, PROGRESS) still list translation + 직독직해 as out-of-scope even though they shipped, have migrations, and have E2E specs. Treated code as the source of truth."
+tags: ["docs", "readme", "verification", "portfolio"]
+---
+
+A README that a recruiter or an interviewer reads is a claim surface. If it lists a feature the repo doesn't actually have, the first engineer to open the code stops trusting everything else on the page. So before rewriting it, I did the unglamorous part first: I verified every claim against the source.
+
+### The drift I found
+
+`ROADMAP.md` §0.4 — the "source of truth" the project's own `CLAUDE.md` tells me to defer to — explicitly bans these:
+
+> ❌ 직독직해 표시 / Korean translation
+
+And `PROGRESS.md` (last touched 2026-05-24) confidently states all eleven out-of-scope items were kept out.
+
+Except they weren't. The product pivoted, and `git` and the schema don't lie:
+
+- migrations `V10__clip_analysis_primary_translation`, `V11__clip_analysis_chunked_translation`, `V12__clip_analysis_practice_scenario`
+- `ClipAnalysis.chunkedTranslation`, whose own field comment reads *"직독직해 — English chunks paired with Korean meaning in source order"*
+- E2E specs `primary-translation.spec.ts`, `chunked-translation.spec.ts`, `scenario-quiz.spec.ts`
+
+Translation, word-by-word gloss, and practice scenarios aren't just shipped — they're the centerpiece, and they're tested end to end. The planning docs simply never got the memo.
+
+### The rule I applied
+
+Code is the source of truth for a public artifact, not a planning doc. I rewrote the README to describe only what I could trace to a migration, a domain class, or an E2E spec. I left ROADMAP §0.4 untouched — it's an honest historical record of the original 24-hour MVP scope, and rewriting history there would be its own kind of lie.
+
+### What changed in the README
+
+- **Fully English, Korean glossed.** I'm job-hunting in Toronto; a reviewer shouldn't need to know what 직독직해 means. It now reads "word-by-word gloss (직독직해)" — English first, the original as flavor.
+- **Two audiences, one page.** A recruiter scans the top in thirty seconds (one-liner, stack badges, at-a-glance counts); an interviewer drops into a new **Engineering highlights** section — the transaction-safe async AI pipeline, the provider abstraction, the $0-marginal-cost JSONB caching — each one a deliberate talking point.
+- **One stale fact fixed.** Prereqs said Node 20+; Next.js 16 needs Node 22, and CI was already bumped (`7ac8720`). Fixed.
+
+### The takeaway
+
+A "source of truth" document that isn't updated on every pivot quietly becomes a liability — and it's most dangerous precisely when you reach for it to make a claim. The cheap insurance: before any feature claim lands in a recruiter-facing file, grep the migrations, the domain, and the E2E specs. If it isn't in at least one of those, it doesn't go on the page.

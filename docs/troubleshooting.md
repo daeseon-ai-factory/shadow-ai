@@ -80,3 +80,17 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Cause**: machine network was throttled (turned out to be a VPN). The default Spring `RestClient` timeout used by `YoutubeMetadataClient` was much shorter than the 28s connect cost.
 - **Fix**: configured `SimpleClientHttpRequestFactory` on the `YoutubeMetadataClient` with `connectTimeout = 60s` and `readTimeout = 60s` to ride out slow networks. Real fix is the user's local network, but the client should not silently fail on a network that *is* eventually reachable.
 - **Commit**: `ba90e00`
+
+---
+
+## README/ROADMAP drift: docs listed shipped features as out-of-scope
+
+- **Symptom**: while rewriting the README for recruiters, the project's own docs contradicted the code. `ROADMAP.md` §0.4 and `PROGRESS.md` (2026-05-24) both assert these never shipped:
+  ```
+  ❌ 직독직해 표시 / Korean translation
+  ```
+  but the README, the UI, and the schema all present translation + 직독직해 + practice scenario as core features.
+- **Cause**: verified against code — the features are real and the planning docs are stale. Migrations `V10__clip_analysis_primary_translation`, `V11__clip_analysis_chunked_translation`, `V12__clip_analysis_practice_scenario`; domain fields `ClipAnalysis.primaryTranslation` / `chunkedTranslation` (its own comment: "직독직해 — English chunks paired with Korean meaning in source order") / `practiceScenario`; E2E specs `primary-translation.spec.ts`, `chunked-translation.spec.ts`, `scenario-quiz.spec.ts`. The product pivoted past the original 24h MVP; §0.4 was never updated.
+- **Fix**: treated **code as the source of truth** for the README, not ROADMAP/PROGRESS. Rewrote `README.md` to describe only claims traceable to a migration, domain class, or E2E spec. Left ROADMAP §0.4 untouched — it's an honest historical record of the original MVP scope.
+- **Commit**: `a8dd7dc`
+- **Pattern**: a "source of truth" doc that isn't updated on every pivot becomes a liability — most dangerous exactly when you reach for it to make a public claim. Before repeating any doc's feature claim in a recruiter-facing artifact, grep migrations + domain + E2E specs to confirm it actually shipped.
