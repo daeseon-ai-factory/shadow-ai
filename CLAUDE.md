@@ -121,35 +121,65 @@ docker compose down         # 종료
 
 ---
 
-## 8. 프로젝트 로그 (자동 기록)
-
-**non-trivial한 fix / decision을 한 turn에서 끝낼 때 두 파일을 같이 적습니다** (커밋과 같은 turn에):
-
-1. **`docs/troubleshooting.md`** — 문제 색인용 짧은 reference. `## <short title>` + 5개 bullet (Symptom · Cause · Fix · Commit · Pattern). **newest at the bottom** (`---` 구분자 아래에 append).
-2. **`content/logs/shadow-ai/<YYYY-MM-DD>-<short-slug>.mdx`** — frontmatter (title / date / project / kind / visibility / language / summary / tags) + 본문 narrative.
-
-**non-trivial 기준**: 빌드/배포 에러, 숨은 결합, 의존성 마이그레이션, 아키텍처 결정, 디자인 선택, 전략 메모.
-**trivial이라 skip**: 평범한 rename, lint fix, typo, 동작 안 바뀌는 dep bump, format-only commit.
-
-### 7가지 anti-hallucination 규칙
-
-1. **Symptom은 literal**. 실제 에러/출력을 fenced code block으로 그대로. paraphrase X.
-2. **Cause는 검증된 것**. 실제 코드에서 읽었거나 명령 실행해 본 것만. 추측은 `Hypothesis: ...` + `Verified by: ...` 명시.
-3. **Fix는 실제 파일명**. `git diff`가 source of truth. diff에 안 보이면 적지 말 것.
-4. **Commit hash는 commit 후에**. `git rev-parse HEAD` 결과만. 없는 해시 절대 X.
-5. **날짜는 git에서**. `git log -1 --format=%cI` 또는 세션 시작일 (today).
-6. **Pattern은 드물게**. 진짜 반복되는 교훈일 때만. 일반 조언 padding X.
-7. **수치 만들지 말 것**. 측정된 duration만 ("about 60s" OK, 가짜 정확 수치 X).
-
-### `kind` 분류 (frontmatter)
-
-- `troubleshoot` — bug/error fix
-- `tech-retro` — 아키텍처/인프라 결정
-- `ux-retro` — 디자인/카피 선택
-- `business` — 전략 (default visibility: `private`)
-- `monetization` — pricing/수익 (default `private`)
-- `update` — 일반 진행
-
-기본 visibility: `public` (business/monetization은 `private`).
-
 매 결정 시 자문: 이게 마찰을 더 만드는가, 줄이는가?
+
+
+## Cross-repo log aggregation (위성 repo)
+
+이 repo는 [daseon-blog](https://github.com/Daeseon-AI-Factory/daseon-blog)의 cross-repo log aggregation **위성**이다. 로그는 **`content/logs/shadow-ai/`** 아래에 저장한다. 블로그가 30초 이내 fetch해서 [daeseon.ai/projects/shadow-ai](https://daeseon.ai/projects/shadow-ai) 타임라인에 자동 반영한다.
+
+**Slug: `shadow-ai`** (= repo 이름과 동일, 블로그 프로젝트 mdx 파일명과 동일). 다른 슬러그 절대 사용 금지 — frontmatter `project:` 필드와 폴더 경로 모두 `shadow-ai`로 고정.
+
+
+## Project log (required, dual-write)
+
+When you fix or decide something non-trivial in this repo, write BOTH of these in the same turn as the commit:
+
+1. `docs/troubleshooting.md` — terse problem-indexed reference (Symptom / Cause / Fix / Commit / Pattern). Append a new entry below the `---` divider.
+2. `content/logs/<project-slug>/<YYYY-MM-DD>-<short-slug>.mdx` — dated narrative with frontmatter:
+
+```yaml
+---
+title: "Concrete one-line title"
+date: "YYYY-MM-DD"
+project: "shadow-ai"
+kind: "troubleshoot | tech-retro | ux-retro | business | monetization | update"
+visibility: "public | unlisted | private"
+language: "en"
+summary: "One or two sentences."
+tags: ["topic", "stack"]
+---
+```
+
+### What counts as non-trivial
+
+LOG IT: build/deploy errors, hidden coupling, dependency migrations, architecture or infra decisions, design/copy choices made on judgment, strategy or pricing memos.
+
+DON'T LOG: routine renames, lint fixes, typo fixes, dependency bumps with no behavior change, formatting commits.
+
+### Anti-hallucination rules (non-negotiable)
+
+1. **Symptom is literal.** Paste the actual error/output in a fenced code block. No paraphrasing.
+2. **Cause is verified.** Only state what you read in the actual code or ran in the actual command. If you guessed, write `Hypothesis: ...` and `Verified by: ...`. If unverifiable, omit Cause or mark `Suspected:` with an explicit caveat.
+3. **Fix names actual files.** `git diff` is the source of truth. If `git diff` doesn't show the change, don't claim you made it.
+4. **Commit hash AFTER committing.** Use `git rev-parse HEAD` after the commit lands. Never write a hash that doesn't exist yet.
+5. **Date from git.** `git log -1 --format=%cI` for the commit time. For forward-looking entries (decisions being written in the moment), today's date from the session start. Never guess.
+6. **Pattern is rare.** Only write a Pattern line if a recurring lesson is obvious from this one incident. Padding it with generic advice is worse than omitting.
+7. **No fabricated metrics.** "Took about 60s" if you saw 60s. "Took 1m 23s exactly" only if you have the timestamp.
+
+### Visibility defaults by kind
+
+- `business`, `monetization` → `private` by default (strategy memos shouldn't ship accidentally)
+- `knowledge`-style facts → `unlisted` if you have such a type
+- Everything else → `public`
+
+Override per entry in frontmatter.
+
+### Skip rule for routine commits
+
+The Stop hook blocks the turn until the most recent commit is either logged OR explicitly marked routine. To skip without writing an entry:
+
+- Option A — put `[no-log]` (or `[skip-log]`) anywhere in the commit message. The hook auto-appends a `<!-- skipped: <hash> <subject> -->` line to `docs/troubleshooting.md` so it stops firing.
+- Option B — append the same `<!-- skipped: <hash> <subject> -->` line yourself, then commit. Same effect.
+
+Routine = typo fix, lint fix, formatting commit, dep bump without behavior change, file rename. Anything else: write the entry.
