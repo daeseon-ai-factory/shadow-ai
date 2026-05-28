@@ -25,7 +25,8 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: ${SERVER_PORT:8080}
+  # Render/Fly/Heroku inject PORT; locally SERVER_PORT or 8080.
+  port: ${PORT:${SERVER_PORT:8080}}
   error:
     include-message: always
 
