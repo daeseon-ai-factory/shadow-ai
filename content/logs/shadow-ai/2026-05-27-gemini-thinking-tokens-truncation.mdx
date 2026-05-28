@@ -1,0 +1,48 @@
+---
+title: "Gemini 2.5 Flash: thinking tokens silently truncated JSON output"
+date: "2026-05-27"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "After switching to Gemini, every analysis came back as `GEMINI_PARSE_FAILED: Unexpected end-of-input` at the same column. Cause: Gemini 2.5 Flash burns 'thinking' tokens before emitting visible output, eating most of `maxOutputTokens: 800` and truncating the JSON mid-string. Fix: `thinkingConfig: { thinkingBudget: 0 }` and bumped output cap to 4096."
+tags: ["gemini", "llm", "json", "structured-output"]
+---
+
+The first wave of Gemini calls all failed the same way:
+
+```
+Gemini response parsing failed:
+  Unexpected end-of-input: was expecting closing quote for a string value
+  at [Source: ...; line: 3, column: 51]
+```
+
+Every time, mid-string. That ruled out malformed JSON in the prompt template — the model was reaching `maxOutputTokens` mid-emission and stopping cold.
+
+What I missed: `gemini-2.5-flash` is a reasoning model. It spends an internal "thinking" budget *before* emitting visible text, and that budget counts against `maxOutputTokens`. With `maxOutputTokens: 800`, the thinking burned a few hundred and the visible JSON had no room.
+
+Two changes:
+
+```java
+"generationConfig", Map.of(
+    "responseMimeType", "application/json",
+    "maxOutputTokens", 4096,
+    "temperature", 0.2,
+    "thinkingConfig", Map.of("thinkingBudget", 0)   // ← disable reasoning
+)
+```
+
+`thinkingBudget: 0` disables reasoning entirely. For our narrow structured-output task (translate + extract vocab + generate scenario), reasoning is overkill anyway — and bizarre to silently cap the visible response.
+
+I also added a short raw-response preview to the parse-failed log so the next time this kind of issue shows up, the cause is one log line away:
+
+```java
+String preview = rawResponse.replace("\n", " ").substring(0, Math.min(300, rawResponse.length()));
+log.warn("Gemini response parsing failed: {} | raw preview: {}", ex.getMessage(), preview);
+```
+
+End-to-end latency dropped too: 11.7s → 6.7s, because the thinking pass no longer happens.
+
+**Pattern**: reasoning-mode models silently steal output tokens. For narrow structured-output tasks (translation, classification, extraction), disable thinking. For open-ended generation, keep it.
+
+**Commit**: pending — not yet committed in this session.

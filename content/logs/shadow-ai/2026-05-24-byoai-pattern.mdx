@@ -1,0 +1,29 @@
+---
+title: "BYOAI — send analysis prompts to the user's own ChatGPT/Claude/Gemini"
+date: "2026-05-24"
+project: "shadow-ai"
+kind: "monetization"
+visibility: "public"
+language: "en"
+summary: "Built a 'Send to my own AI' button that constructs an analysis prompt locally and opens ChatGPT/Claude/Gemini/Perplexity with `?q=...`, falling back to clipboard if auto-fill fails. Operating cost: zero; user keeps the conversation in their preferred model. Sets up a clean alternative to a paid tier."
+tags: ["llm", "monetization", "byoai", "cost"]
+---
+
+The analysis pipeline already produces translation + key expressions + scenario per clip, cached in JSONB so reviews are free. But each clip still costs one LLM call. For a single user that's nothing; for a hundred users it adds up.
+
+BYOAI ("bring your own AI") shifts that cost to the user. The frontend builds the same analysis prompt locally, then opens a tab to one of:
+
+```ts
+chatgpt:     https://chat.openai.com/?q=<prompt>
+claude:      https://claude.ai/new?q=<prompt>
+gemini:      https://gemini.google.com/app?q=<prompt>
+perplexity:  https://www.perplexity.ai/?q=<prompt>
+```
+
+Auto-fill works most of the time. When it doesn't, we copy the prompt to clipboard and tell the user to paste it (`⌘V`). The user's preferred AI gets used; we pay nothing.
+
+The interesting part wasn't the implementation — it was the design decision. This is what makes the tool free to operate at any scale without going bankrupt or pushing ads. It also reads as a feature, not a limitation: "use *your* AI, not ours." That framing matters.
+
+I kept the built-in analysis (Gemini, also free for personal use) as the default — BYOAI is the opt-in path for users who don't want to share their clips with our backend, or who already pay for ChatGPT Plus and would rather use that.
+
+**Commit**: `960adf0` — `[feat] BYOAI — 사용자가 본인 ChatGPT/Claude/Gemini/Perplexity로 분석 보내기`

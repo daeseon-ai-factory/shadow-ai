@@ -1,0 +1,20 @@
+---
+title: "YouTube transcript fetch replaced with yt-dlp + self-healing import"
+date: "2026-05-23"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "The `timedtext` URL embedded in YouTube watch HTML carries a short-lived token; subtitle fetch returned 200 with empty body within minutes. Migrated entirely to `yt-dlp` subprocess and added an idempotent recovery hook so re-importing the same URL retries the transcript and the dimension probe."
+tags: ["youtube", "yt-dlp", "transcript", "spring-boot"]
+---
+
+The first cut of subtitle extraction used the `timedtext` URL embedded in the YouTube watch HTML — same one the YouTube web client uses. It worked at first. Then it stopped working a few minutes after each page load, returning HTTP 200 with zero bytes.
+
+Reading around: the URL carries a short-lived signed token, and the expiration is opaque. There's no caching contract. The official YouTube Data API requires uploader consent for caption tracks, which is useless for clipping arbitrary videos.
+
+`yt-dlp` is the only thing that consistently works for public-caption videos. I replaced the entire transcript fetch path with a subprocess call (`ProcessBuilder`), and while I was there, added a `recoverIfNeeded` hook in `VideoImportService`: re-importing the same URL retries the transcript and the `yt-dlp -J` dimension probe in an idempotent way. If the first import landed without subtitles (the video had captions but the fetch failed), the user can just paste the URL again and it heals itself.
+
+**Pattern**: any unofficial YouTube URL that uses a token has a short shelf-life. Treat `yt-dlp` as the only stable surface for transcripts and metadata that the Data API won't give you.
+
+**Commit**: `8b5eacd` — `[fix] 자막 추출을 yt-dlp 기반으로 교체 + 자가 회복`

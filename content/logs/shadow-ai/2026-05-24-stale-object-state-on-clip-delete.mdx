@@ -1,0 +1,28 @@
+---
+title: "StaleObjectStateException on clip delete cascading to recordings"
+date: "2026-05-24"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "Spring Data's derived `deleteByClipId` hydrates the entity into the persistence context before deleting it, racing with the DB-level `ON DELETE CASCADE`. Switched to `@Modifying @Query` so the delete bypasses the session cache."
+tags: ["jpa", "spring-data", "postgres", "cascade"]
+---
+
+Deleting a clip occasionally threw `StaleObjectStateException` from Hibernate. The recording row was already gone via DB CASCADE (configured at the column level) while JPA still held a stale copy of the recording entity in the persistence context.
+
+Spring Data's derived methods (`deleteByClipId(UUID)`) hydrate the entity into the session before issuing the delete — that's how they get the optimistic-lock version. But in this case the row was already deleted by the cascade, so by the time JPA flushed, the version check failed.
+
+The fix is to bypass the session cache:
+
+```java
+@Modifying
+@Query("delete from RecordingEntity r where r.clipId = :clipId")
+void deleteByClipId(@Param("clipId") UUID clipId);
+```
+
+That issues a single DELETE without loading entities first. Race resolved.
+
+I added `ClipDeleteCascadeTest` as a regression — it creates a clip with recordings, deletes the clip, asserts no leftover rows and no exception.
+
+**Commit**: `146e080` — `[fix+polish] StaleObjectStateException 수정, 녹음 파일 누수, 정렬, 내보내기, 종합 스모크`

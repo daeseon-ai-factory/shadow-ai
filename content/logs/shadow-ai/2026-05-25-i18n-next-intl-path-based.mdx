@@ -1,0 +1,28 @@
+---
+title: "i18n: next-intl with path-based routing across 5 locales"
+date: "2026-05-25"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Migrated the entire frontend to `next-intl` with path-based routing (`/en`, `/ko`, `/ja`, `/zh`, `/es`), default English. All 17 user-facing files were keyed; `<Link>` and `useRouter` imports across the app moved to `@/i18n/navigation` wrappers. ja/zh/es fall back to English copy for now (translation is a non-engineering task)."
+tags: ["i18n", "next-intl", "nextjs", "frontend"]
+---
+
+The decision to add UI internationalization was a product call, not a tech one: the user-facing default switched to English (the actual learner audience), with Korean as a hand-translated fallback. ja/zh/es ship as English fallback until I (or contributors) translate them — the routing is ready.
+
+Stack: `next-intl` with path-based routing. URLs become `/en/library`, `/ko/library`, etc. The default locale (`en`) is *not* implicit — every URL carries a prefix. This is the variant that survives prerendering and SEO without surprises.
+
+The migration was almost entirely mechanical:
+
+1. **Routing** — `i18n/routing.ts` (locale list + default), `i18n/request.ts` (load messages by locale), `i18n/navigation.ts` (typed `<Link>` and `useRouter` wrappers), `middleware.ts` (`createMiddleware(routing)`), `next.config.ts` plugin.
+2. **App directory move** — `app/*` → `app/[locale]/*`. Root `layout.tsx` deleted; the locale-aware layout lives at `app/[locale]/layout.tsx` and is the canonical root.
+3. **Imports** — every `from "next/link"` and the `useRouter`/`usePathname` from `"next/navigation"` had to switch to `"@/i18n/navigation"`. Did it with `sed -i ''` across 14 files. The trap was that `next/link` is a default export while `next-intl/navigation`'s `Link` is named — a second `sed` to fix `import Link from` → `import { Link } from`.
+4. **Keys** — pulled every Korean string into `messages/{en,ko,...}.json` with structured namespaces (`common`, `home`, `nav`, `auth`, `library`, `import`, `review`, `settings`, `discover`, `video`, `clipCreate`, `clipPlayer`, `note`, `recording`, `transcript`, `streak`, `shortcuts`, `globalError`, `notFound`, `analysis`, `blind`, `audioMode`, `locale`).
+5. **Verification** — added `e2e/tests/i18n.spec.ts` covering 5 locale routes + locale selector flips `/en` → `/ko` and back.
+
+**Lesson**: centralize navigation imports from day one if you might ever localize. Replacing them later is a one-shot `sed` either way, but the named/default import disagreement between `next/link` and `next-intl/navigation` cost an extra round.
+
+The locale selector lives in the app header and writes the selected locale to localStorage via the wrapped router; cookie-based detection happens via middleware on first request.
+
+**Commit**: pending — not yet committed in this session.

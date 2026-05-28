@@ -59,6 +59,9 @@ local-storage/
 # ---------- Logs ----------
 logs/
 *.log
+# Cross-repo log aggregation home (daseon-blog satellite) — must NOT be ignored.
+!content/logs/
+!content/logs/**
 
 # ---------- Playwright ----------
 e2e/test-results/

@@ -1,0 +1,61 @@
+---
+title: "Decks (Anki-style clip grouping) + Review next-due toast"
+date: "2026-05-27"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "Two user-perception fixes shipped together. (1) Anki-style decks: a new `decks` table, nullable `deck_id` on `clips` (`ON DELETE SET NULL` so clips fall back to Inbox), library sidebar, per-card move dropdown, deck filter on review. (2) After Easy/Good/Hard/Again, a toast surfaces the actual next-due date so the clip doesn't feel like it 'vanished' from the queue."
+tags: ["srs", "anki", "ux", "postgres", "spring-boot"]
+---
+
+After using my own tool for a few days, a real perception problem surfaced. I'd clip ten phrases, review them, and the review queue would go empty. Instinct: *"wait, where did my clips go?"*
+
+DB check: 40 clips, 40 reviews, all alive. SM-2 had just bumped the due date out 5 days — exactly like Anki. The *data* was right; the *UX* lied.
+
+Two changes, shipped in the same migration window.
+
+### Decks
+
+A new bounded context. One clip belongs to at most one deck (Anki's model). The schema:
+
+```sql
+-- V13__create_decks.sql
+CREATE TABLE decks (
+    id          UUID PRIMARY KEY,
+    user_id     UUID         NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    name        VARCHAR(120) NOT NULL,
+    description TEXT,
+    created_at  TIMESTAMP    NOT NULL,
+    updated_at  TIMESTAMP
+);
+CREATE UNIQUE INDEX uk_decks_user_name ON decks (user_id, name);
+
+ALTER TABLE clips
+    ADD COLUMN deck_id UUID REFERENCES decks (id) ON DELETE SET NULL;
+```
+
+`ON DELETE SET NULL` is the important bit: deleting a deck drops its clips back to "Inbox" (deck_id NULL). Clips never vanish because of deck management.
+
+Frontend: `DeckSidebar` on the library, a `<select>` per clip card to move it, a filter `<select>` on the review page. The review backend grew an optional `deckId` query parameter (handling `"INBOX"` and UUIDs explicitly).
+
+### Next-due toast
+
+After every `respond`, the backend already returned the updated `ReviewItem` with the new `dueDate`. The frontend was throwing it away. Five lines later it surfaces a toast:
+
+```ts
+toast.success(t(quality === REVIEW_QUALITY.AGAIN ? "respondedAgain"
+              : quality === REVIEW_QUALITY.HARD  ? "respondedHard"
+              : quality === REVIEW_QUALITY.GOOD  ? "respondedGood"
+              :                                    "respondedEasy",
+              { date: updated.dueDate }));
+```
+
+So instead of clips silently leaving the queue, the learner sees:
+> "Solid — next due 2026-06-02"
+
+Both changes are zero-data-loss. Same SM-2 algorithm, same persistence. The fix was naming what was already true.
+
+**Pattern**: when users tell you data is missing, check the DB before the code. The bug is usually that the UI doesn't surface the state — not that the state is wrong.
+
+**Commit**: pending — not yet committed in this session.

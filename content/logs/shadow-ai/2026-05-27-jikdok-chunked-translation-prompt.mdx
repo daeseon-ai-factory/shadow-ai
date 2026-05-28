@@ -1,0 +1,78 @@
+---
+title: "Prompt-engineering 직독직해: forcing English word order in Korean output"
+date: "2026-05-27"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "public"
+language: "en"
+summary: "Asking Gemini for 'Korean chunks paired with English chunks' produced grammatical Korean in natural Korean order — useless for shadowing practice. Three prompt revisions: (1) hard rules + bad examples to force source order, (2) tune chunk size from 1-word to 2–5-word sense groups, (3) explicit BAD examples that show the failure mode."
+tags: ["prompt-engineering", "gemini", "language-learning", "sla"]
+---
+
+The single feature I most wanted from the AI pipeline was 직독직해 — word-by-word Korean gloss in English word order. A Korean B1–B2 learner reading top-to-bottom should hear English syntax forming in their head, not Korean.
+
+The naive prompt failed:
+
+```
+"All right, who's ready for some more category theory?"
+  → "자, 누가 좀 더 범주론을 들을 준비가 됐나요?"   ← natural Korean: verb at the end
+```
+
+That's a translation, not a gloss. Useless for shadowing.
+
+### Revision 1: hard rules + good/bad examples
+
+```
+The Korean MUST follow English word order, NOT natural Korean order.
+Each Korean chunk is a direct gloss of its English chunk, in source order.
+Use Korean particles (~를, ~에, ~로, ~라고) to point at what comes next.
+
+✗ BAD: {"en": "I think that he has been lying", "ko": "그가 거짓말해왔다고 나는 생각해"}
+   ← sentence re-ordered to natural Korean = total failure.
+```
+
+Output improved but chunk size was still wrong — sometimes 1 word per chunk (no flow), sometimes 8 words (too coarse).
+
+### Revision 2: chunk size as sense group
+
+```
+Chunk = a "sense group" (한 호흡 단위), 2–5 English words typically.
+Group by syntactic unit, NOT by word count:
+  • Noun phrase: "the cat", "my only goal"
+  • Verb phrase: "is going to", "has been lying"
+  • Prepositional phrase: "with this video"
+  • Short subordinate clause: "that he is smart"
+NEVER split 1 word per chunk — destroys the flow.
+NEVER make a chunk larger than a single clause — destroys English-order training.
+Aim for 5–10 chunks per ~15-word sentence.
+```
+
+This is what SLA research actually recommends for shadowing at the B1–B2 level (the "sense group" idea goes back to Murphey 2001). Single words destroy prosody; whole clauses get translated into native order.
+
+### Revision 3: a real failure mode in the prompt
+
+Adding the actual Korean output a reader would naturally pick — and labeling it `✗ BAD` — moved the model further than any rule. It's easier to *not* do something when you've seen exactly what it looks like:
+
+```
+✗ BAD (the AI's default — DO NOT do this):
+  {"en": "I think that he has been lying", "ko": "그가 거짓말해왔다고 나는 생각해"}
+```
+
+### After all three revisions
+
+```
+"who's ready for"             → "누가 ~할 준비가 됐나요"
+"some more"                   → "좀 더 많은"
+"category theory?"            → "범주론에 대해?"
+"You're all"                  → "여러분 모두"
+"in the wrong room."          → "잘못된 방에 있어요."
+"So this talk"                → "그래서 이 강연은"
+"I hope"                      → "나는 바라건대"
+"seems"                       → "~처럼 보인다"
+```
+
+Reading top-to-bottom now produces an English-shaped sentence in the learner's head. The whole feature works because the prompt is strict about *what failure looks like*, not just about what success looks like.
+
+**Pattern**: when a model defaults to a fluent-but-wrong output, the strongest prompt addition is a labeled BAD example of the exact wrong behavior. Saying "do X" doesn't beat "don't do this specific thing that you keep doing."
+
+**Commit**: pending — not yet committed in this session.

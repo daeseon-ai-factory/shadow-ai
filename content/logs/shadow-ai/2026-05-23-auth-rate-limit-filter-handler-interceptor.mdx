@@ -1,0 +1,22 @@
+---
+title: "AuthRateLimitFilter: Filter auto-registration trap → HandlerInterceptor"
+date: "2026-05-23"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "A `Filter` bean was auto-registered by Spring Boot independent of the `SecurityFilterChain` wiring and tried to instantiate it with a default constructor it didn't have. Switched to `HandlerInterceptor`; same behavior, no auto-registration trap."
+tags: ["spring-boot", "spring-security", "rate-limit", "auth"]
+---
+
+`AuthRateLimitFilter` (per-IP 20 logins/min) booted fine in tests but crashed the real app: `No default constructor found for class AuthRateLimitFilter`.
+
+The cause was that I'd written it as a `Filter` bean. Spring Boot auto-registers `Filter` beans on the servlet container — independent of whether they're wired into the `SecurityFilterChain`. That auto-registrar tried to construct it generically with a no-args constructor, which didn't exist (the rate-limit state was a constructor-injected dependency).
+
+Two ways out: disable auto-registration via `FilterRegistrationBean(enabled = false)`, or use the right abstraction. `HandlerInterceptor` runs at the same point in the request lifecycle for our purposes and has no auto-registration trap.
+
+I picked the abstraction switch.
+
+**Pattern**: per-request middleware in Spring Boot — prefer `HandlerInterceptor` over `Filter` unless you specifically need to run before Spring MVC (or you're integrating with non-MVC traffic). Less mechanism to fight.
+
+**Commit**: `37a87da` — `[hardening] CORS env-driven, auth rate limit, recording orphan cleanup`

@@ -1,0 +1,58 @@
+---
+title: "AI provider abstraction — Claude credit ran out, swapped to Gemini in one env var"
+date: "2026-05-27"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Anthropic credit hit zero mid-session. Introduced `AiAnalysisClient` interface; `ClaudeClient` and a new `GeminiClient` both implement it, each gated by `@ConditionalOnProperty(name = \"tubeshadow.ai.provider\")`. Switching providers is now one env var. Gemini's free tier (1500 req/day) covers personal use indefinitely; operating cost dropped to $0/mo."
+tags: ["llm", "gemini", "claude", "spring-boot", "conditional-on-property"]
+---
+
+Mid-build, every analysis call started failing with:
+
+```
+400 Bad Request: {
+  "type": "error",
+  "error": {
+    "type": "invalid_request_error",
+    "message": "Your credit balance is too low to access the Anthropic API."
+  }
+}
+```
+
+The cause was prosaic — Anthropic prepaid credit hit zero. The interesting part was: I had `ClaudeClient` injected directly into `ClipAnalysisService`, and switching providers would have meant either editing the service or hiding a `if (provider == ...)` branch inside the client.
+
+Instead, I extracted the interface:
+
+```java
+public interface AiAnalysisClient {
+    boolean isConfigured();
+    ClaudeClient.AnalysisResult analyzeClip(String transcript);
+    String model();
+}
+```
+
+Both `ClaudeClient` and the new `GeminiClient` implement it. Each is gated:
+
+```java
+@Component
+@ConditionalOnProperty(name = "tubeshadow.ai.provider", havingValue = "claude")
+public class ClaudeClient implements AiAnalysisClient { … }
+
+@Component
+@ConditionalOnProperty(name = "tubeshadow.ai.provider",
+                       havingValue = "gemini",
+                       matchIfMissing = true)
+public class GeminiClient implements AiAnalysisClient { … }
+```
+
+`ClipAnalysisService` now depends on `AiAnalysisClient`. The DI container picks the right one at startup based on `AI_PROVIDER`. Switching providers is a single env var.
+
+`GeminiClient` calls the REST endpoint directly (`https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}`) with `responseMimeType: "application/json"` to force structured output. The parser deliberately reuses `ClaudeClient.AnalysisResult` — same shape, same caller code.
+
+Operating cost on Gemini 2.5 Flash free tier: **$0/mo** for personal use (1500 req/day is more than I'll ever generate as a single learner).
+
+**Pattern**: provider abstraction is cheap to add when you have one provider and expensive when you have 100 call sites. The right time to introduce an `AiAnalysisClient` was before the third LLM call landed in the service. I introduced it the day I had to.
+
+**Commit**: pending — not yet committed in this session.

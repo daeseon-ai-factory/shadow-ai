@@ -1,0 +1,34 @@
+---
+title: "Recording upload 415: MIME `Content-Type` whitelist must strip codec parameter"
+date: "2026-05-26"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "Chrome's MediaRecorder tags audio with `audio/webm;codecs=opus`. The recording upload service compared the full string against a whitelist of base types, so Chrome uploads were rejected with 415. Stripped MIME parameters before the check."
+tags: ["mediarecorder", "mime", "spring-boot", "audio"]
+---
+
+Front-end recording flow had been working — until I tested in Chrome specifically. POST `/api/clips/{id}/recordings` returned:
+
+```
+HTTP 415 UNSUPPORTED_FORMAT
+지원하지 않는 오디오 형식입니다: audio/webm;codecs=opus
+```
+
+The `RecordingService.upload` whitelist was a `Set<String>` containing base types only — `"audio/webm"`, `"audio/ogg"`, `"audio/mp4"`, `"audio/mpeg"`, `"audio/wav"`, `"audio/x-wav"`. Chrome's `MediaRecorder` chose `audio/webm;codecs=opus` as the best supported MIME, and we were comparing that full string against the set, which contained no codec-tagged variants.
+
+The fix is one line above the lookup:
+
+```java
+String baseType = contentType != null ? contentType.split(";", 2)[0].trim() : null;
+if (baseType == null || !ALLOWED_CONTENT_TYPES.contains(baseType)) {
+    throw new BusinessException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ...);
+}
+```
+
+I added a regression test in `RecordingControllerTest` named `acceptsContentTypeWithCodecParameter` that posts a `MockMultipartFile` with `"audio/webm;codecs=opus"` and asserts 201.
+
+**Pattern**: any MIME-aware whitelist must compare base types, not the full `Content-Type` header. Codecs, charsets, and boundaries all live in parameters.
+
+**Commit**: pending — not yet committed in this session.
