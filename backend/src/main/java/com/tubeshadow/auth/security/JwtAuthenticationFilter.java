@@ -1,10 +1,12 @@
 package com.tubeshadow.auth.security;
 
 import com.tubeshadow.auth.repository.UserRepository;
+import com.tubeshadow.common.web.RequestLoggingFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -41,6 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(principal, null, Collections.emptyList());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    // Tag logs for this request with the user (RequestLoggingFilter clears MDC at the end).
+                    MDC.put(RequestLoggingFilter.USER_ID, principal.id().toString());
                 } else {
                     // User deleted or token revoked → stay unauthenticated.
                     SecurityContextHolder.clearContext();

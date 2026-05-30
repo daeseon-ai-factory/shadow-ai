@@ -43,6 +43,14 @@ springdoc:
   api-docs:
     path: /v3/api-docs
 
+# Expose health + prometheus over the web (dev/test). Prod narrows/secures this in
+# application-prod.yml. /actuator/prometheus carries the custom AI-path metrics.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
 tubeshadow:
   jwt:
     secret: ${JWT_SECRET:dev-only-secret-please-change-in-prod-this-must-be-long-enough-for-hs256}

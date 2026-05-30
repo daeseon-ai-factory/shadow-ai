@@ -34,14 +34,15 @@ logging:
     org.springframework.web: WARN
     org.hibernate.SQL: WARN
 
-# Actuator — only health is exposed over the web in prod (for the load-balancer probe).
-# metrics/info/env stay unexposed so nothing internal leaks publicly. When Micrometer
-# lands (PROD-6), re-expose prometheus behind auth deliberately.
+# Actuator — health (for the load-balancer probe) + prometheus (metrics scrape) are the
+# only web-exposed endpoints in prod. health is public; prometheus is NOT (SecurityConfig
+# only permit-lists /actuator/health, so /actuator/prometheus requires auth — the scrape
+# credential/path is wired in the deploy session). Nothing else (env/beans/etc.) is exposed.
 management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,prometheus
   endpoint:
     health:
       show-details: never

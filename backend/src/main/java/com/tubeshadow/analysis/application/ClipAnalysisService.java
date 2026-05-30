@@ -9,6 +9,8 @@ import com.tubeshadow.clip.application.ClipDeletedEvent;
 import com.tubeshadow.clip.domain.Clip;
 import com.tubeshadow.clip.repository.ClipRepository;
 import com.tubeshadow.common.exception.NotFoundException;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -38,15 +40,18 @@ public class ClipAnalysisService {
     private final ClipRepository clipRepository;
     private final ClipAnalysisRepository analysisRepository;
     private final AiAnalysisClient aiClient;
+    private final MeterRegistry meterRegistry;
     private final org.springframework.beans.factory.ObjectProvider<ClipAnalysisService> selfProvider;
 
     public ClipAnalysisService(ClipRepository clipRepository,
                                ClipAnalysisRepository analysisRepository,
                                AiAnalysisClient aiClient,
+                               MeterRegistry meterRegistry,
                                org.springframework.beans.factory.ObjectProvider<ClipAnalysisService> selfProvider) {
         this.clipRepository = clipRepository;
         this.analysisRepository = analysisRepository;
         this.aiClient = aiClient;
+        this.meterRegistry = meterRegistry;
         this.selfProvider = selfProvider;
     }
 
@@ -90,11 +95,18 @@ public class ClipAnalysisService {
             return;
         }
 
-        // 2. Call Claude OUTSIDE the transaction. Slow, network-bound.
+        // 2. Call the AI provider OUTSIDE the transaction. Slow, network-bound.
+        //    Timed via Micrometer (latency + success/failure rate, tagged by model) so the
+        //    AI path is observable in /actuator/prometheus.
         ClaudeClient.AnalysisResult result;
+        Timer.Sample sample = Timer.start(meterRegistry);
         try {
             result = aiClient.analyzeClip(snapshot.transcript);
+            sample.stop(meterRegistry.timer("tubeshadow.ai.analysis",
+                    "model", aiClient.model(), "outcome", "success"));
         } catch (Exception ex) {
+            sample.stop(meterRegistry.timer("tubeshadow.ai.analysis",
+                    "model", aiClient.model(), "outcome", "failure"));
             log.warn("Analysis failed for clip {}: {}", clipId, ex.getMessage());
             self().completeAsFailed(clipId, ex.getMessage());
             return;
