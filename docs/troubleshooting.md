@@ -207,3 +207,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: introduced a top-level provider-neutral `AiAnalysisResult` + a shared `AiAnalysisParser` (both clients extract their envelope's text, then delegate the schema parsing) — removing ~40 lines of duplication and the cross-impl dependency. Extracted `CollectionService` and slimmed the controller to delegation. Also moved `/me` and `/respond` off `Map<String,Object>` to typed DTOs. No behaviour change; full suite green.
 - **Commit**: `843ec87`
 - **Pattern**: an interface that returns `ConcreteImpl.NestedType` isn't an abstraction — the seam leaks. Put the shared return type and the shared parsing at the abstraction's level, and keep only the envelope-specific bits in each implementation.
+
+---
+
+## Docs only mentioned ANTHROPIC_API_KEY, but the default provider is Gemini (audit-found)
+
+- **Symptom** (audit-found): `.env.example` and `DEPLOY.md` listed only `ANTHROPIC_API_KEY`. The app defaults to `AI_PROVIDER=gemini` (reading `GEMINI_API_KEY`), so anyone deploying by following the docs verbatim would boot with no Gemini key and AI analysis would silently no-op (`GeminiClient.isConfigured()==false` → analysis skipped/FAILED) with no obvious error.
+- **Cause** (verified in code): `application.yml` sets `ai.provider: ${AI_PROVIDER:gemini}` and `gemini.api-key: ${GEMINI_API_KEY:}`, but the env docs predated the Gemini provider and were never updated. The canonical ECS task definition was already correct; this was doc-only drift on the docker-run / PaaS path.
+- **Fix**: added `AI_PROVIDER` + `GEMINI_API_KEY` (and `GEMINI_MODEL`) to `.env.example` and the DEPLOY.md env table + docker-run example, marking each key provider-conditional. Also renamed `Roadmap.md` → `ROADMAP.md` (CLAUDE.md referenced the all-caps name; case-sensitive Linux would 404 the source-of-truth doc) and removed the tracked `temp.md` scratchpad.
+- **Commit**: `5619660`
+- **Pattern**: when the default changes (Claude → Gemini), the env docs are the easiest thing to forget — and a missing key that fails *silently* is worse than one that crashes. Document the selector + every provider's key, conditional on the selector.
