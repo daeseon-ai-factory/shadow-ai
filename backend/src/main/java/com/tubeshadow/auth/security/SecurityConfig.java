@@ -1,5 +1,6 @@
 package com.tubeshadow.auth.security;
 
+import com.tubeshadow.auth.repository.UserRepository;
 import com.tubeshadow.common.config.CorsProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtTokenProvider tokenProvider,
+                                                   UserRepository userRepository,
                                                    JsonAuthenticationEntryPoint entryPoint) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -58,7 +60,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
-                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, userRepository), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

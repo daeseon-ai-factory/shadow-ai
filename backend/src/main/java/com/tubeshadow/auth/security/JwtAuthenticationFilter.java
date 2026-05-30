@@ -1,5 +1,6 @@
 package com.tubeshadow.auth.security;
 
+import com.tubeshadow.auth.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +17,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtTokenProvider tokenProvider;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UserRepository userRepository) {
         this.tokenProvider = tokenProvider;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -30,9 +33,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(BEARER_PREFIX.length());
             try {
                 AuthenticatedUser principal = tokenProvider.parse(token);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(principal, null, Collections.emptyList());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                // Revocation check: the token's "tv" must still match the user's current
+                // version. A password change bumps the DB version, so older tokens (incl.
+                // stolen ones) stop authenticating. One indexed PK lookup per request.
+                Integer currentVersion = userRepository.findTokenVersionById(principal.id()).orElse(null);
+                if (currentVersion != null && currentVersion == principal.tokenVersion()) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(principal, null, Collections.emptyList());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    // User deleted or token revoked → stay unauthenticated.
+                    SecurityContextHolder.clearContext();
+                }
             } catch (JwtTokenProvider.InvalidTokenException ex) {
                 // Token invalid → leave unauthenticated; endpoint security will deal with it.
                 SecurityContextHolder.clearContext();

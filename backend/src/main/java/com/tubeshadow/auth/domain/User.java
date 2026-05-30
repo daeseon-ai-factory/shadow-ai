@@ -27,6 +27,10 @@ public class User extends BaseEntity {
     @Column(name = "display_name", nullable = false, length = 80)
     private String displayName;
 
+    /** Bumped to invalidate all previously-issued JWTs (e.g. on password change). */
+    @Column(name = "token_version", nullable = false)
+    private int tokenVersion;
+
     protected User() {
     }
 
@@ -35,6 +39,7 @@ public class User extends BaseEntity {
         this.email = email;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
+        this.tokenVersion = 0;
     }
 
     public static User createNew(String email, String passwordHash, String displayName) {
@@ -47,6 +52,11 @@ public class User extends BaseEntity {
 
     public void changePasswordHash(String newPasswordHash) {
         this.passwordHash = newPasswordHash;
+    }
+
+    /** Invalidate every token issued so far (call after a password change / forced logout). */
+    public void revokeExistingTokens() {
+        this.tokenVersion++;
     }
 
     public void changeDisplayName(String displayName) {
@@ -67,5 +77,9 @@ public class User extends BaseEntity {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public int getTokenVersion() {
+        return tokenVersion;
     }
 }

@@ -70,10 +70,12 @@ public class AuthService {
             throw new UnauthorizedException("INVALID_CREDENTIALS", "현재 비밀번호가 일치하지 않습니다");
         }
         user.changePasswordHash(passwordEncoder.encode(request.newPassword()));
+        // Invalidate any tokens issued before this change (incl. stolen ones).
+        user.revokeExistingTokens();
     }
 
     private AuthTokenResponse issue(User user) {
-        String token = tokenProvider.issueAccessToken(user.getId(), user.getEmail());
+        String token = tokenProvider.issueAccessToken(user.getId(), user.getEmail(), user.getTokenVersion());
         return new AuthTokenResponse(
                 token,
                 tokenProvider.accessTokenTtlSeconds(),

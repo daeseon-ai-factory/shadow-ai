@@ -89,6 +89,25 @@ class ProfileEndpointTest extends SpringIntegrationTest {
     }
 
     @Test
+    void oldTokenRejectedAfterPasswordChange() throws Exception {
+        // Changing the password bumps token_version, revoking every token issued before it.
+        mockMvc.perform(post("/api/auth/me/password")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(Map.of(
+                        "currentPassword", "supersecret",
+                        "newPassword", "evenmoresecret"))))
+                .andExpect(status().isNoContent());
+
+        // The same token (now stale) must no longer authenticate on a protected endpoint.
+        mockMvc.perform(patch("/api/auth/me")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(Map.of("displayName", "Should Fail"))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void changePasswordRejectsWrongCurrent() throws Exception {
         mockMvc.perform(post("/api/auth/me/password")
                 .header("Authorization", "Bearer " + token)

@@ -42,11 +42,12 @@ public class JwtTokenProvider {
         this.accessTokenTtl = Duration.ofSeconds(properties.accessTokenTtlSeconds());
     }
 
-    public String issueAccessToken(UUID userId, String email) {
+    public String issueAccessToken(UUID userId, String email, int tokenVersion) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(userId.toString())
                 .claim("email", email)
+                .claim("tv", tokenVersion)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(accessTokenTtl)))
                 .signWith(signingKey, Jwts.SIG.HS256)
@@ -60,9 +61,11 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+            Integer tv = claims.get("tv", Integer.class);
             return new AuthenticatedUser(
                     UUID.fromString(claims.getSubject()),
-                    claims.get("email", String.class)
+                    claims.get("email", String.class),
+                    tv != null ? tv : 0  // tokens predating the tv claim default to version 0
             );
         } catch (ExpiredJwtException ex) {
             throw new InvalidTokenException("Token has expired", ex);

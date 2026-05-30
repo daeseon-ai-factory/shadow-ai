@@ -18,7 +18,7 @@ class JwtTokenProviderTest {
     @Test
     void issueAndParseRoundtrip() {
         UUID userId = UUID.randomUUID();
-        String token = provider.issueAccessToken(userId, "user@example.com");
+        String token = provider.issueAccessToken(userId, "user@example.com", 0);
 
         AuthenticatedUser parsed = provider.parse(token);
         assertThat(parsed.id()).isEqualTo(userId);
@@ -26,11 +26,17 @@ class JwtTokenProviderTest {
     }
 
     @Test
+    void carriesTokenVersionClaim() {
+        String token = provider.issueAccessToken(UUID.randomUUID(), "v@example.com", 7);
+        assertThat(provider.parse(token).tokenVersion()).isEqualTo(7);
+    }
+
+    @Test
     void rejectsTokenSignedWithDifferentKey() {
         JwtTokenProvider other = new JwtTokenProvider(
                 new JwtProperties("different-secret-that-is-also-long-enough-for-hs256", 3600),
                 new MockEnvironment());
-        String token = other.issueAccessToken(UUID.randomUUID(), "x@example.com");
+        String token = other.issueAccessToken(UUID.randomUUID(), "x@example.com", 0);
 
         assertThatThrownBy(() -> provider.parse(token))
                 .isInstanceOf(JwtTokenProvider.InvalidTokenException.class);
@@ -39,7 +45,7 @@ class JwtTokenProviderTest {
     @Test
     void rejectsExpiredToken() throws InterruptedException {
         JwtTokenProvider shortLived = new JwtTokenProvider(new JwtProperties(SECRET, 1), new MockEnvironment());
-        String token = shortLived.issueAccessToken(UUID.randomUUID(), "x@example.com");
+        String token = shortLived.issueAccessToken(UUID.randomUUID(), "x@example.com", 0);
         Thread.sleep(1100);
 
         assertThatThrownBy(() -> shortLived.parse(token))
@@ -73,7 +79,7 @@ class JwtTokenProviderTest {
         JwtTokenProvider devProvider = new JwtTokenProvider(
                 new JwtProperties("dev-only-secret-please-change-in-prod-this-must-be-long-enough-for-hs256", 3600),
                 dev);
-        String token = devProvider.issueAccessToken(UUID.randomUUID(), "dev@example.com");
+        String token = devProvider.issueAccessToken(UUID.randomUUID(), "dev@example.com", 0);
         assertThat(devProvider.parse(token).email()).isEqualTo("dev@example.com");
     }
 }
