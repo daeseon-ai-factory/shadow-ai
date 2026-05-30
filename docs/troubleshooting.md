@@ -187,3 +187,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: removed `@Transactional` from `importByUrl`. The HTTP work now runs with no transaction, and each `videoRepository` find/save runs in its own short Spring-Data-managed transaction. Safe to drop the ambient tx here because `Video` has no lazy associations — `transcript_segments` is a JSONB column, not a lazy collection — so the detached entity from `findByYoutubeId` is fully loaded and can be mutated + merged in `recoverIfNeeded`. Added a comment warning against re-adding the annotation.
 - **Commit**: `d508633`
 - **Pattern**: never hold a DB transaction across a network call. Before removing an ambient `@Transactional`, confirm the entity has no lazy associations (or reload inside the write tx) so detached-entity access doesn't blow up.
+
+---
+
+## Logger declared MDC keys nothing populated; AI path had no metrics (audit-found)
+
+- **Symptom** (audit-found): `logback-spring.xml`'s prod JSON encoder listed `requestId` and `userId` MDC keys, but no code ever put them in the MDC, so every prod log line emitted them empty — no per-request correlation. And there were no metrics on the AI call (the slowest, most failure-prone path), so latency/error-rate were invisible.
+- **Cause** (verified in code): no filter populated the MDC; `build.gradle.kts` had `spring-boot-starter-actuator` but no Micrometer registry, and nothing timed `aiClient.analyzeClip`.
+- **Fix**: `RequestLoggingFilter` (`@Order(HIGHEST_PRECEDENCE)`) stamps a short `requestId` into the MDC + an `X-Request-Id` header, clearing the MDC in `finally`; `JwtAuthenticationFilter` adds `userId` on successful auth. Added `micrometer-registry-prometheus`; `ClipAnalysisService` wraps the AI call in a `Timer` (`tubeshadow.ai.analysis`, tagged `model` + `outcome`) exposed at `/actuator/prometheus` (auth-protected in prod).
+- **Commit**: `eec6176`
+- **Pattern**: declaring MDC keys in the log encoder does nothing on its own — a filter has to populate them, ordered to wrap the whole chain, and clear them in `finally` so pooled threads don't leak context across requests.

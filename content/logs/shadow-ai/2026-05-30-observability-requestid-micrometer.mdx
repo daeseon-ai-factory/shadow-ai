@@ -1,0 +1,62 @@
+---
+title: "Making the AI path observable: request-id correlation + Micrometer timers"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The prod JSON logger declared requestId/userId fields that nothing ever filled, and the slowest path in the app — the AI call — had no metrics. Fixed both: a correlation-id filter and a Micrometer timer on the analysis call."
+tags: ["observability", "micrometer", "logging", "spring-boot", "java"]
+---
+
+Two observability gaps the audit caught, both of the "looks instrumented, isn't" variety.
+
+## The logger was lying by omission
+
+`logback-spring.xml`'s prod encoder dutifully listed two MDC keys:
+
+```xml
+<includeMdcKeyName>requestId</includeMdcKeyName>
+<includeMdcKeyName>userId</includeMdcKeyName>
+```
+
+…and nothing in the codebase ever called `MDC.put` for either. So every prod log line carried two empty fields and zero ability to correlate "these 8 log lines all belong to the same request." Declaring the keys felt like instrumentation; it was scaffolding with nothing built on it.
+
+The fix is a filter ordered ahead of everything:
+
+```java
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class RequestLoggingFilter extends OncePerRequestFilter {
+    protected void doFilterInternal(...) {
+        String requestId = UUID.randomUUID().toString().substring(0, 8);
+        MDC.put("requestId", requestId);
+        response.setHeader("X-Request-Id", requestId);
+        try { filterChain.doFilter(request, response); }
+        finally { MDC.clear(); }
+    }
+}
+```
+
+Two details that are easy to get wrong: it has to be ordered first so its `try/finally` *wraps* the Spring Security chain (where `JwtAuthenticationFilter` later adds `userId` once the request is authenticated), and the `finally` has to `MDC.clear()` — otherwise a pooled worker thread carries one request's `userId` into the next user's request. Correlation that leaks identity is worse than none.
+
+## The slowest path had no speedometer
+
+The AI analysis call is the slowest, most failure-prone thing the backend does (network, rate limits, a free-tier provider). It had no metrics — if latency crept up or the error rate spiked, you'd find out from users, not a dashboard.
+
+Added `micrometer-registry-prometheus` and wrapped the call:
+
+```java
+Timer.Sample sample = Timer.start(meterRegistry);
+try {
+    result = aiClient.analyzeClip(transcript);
+    sample.stop(meterRegistry.timer("tubeshadow.ai.analysis", "model", aiClient.model(), "outcome", "success"));
+} catch (Exception ex) {
+    sample.stop(meterRegistry.timer("tubeshadow.ai.analysis", "model", aiClient.model(), "outcome", "failure"));
+    // ... mark FAILED
+}
+```
+
+One timer, tagged by `model` and `outcome`, gives latency percentiles *and* error rate (the failure-tagged count over the total) at `/actuator/prometheus`. The tags are deliberately low-cardinality — model is one or two values, outcome is two — so the metric stays cheap. I didn't try to fake a "cost" metric; that needs token counts I'm not parsing yet, and a made-up number is worse than an absent one.
+
+In prod the endpoint is exposed but auth-protected (only `/actuator/health` is public); wiring an actual scrape credential is a deploy-session concern. The point for now: the path that was a black box has a latency and error-rate signal, and every log line can be traced to a request. (Audit refs PROD-5, PROD-6.)
