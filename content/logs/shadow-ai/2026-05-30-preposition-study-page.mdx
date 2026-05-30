@@ -1,0 +1,20 @@
+---
+title: "A preposition study page: curated images + the ones you mined yourself"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "Beyond per-clip preposition notes, a dedicated /prepositions page: a curated primer of 16 core prepositions taught by their spatial image, with the real examples you've mined from your own clips mapped onto each one."
+tags: ["product", "english-learning", "spring-boot", "next.js"]
+---
+
+The per-clip preposition spotlight answered "why this preposition, here." But to actually *master* prepositions you want to see them as a system — and to see your own collected examples accumulate against that system. So: a `/prepositions` study page, hybrid by design.
+
+**The primer (curated).** 16 core prepositions, each taught by its spatial/relational *image* rather than a gloss: `into` = "밖에서 안으로 — 종종 형태가 바뀜"; `off` = "표면에서 떨어져 나옴"; `through` = "내부를 관통해 지나감." Two examples each, EN + KO. This is the one place I deliberately authored curated content rather than mining it from clips — a small, conscious stretch of the "everything comes from your clips" rule, because understanding the *system* needs a map, not just scattered encounters.
+
+**Your mined examples (yours).** The page calls `GET /api/prepositions/mined`, which aggregates every `preposition_note` from your own clips' analyses, grouped by preposition. Each group is mapped onto its primer card under "내 클립에서," linking back to the clip it came from. So the more you mine, the richer your own examples grow under each preposition — sentence-mining feeding the study map. Prepositions you've mined that aren't in the primer get their own section.
+
+It's a thin read on top of Feature A's data (no new AI, no migration): a `findByClipIdIn` batch fetch, group by normalized preposition in a service, sorted. A small service test pins the grouping (two clips sharing `into` merge into one group of two occurrences).
+
+Next, Feature B — a fill-in drill that blanks these prepositions for active recall — lands as a tab on this same page, turning it into a proper "prepositions hub." Backend suite green, frontend typechecks.
