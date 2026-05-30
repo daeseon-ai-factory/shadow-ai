@@ -2,7 +2,7 @@ package com.tubeshadow.analysis.application;
 
 import com.tubeshadow.analysis.domain.ClipAnalysis;
 import com.tubeshadow.analysis.infrastructure.AiAnalysisClient;
-import com.tubeshadow.analysis.infrastructure.ClaudeClient;
+import com.tubeshadow.analysis.infrastructure.AiAnalysisResult;
 import com.tubeshadow.analysis.repository.ClipAnalysisRepository;
 import com.tubeshadow.clip.domain.Clip;
 import com.tubeshadow.clip.repository.ClipRepository;
@@ -56,7 +56,7 @@ class ClipAnalysisServiceTest {
         when(analysisRepo.findByClipId(clipId)).thenReturn(Optional.of(analysis));
         when(aiClient.isConfigured()).thenReturn(true);
         when(aiClient.analyzeClip("we spin up a server")).thenReturn(
-                new ClaudeClient.AnalysisResult(List.of("g"), List.of(), List.of(), "summary", null, List.of(), null));
+                new AiAnalysisResult(List.of("g"), List.of(), List.of(), "summary", null, List.of(), null));
 
         service.runAnalysisPipeline(clipId);
 

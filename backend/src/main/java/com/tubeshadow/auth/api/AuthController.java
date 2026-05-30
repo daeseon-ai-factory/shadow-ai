@@ -3,6 +3,7 @@ package com.tubeshadow.auth.api;
 import com.tubeshadow.auth.api.dto.AuthTokenResponse;
 import com.tubeshadow.auth.api.dto.ChangePasswordRequest;
 import com.tubeshadow.auth.api.dto.LoginRequest;
+import com.tubeshadow.auth.api.dto.MeResponse;
 import com.tubeshadow.auth.api.dto.SignupRequest;
 import com.tubeshadow.auth.api.dto.UpdateProfileRequest;
 import com.tubeshadow.auth.application.AuthService;
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -54,15 +53,10 @@ public class AuthController {
 
     @GetMapping("/me")
     @Operation(summary = "현재 사용자", security = @SecurityRequirement(name = "bearerAuth"))
-    public ApiResponse<Map<String, Object>> me(@CurrentUser AuthenticatedUser user) {
+    public ApiResponse<MeResponse> me(@CurrentUser AuthenticatedUser user) {
         User loaded = userRepository.findById(user.id())
                 .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "User not found"));
-        return ApiResponse.ok(Map.of(
-                "id", loaded.getId(),
-                "email", loaded.getEmail(),
-                "displayName", loaded.getDisplayName(),
-                "createdAt", loaded.getCreatedAt()
-        ));
+        return ApiResponse.ok(MeResponse.from(loaded));
     }
 
     @PatchMapping("/me")

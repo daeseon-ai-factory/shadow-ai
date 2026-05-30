@@ -5,6 +5,7 @@ import com.tubeshadow.auth.security.CurrentUser;
 import com.tubeshadow.common.web.ApiResponse;
 import com.tubeshadow.review.api.dto.ReviewQueueItem;
 import com.tubeshadow.review.api.dto.ReviewRespondRequest;
+import com.tubeshadow.review.api.dto.ReviewRespondResponse;
 import com.tubeshadow.review.api.dto.StreakResponse;
 import com.tubeshadow.review.application.ReviewService;
 import com.tubeshadow.review.domain.ReviewItem;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -50,17 +50,11 @@ public class ReviewController {
 
     @PostMapping("/items/{id}/respond")
     @Operation(summary = "복습 응답 (quality 0..5)")
-    public ApiResponse<Map<String, Object>> respond(@PathVariable UUID id,
-                                                    @Valid @RequestBody ReviewRespondRequest request,
-                                                    @CurrentUser AuthenticatedUser user) {
+    public ApiResponse<ReviewRespondResponse> respond(@PathVariable UUID id,
+                                                       @Valid @RequestBody ReviewRespondRequest request,
+                                                       @CurrentUser AuthenticatedUser user) {
         ReviewItem updated = reviewService.respond(user.id(), id, request.quality());
-        return ApiResponse.ok(Map.of(
-                "id", updated.getId(),
-                "easiness", updated.getEasiness(),
-                "intervalDays", updated.getIntervalDays(),
-                "repetitions", updated.getRepetitions(),
-                "dueDate", updated.getDueDate()
-        ));
+        return ApiResponse.ok(ReviewRespondResponse.from(updated));
     }
 
     @GetMapping("/streak")

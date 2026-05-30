@@ -2,10 +2,6 @@ package com.tubeshadow.analysis.infrastructure;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tubeshadow.analysis.domain.ChunkPair;
-import com.tubeshadow.analysis.domain.KeyExpression;
-import com.tubeshadow.analysis.domain.PracticeScenario;
-import com.tubeshadow.analysis.domain.Vocabulary;
 import com.tubeshadow.analysis.prompt.ClipAnalysisPrompt;
 import com.tubeshadow.common.exception.BusinessException;
 import org.slf4j.Logger;
@@ -18,14 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Google Gemini 1.5 Flash client. Free tier: 1500 requests/day, 15 RPM, 1M tokens/day.
- * Plenty for a single learner's clip analyses. Uses {@code responseMimeType: application/json}
- * to force JSON output so we can reuse the same parser shape as Claude.
+ * Google Gemini 2.5 Flash client (the default provider). Free tier: generous quota for a
+ * single learner's clip analyses, ~15 RPM. Uses {@code responseMimeType: application/json}
+ * to force JSON output, then delegates parsing to the shared {@link AiAnalysisParser}.
  */
 @Component
 @EnableConfigurationProperties(GeminiProperties.class)
@@ -61,15 +56,15 @@ public class GeminiClient implements AiAnalysisClient {
     }
 
     @Override
-    public ClaudeClient.AnalysisResult analyzeClip(String transcript) {
+    public AiAnalysisResult analyzeClip(String transcript) {
         if (!isConfigured()) {
             throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "GEMINI_NOT_CONFIGURED",
                     "Gemini API key가 설정되지 않았습니다");
         }
 
-        // Gemini 2.5 Flash burns "thinking" tokens before emitting visible text. With
-        // maxOutputTokens=800 the visible JSON was getting truncated mid-string. Disable
-        // thinking (we don't need it for translation) and give the response room to breathe.
+        // Gemini 2.5 Flash burns "thinking" tokens before emitting visible text. With a small
+        // maxOutputTokens the visible JSON got truncated mid-string, so we disable thinking
+        // (not needed for this structured task) and give the response room.
         Map<String, Object> body = Map.of(
                 "systemInstruction", Map.of(
                         "parts", List.of(Map.of("text", ClipAnalysisPrompt.SYSTEM))
@@ -104,7 +99,7 @@ public class GeminiClient implements AiAnalysisClient {
     }
 
     /** Gemini response shape: candidates[0].content.parts[0].text → our JSON string. */
-    public ClaudeClient.AnalysisResult parseResponse(String rawResponse) {
+    public AiAnalysisResult parseResponse(String rawResponse) {
         try {
             JsonNode root = objectMapper.readTree(rawResponse);
             JsonNode candidates = root.path("candidates");
@@ -112,38 +107,7 @@ public class GeminiClient implements AiAnalysisClient {
                 throw new IllegalStateException("Gemini returned no candidates: " + rawResponse);
             }
             String inner = candidates.get(0).path("content").path("parts").get(0).path("text").asText("");
-            JsonNode payload = objectMapper.readTree(stripCodeFence(inner.trim()));
-
-            List<String> grammar = readStrings(payload.path("grammar_notes"));
-            List<KeyExpression> exprs = new ArrayList<>();
-            for (JsonNode n : payload.path("key_expressions")) {
-                exprs.add(new KeyExpression(
-                        n.path("phrase").asText(""),
-                        n.path("meaning").asText(""),
-                        n.path("usage").asText("")));
-            }
-            List<Vocabulary> vocab = new ArrayList<>();
-            for (JsonNode n : payload.path("vocabulary")) {
-                vocab.add(new Vocabulary(
-                        n.path("word").asText(""),
-                        n.path("meaning").asText(""),
-                        n.path("level").asText("basic")));
-            }
-            String summary = payload.path("context_summary").asText("");
-            JsonNode trNode = payload.path("primary_translation");
-            String primaryTranslation = trNode.isMissingNode() || trNode.isNull() ? null : trNode.asText();
-            if (primaryTranslation != null && primaryTranslation.isBlank()) primaryTranslation = null;
-
-            List<ChunkPair> chunked = new ArrayList<>();
-            for (JsonNode n : payload.path("chunked_translation")) {
-                String en = n.path("en").asText("").trim();
-                String ko = n.path("ko").asText("").trim();
-                if (!en.isEmpty() && !ko.isEmpty()) chunked.add(new ChunkPair(en, ko));
-            }
-
-            PracticeScenario scenario = ClaudeClient.parseScenario(payload.path("practice_scenario"));
-
-            return new ClaudeClient.AnalysisResult(grammar, exprs, vocab, summary, primaryTranslation, chunked, scenario);
+            return AiAnalysisParser.parse(objectMapper, inner);
         } catch (Exception ex) {
             // Log a short prefix of the raw response so we can see when the JSON was
             // truncated vs malformed. Strip newlines for log readability.
@@ -158,22 +122,5 @@ public class GeminiClient implements AiAnalysisClient {
     @Override
     public String model() {
         return props.model();
-    }
-
-    private static String stripCodeFence(String s) {
-        if (s.startsWith("```")) {
-            int firstNl = s.indexOf('\n');
-            int lastFence = s.lastIndexOf("```");
-            if (firstNl > 0 && lastFence > firstNl) {
-                return s.substring(firstNl + 1, lastFence).trim();
-            }
-        }
-        return s;
-    }
-
-    private static List<String> readStrings(JsonNode node) {
-        List<String> out = new ArrayList<>();
-        if (node.isArray()) for (JsonNode n : node) out.add(n.asText(""));
-        return out;
     }
 }

@@ -1,7 +1,7 @@
 package com.tubeshadow.analysis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tubeshadow.analysis.infrastructure.ClaudeClient;
+import com.tubeshadow.analysis.infrastructure.AiAnalysisResult;
 import com.tubeshadow.analysis.infrastructure.GeminiClient;
 import com.tubeshadow.analysis.infrastructure.GeminiProperties;
 import com.tubeshadow.common.exception.BusinessException;
@@ -31,7 +31,7 @@ class GeminiClientParseTest {
                     ] } }
                   ]
                 }""";
-        ClaudeClient.AnalysisResult result = client.parseResponse(response);
+        AiAnalysisResult result = client.parseResponse(response);
 
         assertThat(result.grammarNotes()).containsExactly("present perfect");
         assertThat(result.keyExpressions()).hasSize(1);

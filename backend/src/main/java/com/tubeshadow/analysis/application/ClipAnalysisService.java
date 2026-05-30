@@ -2,7 +2,7 @@ package com.tubeshadow.analysis.application;
 
 import com.tubeshadow.analysis.domain.ClipAnalysis;
 import com.tubeshadow.analysis.infrastructure.AiAnalysisClient;
-import com.tubeshadow.analysis.infrastructure.ClaudeClient;
+import com.tubeshadow.analysis.infrastructure.AiAnalysisResult;
 import com.tubeshadow.analysis.repository.ClipAnalysisRepository;
 import com.tubeshadow.clip.application.ClipCreatedEvent;
 import com.tubeshadow.clip.application.ClipDeletedEvent;
@@ -98,7 +98,7 @@ public class ClipAnalysisService {
         // 2. Call the AI provider OUTSIDE the transaction. Slow, network-bound.
         //    Timed via Micrometer (latency + success/failure rate, tagged by model) so the
         //    AI path is observable in /actuator/prometheus.
-        ClaudeClient.AnalysisResult result;
+        AiAnalysisResult result;
         Timer.Sample sample = Timer.start(meterRegistry);
         try {
             result = aiClient.analyzeClip(snapshot.transcript);
@@ -144,7 +144,7 @@ public class ClipAnalysisService {
     }
 
     @Transactional
-    public void completeAsReady(UUID clipId, ClaudeClient.AnalysisResult result) {
+    public void completeAsReady(UUID clipId, AiAnalysisResult result) {
         analysisRepository.findByClipId(clipId).ifPresent(a -> {
             a.markReady(result.grammarNotes(), result.keyExpressions(),
                     result.vocabulary(), result.contextSummary(),

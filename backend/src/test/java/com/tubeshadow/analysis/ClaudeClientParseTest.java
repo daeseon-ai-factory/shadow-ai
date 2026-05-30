@@ -1,6 +1,7 @@
 package com.tubeshadow.analysis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tubeshadow.analysis.infrastructure.AiAnalysisResult;
 import com.tubeshadow.analysis.infrastructure.ClaudeClient;
 import com.tubeshadow.analysis.infrastructure.ClaudeProperties;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ class ClaudeClientParseTest {
                     }
                   ]
                 }""";
-        ClaudeClient.AnalysisResult result = client.parseResponse(response);
+        AiAnalysisResult result = client.parseResponse(response);
 
         assertThat(result.grammarNotes()).containsExactly("'be going to' future");
         assertThat(result.keyExpressions()).hasSize(1);
@@ -49,7 +50,7 @@ class ClaudeClientParseTest {
                     }
                   ]
                 }""";
-        ClaudeClient.AnalysisResult result = client.parseResponse(response);
+        AiAnalysisResult result = client.parseResponse(response);
         assertThat(result.contextSummary()).isEqualTo("hi");
     }
 }
