@@ -56,7 +56,7 @@ class ClipAnalysisServiceTest {
         when(analysisRepo.findByClipId(clipId)).thenReturn(Optional.of(analysis));
         when(aiClient.isConfigured()).thenReturn(true);
         when(aiClient.analyzeClip("we spin up a server")).thenReturn(
-                new AiAnalysisResult(List.of("g"), List.of(), List.of(), "summary", null, List.of(), null));
+                new AiAnalysisResult(List.of("g"), List.of(), List.of(), "summary", null, List.of(), null, List.of()));
 
         service.runAnalysisPipeline(clipId);
 

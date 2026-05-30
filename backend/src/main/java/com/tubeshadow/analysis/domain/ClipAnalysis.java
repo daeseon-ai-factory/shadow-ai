@@ -66,6 +66,11 @@ public class ClipAnalysis extends BaseEntity {
     @Column(name = "practice_scenario", columnDefinition = "jsonb")
     private PracticeScenario practiceScenario;
 
+    /** Feature A — prepositions/particles in the transcript with the relationship each encodes. */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "preposition_notes", columnDefinition = "jsonb")
+    private List<PrepositionNote> prepositionNotes = Collections.emptyList();
+
     @Column(name = "model", length = 100)
     private String model;
 
@@ -95,6 +100,7 @@ public class ClipAnalysis extends BaseEntity {
                           String primaryTranslation,
                           List<ChunkPair> chunkedTranslation,
                           PracticeScenario practiceScenario,
+                          List<PrepositionNote> prepositionNotes,
                           String model) {
         this.grammarNotes = grammarNotes == null ? Collections.emptyList() : List.copyOf(grammarNotes);
         this.keyExpressions = keyExpressions == null ? Collections.emptyList() : List.copyOf(keyExpressions);
@@ -103,6 +109,7 @@ public class ClipAnalysis extends BaseEntity {
         this.primaryTranslation = primaryTranslation;
         this.chunkedTranslation = chunkedTranslation == null ? Collections.emptyList() : List.copyOf(chunkedTranslation);
         this.practiceScenario = practiceScenario;
+        this.prepositionNotes = prepositionNotes == null ? Collections.emptyList() : List.copyOf(prepositionNotes);
         this.model = model;
         this.generatedAt = Instant.now();
         this.status = AnalysisStatus.READY;
@@ -152,6 +159,10 @@ public class ClipAnalysis extends BaseEntity {
 
     public PracticeScenario getPracticeScenario() {
         return practiceScenario;
+    }
+
+    public List<PrepositionNote> getPrepositionNotes() {
+        return prepositionNotes == null ? Collections.emptyList() : prepositionNotes;
     }
 
     public String getModel() {

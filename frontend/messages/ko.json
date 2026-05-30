@@ -318,7 +318,9 @@
     "byoaiZeroCost": "우리 비용 0",
     "byoaiHint": "본인의 ChatGPT/Gemini/Claude/Perplexity로 프롬프트를 보냅니다. 자동 입력이 안 되면 도구 안에서 ⌘V 한 번.",
     "byoaiSend": "보내기",
-    "noTranscriptForExternal": "자막이 없어 분석 프롬프트를 만들 수 없습니다"
+    "noTranscriptForExternal": "자막이 없어 분석 프롬프트를 만들 수 없습니다",
+    "prepositions": "전치사",
+    "prepositionsHint": "각 전치사가 나타내는 관계·이미지 (사전식 뜻이 아니라 \"왜\")."
   },
   "transcript": {
     "emptyNote": "이 영상에는 자막이 없습니다. 영상 위에서 구간을 만들 수는 있지만 자막은 비어 있습니다.",

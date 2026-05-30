@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tubeshadow.analysis.domain.ChunkPair;
 import com.tubeshadow.analysis.domain.KeyExpression;
 import com.tubeshadow.analysis.domain.PracticeScenario;
+import com.tubeshadow.analysis.domain.PrepositionNote;
 import com.tubeshadow.analysis.domain.Vocabulary;
 
 import java.util.ArrayList;
@@ -59,7 +60,15 @@ final class AiAnalysisParser {
 
         PracticeScenario scenario = parseScenario(payload.path("practice_scenario"));
 
-        return new AiAnalysisResult(grammar, exprs, vocab, summary, primaryTranslation, chunked, scenario);
+        List<PrepositionNote> prepositions = new ArrayList<>();
+        for (JsonNode n : payload.path("preposition_notes")) {
+            String prep = n.path("preposition").asText("").trim();
+            String phrase = n.path("phrase").asText("").trim();
+            String sense = n.path("sense").asText("").trim();
+            if (!prep.isEmpty() && !sense.isEmpty()) prepositions.add(new PrepositionNote(prep, phrase, sense));
+        }
+
+        return new AiAnalysisResult(grammar, exprs, vocab, summary, primaryTranslation, chunked, scenario, prepositions);
     }
 
     private static String stripCodeFence(String s) {

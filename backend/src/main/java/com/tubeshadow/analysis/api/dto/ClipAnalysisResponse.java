@@ -4,6 +4,7 @@ import com.tubeshadow.analysis.domain.ChunkPair;
 import com.tubeshadow.analysis.domain.ClipAnalysis;
 import com.tubeshadow.analysis.domain.KeyExpression;
 import com.tubeshadow.analysis.domain.PracticeScenario;
+import com.tubeshadow.analysis.domain.PrepositionNote;
 import com.tubeshadow.analysis.domain.Vocabulary;
 
 import java.time.Instant;
@@ -21,6 +22,7 @@ public record ClipAnalysisResponse(
         String primaryTranslation,
         List<ChunkPair> chunkedTranslation,
         PracticeScenario practiceScenario,
+        List<PrepositionNote> prepositionNotes,
         String model,
         Instant generatedAt,
         String errorMessage
@@ -37,6 +39,7 @@ public record ClipAnalysisResponse(
                 a.getPrimaryTranslation(),
                 a.getChunkedTranslation(),
                 a.getPracticeScenario(),
+                a.getPrepositionNotes(),
                 a.getModel(),
                 a.getGeneratedAt(),
                 a.getErrorMessage()

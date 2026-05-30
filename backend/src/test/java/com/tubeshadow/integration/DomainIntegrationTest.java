@@ -62,6 +62,7 @@ class DomainIntegrationTest extends PostgresContainerTest {
                 "안녕, 잘 지내?",
                 List.of(),
                 null,
+                List.of(),
                 "claude-haiku-4-5-20251001"
         );
         analyses.save(a);

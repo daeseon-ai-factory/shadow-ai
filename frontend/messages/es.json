@@ -318,7 +318,9 @@
     "byoaiZeroCost": "Zero cost to us",
     "byoaiHint": "Sends the prompt to your ChatGPT/Gemini/Claude/Perplexity. If auto-fill doesn't work, paste with ⌘V once you're there.",
     "byoaiSend": "Send",
-    "noTranscriptForExternal": "No subtitle — can't build an analysis prompt"
+    "noTranscriptForExternal": "No subtitle — can't build an analysis prompt",
+    "prepositions": "Prepositions",
+    "prepositionsHint": "Why each preposition — the relationship it encodes, not a dictionary gloss."
   },
   "transcript": {
     "emptyNote": "This video has no subtitles. You can still pick ranges on the video itself, but clips will have empty transcripts.",

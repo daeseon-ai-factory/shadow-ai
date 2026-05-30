@@ -142,6 +142,23 @@ export function AnalysisPanel({ clip }: { clip: ClipResponse }) {
             {data.chunkedTranslation && data.chunkedTranslation.length > 0 && (
               <ChunkedTranslationSection chunks={data.chunkedTranslation} />
             )}
+            {data.prepositionNotes && data.prepositionNotes.length > 0 && (
+              <section className="space-y-2" data-testid="preposition-notes">
+                <h3 className="text-sm font-medium text-muted-foreground">{t("prepositions")}</h3>
+                <p className="text-xs text-muted-foreground">{t("prepositionsHint")}</p>
+                <ul className="space-y-2 text-sm">
+                  {data.prepositionNotes.map((p, i) => (
+                    <li key={i} className="rounded-md border bg-muted/30 p-3">
+                      <div className="flex flex-wrap items-baseline gap-2">
+                        <span className="font-mono text-base font-semibold">{p.preposition}</span>
+                        <span className="text-xs text-muted-foreground">{p.phrase}</span>
+                      </div>
+                      <div className="mt-1 text-muted-foreground">{p.sense}</div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
             {data.contextSummary && (
               <section>
                 <h3 className="text-sm font-medium text-muted-foreground">{t("contextSummary")}</h3>

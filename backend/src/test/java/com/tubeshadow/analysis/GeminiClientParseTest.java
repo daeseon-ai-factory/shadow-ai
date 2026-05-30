@@ -27,7 +27,7 @@ class GeminiClientParseTest {
                 {
                   "candidates": [
                     { "content": { "parts": [
-                      { "text": "{\\"grammar_notes\\":[\\"present perfect\\"],\\"key_expressions\\":[{\\"phrase\\":\\"spin up\\",\\"meaning\\":\\"띄우다\\",\\"usage\\":\\"spin up a server\\"}],\\"vocabulary\\":[{\\"word\\":\\"idempotent\\",\\"meaning\\":\\"멱등\\",\\"level\\":\\"advanced\\"}],\\"context_summary\\":\\"Deploying a service.\\",\\"primary_translation\\":\\"서비스를 배포한다\\",\\"chunked_translation\\":[{\\"en\\":\\"spin up a server\\",\\"ko\\":\\"서버를 띄운다\\"}]}" }
+                      { "text": "{\\"grammar_notes\\":[\\"present perfect\\"],\\"key_expressions\\":[{\\"phrase\\":\\"spin up\\",\\"meaning\\":\\"띄우다\\",\\"usage\\":\\"spin up a server\\"}],\\"vocabulary\\":[{\\"word\\":\\"idempotent\\",\\"meaning\\":\\"멱등\\",\\"level\\":\\"advanced\\"}],\\"context_summary\\":\\"Deploying a service.\\",\\"primary_translation\\":\\"서비스를 배포한다\\",\\"chunked_translation\\":[{\\"en\\":\\"spin up a server\\",\\"ko\\":\\"서버를 띄운다\\"}],\\"preposition_notes\\":[{\\"preposition\\":\\"up\\",\\"phrase\\":\\"spin up a server\\",\\"sense\\":\\"up = 활성화·생성. 없던 것을 '일으켜 세우는' 이미지\\"}]}" }
                     ] } }
                   ]
                 }""";
@@ -41,6 +41,9 @@ class GeminiClientParseTest {
         assertThat(result.primaryTranslation()).isEqualTo("서비스를 배포한다");
         assertThat(result.chunkedTranslation()).hasSize(1);
         assertThat(result.chunkedTranslation().get(0).ko()).isEqualTo("서버를 띄운다");
+        assertThat(result.prepositionNotes()).hasSize(1);
+        assertThat(result.prepositionNotes().get(0).preposition()).isEqualTo("up");
+        assertThat(result.prepositionNotes().get(0).sense()).contains("활성화");
     }
 
     @Test

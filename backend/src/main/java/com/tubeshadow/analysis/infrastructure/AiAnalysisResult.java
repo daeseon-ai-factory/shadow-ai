@@ -3,6 +3,7 @@ package com.tubeshadow.analysis.infrastructure;
 import com.tubeshadow.analysis.domain.ChunkPair;
 import com.tubeshadow.analysis.domain.KeyExpression;
 import com.tubeshadow.analysis.domain.PracticeScenario;
+import com.tubeshadow.analysis.domain.PrepositionNote;
 import com.tubeshadow.analysis.domain.Vocabulary;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public record AiAnalysisResult(
         String contextSummary,
         String primaryTranslation,
         List<ChunkPair> chunkedTranslation,
-        PracticeScenario practiceScenario
+        PracticeScenario practiceScenario,
+        List<PrepositionNote> prepositionNotes
 ) {
 }

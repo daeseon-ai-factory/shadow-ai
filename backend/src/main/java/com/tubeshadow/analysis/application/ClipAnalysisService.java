@@ -131,7 +131,7 @@ public class ClipAnalysisService {
         ClipAnalysis analysis = analysisRepository.findByClipId(clipId)
                 .orElseGet(() -> ClipAnalysis.pending(clipId));
         analysis.markReady(java.util.List.of(), java.util.List.of(), java.util.List.of(),
-                "Transcript unavailable.", null, java.util.List.of(), null, aiClient.model());
+                "Transcript unavailable.", null, java.util.List.of(), null, java.util.List.of(), aiClient.model());
         analysisRepository.save(analysis);
     }
 
@@ -149,7 +149,7 @@ public class ClipAnalysisService {
             a.markReady(result.grammarNotes(), result.keyExpressions(),
                     result.vocabulary(), result.contextSummary(),
                     result.primaryTranslation(), result.chunkedTranslation(),
-                    result.practiceScenario(), aiClient.model());
+                    result.practiceScenario(), result.prepositionNotes(), aiClient.model());
             analysisRepository.save(a);
         });
     }

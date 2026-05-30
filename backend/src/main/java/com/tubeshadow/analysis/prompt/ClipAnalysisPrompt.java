@@ -46,7 +46,10 @@ public final class ClipAnalysisPrompt {
                 "korean_hint": string,             // Korean — what the learner should weave in
                 "sample_response": string          // ONE natural English response that uses
                                                    // an expression from this clip's transcript
-              }
+              },
+              "preposition_notes": [               // at most 4 — see PREPOSITION SPOTLIGHT below
+                { "preposition": string, "phrase": string, "sense": string }
+              ]
             }
 
             === 직독직해 (chunked_translation) — STRICT RULES ===
@@ -128,6 +131,21 @@ public final class ClipAnalysisPrompt {
 
             If the transcript is too short or generic to build a scenario, set practice_scenario to null.
 
+            === preposition_notes — PREPOSITION SPOTLIGHT ===
+            Korean learners guess prepositions because they map Korean particles word-by-word.
+            For each preposition / particle in the transcript that CARRIES MEANING or is non-obvious
+            (off of, into, through, up, over, out of, after, onto, ...), explain the RELATIONSHIP /
+            IMAGE it encodes — in Korean. This is intuition-building, not a dictionary gloss.
+
+            • preposition: the preposition exactly as it appears ("off of", "into", "up with")
+            • phrase: the chunk from the transcript it lives in ("made a living off of lying")
+            • sense (Korean): the relationship/image + nuance — the WHY, not just "~에서".
+              GOOD: "off of = 출처·기반. 무엇에 '기대어' 살아간다는 이미지 → '~로 먹고살다'"
+              BAD : "off of = ~에서"  ← dictionary gloss, no image, useless.
+
+            Skip the trivial ones (plain "of", obvious time/place "in/on/at"). At most 4.
+            If nothing is worth explaining, return [].
+
             Example output (for a clip "We're going to refactor this class into smaller modules"):
             {
               "grammar_notes": ["'be going to' for planned future action"],
@@ -151,7 +169,10 @@ public final class ClipAnalysisPrompt {
                 "situation": "코드 리뷰에서 팀장이 'UserService가 너무 커져서 테스트가 힘들다'고 말한다. 너의 다음 작업 계획을 한 문장으로 답해야 한다.",
                 "korean_hint": "'refactor this class into smaller modules' 패턴 그대로 써보세요.",
                 "sample_response": "Sounds good — I'm going to refactor this class into smaller modules this sprint."
-              }
+              },
+              "preposition_notes": [
+                {"preposition": "into", "phrase": "refactor this class into smaller modules", "sense": "into = 변형·결과. A를 'B 안으로 바뀌어 들어가게' 만드는 이미지 → 'A를 B로 (바꾸다/나누다)'. to(목적지)와 달리 형태가 바뀜을 함의."}
+              ]
             }
 
             Tone for Korean glosses: 짧고 명확하게. Avoid full sentences.

@@ -23,6 +23,12 @@ export interface PracticeScenario {
   sampleResponse: string;
 }
 
+export interface PrepositionNote {
+  preposition: string;
+  phrase: string;
+  sense: string;
+}
+
 export interface ClipAnalysis {
   id: string;
   clipId: string;
@@ -34,6 +40,7 @@ export interface ClipAnalysis {
   primaryTranslation: string | null;
   chunkedTranslation: ChunkPair[];
   practiceScenario: PracticeScenario | null;
+  prepositionNotes: PrepositionNote[];
   model: string | null;
   generatedAt: string | null;
   errorMessage: string | null;
