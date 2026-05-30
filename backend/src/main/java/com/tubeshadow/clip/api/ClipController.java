@@ -12,8 +12,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,6 +33,7 @@ import java.util.UUID;
 @RequestMapping("/api/clips")
 @Tag(name = "Clip", description = "클립 생성 / 라이브러리 / 조회 / 편집")
 @SecurityRequirement(name = "bearerAuth")
+@Validated  // enables @Size and friends on @RequestParam/@PathVariable
 public class ClipController {
 
     private final ClipService clipService;
@@ -51,7 +54,7 @@ public class ClipController {
     @Operation(summary = "클립 목록 (검색/태그/정렬: newest|oldest|name|duration)")
     public ApiResponse<ClipPageResponse> list(
             @CurrentUser AuthenticatedUser user,
-            @RequestParam(required = false) String q,
+            @RequestParam(required = false) @Size(max = 100, message = "검색어는 100자 이하여야 합니다") String q,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false, defaultValue = "newest") String sort,
             @RequestParam(defaultValue = "0") int page,

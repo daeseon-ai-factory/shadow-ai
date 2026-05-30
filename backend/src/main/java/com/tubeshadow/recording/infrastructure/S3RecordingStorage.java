@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -12,7 +11,6 @@ import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -49,11 +47,11 @@ public class S3RecordingStorage implements RecordingStorage {
     @Override
     public InputStream load(String filePath) throws IOException {
         try {
-            byte[] bytes = s3.getObject(
-                    GetObjectRequest.builder().bucket(bucket).key(filePath).build(),
-                    ResponseTransformer.toBytes()
-            ).asByteArray();
-            return new ByteArrayInputStream(bytes);
+            // Stream straight from S3 rather than buffering the whole object into heap.
+            // getObject(req) returns a ResponseInputStream (an InputStream backed by the
+            // live S3 connection). The caller — RecordingController via InputStreamResource —
+            // closes it after streaming to the client, which releases the connection.
+            return s3.getObject(GetObjectRequest.builder().bucket(bucket).key(filePath).build());
         } catch (NoSuchKeyException ex) {
             throw new IOException("Recording not found in S3: " + filePath, ex);
         }

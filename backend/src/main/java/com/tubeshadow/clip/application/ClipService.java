@@ -54,7 +54,7 @@ public class ClipService {
     @Transactional(readOnly = true)
     public ClipPageResponse list(UUID userId, String query, String tag, String sort, int page, int size) {
         Page<Clip> result = clipRepository.search(
-                userId, query, tag, sort,
+                userId, escapeLike(query), tag, sort,
                 PageRequest.of(page, size));
 
         // Batch video lookup → avoids N+1
@@ -125,6 +125,17 @@ public class ClipService {
         }
         clipRepository.delete(clip);
         events.publishEvent(new ClipDeletedEvent(clipId, userId));
+    }
+
+    /**
+     * Escape LIKE metacharacters so a user's literal {@code %}, {@code _}, or {@code \}
+     * in the search box matches literally instead of acting as a SQL wildcard. Pairs with
+     * the {@code ESCAPE '\'} clause in {@link ClipRepository#search}. Backslash is escaped
+     * first so it doesn't double-escape the metacharacters added after it.
+     */
+    private static String escapeLike(String raw) {
+        if (raw == null) return null;
+        return raw.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 
     private Video requireVideoById(UUID videoId) {

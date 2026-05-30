@@ -21,7 +21,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import java.util.UUID;
 
 /**
- * <p>Async pipeline: when a clip is committed, a background thread runs the Claude
+ * <p>Async pipeline: when a clip is committed, a background thread runs the AI provider
  * call <em>outside</em> any DB transaction (HTTP can take seconds, we must not
  * pin a Hikari connection that long). Only the small bookend writes — create
  * PENDING, then mark READY/FAILED — are wrapped in short transactions.
@@ -37,16 +37,16 @@ public class ClipAnalysisService {
 
     private final ClipRepository clipRepository;
     private final ClipAnalysisRepository analysisRepository;
-    private final AiAnalysisClient claudeClient;
+    private final AiAnalysisClient aiClient;
     private final org.springframework.beans.factory.ObjectProvider<ClipAnalysisService> selfProvider;
 
     public ClipAnalysisService(ClipRepository clipRepository,
                                ClipAnalysisRepository analysisRepository,
-                               AiAnalysisClient claudeClient,
+                               AiAnalysisClient aiClient,
                                org.springframework.beans.factory.ObjectProvider<ClipAnalysisService> selfProvider) {
         this.clipRepository = clipRepository;
         this.analysisRepository = analysisRepository;
-        this.claudeClient = claudeClient;
+        this.aiClient = aiClient;
         this.selfProvider = selfProvider;
     }
 
@@ -84,16 +84,16 @@ public class ClipAnalysisService {
             self().completeWithEmptyTranscript(clipId);
             return;
         }
-        if (!claudeClient.isConfigured()) {
-            log.info("Claude API key absent — skipping analysis for clip {}", clipId);
-            self().completeAsFailed(clipId, "Claude API key not configured");
+        if (!aiClient.isConfigured()) {
+            log.info("AI provider key absent — skipping analysis for clip {}", clipId);
+            self().completeAsFailed(clipId, "AI provider key not configured");
             return;
         }
 
         // 2. Call Claude OUTSIDE the transaction. Slow, network-bound.
         ClaudeClient.AnalysisResult result;
         try {
-            result = claudeClient.analyzeClip(snapshot.transcript);
+            result = aiClient.analyzeClip(snapshot.transcript);
         } catch (Exception ex) {
             log.warn("Analysis failed for clip {}: {}", clipId, ex.getMessage());
             self().completeAsFailed(clipId, ex.getMessage());
@@ -119,7 +119,7 @@ public class ClipAnalysisService {
         ClipAnalysis analysis = analysisRepository.findByClipId(clipId)
                 .orElseGet(() -> ClipAnalysis.pending(clipId));
         analysis.markReady(java.util.List.of(), java.util.List.of(), java.util.List.of(),
-                "Transcript unavailable.", null, java.util.List.of(), null, claudeClient.model());
+                "Transcript unavailable.", null, java.util.List.of(), null, aiClient.model());
         analysisRepository.save(analysis);
     }
 
@@ -137,7 +137,7 @@ public class ClipAnalysisService {
             a.markReady(result.grammarNotes(), result.keyExpressions(),
                     result.vocabulary(), result.contextSummary(),
                     result.primaryTranslation(), result.chunkedTranslation(),
-                    result.practiceScenario(), claudeClient.model());
+                    result.practiceScenario(), aiClient.model());
             analysisRepository.save(a);
         });
     }

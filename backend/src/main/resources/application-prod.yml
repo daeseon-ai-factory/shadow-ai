@@ -34,14 +34,24 @@ logging:
     org.springframework.web: WARN
     org.hibernate.SQL: WARN
 
-# Actuator — health for ALB health checks; metrics endpoint stays private
+# Actuator — only health is exposed over the web in prod (for the load-balancer probe).
+# metrics/info/env stay unexposed so nothing internal leaks publicly. When Micrometer
+# lands (PROD-6), re-expose prometheus behind auth deliberately.
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health
   endpoint:
     health:
       show-details: never
       probes:
         enabled: true
+
+# Disable the API explorer in prod — the OpenAPI schema and Swagger UI shouldn't be
+# publicly reachable on a production deployment.
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

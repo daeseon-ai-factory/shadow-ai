@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/decks")
@@ -54,8 +56,12 @@ public class DeckController {
     @GetMapping
     @Operation(summary = "내 덱 목록 (각 덱의 클립 수 포함)")
     public ApiResponse<List<DeckResponse>> list(@CurrentUser AuthenticatedUser user) {
+        // One grouped query for all deck counts instead of a COUNT per deck (N+1).
+        Map<UUID, Long> counts = clipRepository.countClipsGroupedByDeck(user.id()).stream()
+                .collect(Collectors.toMap(ClipRepository.DeckClipCount::getDeckId,
+                        ClipRepository.DeckClipCount::getCount));
         List<DeckResponse> out = deckService.list(user.id()).stream()
-                .map(d -> DeckResponse.from(d, clipRepository.countByUserIdAndDeckId(user.id(), d.getId())))
+                .map(d -> DeckResponse.from(d, counts.getOrDefault(d.getId(), 0L)))
                 .toList();
         return ApiResponse.ok(out);
     }

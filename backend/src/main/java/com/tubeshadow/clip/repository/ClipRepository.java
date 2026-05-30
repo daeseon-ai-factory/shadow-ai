@@ -36,8 +36,8 @@ public interface ClipRepository extends JpaRepository<Clip, UUID> {
             SELECT * FROM clips c
             WHERE c.user_id = :userId
               AND (:q IS NULL OR :q = '' OR
-                   LOWER(c.name) LIKE LOWER(CONCAT('%', :q, '%')) OR
-                   LOWER(COALESCE(c.transcript, '')) LIKE LOWER(CONCAT('%', :q, '%')))
+                   LOWER(c.name) LIKE LOWER(CONCAT('%', :q, '%')) ESCAPE '\\' OR
+                   LOWER(COALESCE(c.transcript, '')) LIKE LOWER(CONCAT('%', :q, '%')) ESCAPE '\\')
               AND (:tag IS NULL OR :tag = '' OR c.tags @> CAST(CONCAT('["', :tag, '"]') AS jsonb))
             ORDER BY
                 CASE WHEN :sortOrder = 'oldest'  THEN c.created_at END ASC,
@@ -50,8 +50,8 @@ public interface ClipRepository extends JpaRepository<Clip, UUID> {
             SELECT COUNT(*) FROM clips c
             WHERE c.user_id = :userId
               AND (:q IS NULL OR :q = '' OR
-                   LOWER(c.name) LIKE LOWER(CONCAT('%', :q, '%')) OR
-                   LOWER(COALESCE(c.transcript, '')) LIKE LOWER(CONCAT('%', :q, '%')))
+                   LOWER(c.name) LIKE LOWER(CONCAT('%', :q, '%')) ESCAPE '\\' OR
+                   LOWER(COALESCE(c.transcript, '')) LIKE LOWER(CONCAT('%', :q, '%')) ESCAPE '\\')
               AND (:tag IS NULL OR :tag = '' OR c.tags @> CAST(CONCAT('["', :tag, '"]') AS jsonb))
             """,
             nativeQuery = true)
@@ -60,4 +60,19 @@ public interface ClipRepository extends JpaRepository<Clip, UUID> {
                       @Param("tag") String tag,
                       @Param("sortOrder") String sortOrder,
                       Pageable pageable);
+
+    /**
+     * One row per non-empty deck with its clip count, in a single grouped query —
+     * replaces the per-deck COUNT loop in DeckController (N+1). Decks with zero clips
+     * are simply absent from the result; callers default them to 0.
+     */
+    @Query("SELECT c.deckId AS deckId, COUNT(c) AS count FROM Clip c "
+            + "WHERE c.userId = :userId AND c.deckId IS NOT NULL GROUP BY c.deckId")
+    List<DeckClipCount> countClipsGroupedByDeck(@Param("userId") UUID userId);
+
+    /** Projection for {@link #countClipsGroupedByDeck}. */
+    interface DeckClipCount {
+        UUID getDeckId();
+        long getCount();
+    }
 }

@@ -50,7 +50,10 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/actuator/**"
+                                // Only health is public (for load-balancer probes). metrics/env/etc.
+                                // require auth; in prod they're also not exposed at all (see application-prod.yml).
+                                "/actuator/health",
+                                "/actuator/health/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

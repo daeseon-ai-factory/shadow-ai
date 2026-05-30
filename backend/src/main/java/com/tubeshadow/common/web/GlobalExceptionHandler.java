@@ -34,6 +34,19 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail(new ApiResponse.ApiError("VALIDATION_FAILED", message)));
     }
 
+    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(
+            jakarta.validation.ConstraintViolationException ex) {
+        // @Validated on a controller (e.g. @Size on a @RequestParam) throws this rather
+        // than MethodArgumentNotValidException. Without an explicit handler it would 500.
+        String message = ex.getConstraintViolations().stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .collect(Collectors.joining(", "));
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.fail(new ApiResponse.ApiError("VALIDATION_FAILED", message)));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity

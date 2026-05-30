@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -17,13 +18,25 @@ import java.util.UUID;
 @Component
 public class JwtTokenProvider {
 
+    /** Prefix of the dev default in application.yml — long enough to pass the 32-byte check. */
+    private static final String DEV_PLACEHOLDER_PREFIX = "dev-only-secret";
+
     private final SecretKey signingKey;
     private final Duration accessTokenTtl;
 
-    public JwtTokenProvider(JwtProperties properties) {
+    public JwtTokenProvider(JwtProperties properties, Environment environment) {
         byte[] keyBytes = properties.secret().getBytes(StandardCharsets.UTF_8);
         if (keyBytes.length < 32) {
             throw new IllegalStateException("tubeshadow.jwt.secret must be at least 32 bytes for HS256");
+        }
+        // Fail fast rather than silently signing prod tokens with the well-known dev secret.
+        // A forgotten JWT_SECRET env falls back to the dev default (which IS >=32 bytes, so the
+        // length check alone wouldn't catch it) — that key is public in the repo, so anyone
+        // could forge tokens. Only enforced under the 'prod' profile so local dev stays frictionless.
+        if (environment.matchesProfiles("prod") && properties.secret().startsWith(DEV_PLACEHOLDER_PREFIX)) {
+            throw new IllegalStateException(
+                    "Refusing to start under the 'prod' profile with the default dev JWT secret. "
+                            + "Set JWT_SECRET to a strong random value (>=32 bytes).");
         }
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenTtl = Duration.ofSeconds(properties.accessTokenTtlSeconds());
