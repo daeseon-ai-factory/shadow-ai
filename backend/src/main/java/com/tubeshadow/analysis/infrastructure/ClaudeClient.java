@@ -79,12 +79,13 @@ public class ClaudeClient implements AiAnalysisClient {
 
         String raw;
         try {
-            raw = http.post()
+            // Retry transient failures (429 / 5xx / timeout); permanent errors fail fast.
+            raw = AiRetry.withRetry("Claude", () -> http.post()
                     .uri("/v1/messages")
                     .header("x-api-key", props.apiKey())
                     .body(body)
                     .retrieve()
-                    .body(String.class);
+                    .body(String.class));
         } catch (Exception ex) {
             log.error("Claude API call failed", ex);
             throw new BusinessException(HttpStatus.BAD_GATEWAY, "CLAUDE_CALL_FAILED",

@@ -65,9 +65,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        List<String> origins = corsProperties.allowedOrigins() != null && !corsProperties.allowedOrigins().isEmpty()
-                ? corsProperties.allowedOrigins()
-                : List.of("http://localhost:*", "https://*.vercel.app");
+        // allowCredentials(true) + a wildcard origin pattern is a dangerous combo, so we never
+        // fall back to a hardcoded "*.vercel.app" default here. Origins come solely from
+        // tubeshadow.cors.allowed-origins (application.yml ships a localhost+vercel default for
+        // dev; application-prod.yml requires CORS_ALLOWED_ORIGINS with no default → fail-fast).
+        List<String> origins = corsProperties.allowedOrigins();
+        if (origins == null || origins.isEmpty()) {
+            throw new IllegalStateException(
+                    "tubeshadow.cors.allowed-origins is empty — set CORS_ALLOWED_ORIGINS (comma-separated).");
+        }
         config.setAllowedOriginPatterns(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

@@ -87,12 +87,13 @@ public class GeminiClient implements AiAnalysisClient {
 
         String raw;
         try {
-            raw = http.post()
+            // Retry transient failures (429 / 5xx / timeout); permanent errors fail fast.
+            raw = AiRetry.withRetry("Gemini", () -> http.post()
                     .uri("/v1beta/models/{model}:generateContent?key={key}",
                             props.model(), props.apiKey())
                     .body(body)
                     .retrieve()
-                    .body(String.class);
+                    .body(String.class));
         } catch (Exception ex) {
             log.error("Gemini API call failed", ex);
             throw new BusinessException(HttpStatus.BAD_GATEWAY, "GEMINI_CALL_FAILED",
