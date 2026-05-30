@@ -1,0 +1,53 @@
+---
+title: "Adding JWT revocation without a session store: a token_version claim"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Stateless JWTs can't be revoked — so changing your password didn't actually log out a stolen token. Here's the token_version approach: one claim, one column, one indexed lookup per request, and real revocation."
+tags: ["spring-security", "jwt", "auth", "security", "java"]
+---
+
+The audit flagged something that sounds obvious once you say it out loud: **changing your password didn't log anyone out.** TubeShadow uses stateless JWTs with a 24-hour TTL, so a token issued before a password change kept working until it expired — including a stolen one. Password change is the exact thing a user does when they suspect compromise, and it did nothing to the tokens already in the wild.
+
+That's not a bug in the code so much as the default behaviour of stateless JWTs: there's no server-side record to invalidate. The whole point of the pattern is that you *don't* look anything up. So adding revocation means giving up a little of that statelessness — the question is how little.
+
+## The cheapest thing that actually works
+
+A `token_version` integer per user:
+
+- The token carries the version it was minted with, as a `tv` claim.
+- The user row stores the current version (`token_version`, default 0).
+- On every authenticated request, the filter compares the two. Match → authenticated. Mismatch → rejected.
+- Anything that should "log out everywhere" just bumps the user's version. Every older token now mismatches.
+
+```java
+AuthenticatedUser principal = tokenProvider.parse(token);
+Integer current = userRepository.findTokenVersionById(principal.id()).orElse(null);
+if (current != null && current == principal.tokenVersion()) {
+    // authenticate
+} else {
+    SecurityContextHolder.clearContext(); // revoked or user gone
+}
+```
+
+`changePassword` calls `user.revokeExistingTokens()` (which is just `tokenVersion++`). Done. No session table, no Redis denylist, no refresh-token dance.
+
+## The two details that matter
+
+**Don't log everyone out on deploy.** Tokens minted before this change have no `tv` claim. If a missing claim were treated as "version null ≠ 0," every existing session would break the moment I shipped. So a missing `tv` defaults to `0`, and the new column defaults to `0` — old tokens keep matching until they naturally expire. Smooth rollout.
+
+**Be honest about the cost.** This adds one DB read to every authenticated request — a primary-key lookup, and a deliberately narrow one (`select u.tokenVersion ...`, not the whole user). For a study app that's nothing; at large scale you'd cache it. The point is it's a *choice*: I traded a sliver of statelessness for real revocation, and the cost is bounded and named, not hidden.
+
+## Proving it
+
+The test that matters isn't the claim round-trip — it's the end-to-end one: log in, change the password, then try the **old** token against a protected endpoint and assert `401`.
+
+```java
+// change password (bumps token_version) ... then:
+mockMvc.perform(patch("/api/auth/me").header("Authorization", "Bearer " + oldToken) ...)
+       .andExpect(status().isUnauthorized());
+```
+
+Green. Now "change your password" means what users assume it means. (Migration V14, audit ref SEC-2.)

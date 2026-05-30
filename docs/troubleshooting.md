@@ -167,3 +167,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: `AiRetry.withRetry` — 3-attempt linear backoff retrying only transient failures (`HttpClientErrorException.TooManyRequests`, `HttpServerErrorException`, `ResourceAccessException`), permanent errors re-throw immediately; wired into both AI clients (PROD-9). `SecurityConfig` now reads origins solely from `tubeshadow.cors.allowed-origins` and throws on empty instead of falling back to a wildcard (SEC-3) — dev keeps its localhost+vercel default via application.yml; prod requires `CORS_ALLOWED_ORIGINS`.
 - **Commit**: `7c88054`
 - **Pattern**: `allowCredentials(true)` must never pair with a wildcard origin — and a "safe default" that is itself the insecure value defeats the point. Fail closed.
+
+---
+
+## Password change didn't invalidate existing JWTs (audit-found)
+
+- **Symptom** (audit-found): after a user changed their password, a token issued before the change kept working until its 24h expiry — so a leaked/stolen token survived the exact action a user takes to recover from compromise.
+- **Cause** (verified in code): tokens were stateless with no revocation path; `AuthService.changePassword` only swapped the hash. Nothing tied a token's validity to "current" account state.
+- **Fix**: added a `token_version` column (migration V14) and a `"tv"` claim on the token. `JwtAuthenticationFilter` now compares the token's `tv` against the user's current `token_version` (one indexed PK lookup per request) and rejects on mismatch; `changePassword` bumps the version. Tokens predating the claim default to `tv=0`, matching the column default, so deploying doesn't log everyone out. Proven by an end-to-end test (old token → 401 after change).
+- **Commit**: `941369c`
+- **Pattern**: stateless JWTs have no revocation by default. A monotonically-increasing per-user version claim, checked against the DB per request, is the lightweight way to add targeted revocation without a session store — at the cost of one cheap lookup per authenticated request.
