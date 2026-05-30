@@ -117,3 +117,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: added explicit `@ExceptionHandler`s for `HttpMessageNotReadableException` → `400 MALFORMED_REQUEST`, `MethodArgumentTypeMismatchException` → `400 TYPE_MISMATCH` (reports the offending param **name** only, never the raw value/stacktrace), and `MissingServletRequestParameterException` → `400 MISSING_PARAMETER`. The `RuntimeException` catch-all stays as the last-resort 500.
 - **Commit**: `e2defd4`
 - **Pattern**: a `RuntimeException` catch-all in `@RestControllerAdvice` silently swallows Spring MVC's own 4xx exceptions. Handle the framework's client-error exceptions explicitly, or extend `ResponseEntityExceptionHandler`, so a genuine 5xx stays a meaningful signal.
+
+---
+
+## Scope-drift docs RESOLVED: planning docs certified shipped features as out-of-scope
+
+- **Symptom**: `Roadmap.md` §0.4 listed `직독직해 / Korean translation` and `다국어 UI` as ❌ OUT-OF-SCOPE, and `PROGRESS.md` affirmatively certified "11개 항목 모두 미포함" — but both shipped (V10/V11 migrations, `ClipAnalysis` translation fields, next-intl `[locale]` routing). An interviewer reading top-down hits the contradiction before the code.
+- **Cause**: the original finding was logged at `a8dd7dc` (see "README/ROADMAP drift" above) but only the README was corrected then; the planning docs were left stale.
+- **Fix**: added `Roadmap.md` §0.4.1 "스코프 진화 노트" — keeps the original ❌ list as honest MVP history, annotates the two reconsidered items inline, and cites the migrations/E2E that prove they shipped. Rewrote `PROGRESS.md`'s OUT-OF-SCOPE block to "9 still absent, 2 intentionally shipped." Doc-only, no behaviour change. The other 9 OUT-OF-SCOPE items remain genuinely unshipped.
+- **Commit**: `ef860d5`
+- **Pattern**: when you find doc/code drift, fix *every* surface in the same pass — correcting the README but leaving the roadmap stale just relocates the contradiction.
