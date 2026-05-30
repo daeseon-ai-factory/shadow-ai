@@ -59,6 +59,10 @@ local-storage/
 # ---------- Infra local overrides (real AWS account IDs / ARNs — never commit) ----------
 infrastructure/*.local.json
 
+# ---------- Scratch (don't commit brainstorm files at repo root) ----------
+temp.md
+*.tmp
+
 # ---------- Logs ----------
 logs/
 *.log

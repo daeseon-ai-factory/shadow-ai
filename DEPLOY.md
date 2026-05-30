@@ -9,8 +9,10 @@
 | `DATABASE_URL` | JDBC URL | `jdbc:postgresql://host:5432/tubeshadow` |
 | `DATABASE_USERNAME` | DB 사용자 | `tubeshadow` |
 | `DATABASE_PASSWORD` | DB 비밀번호 | `(generated)` |
-| `JWT_SECRET` | JWT 서명 키 (≥32 bytes) | `openssl rand -hex 32` |
-| `ANTHROPIC_API_KEY` | Claude API 키 | `sk-ant-…` |
+| `JWT_SECRET` | JWT 서명 키 (≥32 bytes; prod에서 dev 기본값이면 기동 거부) | `openssl rand -hex 32` |
+| `AI_PROVIDER` | AI 제공자: `gemini`(기본) 또는 `claude` | `gemini` |
+| `GEMINI_API_KEY` | Gemini API 키 (AI_PROVIDER=gemini일 때 필요) | `AIza…` |
+| `ANTHROPIC_API_KEY` | Claude API 키 (AI_PROVIDER=claude일 때 필요) | `sk-ant-…` |
 
 ### 백엔드 선택
 | 변수 | 기본값 |
@@ -18,6 +20,7 @@
 | `SERVER_PORT` | `8080` |
 | `JWT_TTL_SECONDS` | `86400` (1일) |
 | `RECORDING_STORAGE_DIR` | `./local-storage/recordings` |
+| `GEMINI_MODEL` | `gemini-2.5-flash` |
 | `ANTHROPIC_MODEL` | `claude-haiku-4-5-20251001` |
 
 ### 프론트엔드
@@ -46,8 +49,10 @@ docker run -p 8080:8080 \
   -e DATABASE_USERNAME=tubeshadow \
   -e DATABASE_PASSWORD=xxx \
   -e JWT_SECRET="$(openssl rand -hex 32)" \
-  -e ANTHROPIC_API_KEY=sk-ant-xxx \
+  -e AI_PROVIDER=gemini \
+  -e GEMINI_API_KEY=AIza-xxx \
   tubeshadow-backend
+# For Claude instead: -e AI_PROVIDER=claude -e ANTHROPIC_API_KEY=sk-ant-xxx
 ```
 
 Railway/Render는 `Dockerfile`을 자동 감지합니다. 빌드 명령은 따로 설정할 필요 없음.
