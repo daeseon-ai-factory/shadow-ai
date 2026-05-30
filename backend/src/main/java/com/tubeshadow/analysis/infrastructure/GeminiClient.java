@@ -13,9 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,15 @@ public class GeminiClient implements AiAnalysisClient {
     public GeminiClient(GeminiProperties props, ObjectMapper objectMapper) {
         this.props = props;
         this.objectMapper = objectMapper;
+        // LLM calls are slow but must never hang an @Async thread forever. A stalled
+        // provider (Gemini free tier is 15 RPM and throttles) with no read timeout
+        // would block the bounded analysis pool indefinitely. Bound both phases; on
+        // timeout analyzeClip()'s catch marks the analysis FAILED and frees the thread.
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(10));
+        factory.setReadTimeout(Duration.ofSeconds(60));
         this.http = RestClient.builder()
+                .requestFactory(factory)
                 .baseUrl(props.baseUrl())
                 .defaultHeader("content-type", "application/json")
                 .build();

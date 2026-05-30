@@ -62,6 +62,41 @@ public class GlobalExceptionHandler {
                         "이미 존재하는 데이터입니다.")));
     }
 
+    // --- Client errors that are RuntimeExceptions. Without explicit handlers these
+    // fall through to the 500 catch-all below, polluting error dashboards and masking
+    // real server faults. They are all 4xx (the client sent something malformed).
+
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotReadable(
+            org.springframework.http.converter.HttpMessageNotReadableException ex) {
+        // Malformed / empty / unparseable JSON request body.
+        log.debug("Unreadable request body: {}", ex.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.fail(new ApiResponse.ApiError("MALFORMED_REQUEST",
+                        "요청 본문을 읽을 수 없습니다.")));
+    }
+
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex) {
+        // e.g. GET /api/clips/not-a-uuid, ?page=abc. Report the offending parameter name
+        // only — never echo the raw value or leak a stacktrace.
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.fail(new ApiResponse.ApiError("TYPE_MISMATCH",
+                        "'" + ex.getName() + "' 파라미터 형식이 올바르지 않습니다.")));
+    }
+
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingParam(
+            org.springframework.web.bind.MissingServletRequestParameterException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.fail(new ApiResponse.ApiError("MISSING_PARAMETER",
+                        "'" + ex.getParameterName() + "' 파라미터가 필요합니다.")));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Void>> handleUnexpected(RuntimeException ex) {
         log.error("Unhandled exception", ex);

@@ -4,6 +4,12 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 
+  # Drain in-flight HTTP requests and let the @Async pool finish on SIGTERM instead of
+  # killing connections mid-flight. Pairs with AsyncConfig's awaitTermination for clean
+  # zero-downtime rolling deploys (e.g. ECS).
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
   servlet:
     multipart:
       # Match tubeshadow.recording.max-bytes so service-level validation kicks in
@@ -27,6 +33,7 @@ spring:
 server:
   # Render/Fly/Heroku inject PORT; locally SERVER_PORT or 8080.
   port: ${PORT:${SERVER_PORT:8080}}
+  shutdown: graceful
   error:
     include-message: always
 

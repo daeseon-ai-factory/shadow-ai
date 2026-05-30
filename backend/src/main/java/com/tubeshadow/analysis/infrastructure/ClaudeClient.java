@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +36,13 @@ public class ClaudeClient implements AiAnalysisClient {
     public ClaudeClient(ClaudeProperties props, ObjectMapper objectMapper) {
         this.props = props;
         this.objectMapper = objectMapper;
+        // See GeminiClient: bound connect/read so a stalled provider can't pin an
+        // @Async analysis thread forever. On timeout the pipeline marks FAILED.
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(10));
+        factory.setReadTimeout(Duration.ofSeconds(60));
         this.http = RestClient.builder()
+                .requestFactory(factory)
                 .baseUrl(props.baseUrl())
                 .defaultHeader("anthropic-version", "2023-06-01")
                 .defaultHeader("content-type", "application/json")
