@@ -1,0 +1,48 @@
+---
+title: "When the abstraction leaks: AiAnalysisClient returned ClaudeClient.AnalysisResult"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The pluggable AI-provider interface returned a type nested inside one of its implementations — so the 'neutral' abstraction depended on Claude, and Gemini imported Claude to satisfy it. The fix, plus extracting the one service the codebase forgot."
+tags: ["architecture", "refactoring", "spring-boot", "java"]
+---
+
+The provider abstraction looked clean from a distance: `AiAnalysisClient`, two implementations (`GeminiClient`, `ClaudeClient`), chosen at runtime by config. The README even sells it as a pluggable-provider design. Then you read the interface:
+
+```java
+public interface AiAnalysisClient {
+    AiAnalysisResult... no —
+    ClaudeClient.AnalysisResult analyzeClip(String transcript);
+}
+```
+
+The "neutral" interface returned a type **nested inside one of its own implementations**. So `GeminiClient` — the *default* provider — had to `import ClaudeClient` and return `ClaudeClient.AnalysisResult`, and even called `ClaudeClient.parseScenario(...)`. The seam leaked: delete Claude and the abstraction stops compiling. That's not an abstraction, it's two classes with a shared favourite.
+
+And the duplication underneath it: both clients had the same ~40 lines parsing `grammar_notes` / `key_expressions` / `vocabulary` / `primary_translation` / `chunked_translation` / `practice_scenario` out of the model's JSON. The providers genuinely differ only in the *envelope* — Gemini wraps the text in `candidates[0].content.parts[0].text`, Claude concatenates `content[]` text blocks. Everything after "give me the model's text" is identical.
+
+## The fix
+
+Put the shared things at the abstraction's level:
+
+- A top-level `AiAnalysisResult` record (provider-neutral). The interface returns *that*.
+- A shared `AiAnalysisParser`: give it the model's text, get back an `AiAnalysisResult`. Each client keeps only its envelope-unwrap and hands the text over.
+
+```java
+// GeminiClient
+String inner = candidates.get(0).path("content").path("parts").get(0).path("text").asText("");
+return AiAnalysisParser.parse(objectMapper, inner);
+
+// ClaudeClient
+// concatenate content[] text blocks → textBuilder
+return AiAnalysisParser.parse(objectMapper, textBuilder.toString());
+```
+
+Now the interface depends on nothing concrete, Gemini doesn't import Claude, and the parsing lives in exactly one place. (I also caught a stale Javadoc claiming the model was `gemini-1.5-flash` when config has said `2.5-flash` for a while — a small lie that makes a reader doubt the rest.)
+
+## The service the codebase forgot
+
+Same batch, same theme: `CollectionController` was the one controller that held a `@Transactional` and wired three repositories directly, building responses inline — every other domain goes Controller → Service → Repository. Extracted `CollectionService`; the controller is now two delegating methods. And `/me` and `/respond` went from `Map<String,Object>` (untyped, undocumented in OpenAPI) to typed `MeResponse` / `ReviewRespondResponse` records.
+
+Zero behaviour change, full suite green. This is the unglamorous half of "고도화": no new capability, just the codebase telling the truth about its own shape — which is exactly what a reviewer reads first.

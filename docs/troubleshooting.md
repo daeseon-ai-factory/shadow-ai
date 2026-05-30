@@ -197,3 +197,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: `RequestLoggingFilter` (`@Order(HIGHEST_PRECEDENCE)`) stamps a short `requestId` into the MDC + an `X-Request-Id` header, clearing the MDC in `finally`; `JwtAuthenticationFilter` adds `userId` on successful auth. Added `micrometer-registry-prometheus`; `ClipAnalysisService` wraps the AI call in a `Timer` (`tubeshadow.ai.analysis`, tagged `model` + `outcome`) exposed at `/actuator/prometheus` (auth-protected in prod).
 - **Commit**: `eec6176`
 - **Pattern**: declaring MDC keys in the log encoder does nothing on its own — a filter has to populate them, ordered to wrap the whole chain, and clear them in `finally` so pooled threads don't leak context across requests.
+
+---
+
+## AiAnalysisClient leaked a concrete impl's type; CollectionController bypassed the service layer (audit-found)
+
+- **Symptom** (audit-found): the provider abstraction `AiAnalysisClient.analyzeClip` returned `ClaudeClient.AnalysisResult` — so the interface (and the default GeminiClient) depended on a nested type of one concrete implementation. The grammar/expression/vocabulary/translation parsing was also copy-pasted in both clients. Separately, `CollectionController` held a `@Transactional` and orchestrated three repositories directly, the only domain not following Controller→Service→Repository.
+- **Cause** (verified in code): `AnalysisResult` was declared as a nested record inside `ClaudeClient`; `GeminiClient` imported and returned it and even called `ClaudeClient.parseScenario`. No `CollectionService` existed.
+- **Fix**: introduced a top-level provider-neutral `AiAnalysisResult` + a shared `AiAnalysisParser` (both clients extract their envelope's text, then delegate the schema parsing) — removing ~40 lines of duplication and the cross-impl dependency. Extracted `CollectionService` and slimmed the controller to delegation. Also moved `/me` and `/respond` off `Map<String,Object>` to typed DTOs. No behaviour change; full suite green.
+- **Commit**: `843ec87`
+- **Pattern**: an interface that returns `ConcreteImpl.NestedType` isn't an abstraction — the seam leaks. Put the shared return type and the shared parsing at the abstraction's level, and keep only the envelope-specific bits in each implementation.
