@@ -1,0 +1,69 @@
+---
+title: "Hardening the async AI pipeline: timeouts, a bounded pool, graceful shutdown, and honest 4xx"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "A multi-agent audit of the codebase found a classic compound prod-hang: AI HTTP clients with no read timeout running on an unbounded @Async executor, plus a catch-all that turned client errors into 500s. Here's the fix and why each part matters."
+tags: ["spring-boot", "resilience", "async", "observability", "java"]
+---
+
+TubeShadow is feature-complete, so this session wasn't about adding anything — it was **고도화**: taking the existing code from "works on my machine" to "I'd be comfortable putting this in front of a senior interviewer." Before touching anything I ran a multi-dimensional audit of the codebase (security, performance, tests, observability, API contract, frontend, docs), then adversarially verified every finding against the actual code so I wasn't fixing imaginary problems. The first batch came out of that audit.
+
+## The compound failure nobody had hit yet
+
+Three findings turned out to be the same story told three ways.
+
+**1. The AI clients had no read timeout.** `GeminiClient` and `ClaudeClient` built their `RestClient` like this:
+
+```java
+this.http = RestClient.builder()
+        .baseUrl(props.baseUrl())
+        .defaultHeader("content-type", "application/json")
+        .build();
+```
+
+No `requestFactory` means the JDK default, which has **no read timeout**. The irony: `YoutubeMetadataClient` — written earlier, after a real "Connect timed out" incident — already does the right thing with a `SimpleClientHttpRequestFactory`. The AI clients never got the same treatment. Gemini's free tier is 15 requests/minute and throttles; the day it stalls, `analyzeClip()` blocks forever.
+
+**2. That "forever" runs on an unbounded thread pool.** `@EnableAsync` was on the application class with no `TaskExecutor` bean defined. Spring's fallback in that case is `SimpleAsyncTaskExecutor` — a brand-new thread for every task, no ceiling, no queue. Every clip you save fires one async analysis. So the real failure mode isn't "one slow request." It's: provider degrades → every analysis hangs → threads pile up with no limit → memory pressure → the whole app goes down, with not a single `ClipAnalysis` row marked FAILED to show why.
+
+**3. Nothing drained on shutdown.** No `server.shutdown: graceful` anywhere, so a SIGTERM during a rolling deploy severs in-flight HTTP and kills running analyses mid-write, leaving rows stuck PENDING (there's no reaper).
+
+An infinite-timeout call, on an unbounded pool, with no graceful drain. Each one is survivable alone; together they're the textbook prod-hang.
+
+## The fix
+
+Read timeouts, mirroring the client that already got it right:
+
+```java
+SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+factory.setConnectTimeout(Duration.ofSeconds(10));
+factory.setReadTimeout(Duration.ofSeconds(60));
+this.http = RestClient.builder().requestFactory(factory) /* ... */ .build();
+```
+
+On timeout, the pipeline's existing `catch` marks the analysis FAILED and releases the thread — the behaviour that was supposed to exist all along.
+
+A bounded executor (`AsyncConfig implements AsyncConfigurer`), so a burst degrades instead of detonating:
+
+```java
+executor.setCorePoolSize(2);
+executor.setMaxPoolSize(4);
+executor.setQueueCapacity(50);
+executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+executor.setWaitForTasksToCompleteOnShutdown(true);
+executor.setAwaitTerminationSeconds(30);
+```
+
+`CallerRunsPolicy` is the important detail: when the queue saturates, the work runs on the calling thread instead of being dropped silently. Back-pressure, not data loss. And `waitForTasksToCompleteOnShutdown` + `server.shutdown: graceful` + a 30s lifecycle timeout means a rolling deploy drains cleanly.
+
+## The bonus: a catch-all that lied about whose fault it was
+
+While in `GlobalExceptionHandler` I confirmed a fourth finding: an `@ExceptionHandler(RuntimeException.class)` catch-all was swallowing Spring MVC's own client-error exceptions. `GET /api/clips/not-a-uuid` (a `MethodArgumentTypeMismatchException`) and a malformed JSON body (`HttpMessageNotReadableException`) are both `RuntimeException`s — so they fell through to the 500 branch, logging `Unhandled exception` and polluting the dashboard with what were actually *client* mistakes. Added explicit 400 handlers (reporting the offending parameter **name** only, never the raw value), and left the catch-all as the genuine last resort. Now a 500 means a real server fault again.
+
+## Why this is the right kind of "고도화"
+
+None of this is a feature. It's the difference between code that demos and code that survives a bad afternoon for its upstream provider. The resilience trio — bounded pool, timeouts, graceful drain — is exactly the vocabulary a backend interviewer probes for, and now it's not talk, it's in the repo. Tests stayed green (`./gradlew test`, 24s).
+
+Next in the queue: the observability half (request-id MDC + Micrometer on the AI path) and writing the tests this pipeline never had.

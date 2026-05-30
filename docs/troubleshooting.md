@@ -94,3 +94,26 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: treated **code as the source of truth** for the README, not ROADMAP/PROGRESS. Rewrote `README.md` to describe only claims traceable to a migration, domain class, or E2E spec. Left ROADMAP §0.4 untouched — it's an honest historical record of the original MVP scope.
 - **Commit**: `a8dd7dc`
 - **Pattern**: a "source of truth" doc that isn't updated on every pivot becomes a liability — most dangerous exactly when you reach for it to make a public claim. Before repeating any doc's feature claim in a recruiter-facing artifact, grep migrations + domain + E2E specs to confirm it actually shipped.
+
+---
+
+## AI analysis pipeline could hang threads / exhaust the pool (audit-found, latent)
+
+- **Symptom** (latent — surfaced by a codebase audit, not yet observed in prod): a stalled or throttled AI provider would block an analysis thread indefinitely, and a burst of clip imports could spawn unbounded threads.
+- **Cause** (verified in code):
+  - `GeminiClient`/`ClaudeClient` built their `RestClient` with **no `requestFactory`**, so the JDK default has **no read timeout** — unlike `YoutubeMetadataClient`, which already sets one. A hung `analyzeClip()` never returns and never writes a FAILED status.
+  - `@EnableAsync` was on `TubeshadowApplication` with **no `TaskExecutor` bean**, so `@Async` fell back to `SimpleAsyncTaskExecutor` (a new unbounded thread per task). `ClipAnalysisService.onClipCreated` fires one async analysis per clip creation.
+  - No `server.shutdown: graceful` anywhere → SIGTERM during an ECS roll kills in-flight analyses, leaving `ClipAnalysis` rows stuck PENDING (no reaper exists).
+- **Fix**: `GeminiClient`/`ClaudeClient` now use `SimpleClientHttpRequestFactory` (connect 10s, read 60s); on timeout the pipeline's existing catch marks the analysis FAILED and frees the thread. New `common/config/AsyncConfig` defines a bounded `ThreadPoolTaskExecutor` (core 2 / max 4 / queue 50, CallerRuns back-pressure) named `taskExecutor`, draining on shutdown. `application.yml` adds `server.shutdown: graceful` + `spring.lifecycle.timeout-per-shutdown-phase: 30s`.
+- **Commit**: `e2defd4`
+- **Pattern**: every outbound HTTP client needs an explicit read timeout, and `@EnableAsync` without a bounded executor is a thread-exhaustion bomb. Audit the two together — an infinite-timeout call on an unbounded pool is the classic prod-hang compound failure.
+
+---
+
+## Bad UUID / malformed JSON returned 500 instead of 400 (audit-found)
+
+- **Symptom** (audit-found): `GET /api/clips/{a-non-uuid}`, `?page=abc`, or a malformed JSON request body returned `500 INTERNAL_ERROR` with a noisy `Unhandled exception` error log, instead of a 4xx client error.
+- **Cause** (verified in code): `GlobalExceptionHandler` has an `@ExceptionHandler(RuntimeException.class)` catch-all. `MethodArgumentTypeMismatchException` (bad path-var/param) and `HttpMessageNotReadableException` (unparseable body) are both `RuntimeException` with no closer handler, so they fell through to the 500 branch. Reachable from every `@PathVariable UUID` / typed `@RequestParam` endpoint.
+- **Fix**: added explicit `@ExceptionHandler`s for `HttpMessageNotReadableException` → `400 MALFORMED_REQUEST`, `MethodArgumentTypeMismatchException` → `400 TYPE_MISMATCH` (reports the offending param **name** only, never the raw value/stacktrace), and `MissingServletRequestParameterException` → `400 MISSING_PARAMETER`. The `RuntimeException` catch-all stays as the last-resort 500.
+- **Commit**: `e2defd4`
+- **Pattern**: a `RuntimeException` catch-all in `@RestControllerAdvice` silently swallows Spring MVC's own 4xx exceptions. Handle the framework's client-error exceptions explicitly, or extend `ResponseEntityExceptionHandler`, so a genuine 5xx stays a meaningful signal.
