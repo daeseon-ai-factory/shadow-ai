@@ -54,6 +54,10 @@ export default function ReviewPage() {
       reviewApi.respond(id, quality),
     onSuccess: (updated, vars) => {
       queryClient.invalidateQueries({ queryKey: ["review", "streak"] });
+      // Mark every review-queue variant stale so re-entering review / switching decks
+      // refetches, but don't refetch the active queue now — the page walks the loaded
+      // queue by local index, and refetching mid-session would reshuffle under us.
+      queryClient.invalidateQueries({ queryKey: ["review", "queue"], refetchType: "none" });
       // Surface the next due date so the learner knows the clip isn't "lost".
       // The respond payload is the updated ReviewItem with the new dueDate.
       const date = updated?.dueDate ?? "";

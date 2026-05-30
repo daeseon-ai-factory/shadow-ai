@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function Recorder({ onComplete, disabled }: Props) {
+  const t = useTranslations("recording");
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef<number>(0);
@@ -34,7 +36,7 @@ export function Recorder({ onComplete, disabled }: Props) {
 
   const start = useCallback(async () => {
     if (typeof navigator === "undefined" || !navigator.mediaDevices) {
-      toast.error("이 브라우저는 녹음을 지원하지 않습니다");
+      toast.error(t("unsupported"));
       return;
     }
     try {
@@ -58,10 +60,10 @@ export function Recorder({ onComplete, disabled }: Props) {
       setRecording(true);
     } catch (err) {
       setPermissionDenied(true);
-      toast.error("마이크 권한이 필요합니다");
+      toast.error(t("micRequired"));
       console.error(err);
     }
-  }, [onComplete]);
+  }, [onComplete, t]);
 
   const stop = useCallback(() => {
     recorderRef.current?.stop();
@@ -71,7 +73,7 @@ export function Recorder({ onComplete, disabled }: Props) {
   if (permissionDenied) {
     return (
       <p className="text-sm text-red-600">
-        마이크 권한이 거부되었습니다. 브라우저 설정에서 권한을 허용해주세요.
+        {t("micDenied")}
       </p>
     );
   }
@@ -80,17 +82,17 @@ export function Recorder({ onComplete, disabled }: Props) {
     <div className="flex items-center gap-3">
       {!recording ? (
         <Button onClick={start} disabled={disabled} variant="destructive">
-          ● 녹음 시작
+          ● {t("start")}
         </Button>
       ) : (
         <Button onClick={stop} variant="outline">
-          ■ 정지
+          ■ {t("stop")}
         </Button>
       )}
       {recording && (
         <span className="flex items-center gap-2 text-sm text-red-600">
           <span className="inline-block size-2 animate-pulse rounded-full bg-red-600" />
-          녹음 중…
+          {t("inProgress")}
         </span>
       )}
     </div>

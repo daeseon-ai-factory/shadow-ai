@@ -283,7 +283,13 @@
     "uploadedToast": "Recording saved",
     "deletedToast": "Recording deleted",
     "uploadFailed": "Upload failed",
-    "loadFailed": "Could not load recording"
+    "loadFailed": "Could not load recording",
+    "start": "Start recording",
+    "stop": "Stop",
+    "inProgress": "Recording…",
+    "unsupported": "This browser does not support recording",
+    "micRequired": "Microphone permission is required",
+    "micDenied": "Microphone access was denied. Please allow it in your browser settings."
   },
   "analysis": {
     "title": "AI explanation",
@@ -335,7 +341,8 @@
   "globalError": {
     "title": "Something went wrong",
     "retry": "Try again",
-    "toLibrary": "Back to library"
+    "toLibrary": "Back to library",
+    "fallback": "Please try again in a moment."
   },
   "notFound": {
     "pageNotFound": "Page not found.",

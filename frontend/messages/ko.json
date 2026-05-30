@@ -283,7 +283,13 @@
     "uploadedToast": "녹음 저장됨",
     "deletedToast": "녹음 삭제됨",
     "uploadFailed": "업로드 실패",
-    "loadFailed": "녹음 로드 실패"
+    "loadFailed": "녹음 로드 실패",
+    "start": "녹음 시작",
+    "stop": "정지",
+    "inProgress": "녹음 중…",
+    "unsupported": "이 브라우저는 녹음을 지원하지 않습니다",
+    "micRequired": "마이크 권한이 필요합니다",
+    "micDenied": "마이크 권한이 거부되었습니다. 브라우저 설정에서 권한을 허용해주세요."
   },
   "analysis": {
     "title": "AI 설명",
@@ -335,7 +341,8 @@
   "globalError": {
     "title": "문제가 발생했어요",
     "retry": "다시 시도",
-    "toLibrary": "라이브러리로"
+    "toLibrary": "라이브러리로",
+    "fallback": "잠시 후 다시 시도해주세요."
   },
   "notFound": {
     "pageNotFound": "찾으시는 페이지가 없습니다.",
