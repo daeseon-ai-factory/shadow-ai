@@ -177,3 +177,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: added a `token_version` column (migration V14) and a `"tv"` claim on the token. `JwtAuthenticationFilter` now compares the token's `tv` against the user's current `token_version` (one indexed PK lookup per request) and rejects on mismatch; `changePassword` bumps the version. Tokens predating the claim default to `tv=0`, matching the column default, so deploying doesn't log everyone out. Proven by an end-to-end test (old token → 401 after change).
 - **Commit**: `941369c`
 - **Pattern**: stateless JWTs have no revocation by default. A monotonically-increasing per-user version claim, checked against the DB per request, is the lightweight way to add targeted revocation without a session store — at the cost of one cheap lookup per authenticated request.
+
+---
+
+## YouTube import held a DB connection across 2–3 HTTP calls (audit-found)
+
+- **Symptom** (audit-found): `VideoImportService.importByUrl` was `@Transactional` and made oEmbed + yt-dlp probe + transcript HTTP calls inside it, so a Hikari connection was pinned for the entire (multi-second) network round-trip — the same anti-pattern the analysis pipeline already avoids.
+- **Cause** (verified in code): the `@Transactional` on `importByUrl` spanned the whole method including the blocking client calls.
+- **Fix**: removed `@Transactional` from `importByUrl`. The HTTP work now runs with no transaction, and each `videoRepository` find/save runs in its own short Spring-Data-managed transaction. Safe to drop the ambient tx here because `Video` has no lazy associations — `transcript_segments` is a JSONB column, not a lazy collection — so the detached entity from `findByYoutubeId` is fully loaded and can be mutated + merged in `recoverIfNeeded`. Added a comment warning against re-adding the annotation.
+- **Commit**: `d508633`
+- **Pattern**: never hold a DB transaction across a network call. Before removing an ambient `@Transactional`, confirm the entity has no lazy associations (or reload inside the write tx) so detached-entity access doesn't blow up.
