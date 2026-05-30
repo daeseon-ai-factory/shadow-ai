@@ -127,3 +127,23 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: added `Roadmap.md` §0.4.1 "스코프 진화 노트" — keeps the original ❌ list as honest MVP history, annotates the two reconsidered items inline, and cites the migrations/E2E that prove they shipped. Rewrote `PROGRESS.md`'s OUT-OF-SCOPE block to "9 still absent, 2 intentionally shipped." Doc-only, no behaviour change. The other 9 OUT-OF-SCOPE items remain genuinely unshipped.
 - **Commit**: `ef860d5`
 - **Pattern**: when you find doc/code drift, fix *every* surface in the same pass — correcting the README but leaving the roadmap stale just relocates the contradiction.
+
+---
+
+## Prod could boot with the public dev JWT secret + over-exposed actuator (audit-found)
+
+- **Symptom** (audit-found, latent): under the `prod` profile, a missing `JWT_SECRET` env silently fell back to the dev default `dev-only-secret-please-change-in-prod-…`, and `/actuator/**` (incl. `metrics`/`info`) plus Swagger were publicly reachable.
+- **Cause** (verified in code): `application.yml` sets `tubeshadow.jwt.secret: ${JWT_SECRET:dev-only-secret-…}`; that default is >=32 bytes so `JwtTokenProvider`'s length-only check passed it — and the dev secret is committed in the repo, so anyone could forge tokens. `SecurityConfig` permit-listed `/actuator/**`, and `application-prod.yml` exposed `health,info,metrics`.
+- **Fix**: `JwtTokenProvider` now takes `Environment` and throws on startup if the `prod` profile is active and the secret starts with `dev-only-secret` (PROD-4) — two guard tests added. `SecurityConfig` permit-list narrowed to `/actuator/health` + `/actuator/health/**`; prod actuator exposure cut to `health` only and `springdoc.api-docs/swagger-ui.enabled=false` in prod (SEC-1).
+- **Commit**: `e7e45a8`
+- **Pattern**: a length/format check on a secret is not a "is this a real secret" check. Fail-fast on the *known placeholder value* under the prod profile, and never expose actuator/Swagger publicly in prod.
+
+---
+
+## Clip search treated user-typed `%` / `_` as SQL wildcards (audit-found)
+
+- **Symptom** (audit-found): searching the clip library for a literal `%` or `_` matched everything / arbitrary single chars, because the native `LIKE` query interpolated the raw term. No length cap either, so a pathological term hit the DB unbounded.
+- **Cause** (verified in code): `ClipRepository.search` used `LIKE LOWER(CONCAT('%', :q, '%'))` with no `ESCAPE`; `ClipService.list` passed the raw `q`; `ClipController` had no size constraint.
+- **Fix**: escape `\`, `%`, `_` in `ClipService.escapeLike` (backslash first), add `ESCAPE '\'` to all four LIKE clauses, and cap `?q` at 100 chars via `@Validated` + `@Size`. Added a `ConstraintViolationException` → 400 handler so the cap returns a clean 400 instead of falling through to the 500 catch-all.
+- **Commit**: `e7e45a8`
+- **Pattern**: any user string that reaches a `LIKE` needs both metacharacter-escaping (with an explicit `ESCAPE`) and a length bound — escaping without the `ESCAPE` clause silently does nothing on some engines.

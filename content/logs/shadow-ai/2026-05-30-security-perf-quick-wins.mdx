@@ -1,0 +1,47 @@
+---
+title: "Six quick wins from the audit: a forgeable prod secret, an open actuator, and LIKE wildcards"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Second hardening batch: fail-fast on the dev JWT secret in prod, lock down actuator/Swagger, escape search wildcards, kill a Deck N+1, stream S3 recordings, and de-Claude a misleading field name. Small diffs, real risk removed."
+tags: ["spring-boot", "security", "jwt", "performance", "java"]
+---
+
+After the first hardening batch (timeouts + bounded pool + graceful shutdown), the audit's "quick wins" bucket was next: six small, independent fixes, each verified against the actual code before I touched it. None is a feature; all six are the kind of thing that quietly bites in production.
+
+## The one that matters most: a forgeable prod token
+
+`application.yml` ships a dev default for the JWT signing secret:
+
+```yaml
+secret: ${JWT_SECRET:dev-only-secret-please-change-in-prod-this-must-be-long-enough-for-hs256}
+```
+
+That default is **in the public repo**, and it's long enough (>32 bytes) to sail through `JwtTokenProvider`'s only guard — a length check. So if you deploy to prod and forget to set `JWT_SECRET`, the app boots happily and signs every session token with a key anyone can read off GitHub. Token forgery, full account takeover, zero errors in the logs.
+
+A length check answers "is this string big enough for HS256," not "is this an actual secret." So `JwtTokenProvider` now takes `Environment` and refuses to start when it matters:
+
+```java
+if (environment.matchesProfiles("prod") && properties.secret().startsWith(DEV_PLACEHOLDER_PREFIX)) {
+    throw new IllegalStateException(
+        "Refusing to start under the 'prod' profile with the default dev JWT secret. ...");
+}
+```
+
+Only under the `prod` profile, so local dev stays frictionless. Two tests pin it: rejects the placeholder under `prod`, allows it everywhere else. Paired with this, `/actuator/**` was publicly permit-listed (metrics, env, the works) and Swagger was open in prod — narrowed to `/actuator/health` only, with prod exposure cut to `health` and the OpenAPI explorer disabled in prod.
+
+## LIKE wildcards are user input too
+
+Clip search ran `LIKE LOWER(CONCAT('%', :q, '%'))` on the raw query. Type a literal `%` and you match every clip; type `_` and you match any single char. Not a catastrophic injection (it's parameterized, so no SQL execution), but wrong results and an unbounded query. Fixed by escaping `\ % _` (backslash first, so it doesn't double-escape) plus an explicit `ESCAPE '\'` clause, and a 100-char cap via `@Validated` + `@Size`. The cap needed a `ConstraintViolationException → 400` handler — otherwise it'd have thrown a 500, which is exactly the catch-all bug I fixed in batch one.
+
+## The two perf ones
+
+`DeckController` listed decks and ran a `COUNT` query *per deck* — textbook N+1. Replaced with one grouped query (`GROUP BY deck_id`) and a map lookup. And `S3RecordingStorage.load` was reading entire audio files into a `byte[]` before streaming them to the client; now it streams straight from the bucket (`InputStreamResource` closes the connection when done). Heap stops scaling with file size.
+
+## And one bit of honesty
+
+The analysis pipeline held its provider in a field called `claudeClient` — except the default provider is **Gemini**. A reviewer reading that field would conclude the app is Claude-only, which is false and undersells the pluggable design. Renamed to `aiClient`, de-Claude'd the log strings. Cosmetic, but a misleading name is a small lie the code keeps telling.
+
+Tests green (`./gradlew test`, 15s). Next: the high-impact batch (move VideoImport's external fetches out of the transaction, add retry/backoff to the AI path) and then the observability work.
