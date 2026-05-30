@@ -27,16 +27,25 @@
 
 - ❌ 발음 점수 / AI 평가 (Azure Pronunciation Assessment, ELSA 식)
 - ❌ 프로소디 마크업 (강세/연음/인토네이션 시각화)
-- ❌ 직독직해 표시 / Korean translation
+- ❌ 직독직해 표시 / Korean translation  **→ 2026-05 재검토 후 출시됨 (§0.4.1 참조)**
 - ❌ 사용자간 라이브러리 공유 / 소셜 기능
 - ❌ 모바일 네이티브 앱 (iOS/Android) — 웹만
 - ❌ 결제 / 구독 / Stripe 연동
-- ❌ 영어 외 다른 언어
+- ❌ 영어 외 다른 언어 (학습 콘텐츠)
 - ❌ 개발자 외 다른 직종 큐레이션
 - ❌ 자막 없는 영상 Whisper STT (개발자 영상은 99% 자막 있음)
 - ❌ Whisper API 호출 (비용 폭발 가능성)
 - ❌ 자체 STT / 음성 분석
-- ❌ 다국어 UI (한국어 UI 하나로 가도 됨, 또는 영어 하나)
+- ❌ 다국어 UI (한국어 UI 하나로 가도 됨, 또는 영어 하나)  **→ 2026-05 재검토 후 출시됨 (§0.4.1 참조)**
+
+### 0.4.1 스코프 진화 노트 (2026-05)
+
+위 §0.4는 **원래 24h MVP 기준의 정직한 역사 기록**이다. 이후 제품이 sentence-mining 학습 도구로 발전하면서, 위 목록 중 **두 항목이 의도적으로 재검토되어 출시**되었다. 진실의 원천은 코드다:
+
+- **직독직해 / 번역** — sentence mining의 핵심 가치로 판단되어 출시. 근거: 마이그레이션 `V10__clip_analysis_primary_translation`, `V11__clip_analysis_chunked_translation`; 도메인 `ClipAnalysis.primaryTranslation` / `chunkedTranslation`; E2E `primary-translation.spec.ts`, `chunked-translation.spec.ts`.
+- **다국어 UI (i18n)** — 한/영 학습자 UX를 위해 next-intl로 출시. 근거: `frontend/app/[locale]/…` 라우팅 + `next-intl` 로케일.
+
+나머지 §0.4 항목(발음 점수, 프로소디, 결제, **영어 외 학습 콘텐츠**, Whisper/STT, 소셜, 네이티브 앱, 개발자 외 큐레이션)은 **여전히 OUT-OF-SCOPE이며 미출시**다. 새 기능을 제안하기 전, 이 노트 + 마이그레이션 + E2E를 함께 확인해 실제 출시 여부를 검증할 것.
 
 ### 0.5 v0에 반드시 들어가는 것
 - ✅ YouTube URL 임포트 (자막 있는 영상)
