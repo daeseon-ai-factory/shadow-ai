@@ -1,0 +1,24 @@
+---
+title: "Testing the parts that mattered: the AI pipeline, the default parser, and the isolation gates"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "16 source files had tests; 103 didn't. Rather than chase a coverage number, I tested the four things whose failure would hurt most: the async analysis pipeline, the default provider's parser, the SRS streak logic, and the per-user isolation boundaries."
+tags: ["testing", "junit", "mockito", "spring-boot", "java"]
+---
+
+The audit's bluntest finding: 16 test files for 103 source files, and the app's signature feature — the async AI analysis pipeline — had **zero** tests. The wrong response is to chase a coverage percentage. The right one is to ask which untested code, if it broke silently, would do the most damage, and test that.
+
+Four answers:
+
+**1. The async analysis pipeline.** `ClipAnalysisService.runAnalysisPipeline` orchestrates the whole "clip saved → analyze → persist" flow with transactional bookends around a network call and a self-injected proxy for the `@Async` hop. I test it synchronously: stub the self-proxy to return the instance, mock the repos and the provider, and assert the three branches — provider succeeds → analysis marked `READY`; provider not configured → `FAILED` and the provider is *never* called; clip already deleted → short-circuits quietly. The branching *is* the logic; the test pins it.
+
+**2. The default provider's parser.** TubeShadow defaults to Gemini, and `GeminiClient.parseResponse` had no test even though it does the fiddly `candidates → content → parts → text` unwrap and then parses the inner JSON for the sentence-mining fields. I added the round-trip (including `primary_translation` / `chunked_translation`), the markdown-code-fence strip, and — importantly — the **failure contract**: a response truncated mid-string (the real gemini-2.5 thinking-token bug from an earlier log) must surface as a clean `BusinessException`, not a raw Jackson error.
+
+**3. The streak logic.** `computeStreak` is pure and full of off-by-one traps: consecutive days ending today, a gap that breaks the run, the "today not done yet but yesterday was" case that should still show a streak, and the empty/stale → 0 case. It's package-private, so the test lives in the same package and feeds it `LocalDate`s directly — no DB, no mocks, just the logic.
+
+**4. The isolation gates.** The whole product promise is "your library is yours." Two boundaries now have explicit tests: `ReviewService.respond` rejects another user's review item (the `findByIdAndUserId` gate → `NotFoundException`), and `DeckService.moveClip` rejects both a clip you don't own *and* a target deck you don't own. These are the tests I'd want a reviewer to see, because they encode the security model as an assertion, not a hope.
+
+14 tests, all green. Not a coverage trophy — coverage of the things that would actually hurt.
