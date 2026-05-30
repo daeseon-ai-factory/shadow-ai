@@ -245,7 +245,9 @@
     "shortcutAudioOnly": "오디오 모드 토글",
     "prev": "이전",
     "next": "다음",
-    "autoplay": "자동 다음 재생"
+    "autoplay": "자동 다음 재생",
+    "tabChunks": "청크",
+    "chunksCardTitle": "청크 쉐도잉"
   },
   "audioMode": {
     "label": "오디오 모드",
@@ -372,5 +374,18 @@
     "drillWrong": "아쉬워요",
     "drillNext": "다음",
     "drillFromClip": "내 클립에서 →"
+  },
+  "chunkShadow": {
+    "instruction": "각 청크를 소리내어 말한 뒤 다음을 여세요.",
+    "needAnalysis": "먼저 이 클립을 분석하면 청크가 생겨요.",
+    "noChunks": "이 클립엔 청크가 없어요.",
+    "showKorean": "한국어 보기",
+    "hideKorean": "한국어 숨기기",
+    "doneTitle": "문장 전체를 청크로 말했어요 🎉",
+    "restart": "다시",
+    "progress": "{n} / {total}",
+    "prev": "이전",
+    "next": "다음 청크",
+    "finish": "완료"
   }
 }

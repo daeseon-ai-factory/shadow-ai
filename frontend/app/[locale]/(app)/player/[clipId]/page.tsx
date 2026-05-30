@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { YoutubePlayer, type YoutubePlayerHandle } from "@/components/player/YoutubePlayer";
 import { AnalysisPanel } from "@/components/clip/AnalysisPanel";
 import { BlindShadowingPanel } from "@/components/clip/BlindShadowingPanel";
+import { ChunkShadowingPanel } from "@/components/clip/ChunkShadowingPanel";
 import { ClipNote } from "@/components/clip/ClipNote";
 import { RecordingPanel } from "@/components/recording/RecordingPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -298,8 +299,9 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
       </div>
       <div className="space-y-4">
         <Tabs defaultValue="script" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="script">{t("tabScript")}</TabsTrigger>
+            <TabsTrigger value="chunks">{t("tabChunks")}</TabsTrigger>
             <TabsTrigger value="note">{t("tabNote")}</TabsTrigger>
             <TabsTrigger value="ai">{t("tabAi")}</TabsTrigger>
             <TabsTrigger value="record">{t("tabRecord")}</TabsTrigger>
@@ -315,6 +317,16 @@ export default function ClipPlayerPage({ params }: { params: Promise<{ clipId: s
                 ) : (
                   <p className="text-sm text-muted-foreground">{t("transcriptNone")}</p>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="chunks" className="mt-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("chunksCardTitle")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ChunkShadowingPanel clipId={data.id} />
               </CardContent>
             </Card>
           </TabsContent>

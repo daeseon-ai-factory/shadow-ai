@@ -245,7 +245,9 @@
     "shortcutAudioOnly": "Toggle audio-only",
     "prev": "Prev",
     "next": "Next",
-    "autoplay": "Autoplay next"
+    "autoplay": "Autoplay next",
+    "tabChunks": "Chunks",
+    "chunksCardTitle": "Chunk shadowing"
   },
   "audioMode": {
     "label": "Audio mode",
@@ -372,5 +374,18 @@
     "drillWrong": "Not quite",
     "drillNext": "Next",
     "drillFromClip": "from your clip →"
+  },
+  "chunkShadow": {
+    "instruction": "Say each chunk out loud, then reveal the next.",
+    "needAnalysis": "Analyze this clip first to get its chunks.",
+    "noChunks": "No chunks for this clip.",
+    "showKorean": "Show Korean",
+    "hideKorean": "Hide Korean",
+    "doneTitle": "You said the whole sentence in chunks 🎉",
+    "restart": "Restart",
+    "progress": "{n} / {total}",
+    "prev": "Back",
+    "next": "Next chunk",
+    "finish": "Finish"
   }
 }
