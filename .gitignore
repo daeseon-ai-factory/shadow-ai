@@ -56,6 +56,9 @@ recordings/
 uploads/
 local-storage/
 
+# ---------- Infra local overrides (real AWS account IDs / ARNs — never commit) ----------
+infrastructure/*.local.json
+
 # ---------- Logs ----------
 logs/
 *.log
