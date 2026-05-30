@@ -1,31 +1,166 @@
-// Curated core-preposition primer for the study page. English + an animated diagram only —
-// no Korean. The picture carries the spatial meaning; the gloss + examples are English so you
-// learn the preposition the way you'll use it. `key` joins against the user's mined notes and
-// selects the diagram in <PrepositionDiagram />.
+// Curated core-preposition primer. Each preposition has its real, well-established senses
+// (standard ESL / cognitive-linguistics meanings — not invented). A sense gets a diagram
+// ONLY when the diagram honestly depicts it; abstract senses (e.g. "about" = roughly,
+// "on" = concerning) carry no picture rather than a forced one. English only.
+
+export interface PrimerSense {
+  label: string; // short English sense
+  example: string; // real, idiomatic English example
+  diagram?: string; // PrepositionDiagram archetype, omitted when no honest picture fits
+}
 
 export interface PrimerPreposition {
-  key: string; // lowercase match key + diagram selector
-  prep: string; // display form
-  gloss: string; // short English sense
-  examples: string[]; // English examples
+  key: string; // lowercase match key (joins mined notes)
+  prep: string;
+  senses: PrimerSense[];
 }
 
 export const PREPOSITION_PRIMER: PrimerPreposition[] = [
-  { key: "in", prep: "in", gloss: "inside an enclosed space", examples: ["in the room", "in two hours"] },
-  { key: "on", prep: "on", gloss: "touching a surface", examples: ["on the table", "on Monday"] },
-  { key: "at", prep: "at", gloss: "at a single point", examples: ["at the door", "at 3 p.m."] },
-  { key: "to", prep: "to", gloss: "toward a destination", examples: ["go to work", "give it to me"] },
-  { key: "into", prep: "into", gloss: "entering — often becoming", examples: ["walk into the room", "refactor it into modules"] },
-  { key: "out of", prep: "out of", gloss: "from inside to outside", examples: ["get out of the car", "made out of wood"] },
-  { key: "through", prep: "through", gloss: "in one side, out the other", examples: ["walk through the door", "go through the code"] },
-  { key: "over", prep: "over", gloss: "above, arcing across", examples: ["jump over the wall", "talk over coffee"] },
-  { key: "off", prep: "off", gloss: "away from a surface", examples: ["take it off the table", "live off savings"] },
-  { key: "up", prep: "up", gloss: "upward / completely", examples: ["spin up a server", "eat it up"] },
-  { key: "down", prep: "down", gloss: "downward", examples: ["write it down", "calm down"] },
-  { key: "for", prep: "for", gloss: "toward a purpose", examples: ["a gift for you", "wait for the build"] },
-  { key: "with", prep: "with", gloss: "together / using", examples: ["come with me", "cut it with a knife"] },
-  { key: "from", prep: "from", gloss: "away from a source", examples: ["from Seoul", "learn from mistakes"] },
-  { key: "by", prep: "by", gloss: "right beside / by means of", examples: ["by the window", "fix it by Friday"] },
-  { key: "about", prep: "about", gloss: "around a topic", examples: ["talk about it", "about ten people"] },
-  { key: "under", prep: "under", gloss: "below", examples: ["under the desk", "under pressure"] },
+  {
+    key: "in",
+    prep: "in",
+    senses: [
+      { label: "inside an enclosed space", example: "in the room", diagram: "inside" },
+      { label: "within a period of time", example: "in two hours", diagram: "inside" },
+    ],
+  },
+  {
+    key: "on",
+    prep: "on",
+    senses: [
+      { label: "touching a surface", example: "on the table", diagram: "surface" },
+      { label: "on a day or date", example: "on Monday", diagram: "surface" },
+      { label: "about / concerning", example: "a book on AI" },
+    ],
+  },
+  {
+    key: "at",
+    prep: "at",
+    senses: [
+      { label: "at a precise place", example: "at the door", diagram: "point" },
+      { label: "at a precise time", example: "at 3 p.m.", diagram: "point" },
+    ],
+  },
+  {
+    key: "to",
+    prep: "to",
+    senses: [
+      { label: "toward a destination", example: "go to work", diagram: "toward" },
+      { label: "to a recipient", example: "give it to me", diagram: "toward" },
+    ],
+  },
+  {
+    key: "into",
+    prep: "into",
+    senses: [
+      { label: "entering a space", example: "walk into the room", diagram: "enter" },
+      { label: "changing / becoming", example: "turn notes into code", diagram: "enter" },
+    ],
+  },
+  {
+    key: "out of",
+    prep: "out of",
+    senses: [
+      { label: "from inside to outside", example: "get out of the car", diagram: "exit" },
+      { label: "made from a material", example: "made out of wood", diagram: "leaveSource" },
+    ],
+  },
+  {
+    key: "through",
+    prep: "through",
+    senses: [
+      { label: "in one side, out the other", example: "walk through the door", diagram: "through" },
+      { label: "from start to finish", example: "go through the code", diagram: "through" },
+    ],
+  },
+  {
+    key: "over",
+    prep: "over",
+    senses: [
+      { label: "above, arcing across", example: "jump over the wall", diagram: "arcOver" },
+      { label: "covering", example: "a blanket over the bed", diagram: "cover" },
+      { label: "more than", example: "over 100 people", diagram: "moreThan" },
+    ],
+  },
+  {
+    key: "under",
+    prep: "under",
+    senses: [
+      { label: "below", example: "under the desk", diagram: "below" },
+      { label: "less than", example: "under $100", diagram: "lessThan" },
+      { label: "subject to", example: "under pressure" },
+    ],
+  },
+  {
+    key: "off",
+    prep: "off",
+    senses: [
+      { label: "away from a surface", example: "take it off the table", diagram: "awayOff" },
+      { label: "stopped / not on", example: "turn off the light" },
+    ],
+  },
+  {
+    key: "up",
+    prep: "up",
+    senses: [
+      { label: "to a higher position", example: "pick it up", diagram: "upward" },
+      { label: "increasing", example: "turn the volume up", diagram: "upward" },
+    ],
+  },
+  {
+    key: "down",
+    prep: "down",
+    senses: [
+      { label: "to a lower position", example: "sit down", diagram: "downward" },
+      { label: "decreasing", example: "turn it down", diagram: "downward" },
+    ],
+  },
+  {
+    key: "across",
+    prep: "across",
+    senses: [
+      { label: "to the other side", example: "walk across the street", diagram: "across" },
+    ],
+  },
+  {
+    key: "from",
+    prep: "from",
+    senses: [
+      { label: "starting at a source", example: "from Seoul", diagram: "leaveSource" },
+      { label: "the source of something", example: "learn from mistakes", diagram: "leaveSource" },
+    ],
+  },
+  {
+    key: "for",
+    prep: "for",
+    senses: [
+      { label: "intended for someone", example: "a gift for you", diagram: "toward" },
+      { label: "for a length of time", example: "for three days", diagram: "span" },
+    ],
+  },
+  {
+    key: "with",
+    prep: "with",
+    senses: [
+      { label: "together / accompanying", example: "come with me", diagram: "together" },
+      { label: "using (an instrument)", example: "cut it with a knife", diagram: "tool" },
+    ],
+  },
+  {
+    key: "by",
+    prep: "by",
+    senses: [
+      { label: "right beside", example: "by the window", diagram: "beside" },
+      { label: "by means of", example: "by car" },
+      { label: "no later than", example: "finish by Friday" },
+    ],
+  },
+  {
+    key: "about",
+    prep: "about",
+    senses: [
+      { label: "concerning a topic", example: "a talk about AI", diagram: "orbit" },
+      { label: "approximately", example: "about ten people" },
+    ],
+  },
 ];

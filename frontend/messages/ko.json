@@ -357,6 +357,7 @@
     "coreTitle": "핵심 전치사",
     "minedTitle": "내 클립에서 모은 기타 전치사",
     "minedEmpty": "아직 없어요 — 클립을 분석하면 마주친 전치사가 여기에 모입니다.",
-    "fromMyClips": "내 클립에서 ({count})"
+    "fromMyClips": "내 클립에서 ({count})",
+    "senseCount": "뜻 {count}개"
   }
 }

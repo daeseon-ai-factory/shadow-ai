@@ -357,6 +357,7 @@
     "coreTitle": "Core prepositions",
     "minedTitle": "Other prepositions from my clips",
     "minedEmpty": "None yet — analyze a few clips and the prepositions you meet will collect here.",
-    "fromMyClips": "From my clips ({count})"
+    "fromMyClips": "From my clips ({count})",
+    "senseCount": "{count} senses"
   }
 }
