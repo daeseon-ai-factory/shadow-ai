@@ -147,3 +147,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: escape `\`, `%`, `_` in `ClipService.escapeLike` (backslash first), add `ESCAPE '\'` to all four LIKE clauses, and cap `?q` at 100 chars via `@Validated` + `@Size`. Added a `ConstraintViolationException` → 400 handler so the cap returns a clean 400 instead of falling through to the 500 catch-all.
 - **Commit**: `e7e45a8`
 - **Pattern**: any user string that reaches a `LIKE` needs both metacharacter-escaping (with an explicit `ESCAPE`) and a length bound — escaping without the `ESCAPE` clause silently does nothing on some engines.
+
+---
+
+## Hardcoded Korean in Recorder/error boundary + stale review queue after grading (audit-found)
+
+- **Symptom** (audit-found): `Recorder.tsx` (6 strings) and the `(app)` route error boundary rendered hardcoded Korean regardless of the active locale, so an `en` user saw Korean. Separately, grading a review card invalidated only the streak query, leaving the queue (and due counts seen elsewhere) stale.
+- **Cause** (verified in code): the two components never called `useTranslations`; the review `respondMutation.onSuccess` invalidated `["review","streak"]` only. Also discovered: `messages/ja.json`, `zh.json`, `es.json` are NOT real translations — they mirror the English values (e.g. `review.doneTitle` = "Done for today 🎉" in all three), so the repo's "5 locales" claim is really en + ko + 3 English stubs.
+- **Fix**: moved the strings into the `recording` + `globalError` i18n namespaces (en/ko real; ja/zh/es English stubs, matching the existing convention). Review grading now also invalidates `["review","queue"]` with `refetchType: "none"` — marks every queue variant stale for the next mount/deck-switch without refetching the active query, which would reshuffle the in-memory `index` walk underneath the user. The locale-set trim (en+ko only) is deferred to batch 7.
+- **Commit**: `1c4e17b`
+- **Pattern**: `invalidateQueries` defaults to refetching *active* queries — when a screen walks a loaded list by local index, use `refetchType: "none"` to mark-stale-without-refetch so you don't yank the data out from under the current session.
