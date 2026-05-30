@@ -1,0 +1,21 @@
+---
+title: "Chunk-by-chunk shadowing: learning to speak in breaths, not words"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "A Chunks tab in the player reveals a sentence one sense-group at a time. You say each chunk out loud before the next appears — training the habit of speaking in chunks instead of translating Korean word by word."
+tags: ["product", "english-learning", "shadowing", "next.js"]
+---
+
+The owner named the pain exactly: *"when I speak English I don't speak in chunks, I swap Korean words one at a time."* The prepositions work attacked one side of that; this is the other side — output, in chunks.
+
+The clip player already had a blind-shadowing tab (mask the whole transcript to recall it). The new **Chunks** tab is the complement. It uses the 직독직해 chunks the AI already extracts — sense-groups like `so my only goal` / `with this video` / `is to have you` — and reveals them **one at a time**. The current chunk is highlighted; the ones ahead are hidden blocks. You say the visible chunk out loud, hit *Next*, the next chunk appears, and the sentence builds left to right. By the end you've spoken the whole sentence the way a native does — in breaths, not in single-word swaps.
+
+Small choices that matter:
+- **English first.** The Korean gloss is off by default; it's a toggle, not the main event. You're training to produce English, so English leads.
+- **Self-paced, not timestamped.** Chunks have no audio timing, so I didn't fake a synced karaoke. You advance yourself, at speaking speed, with the clip looping in the background for reference. Honest, and actually better for output practice.
+- **Free to build.** It reuses the existing analysis (`chunkedTranslation`) — same React Query cache as the analysis panel, no new endpoint, no migration. If a clip hasn't been analyzed yet, it just says so.
+
+With this, both halves of the original frustration have a tool: **prepositions** (spotlight → study page → drill) and **chunked speaking** (this). The product is starting to answer the exact problem its owner has.
