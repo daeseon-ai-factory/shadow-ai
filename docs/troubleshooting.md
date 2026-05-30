@@ -157,3 +157,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: moved the strings into the `recording` + `globalError` i18n namespaces (en/ko real; ja/zh/es English stubs, matching the existing convention). Review grading now also invalidates `["review","queue"]` with `refetchType: "none"` — marks every queue variant stale for the next mount/deck-switch without refetching the active query, which would reshuffle the in-memory `index` walk underneath the user. The locale-set trim (en+ko only) is deferred to batch 7.
 - **Commit**: `1c4e17b`
 - **Pattern**: `invalidateQueries` defaults to refetching *active* queries — when a screen walks a loaded list by local index, use `refetchType: "none"` to mark-stale-without-refetch so you don't yank the data out from under the current session.
+
+---
+
+## No retry on transient AI failures + credentialed CORS wildcard fallback (audit-found)
+
+- **Symptom** (audit-found): a single 429/5xx/timeout from the AI provider failed the whole analysis with no retry; and `SecurityConfig` fell back to `allowedOriginPatterns(["http://localhost:*","https://*.vercel.app"])` with `allowCredentials(true)` whenever the configured origins were empty.
+- **Cause** (verified in code): the `RestClient` calls had no retry wrapper; `SecurityConfig.corsConfigurationSource` hardcoded that wildcard fallback. A credentialed wildcard means any `*.vercel.app` origin could make authenticated cross-origin requests.
+- **Fix**: `AiRetry.withRetry` — 3-attempt linear backoff retrying only transient failures (`HttpClientErrorException.TooManyRequests`, `HttpServerErrorException`, `ResourceAccessException`), permanent errors re-throw immediately; wired into both AI clients (PROD-9). `SecurityConfig` now reads origins solely from `tubeshadow.cors.allowed-origins` and throws on empty instead of falling back to a wildcard (SEC-3) — dev keeps its localhost+vercel default via application.yml; prod requires `CORS_ALLOWED_ORIGINS`.
+- **Commit**: `7c88054`
+- **Pattern**: `allowCredentials(true)` must never pair with a wildcard origin — and a "safe default" that is itself the insecure value defeats the point. Fail closed.
