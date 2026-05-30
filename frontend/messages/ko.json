@@ -43,7 +43,8 @@
     "settings": "설정",
     "logout": "로그아웃",
     "sessionChecking": "세션 확인 중…",
-    "logoutToast": "로그아웃되었습니다"
+    "logoutToast": "로그아웃되었습니다",
+    "prepositions": "전치사"
   },
   "auth": {
     "signupTitle": "회원가입",
@@ -349,5 +350,13 @@
   "notFound": {
     "pageNotFound": "찾으시는 페이지가 없습니다.",
     "toHome": "홈으로"
+  },
+  "prepositions": {
+    "title": "전치사",
+    "intro": "각 전치사가 나타내는 관계를 감각으로 익히고, 내 클립에서 모은 실제 용례를 함께 보세요.",
+    "coreTitle": "핵심 전치사",
+    "minedTitle": "내 클립에서 모은 기타 전치사",
+    "minedEmpty": "아직 없어요 — 클립을 분석하면 마주친 전치사가 여기에 모입니다.",
+    "fromMyClips": "내 클립에서 ({count})"
   }
 }

@@ -43,7 +43,8 @@
     "settings": "Settings",
     "logout": "Log out",
     "sessionChecking": "Checking session…",
-    "logoutToast": "Logged out"
+    "logoutToast": "Logged out",
+    "prepositions": "Prepositions"
   },
   "auth": {
     "signupTitle": "Sign up",
@@ -349,5 +350,13 @@
   "notFound": {
     "pageNotFound": "Page not found.",
     "toHome": "Home"
+  },
+  "prepositions": {
+    "title": "Prepositions",
+    "intro": "Build intuition for each preposition — the relationship it encodes — and see the ones you mined from your own clips.",
+    "coreTitle": "Core prepositions",
+    "minedTitle": "Other prepositions from my clips",
+    "minedEmpty": "None yet — analyze a few clips and the prepositions you meet will collect here.",
+    "fromMyClips": "From my clips ({count})"
   }
 }

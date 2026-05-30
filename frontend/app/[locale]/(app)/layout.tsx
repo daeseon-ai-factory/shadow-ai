@@ -46,6 +46,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Link href="/library" className="shrink-0 font-semibold tracking-tight">{tCommon("appName")}</Link>
             <NavLink href="/library" active={pathname?.startsWith("/library")}>{t("library")}</NavLink>
             <NavLink href="/review" active={pathname?.startsWith("/review")}>{t("review")}</NavLink>
+            <NavLink href="/prepositions" active={pathname?.startsWith("/prepositions")}>{t("prepositions")}</NavLink>
             <NavLink href="/import" active={pathname?.startsWith("/import")}>{t("import")}</NavLink>
             <NavLink href="/discover" active={pathname?.startsWith("/discover")}>{t("discover")}</NavLink>
           </nav>
