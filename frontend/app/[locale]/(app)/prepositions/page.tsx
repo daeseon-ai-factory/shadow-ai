@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PrepositionDiagram } from "@/components/prepositions/PrepositionDiagram";
 import { PREPOSITION_PRIMER } from "@/lib/prepositions-primer";
 import { prepositionsApi, type MinedPreposition } from "@/lib/api/prepositions";
 
@@ -45,20 +46,15 @@ export default function PrepositionsPage() {
             const group = minedByKey.get(p.key);
             return (
               <Card key={p.key}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-baseline gap-3">
-                    <span className="font-mono text-xl">{p.prep}</span>
-                    <span className="text-sm font-normal text-muted-foreground">{p.sense}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  <p className="leading-relaxed">{p.image}</p>
-                  <ul className="space-y-1">
+                <CardContent className="space-y-3 p-4 text-sm">
+                  <PrepositionDiagram prepKey={p.key} className="h-24 w-full rounded-md bg-muted/20" />
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-mono text-2xl font-semibold tracking-tight">{p.prep}</span>
+                    <span className="text-muted-foreground">{p.gloss}</span>
+                  </div>
+                  <ul className="space-y-0.5 font-mono text-sm">
                     {p.examples.map((ex, i) => (
-                      <li key={i} className="flex flex-wrap items-baseline gap-x-2">
-                        <span className="font-mono">{ex.en}</span>
-                        <span className="text-muted-foreground">— {ex.ko}</span>
-                      </li>
+                      <li key={i}>{ex}</li>
                     ))}
                   </ul>
                   {group && group.occurrences.length > 0 && (
