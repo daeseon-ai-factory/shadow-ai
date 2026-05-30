@@ -1,0 +1,34 @@
+---
+title: "Preposition spotlight: teaching the why, not the gloss"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "A new learning feature: for every meaningful preposition in a clip, the AI explains the relationship it encodes (off of = source you lean on; into = transformation) in Korean — built to fix the habit of guessing prepositions by mapping Korean particles word-by-word."
+tags: ["product", "english-learning", "ai", "spring-boot"]
+---
+
+The pain that prompted this is universal for Korean English speakers: you guess prepositions. `off of`, `into`, `up with`, `through` — you map them to a Korean particle and hope. A dictionary tells you `off = ~에서`, which is exactly the gloss that doesn't help, because prepositions aren't words, they're *relationships*.
+
+So the analysis pipeline now produces a fourth learning lens alongside the existing 직독직해 (chunked translation), key expressions, and practice scenarios: **preposition_notes**. For each preposition worth explaining in a clip, the AI returns:
+
+- the preposition as it appears (`off of`),
+- the phrase it lives in (`made a living off of lying`),
+- and — the point — the **relationship/image** it encodes, in Korean:
+  `off of = 출처·기반. 무엇에 '기대어' 살아간다는 이미지 → '~로 먹고살다'`
+
+The prompt is explicit that a dictionary gloss is a failure (`"off of = ~에서"` is rejected in the examples); it has to be the *why*. `into` isn't "~로", it's "transformation — A reshaped to become B," which is why you `refactor a class into modules` but not `to modules`.
+
+## The build
+
+It's a thin vertical slice on top of the existing provider-neutral analysis:
+
+- **Migration V15** adds `clip_analyses.preposition_notes` (JSONB, nullable — old analyses just show nothing until re-run).
+- A `PrepositionNote {preposition, phrase, sense}` domain record, carried through the shared `AiAnalysisParser` and the neutral `AiAnalysisResult` (so both Gemini and Claude produce it for free), exposed in the response DTO.
+- The player's analysis panel renders a "Prepositions" section; i18n keys added (en/ko real, the other locales English-stubbed, matching the repo's current reality).
+- The prompt gained a `PREPOSITION SPOTLIGHT` block with a good/bad example so the model doesn't regress to dictionary glosses.
+
+Backend suite green, frontend production build green. No new product *category* — this is squarely the existing "in-app AI explanation" value (NORTH STAR §0.3.3), just aimed at the one thing the owner most wanted to stop guessing.
+
+Next: a fill-in drill that blanks these prepositions for active recall, and a chunk-by-chunk shadowing mode for the "speak in breaths, not word-by-word" half of the problem.
