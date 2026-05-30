@@ -358,6 +358,19 @@
     "minedTitle": "내 클립에서 모은 기타 전치사",
     "minedEmpty": "아직 없어요 — 클립을 분석하면 마주친 전치사가 여기에 모입니다.",
     "fromMyClips": "내 클립에서 ({count})",
-    "senseCount": "뜻 {count}개"
+    "senseCount": "뜻 {count}개",
+    "tabBrowse": "둘러보기",
+    "tabDrill": "드릴",
+    "drillEmpty": "아직 항목이 없어요 — 클립을 먼저 분석해보세요.",
+    "drillDone": "완료!",
+    "drillScore": "{correct}/{total} 정답",
+    "drillRestart": "다시",
+    "drillProgress": "{n} / {total}",
+    "drillPlaceholder": "전치사…",
+    "drillCheck": "확인",
+    "drillCorrect": "정답!",
+    "drillWrong": "아쉬워요",
+    "drillNext": "다음",
+    "drillFromClip": "내 클립에서 →"
   }
 }

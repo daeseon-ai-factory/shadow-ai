@@ -7,7 +7,9 @@ import { Link } from "@/i18n/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { PrepositionDiagram } from "@/components/prepositions/PrepositionDiagram";
+import { PrepositionDrill } from "@/components/prepositions/PrepositionDrill";
 import { PREPOSITION_PRIMER, type PrimerSense } from "@/lib/prepositions-primer";
 import { prepositionsApi, type MinedPreposition } from "@/lib/api/prepositions";
 
@@ -54,6 +56,13 @@ export default function PrepositionsPage() {
         <p className="text-sm text-muted-foreground">{t("intro")}</p>
       </header>
 
+      <Tabs defaultValue="browse">
+        <TabsList>
+          <TabsTrigger value="browse">{t("tabBrowse")}</TabsTrigger>
+          <TabsTrigger value="drill">{t("tabDrill")}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="browse" className="space-y-6">
       <section className="space-y-4">
         <h2 className="text-sm font-medium text-muted-foreground">{t("coreTitle")}</h2>
         <div className="space-y-3">
@@ -132,6 +141,12 @@ export default function PrepositionsPage() {
           </div>
         )}
       </section>
+        </TabsContent>
+
+        <TabsContent value="drill">
+          <PrepositionDrill mined={mined ?? []} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

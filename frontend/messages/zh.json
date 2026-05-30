@@ -358,6 +358,19 @@
     "minedTitle": "Other prepositions from my clips",
     "minedEmpty": "None yet — analyze a few clips and the prepositions you meet will collect here.",
     "fromMyClips": "From my clips ({count})",
-    "senseCount": "{count} senses"
+    "senseCount": "{count} senses",
+    "tabBrowse": "Browse",
+    "tabDrill": "Drill",
+    "drillEmpty": "No items yet — analyze a few clips first.",
+    "drillDone": "Done!",
+    "drillScore": "{correct}/{total} correct",
+    "drillRestart": "Restart",
+    "drillProgress": "{n} / {total}",
+    "drillPlaceholder": "preposition…",
+    "drillCheck": "Check",
+    "drillCorrect": "Correct!",
+    "drillWrong": "Not quite",
+    "drillNext": "Next",
+    "drillFromClip": "from your clip →"
   }
 }
