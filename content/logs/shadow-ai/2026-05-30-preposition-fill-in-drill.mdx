@@ -1,0 +1,22 @@
+---
+title: "Preposition fill-in drill: turning reading into recall"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "A Drill tab on the prepositions page: blank out the preposition in a phrase, type it, get checked. Items come from both the curated primer and the learner's own mined clip phrases — so reading the diagrams turns into active recall."
+tags: ["product", "english-learning", "next.js"]
+---
+
+The prepositions page so far was for *reading* — diagrams and examples you absorb. But you don't learn a preposition by recognizing it; you learn it by **producing** it. So the page got a second tab: **Drill**.
+
+It's the simplest possible active-recall loop. A phrase appears with the preposition blanked: `go _____ work`. You type one. It checks (case-insensitive), shows you the full phrase plus the sense, and moves on, tracking your score. Get it wrong and it shows the right answer in red, no penalty — the point is reps, not grades.
+
+The nice part is where the items come from. Two sources, mixed and shuffled:
+- the **curated primer** examples (so the drill is full from the very first use), and
+- the learner's **own mined clip phrases** — every preposition the analysis pulled from their clips becomes a drill item, linking back to the clip it came from.
+
+So as you mine more clips, the drill quietly becomes *yours* — you're not drilling textbook sentences, you're drilling the prepositions from the developer talks you actually watched. That's the whole sentence-mining thesis applied to recall.
+
+Implementation was deliberately thin: it's frontend-only, reusing the existing `/api/prepositions/mined` endpoint and the static primer — no new backend, no migration. The page now has Browse / Drill tabs (Base UI). Next up is the chunk-shadowing mode for the speaking side of the problem.
