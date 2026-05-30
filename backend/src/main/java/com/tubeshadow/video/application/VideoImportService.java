@@ -38,7 +38,16 @@ public class VideoImportService {
         this.probe = probe;
     }
 
-    @Transactional
+    /**
+     * Deliberately NOT {@code @Transactional}: this method makes 2–3 blocking HTTP calls
+     * (oEmbed metadata, yt-dlp probe, transcript fetch) that can take seconds. Wrapping them
+     * in a transaction would pin a Hikari connection for the whole network round-trip. Instead
+     * the network work runs with no transaction, and each {@code videoRepository} find/save
+     * runs in its own short transaction (Spring Data manages them). Video has no lazy
+     * associations (transcript is a JSONB column), so the detached entity returned by
+     * {@code findByYoutubeId} is safe to mutate and re-save in {@link #recoverIfNeeded}.
+     * Do not add {@code @Transactional} back here.
+     */
     public Video importByUrl(String urlOrId) {
         String videoId = YoutubeUrlParser.extractVideoId(urlOrId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST,
