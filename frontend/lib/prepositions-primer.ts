@@ -88,7 +88,7 @@ export const PREPOSITION_PRIMER: PrimerPreposition[] = [
     senses: [
       { label: "below", example: "under the desk", diagram: "below" },
       { label: "less than", example: "under $100", diagram: "lessThan" },
-      { label: "subject to", example: "under pressure" },
+      { label: "subject to", example: "under pressure", diagram: "pressure" },
     ],
   },
   {
@@ -96,7 +96,7 @@ export const PREPOSITION_PRIMER: PrimerPreposition[] = [
     prep: "off",
     senses: [
       { label: "away from a surface", example: "take it off the table", diagram: "awayOff" },
-      { label: "stopped / not on", example: "turn off the light" },
+      { label: "stopped / not on", example: "turn off the light", diagram: "toggle" },
     ],
   },
   {
@@ -152,7 +152,7 @@ export const PREPOSITION_PRIMER: PrimerPreposition[] = [
     senses: [
       { label: "right beside", example: "by the window", diagram: "beside" },
       { label: "by means of", example: "by car" },
-      { label: "no later than", example: "finish by Friday" },
+      { label: "no later than", example: "finish by Friday", diagram: "deadline" },
     ],
   },
   {
@@ -160,7 +160,7 @@ export const PREPOSITION_PRIMER: PrimerPreposition[] = [
     prep: "about",
     senses: [
       { label: "concerning a topic", example: "a talk about AI", diagram: "orbit" },
-      { label: "approximately", example: "about ten people" },
+      { label: "approximately", example: "about ten people", diagram: "range" },
     ],
   },
 ];

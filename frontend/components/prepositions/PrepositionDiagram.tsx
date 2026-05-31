@@ -109,6 +109,37 @@ function content(d: string) {
         <line x1={104} y1={30} x2={104} y2={60} className="stroke-primary/40" strokeWidth={1.5} />
         <Motion path="M16,45 L104,45" dur="3s" />
       </>);
+    case "toggle": // off = stopped / not on (a switch flipping off)
+      return (<>
+        <rect x={38} y={36} width={44} height={18} rx={9} className="fill-primary/15 stroke-primary/40" strokeWidth={1.5} />
+        <circle cy={45} r={7} className="fill-primary">
+          <animate attributeName="cx" values="74;46;46;74" keyTimes="0;0.4;0.8;1" dur="3s" repeatCount="indefinite" calcMode="spline" keySplines={`${EASE};0 0 1 1;${EASE}`} />
+        </circle>
+      </>);
+    case "pressure": // under = subject to ("under pressure" — a weight pressing down)
+      return (<>
+        {Box()}
+        <rect x={48} width={36} height={7} rx={2} className="fill-primary/70">
+          <animate attributeName="y" values="10;22;22;10" keyTimes="0;0.4;0.8;1" dur="3s" repeatCount="indefinite" calcMode="spline" keySplines={`${EASE};0 0 1 1;${EASE}`} />
+        </rect>
+      </>);
+    case "range": // about = approximately (a dot wobbling within a band)
+      return (<>
+        <line x1={12} y1={45} x2={108} y2={45} className="stroke-primary/30" strokeWidth={1.5} />
+        <rect x={46} y={36} width={28} height={18} rx={3} className="fill-primary/12 stroke-primary/40" strokeWidth={1.25} />
+        <circle cy={45} r={6} className="fill-primary">
+          <animate attributeName="cx" values="52;68;52" dur="2.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines={`${EASE};${EASE}`} />
+        </circle>
+      </>);
+    case "deadline": // by = no later than (arrive at/before a point on a timeline)
+      return (<>
+        <line x1={12} y1={52} x2={104} y2={52} className="stroke-primary/40" strokeWidth={1.5} />
+        <line x1={100} y1={28} x2={100} y2={52} className="stroke-primary/50" strokeWidth={1.5} />
+        <path d="M100 28 l12 4 l-12 4 z" className="fill-primary/60" />
+        <circle cy={52} r={6} className="fill-primary">
+          <animate attributeName="cx" values="16;92" dur="2.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;1" keySplines={EASE} />
+        </circle>
+      </>);
     default:
       return (<>{Box()}<Ball cx={66} cy={45} /></>);
   }

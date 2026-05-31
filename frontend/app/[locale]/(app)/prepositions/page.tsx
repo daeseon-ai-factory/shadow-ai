@@ -19,8 +19,10 @@ function SenseTile({ sense }: { sense: PrimerSense }) {
       {sense.diagram ? (
         <PrepositionDiagram diagram={sense.diagram} className="mb-2 h-20 w-full rounded bg-muted/20" />
       ) : (
-        <div className="mb-2 flex h-20 w-full items-center justify-center rounded bg-muted/10 text-xs text-muted-foreground">
-          (abstract sense)
+        <div className="mb-2 flex h-20 w-full items-center justify-center rounded bg-muted/10">
+          <span className="rounded-full border border-dashed border-muted-foreground/40 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+            figurative
+          </span>
         </div>
       )}
       <div className="text-sm font-medium">{sense.label}</div>
