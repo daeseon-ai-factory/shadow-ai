@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -29,13 +29,9 @@ export function ScenarioQuiz({ clipId }: Props) {
     },
   });
 
+  // State resets between clips via a key={clipId} on this component in the parent (review page).
   const [draft, setDraft] = useState("");
   const [checked, setChecked] = useState(false);
-
-  useEffect(() => {
-    setDraft("");
-    setChecked(false);
-  }, [clipId]);
 
   if (isPending) {
     return <p className="text-sm text-muted-foreground">{t("title")}…</p>;

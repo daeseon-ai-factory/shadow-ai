@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -33,16 +33,11 @@ export function WriteQuiz({ clipId, originalEnglish, onChecked }: Props) {
     },
   });
 
+  // State resets between clips via a key={clipId} on this component in the parent (review page)
+  // — see React's "You Might Not Need an Effect"; cleaner than resetting in an effect.
   const [showChunked, setShowChunked] = useState(false);
   const [draft, setDraft] = useState("");
   const [checked, setChecked] = useState(false);
-
-  // Reset between clips
-  useEffect(() => {
-    setDraft("");
-    setChecked(false);
-    setShowChunked(false);
-  }, [clipId]);
 
   if (isPending) {
     return <p className="text-sm text-muted-foreground">{t("title")}…</p>;

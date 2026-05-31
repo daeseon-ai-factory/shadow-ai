@@ -269,10 +269,10 @@ function ReviewCard({
           </div>
         )}
         {mode === "write" && (
-          <WriteQuiz clipId={item.clip.id} originalEnglish={item.clip.transcript} />
+          <WriteQuiz key={item.clip.id} clipId={item.clip.id} originalEnglish={item.clip.transcript} />
         )}
         {mode === "scenario" && (
-          <ScenarioQuiz clipId={item.clip.id} />
+          <ScenarioQuiz key={item.clip.id} clipId={item.clip.id} />
         )}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <Button variant="destructive" disabled={disabled} onClick={() => onRespond(REVIEW_QUALITY.AGAIN)}>

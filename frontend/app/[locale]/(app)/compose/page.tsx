@@ -23,7 +23,7 @@ function buildPool(): Target[] {
 
 export default function ComposePage() {
   const t = useTranslations("compose");
-  const pool = useMemo(buildPool, []);
+  const pool = useMemo(() => buildPool(), []);
   const [idx, setIdx] = useState(0); // start deterministic (no SSR random mismatch); "Next" randomizes
 
   const current = pool[idx];
