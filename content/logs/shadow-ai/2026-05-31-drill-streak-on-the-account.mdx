@@ -1,0 +1,30 @@
+---
+title: "Moving the drill streak off localStorage and onto the account"
+date: "2026-05-31"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The pattern and collocation drills tracked the daily streak in browser localStorage — fine for a personal tool, but it's the exact line between 'my practice' and a product. Added a backend practice slice (one row per user, timezone-correct streak rules as domain behavior) and swapped the frontend to a TanStack Query hook with optimistic reps."
+tags: ["spring-boot", "next.js", "architecture", "postgres", "product"]
+---
+
+A useful question surfaced while looking at the new drills: *how is any of this actually managed right now?* The honest answer was that the app had two tiers living side by side. The clip side — videos, SRS review, mined prepositions — was already **product-grade**: Postgres, tied to the account. The drill side — the daily streak and rep count for patterns and collocations — was **personal-tool-grade**: a few keys in browser `localStorage`. Per-device, anonymous, gone if you clear the cache.
+
+That gap *is* the line between "my practice" and a product. No cross-device sync, and — more importantly for a thing you'd want real users on — no retention signal at all. So the streak moved onto the account.
+
+## Backend
+
+A new `practice` slice, built to mirror the existing `review` convention exactly (entity extends the audited `BaseEntity`, `@CurrentUser AuthenticatedUser` for the principal, `record` DTOs with static `from()`, `ApiResponse.ok`): one `practice_progress` row per user, unique on `user_id`. Two endpoints — `GET /api/practice/progress`, `POST /api/practice/rep`.
+
+The one design decision worth calling out: **whose midnight?** A streak is a daily thing, so "today" matters — and the server's UTC day is not the learner's day. So the client sends its own local calendar date with each request, and the streak rules (advance on a consecutive day, reset after a gap, lapse on read once it's stale) live as domain behavior on the entity, computed against that supplied date. Six Testcontainers integration tests pin the behavior: same-day accumulation, consecutive-day growth, missed-day reset, lapse-on-read, per-user isolation.
+
+(Aside: the backend wouldn't even configure — `spring-boot-gradle-plugin` needs a 17+ launcher and this machine's default JDK is 11. The fix was pointing `JAVA_HOME` at the Homebrew `openjdk@21` keg, which `java_home` doesn't register. Logged in troubleshooting.)
+
+## Frontend
+
+`lib/api/practice.ts` plus a `usePracticeProgress()` hook over TanStack Query: a rep updates the count **optimistically** so the UI is instant, then the server response becomes the source of truth (with rollback on error). `PatternDrill` and `CollocationDrill` dropped the old localStorage module and share the hook — so patterns and collocations still feed **one** streak: any drill rep today counts as practicing.
+
+## On "100k users"
+
+The same conversation raised scaling. Worth stating plainly: the architecture is not the bottleneck at that size. Static drill content is CDN-cheap; one Postgres handles many thousands of accounts. The real constraints for this product are AI cost per analysis and the legal/infra reality of YouTube ingestion — not sharding. The streak-on-the-account change isn't a scaling move; it's the smallest change that makes the drills a *product* feature instead of a personal one. Premature scale infra would have been the wrong build.

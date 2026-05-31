@@ -240,3 +240,17 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Cause**: the audit agent's output schema declared `prep` as a free-form `string`. When the agent had a summary to give ("everything's fine"), it wrote that summary **into the nearest string field** instead of the `changes` array. Schema validation passed because a paragraph *is* a valid string. Grouping the UI by `prep` would have produced one garbage section header.
 - **Fix**: normalize structural/label fields against an allow-list after the workflow returns, before writing the data file — `prep = p if p in VALID else "about"` (the 10 corrupted ones were all the `about` cluster). `e40ed78`. Caught only because the generator script printed `group_by(prep)` counts and one "group" was a paragraph.
 - **Pattern**: a JSON-Schema `string` constrains *type*, not *meaning* — an agent will overload a loosely-typed field with prose it has nowhere else to put. For any field that's really an enum/key/label, declare it as `enum` in the schema, or re-derive/validate it against an allow-list on the way out. Never group or key UI off an un-validated agent-supplied label.
+
+---
+
+## Gradle build fails: "Dependency requires at least JVM runtime version 17. This build uses a Java 11 JVM."
+
+- **Symptom**: `./gradlew compileJava` on the backend dies during configuration:
+```
+> Could not resolve org.springframework.boot:spring-boot-gradle-plugin:3.3.5.
+   > Dependency requires at least JVM runtime version 17. This build uses a Java 11 JVM.
+* Try: > Run this build using a Java 17 or newer JVM.
+```
+- **Cause**: this machine's default JDK (what `/usr/libexec/java_home` returns) is AdoptOpenJDK **11** — the only JDK registered there. The Gradle **launcher** itself needs 17+ to load the Spring Boot 3.x plugin; the project's `toolchain { languageVersion = 21 }` only governs *compilation*, not the launcher JVM, so it can't save you here. A native **JDK 21 does exist** via Homebrew (`/opt/homebrew/opt/openjdk@21`) but isn't on `java_home`'s radar.
+- **Fix**: export `JAVA_HOME` before any gradle command — `export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && ./gradlew …`. Verified: compiles + `PracticeControllerTest` (Testcontainers) goes green. `7729abe`.
+- **Pattern**: Homebrew `openjdk@N` kegs are keg-only and never registered with macOS `java_home`, so `java_home -v 21` won't find them — check `/opt/homebrew/opt/openjdk@*` directly. Any backend gradle invocation in this repo needs `JAVA_HOME` pointed at 21 first.
