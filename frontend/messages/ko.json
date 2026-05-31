@@ -422,7 +422,8 @@
     "cat_articles": "관사·수량",
     "cat_collocations": "동사·형용사 + 전치사",
     "dailyHint": "오늘 due {due}개 · 신규 {new}개",
-    "caughtUp": "✅ 다 잡았어 — 오늘 due 없음. 아래에서 골라 연습하거나 내일 다시."
+    "caughtUp": "✅ 다 잡았어 — 오늘 due 없음. 아래에서 골라 연습하거나 내일 다시.",
+    "listen": "듣기"
   },
   "practice": {
     "title": "연습",
@@ -436,7 +437,9 @@
     "collocationsDesc": "단어+전치사를 한 덩어리로 — depend on, good at, deploy to. 안 멈추고 말하는 가장 빠른 길.",
     "countPatterns": "패턴 {n}개",
     "countPrepositions": "전치사 {n}개",
-    "countCollocations": "청크 {n}개"
+    "countCollocations": "청크 {n}개",
+    "weakTitle": "약점",
+    "weakDesc": "자꾸 틀리는 카드 — 집중할 곳. 드릴할수록 갱신돼."
   },
   "collocations": {
     "title": "콜로케이션",
@@ -461,6 +464,23 @@
     "streakDays": "{n}일 연속",
     "todayReps": "오늘 {n}개",
     "dailyHint": "오늘 due {due}개 · 신규 {new}개",
-    "caughtUp": "✅ 다 잡았어 — 오늘 due 없음. 아래에서 골라 연습하거나 내일 다시."
+    "caughtUp": "✅ 다 잡았어 — 오늘 due 없음. 아래에서 골라 연습하거나 내일 다시.",
+    "listen": "듣기"
+  },
+  "weak": {
+    "title": "약점",
+    "intro": "가장 많이 틀린 드릴 카드. 이미 데일리 드릴에서 더 자주 돌아오지만, 이건 한눈에 보는 X-ray야.",
+    "statSeen": "본 카드",
+    "statLapses": "총 틀림",
+    "statMastered": "마스터",
+    "emptyNoData": "아직 드릴 기록이 없어 — 데일리 드릴 먼저 하면 약점이 여기 모여.",
+    "emptyNoWeak": "✅ 아직 틀린 게 없어. 계속 돌리다 헷갈리는 게 생기면 여기 떠.",
+    "topHeading": "틀린 횟수 Top {n}",
+    "kindPattern": "패턴",
+    "kindCollocation": "콜로케이션",
+    "listen": "듣기",
+    "lapseBadge": "{n}회 틀림",
+    "boxLabel": "박스 {n}",
+    "drillNote": "이것들은 데일리 드릴에 자동으로 다시 나와 (낮은 박스 = 곧 due)."
   }
 }

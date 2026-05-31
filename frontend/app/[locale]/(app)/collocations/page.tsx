@@ -10,11 +10,12 @@ import { COLLOCATIONS, COLLOCATION_DOMAINS, type Collocation, type CollocationDo
 import { CollocationDrill, type ColloDrillEntry } from "@/components/collocations/CollocationDrill";
 import { usePracticeSrsStates } from "@/lib/hooks/use-practice-progress";
 import { buildSession, partition, localToday, shuffle, NEW_PER_DAY } from "@/lib/practice-srs";
+import { collocationKey } from "@/lib/practice-cards";
 
 function entriesFrom(cols: Collocation[]): ColloDrillEntry[] {
   return cols.flatMap((c) =>
     c.items.map((it, i) => ({
-      key: `col:${c.id}#${i}`,
+      key: collocationKey(c.id, i),
       anchor: c.anchor,
       gloss: c.gloss,
       domain: c.domain,

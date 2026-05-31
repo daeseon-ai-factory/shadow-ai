@@ -11,7 +11,7 @@ interface Drill {
   href: string;
   title: string;
   desc: string;
-  count: string;
+  count?: string;
 }
 
 export default function PracticePage() {
@@ -36,6 +36,11 @@ export default function PracticePage() {
       desc: t("collocationsDesc"),
       count: t("countCollocations", { n: COLLOCATIONS.length }),
     },
+    {
+      href: "/weak",
+      title: t("weakTitle"),
+      desc: t("weakDesc"),
+    },
   ];
 
   return (
@@ -52,7 +57,7 @@ export default function PracticePage() {
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-baseline justify-between gap-2">
                   <span>{d.title}</span>
-                  <span className="text-xs font-normal text-muted-foreground">{d.count}</span>
+                  {d.count && <span className="text-xs font-normal text-muted-foreground">{d.count}</span>}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">

@@ -9,11 +9,12 @@ import { PATTERNS, PATTERN_CATEGORIES, type Pattern } from "@/lib/patterns";
 import { PatternDrill, type DrillEntry } from "@/components/patterns/PatternDrill";
 import { usePracticeSrsStates } from "@/lib/hooks/use-practice-progress";
 import { buildSession, partition, localToday, shuffle, NEW_PER_DAY } from "@/lib/practice-srs";
+import { patternKey } from "@/lib/practice-cards";
 
 function entriesFrom(patterns: Pattern[]): DrillEntry[] {
   return patterns.flatMap((p) =>
     p.items.map((it, i) => ({
-      key: `pat:${p.id}#${i}`,
+      key: patternKey(p.id, i),
       category: p.category,
       frame: p.frame,
       gloss: p.gloss,
