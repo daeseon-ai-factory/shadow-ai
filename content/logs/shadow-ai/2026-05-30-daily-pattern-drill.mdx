@@ -1,0 +1,26 @@
+---
+title: "Daily Pattern Drill: forcing the frames you don't use into your mouth"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "Not phrasal verbs — the sentence frames natives use without thinking ('as long as ___', 'I should have + p.p.', 'Have you ever…?'). A daily production drill: see the frame + a meaning, say the English out loud, check a model, mark it, repeat — with a day streak so it actually happens every day."
+tags: ["product", "english-learning", "drill", "next.js"]
+---
+
+The request was specific and emotional: *not* phrasal verbs — the **patterns**. The frames a native uses like breathing — `as long as ___`, `I should have + p.p.`, question forms like `Have you ever…?` and `What if…?` — where the structure stays fixed and you just swap the words inside. And the demand: drill them **hard, every single day**, until they're automatic.
+
+So: a **Pattern Drill**.
+
+The unit is a frame, grouped by category — Questions, Modals & regret, Conditionals, Reactions, Opinions. Each frame carries a few real items: a Korean cue (the meaning to express) and a natural English model. The loop is built for production, not recognition:
+
+1. You see the **frame** (`I should have ___`) and a **Korean cue** (the meaning).
+2. You **say the full English out loud** — that's the rep.
+3. **Reveal** a model answer, **self-mark** Got it / Again, next.
+
+Same frame, new words, fast — the classic substitution drill, which is exactly how you make a pattern automatic. The Korean is only the *prompt*; the answer is always English. Self-marking (not auto-grading) because real production has many right answers — the model is one good one, your ear is the judge.
+
+The piece that makes "every day" real: a **daily rep counter + a day streak** in localStorage, that advances when you practice on a new day and continues if you practiced yesterday. You see `🔥 3-day streak · 18 today`. Streaks are the cheapest, most honest habit mechanic there is.
+
+v1 is curated — I wrote the patterns (real, idiomatic, nothing faked). The natural next step is mining patterns from the user's own clips, the same way the prepositions hub does: the frames you actually hear in the dev talks you watch become the frames you drill. Frontend-only for now; no backend needed to start swinging.
