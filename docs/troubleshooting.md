@@ -267,6 +267,19 @@ GET /ko/collocations → HTTP 404   (but the server was clearly up — / returne
 - **Cause**: two compounding things. (1) The sibling repo `ai-product/motivation` also runs Next on **:3000**, and its dev server had won the port — so requests hit *that* app, which has no `/practice` route → 404. `lsof -nP -iTCP:3000` showed `.../ai-product/motivation/node_modules/.bin/next dev`. (2) Separately, running `npm run build` (`next build`) while `next dev` is live corrupts the shared `.next/` dir and makes the dev server 404 routes it had served fine.
 - **Fix**: pinned shadow-ai's dev/start to port **3100** (`next dev -p 3100`) so it never collides — `85ce604`. When `.next` gets into a bad state: kill the dev server, `rm -rf .next`, restart `npm run dev`. Don't run `next build` against a directory with a live `next dev`.
 - **Pattern**: a 404 on a route you *know* exists, with the server otherwise responding, means you're talking to the wrong server (port collision) or a stale/corrupt `.next` — check `lsof -iTCP:<port>` for *which* app owns the port before debugging routing. Give each local project a distinct fixed port.
+
+---
+
+## CI lint went red on a rule that `tsc` + `next build` don't run
+
+- **Symptom**: GitHub Actions CI failed (and emailed) right after a push, despite local `tsc --noEmit` and `next build` both being clean:
+```
+react-hooks/use-memo  Error: Expected the first argument to be an inline function expression
+✖ 11 problems (1 error, 10 warnings)   Process completed with exit code 1
+```
+- **Cause**: `useMemo(buildPool, [])` passed a function *reference*; Next 16 / eslint-config-next's `react-hooks/use-memo` requires an **inline** function expression. Neither `tsc` nor `next build` runs ESLint, so the local type-check + build passed while CI's `npm run lint` (bare `eslint`, which exits 1 on any error) failed. The same lint also surfaces pre-existing `react-hooks/set-state-in-effect` *warnings* in older files — warnings don't fail `eslint`, only errors do, so those don't block CI.
+- **Fix**: `useMemo(() => buildPool(), [])`. `2258fbf`. Confirmed `npm run lint` → exit 0.
+- **Pattern**: build/type-check passing ≠ lint passing. Next 16's react-hooks rules (`use-memo`, `set-state-in-effect`) flag patterns the compiler happily accepts. Run `npm run lint` locally before pushing — it's exactly what CI gates on.
 <!-- skipped: dfa9fe3 Add log entries for shadow-ai (arch overview + 1 backfill) [no-log] -->
 <!-- skipped: 7353f87 docs(log): hardening — AI rate limit + frontend tests (1b4fd3f) [no-log] -->
 <!-- skipped: 7f93bbe docs(log): AI composition (영작) mode (437afc7) [no-log] -->
