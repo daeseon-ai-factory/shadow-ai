@@ -45,7 +45,8 @@
     "sessionChecking": "Checking session…",
     "logoutToast": "Logged out",
     "prepositions": "Prepositions",
-    "patterns": "Patterns"
+    "patterns": "Patterns",
+    "practice": "Practice"
   },
   "auth": {
     "signupTitle": "Sign up",
@@ -420,5 +421,42 @@
     "cat_passive": "Passive",
     "cat_articles": "Articles & quantifiers",
     "cat_collocations": "Verb/adj + preposition"
+  },
+  "practice": {
+    "title": "Practice",
+    "intro": "Your daily drills — say them out loud until they're automatic. Separate from your video library.",
+    "open": "Open",
+    "patternsTitle": "Patterns",
+    "patternsDesc": "Sentence frames natives use without thinking — the \"as\" family, relative clauses, indirect questions, conditionals, and more.",
+    "prepositionsTitle": "Prepositions",
+    "prepositionsDesc": "Build a feel for each preposition with animated diagrams, plus the ones mined from your own clips.",
+    "collocationsTitle": "Collocations",
+    "collocationsDesc": "Word + preposition learned as one chunk — depend on, good at, deploy to. The fastest path to not pausing.",
+    "countPatterns": "{n} patterns",
+    "countPrepositions": "{n} prepositions",
+    "countCollocations": "{n} chunks"
+  },
+  "collocations": {
+    "title": "Collocations",
+    "intro": "Prepositions you can't reason out — learn the whole \"word + preposition\" as one chunk and say it until it's automatic.",
+    "startDaily": "Start daily drill",
+    "drillThis": "Drill",
+    "filterAll": "All",
+    "filterGeneral": "General",
+    "filterDev": "Dev / IT",
+    "domainGeneral": "General",
+    "domainDev": "Dev / IT",
+    "sayThis": "Say this in English:",
+    "reveal": "Reveal",
+    "markGot": "Got it",
+    "markAgain": "Again",
+    "drillProgress": "{n} / {total}",
+    "drillDone": "Session done!",
+    "drillSummary": "{got}/{total} on the first try",
+    "drillAgain": "Again",
+    "drillExit": "Done",
+    "drillEmpty": "No collocations to drill.",
+    "streakDays": "{n}-day streak",
+    "todayReps": "{n} today"
   }
 }

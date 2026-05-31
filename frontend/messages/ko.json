@@ -45,7 +45,8 @@
     "sessionChecking": "세션 확인 중…",
     "logoutToast": "로그아웃되었습니다",
     "prepositions": "전치사",
-    "patterns": "패턴"
+    "patterns": "패턴",
+    "practice": "연습"
   },
   "auth": {
     "signupTitle": "회원가입",
@@ -420,5 +421,42 @@
     "cat_passive": "수동·사역수동",
     "cat_articles": "관사·수량",
     "cat_collocations": "동사·형용사 + 전치사"
+  },
+  "practice": {
+    "title": "연습",
+    "intro": "매일 소리내어 반복하는 드릴 — 자동으로 나올 때까지. 영상 라이브러리와는 별개야.",
+    "open": "열기",
+    "patternsTitle": "패턴",
+    "patternsDesc": "원어민이 생각 없이 쓰는 문장 틀 — \"as\" 패밀리, 관계절, 간접의문문, 가정법 등.",
+    "prepositionsTitle": "전치사",
+    "prepositionsDesc": "움직이는 그림으로 전치사 감 잡기 + 내 클립에서 캔 전치사.",
+    "collocationsTitle": "콜로케이션",
+    "collocationsDesc": "단어+전치사를 한 덩어리로 — depend on, good at, deploy to. 안 멈추고 말하는 가장 빠른 길.",
+    "countPatterns": "패턴 {n}개",
+    "countPrepositions": "전치사 {n}개",
+    "countCollocations": "청크 {n}개"
+  },
+  "collocations": {
+    "title": "콜로케이션",
+    "intro": "논리로 못 고르는 전치사 — \"단어+전치사\"를 통째로 한 덩어리로 외워서 자동으로 나올 때까지 말해.",
+    "startDaily": "데일리 드릴 시작",
+    "drillThis": "드릴",
+    "filterAll": "전체",
+    "filterGeneral": "일반",
+    "filterDev": "개발 / IT",
+    "domainGeneral": "일반",
+    "domainDev": "개발 / IT",
+    "sayThis": "영어로 말해봐:",
+    "reveal": "정답 보기",
+    "markGot": "됐어",
+    "markAgain": "다시",
+    "drillProgress": "{n} / {total}",
+    "drillDone": "세션 완료!",
+    "drillSummary": "첫 시도에 {got}/{total}",
+    "drillAgain": "다시",
+    "drillExit": "끝내기",
+    "drillEmpty": "드릴할 콜로케이션이 없어.",
+    "streakDays": "{n}일 연속",
+    "todayReps": "오늘 {n}개"
   }
 }
