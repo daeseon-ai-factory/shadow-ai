@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 // Shares the daily streak with the pattern drill: any practice today counts as one streak day.
-import { bumpRep, getDaily } from "@/lib/pattern-progress";
+import { usePracticeProgress } from "@/lib/hooks/use-practice-progress";
 import type { CollocationDomain } from "@/lib/collocations";
 
 export interface ColloDrillEntry {
@@ -21,7 +21,7 @@ export function CollocationDrill({ items, onExit }: { items: ColloDrillEntry[]; 
   const [idx, setIdx] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [got, setGot] = useState(0);
-  const [daily, setDaily] = useState(() => getDaily());
+  const { daily, bumpRep } = usePracticeProgress();
 
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("drillEmpty")}</p>;
 
@@ -29,7 +29,7 @@ export function CollocationDrill({ items, onExit }: { items: ColloDrillEntry[]; 
 
   const answer = (ok: boolean) => {
     if (ok) setGot((g) => g + 1);
-    setDaily(bumpRep());
+    bumpRep();
     setRevealed(false);
     setIdx((i) => i + 1);
   };
