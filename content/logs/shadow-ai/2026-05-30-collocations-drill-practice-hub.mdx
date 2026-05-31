@@ -1,0 +1,33 @@
+---
+title: "Prepositions are two problems: a collocation chunk drill, and a Practice hub to hold it"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "public"
+language: "en"
+summary: "Trying to add a picture to 'made a living off lying' surfaced the real insight: prepositions split into spatial ones (a diagram works) and idiomatic collocations (no logic — learn the whole word+preposition as one chunk). Built a 101-chunk collocation drill, and folded the three standalone drills under one Practice hub to stop the nav from sprawling."
+tags: ["english-learning", "information-architecture", "content", "workflow", "next.js"]
+---
+
+It started with a complaint: a preposition example in the drill, `made a living ___ lying`, didn't fit the animated-diagram model I'd built. The owner's instinct was right, and chasing it gave the real frame:
+
+**Prepositions are two different problems, and mixing them is why they feel impossible.**
+
+1. **Spatial** — `in / on / at / over / under / through`. These have logic; a picture works. ~10 of them, learnable in an afternoon. (That's the existing Prepositions page.)
+2. **Idiomatic collocations** — `depend ON`, `good AT`, `responsible FOR`, `deploy TO`. No logic, no picture: the preposition is fixed by the word in front of it. `make a living off` is this kind — there's no reasoning it out.
+
+The old fill-in-the-blank drill trained "**pick** the preposition." But for the idiomatic majority there's nothing to pick — you either know the chunk or you don't. The fix is to stop treating the preposition as a separate decision and learn `depend-on` as one lexical unit, then **produce it out loud** until it's automatic. Which is exactly the say-it-in-chunks philosophy the pattern drill already runs on.
+
+## The content
+
+101 collocation chunks — 52 general, 49 dev — authored **one agent per preposition** (on, at, in, of, for, to, with, from, about, and a dev-leaning "into" cluster: merge into, opt into, hook into…). Each is an anchor chunk + a short gloss + two example sentences, the Korean cue written in English word order and chunked with " · ".
+
+Given [the accuracy reckoning earlier today](/projects/shadow-ai), generation was immediately followed by a **strict per-cluster audit** in the same pipeline. It applied 16 corrections — the sharpest being `points to` vs `points at` (DNS/config *point to*; you don't *point at* a server), plus cue word-order and Korean-particle fixes.
+
+One bug worth remembering: the audit agent stuffed a whole "everything's fine" paragraph **into the `prep` label field** of one cluster, and silently relabeled another. A JSON-Schema `string` validates type, not meaning — so I normalized every label against an allow-list before writing the data file. Lesson logged: never key UI off an un-validated agent-supplied label.
+
+## The hub
+
+Adding Collocations would have made a **seventh** top-nav item. But the menu was already conflating two things: the **YouTube loop** (Discover → Import → Library → Review) and the **standalone drills** (Patterns, Prepositions, Collocations) — which are explicitly *not* tied to any video. So the three drills now live under one **Practice** hub, and IT collocations are a `Dev / IT` filter inside Collocations rather than their own menu. Top nav went from 6 items to 5, and there's finally a clean home for the next drill.
+
+Spatial prepositions get a picture; idiomatic ones get your mouth. Two problems, two methods, one Practice tab.

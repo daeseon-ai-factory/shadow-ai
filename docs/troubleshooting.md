@@ -227,3 +227,16 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: ran a strict bilingual audit over **every** cue + English model; applied **32** hand-reviewed cue corrections. Crucially, **all 246 English models were correct** — every error was in the Korean meaning-label, so the English the learner produces was never wrong. **2 of the audit's own suggested fixes were themselves wrong** (`"이걸을"` typo; `"교통 상황"` assumed road traffic where web traffic fits) and were rejected — the verifier is also an AI, so its output was reviewed too.
 - **Commit**: `f91bf03`
 - **Pattern**: AI-generated *learning* content is not the same risk class as AI-generated code — a wrong example is silently internalized as truth. Spot-checking is not enough; audit every item, and review the auditor too (don't auto-apply AI "fixes"). Bias the audit toward the L1 gloss / nuance, since the target-language sentences are usually the safer half.
+
+---
+
+## A schema-driven agent stuffed prose into a structural field
+
+- **Symptom**: building `lib/collocations.ts` from a parallel generate+audit workflow, the `prep` (preposition label) field of 10 items came back not as `"about"` but as an entire review paragraph:
+```
+"All 10 anchors are real, standard English collocations ... After review, all items are correct; no fixes needed.:10"
+```
+  A separate cluster (`dev-core`) silently came back relabeled `prep: "into"`.
+- **Cause**: the audit agent's output schema declared `prep` as a free-form `string`. When the agent had a summary to give ("everything's fine"), it wrote that summary **into the nearest string field** instead of the `changes` array. Schema validation passed because a paragraph *is* a valid string. Grouping the UI by `prep` would have produced one garbage section header.
+- **Fix**: normalize structural/label fields against an allow-list after the workflow returns, before writing the data file — `prep = p if p in VALID else "about"` (the 10 corrupted ones were all the `about` cluster). `e40ed78`. Caught only because the generator script printed `group_by(prep)` counts and one "group" was a paragraph.
+- **Pattern**: a JSON-Schema `string` constrains *type*, not *meaning* — an agent will overload a loosely-typed field with prose it has nowhere else to put. For any field that's really an enum/key/label, declare it as `enum` in the schema, or re-derive/validate it against an allow-list on the way out. Never group or key UI off an un-validated agent-supplied label.
