@@ -1,0 +1,20 @@
+---
+title: "Two honest gaps after a feature sprint: a cost-guard on the AI endpoint and frontend tests"
+date: "2026-05-31"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Asked 'is there anything left to harden?', the honest answer was two real things, not busywork: the one AI-cost endpoint had no rate limit, and the frontend logic shipped this session had no tests. Both closed."
+tags: ["spring-boot", "next.js", "security", "testing", "hardening"]
+---
+
+After a run of features (collocations, SRS, weak-spots, TTS, AI composition), the question was whether anything genuinely needed hardening or whether it was done. The honest answer was two real gaps — and naming them mattered more than inventing a third.
+
+**The AI endpoint had no cost guard.** `/api/practice/compose/check` is the one authenticated endpoint that costs a real provider call. But the app's rate limiter only covered `/api/auth/signup` and `/api/auth/login` — so a logged-in user (or a runaway client loop) could hammer the compose endpoint and run up the Gemini bill. That's a real hole, especially right before adding a real API key and deploying.
+
+Fix: a `ComposeRateLimitInterceptor` — the same fixed-window approach as the auth limiter, but keyed by the **authenticated user id** (the auth one is per-IP, since signup/login are anonymous; here the principal is available because interceptors run after the JWT filter). 15/min by default, registered only on the compose path. The existing auth limiter was left untouched. Verified three ways: a unit test (16th request → 429, separate buckets per user), the full-context integration tests (so the wiring is exercised), and a live run — firing 17 requests returned `503 ×15` (no key, reaching the controller) then `429 429` (blocked at the interceptor, before the controller). Exactly right.
+
+**The frontend logic had no tests.** The backend is well-covered (Testcontainers + unit), but everything shipped on the frontend this session — the SRS session builder, the card-key index — had zero tests. The session logic is pure functions, which is the easy, high-value place to start: `partition` (due vs new vs seen-but-future), `buildSession` (due-first, new capped at the daily limit), `shuffle` (non-mutating), and `cardIndex` (every card key maps back to its content — the thing that would silently break the weak-spots view if a key format drifted). Frontend suite went from 3 files to 5, 29 tests.
+
+Neither was glamorous, and that's the point: when someone asks "anything left to harden?", the useful answer names the two things that are actually load-bearing — a cost/abuse hole and an untested core — not a backlog of polish.
