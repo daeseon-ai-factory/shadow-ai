@@ -44,7 +44,8 @@
     "logout": "Log out",
     "sessionChecking": "Checking session…",
     "logoutToast": "Logged out",
-    "prepositions": "Prepositions"
+    "prepositions": "Prepositions",
+    "patterns": "Patterns"
   },
   "auth": {
     "signupTitle": "Sign up",
@@ -387,5 +388,28 @@
     "prev": "Back",
     "next": "Next chunk",
     "finish": "Finish"
+  },
+  "patterns": {
+    "title": "Patterns",
+    "intro": "Drill the sentence frames natives use without thinking. Say each one out loud, every day, until it is automatic.",
+    "startDaily": "Start daily drill",
+    "drillThis": "Drill",
+    "cat_questions": "Questions",
+    "cat_modals": "Modals & regret",
+    "cat_conditionals": "Conditionals",
+    "cat_reactions": "Reactions",
+    "cat_opinions": "Opinions & hedging",
+    "sayThis": "Say this in English:",
+    "reveal": "Reveal",
+    "markGot": "Got it",
+    "markAgain": "Again",
+    "drillProgress": "{n} / {total}",
+    "drillDone": "Session done!",
+    "drillSummary": "{got}/{total} on the first try",
+    "drillAgain": "Again",
+    "drillExit": "Done",
+    "drillEmpty": "No patterns to drill.",
+    "streakDays": "{n}-day streak",
+    "todayReps": "{n} today"
   }
 }

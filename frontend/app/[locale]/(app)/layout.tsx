@@ -47,6 +47,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <NavLink href="/library" active={pathname?.startsWith("/library")}>{t("library")}</NavLink>
             <NavLink href="/review" active={pathname?.startsWith("/review")}>{t("review")}</NavLink>
             <NavLink href="/prepositions" active={pathname?.startsWith("/prepositions")}>{t("prepositions")}</NavLink>
+            <NavLink href="/patterns" active={pathname?.startsWith("/patterns")}>{t("patterns")}</NavLink>
             <NavLink href="/import" active={pathname?.startsWith("/import")}>{t("import")}</NavLink>
             <NavLink href="/discover" active={pathname?.startsWith("/discover")}>{t("discover")}</NavLink>
           </nav>

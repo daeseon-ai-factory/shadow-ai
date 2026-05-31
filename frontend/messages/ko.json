@@ -44,7 +44,8 @@
     "logout": "로그아웃",
     "sessionChecking": "세션 확인 중…",
     "logoutToast": "로그아웃되었습니다",
-    "prepositions": "전치사"
+    "prepositions": "전치사",
+    "patterns": "패턴"
   },
   "auth": {
     "signupTitle": "회원가입",
@@ -387,5 +388,28 @@
     "prev": "이전",
     "next": "다음 청크",
     "finish": "완료"
+  },
+  "patterns": {
+    "title": "패턴",
+    "intro": "원어민이 무의식적으로 쓰는 문장 패턴을 매일 소리내어 반복해서 입에 붙이세요.",
+    "startDaily": "오늘 드릴 시작",
+    "drillThis": "드릴",
+    "cat_questions": "의문문",
+    "cat_modals": "조동사·후회",
+    "cat_conditionals": "조건문",
+    "cat_reactions": "리액션",
+    "cat_opinions": "의견·완곡",
+    "sayThis": "영어로 말해보세요:",
+    "reveal": "정답 보기",
+    "markGot": "됐어",
+    "markAgain": "다시",
+    "drillProgress": "{n} / {total}",
+    "drillDone": "세션 완료!",
+    "drillSummary": "첫 시도에 {got}/{total}",
+    "drillAgain": "다시",
+    "drillExit": "끝내기",
+    "drillEmpty": "드릴할 패턴이 없어요.",
+    "streakDays": "{n}일 연속",
+    "todayReps": "오늘 {n}회"
   }
 }
