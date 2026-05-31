@@ -410,6 +410,15 @@
     "drillExit": "끝내기",
     "drillEmpty": "드릴할 패턴이 없어요.",
     "streakDays": "{n}일 연속",
-    "todayReps": "오늘 {n}회"
+    "todayReps": "오늘 {n}회",
+    "cat_asfamily": "as 패밀리",
+    "cat_comparatives": "비교급·최상급",
+    "cat_relatives": "관계대명사",
+    "cat_tense": "시제·상",
+    "cat_verbpatterns": "동사 패턴",
+    "cat_connectors": "연결어",
+    "cat_passive": "수동·사역수동",
+    "cat_articles": "관사·수량",
+    "cat_collocations": "동사·형용사 + 전치사"
   }
 }
