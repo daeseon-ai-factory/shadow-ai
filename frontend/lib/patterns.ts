@@ -31,7 +31,7 @@ export const PATTERNS: Pattern[] = [
         "model": "Did you already review this PR?"
       },
       {
-        "cue": "너 배포했어? · 그걸 · 스테이징에 · 벌써",
+        "cue": "너 배포했어? · 그걸 · 스테이징에 · 이제",
         "model": "Have you deployed it to staging yet?"
       },
       {
