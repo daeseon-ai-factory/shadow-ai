@@ -254,3 +254,16 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Cause**: this machine's default JDK (what `/usr/libexec/java_home` returns) is AdoptOpenJDK **11** — the only JDK registered there. The Gradle **launcher** itself needs 17+ to load the Spring Boot 3.x plugin; the project's `toolchain { languageVersion = 21 }` only governs *compilation*, not the launcher JVM, so it can't save you here. A native **JDK 21 does exist** via Homebrew (`/opt/homebrew/opt/openjdk@21`) but isn't on `java_home`'s radar.
 - **Fix**: export `JAVA_HOME` before any gradle command — `export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && ./gradlew …`. Verified: compiles + `PracticeControllerTest` (Testcontainers) goes green. `7729abe`.
 - **Pattern**: Homebrew `openjdk@N` kegs are keg-only and never registered with macOS `java_home`, so `java_home -v 21` won't find them — check `/opt/homebrew/opt/openjdk@*` directly. Any backend gradle invocation in this repo needs `JAVA_HOME` pointed at 21 first.
+
+---
+
+## Frontend pages 404 in dev (port stolen by a sibling project; .next corrupted by a concurrent build)
+
+- **Symptom**: every locale route 404'd in dev even though the routes exist:
+```
+GET /ko/practice → HTTP 404
+GET /ko/collocations → HTTP 404   (but the server was clearly up — / returned 307)
+```
+- **Cause**: two compounding things. (1) The sibling repo `ai-product/motivation` also runs Next on **:3000**, and its dev server had won the port — so requests hit *that* app, which has no `/practice` route → 404. `lsof -nP -iTCP:3000` showed `.../ai-product/motivation/node_modules/.bin/next dev`. (2) Separately, running `npm run build` (`next build`) while `next dev` is live corrupts the shared `.next/` dir and makes the dev server 404 routes it had served fine.
+- **Fix**: pinned shadow-ai's dev/start to port **3100** (`next dev -p 3100`) so it never collides — `85ce604`. When `.next` gets into a bad state: kill the dev server, `rm -rf .next`, restart `npm run dev`. Don't run `next build` against a directory with a live `next dev`.
+- **Pattern**: a 404 on a route you *know* exists, with the server otherwise responding, means you're talking to the wrong server (port collision) or a stale/corrupt `.next` — check `lsof -iTCP:<port>` for *which* app owns the port before debugging routing. Give each local project a distinct fixed port.

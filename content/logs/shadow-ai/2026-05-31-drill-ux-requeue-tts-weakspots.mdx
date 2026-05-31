@@ -1,0 +1,20 @@
+---
+title: "Three drill upgrades: in-session requeue, spoken models, and a weak-spots view"
+date: "2026-05-31"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "On top of the spaced-repetition drills: cards you miss now reappear within the same session, the model sentence is spoken aloud so you can shadow it, and a weak-spots dashboard surfaces what you keep getting wrong — all from data the daily grade already collects."
+tags: ["next.js", "spaced-repetition", "learning", "ux"]
+---
+
+With SRS persisting on the account, three quick upgrades made the drill loop noticeably better to actually use every day.
+
+**In-session requeue.** Hitting *Again* now pushes that card to the end of the current session, so you keep meeting it until it sticks — instead of moving on and not seeing it for a day. The subtlety: SRS still scores only the **first attempt** per card in a session. So the Leitner box reflects genuine recall, not in-session grinding; the requeue is pure reinforcement and doesn't inflate your stats.
+
+**Spoken models (TTS).** The drills were text-only, which is odd for a shadowing tool. The model sentence is now spoken on reveal via the browser's Web Speech API — free, no key, slightly slowed for shadowing — with a 🔊 replay button. Hear it, say it.
+
+**Weak-spots dashboard.** A new `/weak` view (linked from the Practice hub) lists the cards you miss most, sorted by lapses, with seen / total-misses / mastered stats across the deck. It's deliberately **read-only**: the daily grade already records every miss, and low-box cards already come back sooner on their own — so this is the X-ray, not another thing to manage. A new `lib/practice-cards.ts` became the single source of truth for card keys, so the drill pages and the dashboard can't disagree about what a key means.
+
+A dev-environment note worth recording (it cost real time, twice): every locale route started 404'ing in dev. Cause was nothing in the code — a **sibling Next project squatted on :3000**, so requests were hitting the wrong app, and a stray `next build` against the live dev server had corrupted `.next`. Fixed by pinning this app to port **3100** and clearing `.next`. When a route you *know* exists 404s but the server still answers, check *which* app owns the port before touching routing.
