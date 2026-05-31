@@ -114,6 +114,48 @@ public class ClaudeClient implements AiAnalysisClient {
     }
 
     @Override
+    public String complete(String systemPrompt, String userPrompt) {
+        if (!isConfigured()) {
+            throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "CLAUDE_NOT_CONFIGURED",
+                    "Anthropic API key가 설정되지 않았습니다");
+        }
+        Map<String, Object> body = Map.of(
+                "model", props.model(),
+                "max_tokens", 600,
+                "system", List.of(Map.of("type", "text", "text", systemPrompt)),
+                "messages", List.of(Map.of(
+                        "role", "user",
+                        "content", List.of(Map.of("type", "text", "text", userPrompt))))
+        );
+        String raw;
+        try {
+            raw = AiRetry.withRetry("Claude", () -> http.post()
+                    .uri("/v1/messages")
+                    .header("x-api-key", props.apiKey())
+                    .body(body)
+                    .retrieve()
+                    .body(String.class));
+        } catch (Exception ex) {
+            log.error("Claude completion failed", ex);
+            throw new BusinessException(HttpStatus.BAD_GATEWAY, "CLAUDE_CALL_FAILED",
+                    "Claude 호출 실패: " + ex.getMessage());
+        }
+        try {
+            JsonNode root = objectMapper.readTree(raw);
+            StringBuilder sb = new StringBuilder();
+            for (JsonNode block : root.path("content")) {
+                if ("text".equals(block.path("type").asText())) {
+                    sb.append(block.path("text").asText());
+                }
+            }
+            return sb.toString();
+        } catch (Exception ex) {
+            log.warn("Claude completion parse failed: {}", ex.getMessage());
+            throw new BusinessException(HttpStatus.BAD_GATEWAY, "CLAUDE_PARSE_FAILED", "Claude 응답 파싱 실패");
+        }
+    }
+
+    @Override
     public String model() {
         return props.model();
     }

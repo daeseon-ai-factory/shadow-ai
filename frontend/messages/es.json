@@ -439,7 +439,9 @@
     "countPrepositions": "{n} prepositions",
     "countCollocations": "{n} chunks",
     "weakTitle": "Weak spots",
-    "weakDesc": "The cards you keep missing — what to focus on. Updates as you drill."
+    "weakDesc": "The cards you keep missing — what to focus on. Updates as you drill.",
+    "composeTitle": "Compose (영작)",
+    "composeDesc": "Write your own sentences with a pattern or chunk; AI checks them. Active production, not recall."
   },
   "collocations": {
     "title": "Collocations",
@@ -482,5 +484,22 @@
     "lapseBadge": "{n}× missed",
     "boxLabel": "box {n}",
     "drillNote": "These come back automatically in the daily drill (low box = due soon)."
+  },
+  "compose": {
+    "title": "Compose",
+    "intro": "Write your own sentence using the target — AI checks it and suggests a better version. Production, not just recall.",
+    "placeholder": "Write a sentence using the target…",
+    "check": "Check",
+    "checking": "Checking…",
+    "next": "Next target →",
+    "ok": "Natural — nicely done",
+    "needsWork": "Almost — tweak it",
+    "usesTargetNo": "doesn't use the target",
+    "betterLabel": "Better:",
+    "notConfigured": "AI isn't configured — add a GEMINI_API_KEY to the backend to use this.",
+    "error": "Couldn't check that — try again.",
+    "kindPattern": "pattern",
+    "kindCollocation": "collocation",
+    "listen": "Listen"
   }
 }

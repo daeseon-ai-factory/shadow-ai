@@ -120,6 +120,45 @@ public class GeminiClient implements AiAnalysisClient {
     }
 
     @Override
+    public String complete(String systemPrompt, String userPrompt) {
+        if (!isConfigured()) {
+            throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "GEMINI_NOT_CONFIGURED",
+                    "Gemini API key가 설정되지 않았습니다");
+        }
+        Map<String, Object> body = Map.of(
+                "systemInstruction", Map.of("parts", List.of(Map.of("text", systemPrompt))),
+                "contents", List.of(Map.of("parts", List.of(Map.of("text", userPrompt)))),
+                "generationConfig", Map.of(
+                        "responseMimeType", "application/json",
+                        "maxOutputTokens", 600,
+                        "temperature", 0.3,
+                        "thinkingConfig", Map.of("thinkingBudget", 0))
+        );
+        String raw;
+        try {
+            raw = AiRetry.withRetry("Gemini", () -> http.post()
+                    .uri("/v1beta/models/{model}:generateContent?key={key}", props.model(), props.apiKey())
+                    .body(body)
+                    .retrieve()
+                    .body(String.class));
+        } catch (Exception ex) {
+            log.error("Gemini completion failed", ex);
+            throw new BusinessException(HttpStatus.BAD_GATEWAY, "GEMINI_CALL_FAILED",
+                    "Gemini 호출 실패: " + ex.getMessage());
+        }
+        try {
+            JsonNode candidates = objectMapper.readTree(raw).path("candidates");
+            if (!candidates.isArray() || candidates.isEmpty()) {
+                throw new IllegalStateException("Gemini returned no candidates");
+            }
+            return candidates.get(0).path("content").path("parts").get(0).path("text").asText("");
+        } catch (Exception ex) {
+            log.warn("Gemini completion parse failed: {}", ex.getMessage());
+            throw new BusinessException(HttpStatus.BAD_GATEWAY, "GEMINI_PARSE_FAILED", "Gemini 응답 파싱 실패");
+        }
+    }
+
+    @Override
     public String model() {
         return props.model();
     }

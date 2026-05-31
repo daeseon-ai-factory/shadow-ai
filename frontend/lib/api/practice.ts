@@ -24,10 +24,20 @@ export interface GradeResult {
   progress: PracticeProgress;
 }
 
+// AI verdict on a composition ("영작") attempt.
+export interface ComposeFeedback {
+  ok: boolean; // grammatical, natural, AND uses the target correctly
+  usesTarget: boolean;
+  feedback: string;
+  better: string;
+}
+
 export const practiceApi = {
   progress: (localDate: string) =>
     apiClient.get<PracticeProgress>("/api/practice/progress", { query: { localDate } }),
   srsStates: () => apiClient.get<SrsCard[]>("/api/practice/srs"),
   grade: (cardKey: string, correct: boolean, localDate: string) =>
     apiClient.post<GradeResult>("/api/practice/srs/grade", { cardKey, correct, localDate }),
+  composeCheck: (target: string, gloss: string, sentence: string) =>
+    apiClient.post<ComposeFeedback>("/api/practice/compose/check", { target, gloss, sentence }),
 };

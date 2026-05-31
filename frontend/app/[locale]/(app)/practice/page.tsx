@@ -37,6 +37,11 @@ export default function PracticePage() {
       count: t("countCollocations", { n: COLLOCATIONS.length }),
     },
     {
+      href: "/compose",
+      title: t("composeTitle"),
+      desc: t("composeDesc"),
+    },
+    {
       href: "/weak",
       title: t("weakTitle"),
       desc: t("weakDesc"),

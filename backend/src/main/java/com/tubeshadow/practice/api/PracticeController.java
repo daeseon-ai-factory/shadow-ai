@@ -3,11 +3,14 @@ package com.tubeshadow.practice.api;
 import com.tubeshadow.auth.security.AuthenticatedUser;
 import com.tubeshadow.auth.security.CurrentUser;
 import com.tubeshadow.common.web.ApiResponse;
+import com.tubeshadow.practice.api.dto.ComposeCheckRequest;
+import com.tubeshadow.practice.api.dto.ComposeFeedback;
 import com.tubeshadow.practice.api.dto.GradeRequest;
 import com.tubeshadow.practice.api.dto.GradeResponse;
 import com.tubeshadow.practice.api.dto.PracticeCardResponse;
 import com.tubeshadow.practice.api.dto.PracticeProgressResponse;
 import com.tubeshadow.practice.api.dto.PracticeRepRequest;
+import com.tubeshadow.practice.application.CompositionService;
 import com.tubeshadow.practice.application.PracticeProgressService;
 import com.tubeshadow.practice.application.PracticeSrsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,10 +36,13 @@ public class PracticeController {
 
     private final PracticeProgressService service;
     private final PracticeSrsService srsService;
+    private final CompositionService compositionService;
 
-    public PracticeController(PracticeProgressService service, PracticeSrsService srsService) {
+    public PracticeController(PracticeProgressService service, PracticeSrsService srsService,
+                             CompositionService compositionService) {
         this.service = service;
         this.srsService = srsService;
+        this.compositionService = compositionService;
     }
 
     @GetMapping("/progress")
@@ -70,5 +76,12 @@ public class PracticeController {
         PracticeCardResponse card = srsService.grade(user.id(), request.cardKey(), request.correct(), today);
         PracticeProgressResponse progress = service.recordRep(user.id(), today);
         return ApiResponse.ok(new GradeResponse(card, progress));
+    }
+
+    @PostMapping("/compose/check")
+    @Operation(summary = "영작 1문장 AI 채점 — 패턴/청크를 맞게 썼는지 + 더 나은 버전")
+    public ApiResponse<ComposeFeedback> composeCheck(@CurrentUser AuthenticatedUser user,
+                                                     @Valid @RequestBody ComposeCheckRequest request) {
+        return ApiResponse.ok(compositionService.check(request.target(), request.gloss(), request.sentence()));
     }
 }
