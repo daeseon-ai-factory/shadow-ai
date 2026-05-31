@@ -160,7 +160,7 @@ cd backend
 cp ../.env.example ../.env          # fill in the JWT secret; an LLM API key is optional
 ./gradlew bootRun
 
-# 3. Frontend → http://localhost:3000
+# 3. Frontend → http://localhost:3100
 cd frontend
 npm install
 npm run dev

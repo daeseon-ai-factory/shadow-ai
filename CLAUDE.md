@@ -63,7 +63,7 @@ cd backend
 ### 프론트엔드
 ```bash
 cd frontend
-npm run dev                 # 개발 서버 (3000 포트)
+npm run dev                 # 개발 서버 (3100 포트)
 npm run build               # 빌드
 npm run test                # Vitest 테스트
 npm run lint                # ESLint
