@@ -1,0 +1,26 @@
+---
+title: "Spaced repetition for the drills — and why Leitner, not SM-2"
+date: "2026-05-31"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The pattern and collocation drills reshuffled the whole deck every time, wasting reps on chunks you'd already nailed. Added per-card spaced repetition on the account: the daily drill now surfaces what's due plus a trickle of new cards. Picked a Leitner box system over SM-2 because the drill's two outcomes map to it exactly."
+tags: ["spring-boot", "next.js", "spaced-repetition", "learning", "product"]
+---
+
+With the drill streak now living on the account, the next gap was obvious: "Start daily drill" reshuffled **all** 246 patterns / 202 collocation items every session. So you'd re-drill `depend on` (long since automatic) at the same rate as `result from` (which you keep fumbling). The owner's actual ask all along was *efficient* daily practice — and that's exactly what spaced repetition is for.
+
+## Why Leitner, not SM-2
+
+The app already runs **SM-2** on the clip Review side, and it would have been tempting to reuse it. But SM-2 wants a 0–5 quality grade per review — it fits the clip review's four buttons (Again / Hard / Good / Easy). The **drill** has only two outcomes: *Got it* or *Again*. Forcing those into SM-2's scale would throw away most of its precision and add complexity for no gain.
+
+A **Leitner box** system fits the binary outcome exactly: a correct recall promotes the card one box (it comes back later), a miss drops it to box 1 (back tomorrow). Box → interval is a fixed ladder: 1 → 2 → 4 → 7 → 14 → 30 days. Right tool for the shape of the data, even though a "fancier" one was sitting right there.
+
+## The shape
+
+Backend, extending the `practice` slice from yesterday: a `practice_card` row per (user, card), where a card is one drill item keyed by a stable string — `pat:on-depend-on#0`, `col:for-responsible-for#1`. The Leitner rules live as domain behavior on the entity. Two endpoints: read all card states, and grade one. Grading a card **also** records a streak rep, so spaced-repetition state and the daily streak come back in a single round-trip.
+
+Frontend: the day's session is built client-side from the static deck + the user's card states — everything **due** today (shuffled) plus up to 12 **new** cards. The two drill buttons *are* the grades: "Got it" promotes, "Again" demotes; both count as practicing. Each page shows a `{due} due · {new} new` hint, and a caught-up toast when there's nothing due.
+
+Verified three ways: ten Testcontainers integration tests (promote-on-correct, reset-on-miss, per-user isolation, validation), a live HTTP round-trip (a card walking box 1 → 2 → back to 1 on a miss, due dates moving 06-01 → 06-03), and a direct `practice_card` query confirming the rows. The drills are now a real daily practice loop, not a shuffle.
