@@ -267,3 +267,36 @@ GET /ko/collocations → HTTP 404   (but the server was clearly up — / returne
 - **Cause**: two compounding things. (1) The sibling repo `ai-product/motivation` also runs Next on **:3000**, and its dev server had won the port — so requests hit *that* app, which has no `/practice` route → 404. `lsof -nP -iTCP:3000` showed `.../ai-product/motivation/node_modules/.bin/next dev`. (2) Separately, running `npm run build` (`next build`) while `next dev` is live corrupts the shared `.next/` dir and makes the dev server 404 routes it had served fine.
 - **Fix**: pinned shadow-ai's dev/start to port **3100** (`next dev -p 3100`) so it never collides — `85ce604`. When `.next` gets into a bad state: kill the dev server, `rm -rf .next`, restart `npm run dev`. Don't run `next build` against a directory with a live `next dev`.
 - **Pattern**: a 404 on a route you *know* exists, with the server otherwise responding, means you're talking to the wrong server (port collision) or a stale/corrupt `.next` — check `lsof -iTCP:<port>` for *which* app owns the port before debugging routing. Give each local project a distinct fixed port.
+<!-- skipped: dfa9fe3 Add log entries for shadow-ai (arch overview + 1 backfill) [no-log] -->
+<!-- skipped: 7353f87 docs(log): hardening — AI rate limit + frontend tests (1b4fd3f) [no-log] -->
+<!-- skipped: 7f93bbe docs(log): AI composition (영작) mode (437afc7) [no-log] -->
+<!-- skipped: d4d6a5c docs(log): drill UX batch — requeue/TTS/weak-spots (0548ee6) [no-log] -->
+<!-- skipped: acdecdc docs(log): SRS (Leitner) for drills (5b971b8) [no-log] -->
+<!-- skipped: 4f80294 docs(log): drill streak persisted to account (7729abe) [no-log] -->
+<!-- skipped: 8b82463 docs(log): collocations drill + Practice hub (e40ed78) [no-log] -->
+<!-- skipped: 7e621f5 docs(log): pattern-content accuracy audit (f91bf03) [no-log] -->
+<!-- skipped: e0e382d fix(web): pattern cue — gloss "yet" as 이제, not 벌써(already) [no-log] -->
+<!-- skipped: 183a67e feat(web): pattern-drill cues now in English word order (chunked 직독직해) [no-log] -->
+<!-- skipped: f508806 docs(log): full pattern-drill grammar curriculum (2a017f7) [no-log] -->
+<!-- skipped: 314f77c docs(log): daily pattern drill feature (7f3ba45) [no-log] -->
+<!-- skipped: 272d2d3 feat(web): honest diagrams for abstract preposition senses [no-log] -->
+<!-- skipped: 993706f docs(log): chunk-by-chunk shadowing feature (389bf7b) [no-log] -->
+<!-- skipped: 5f8c2b1 docs(log): preposition fill-in drill feature (b66f7ac) [no-log] -->
+<!-- skipped: 8a696f3 docs(log): multi-sense + no-forced-diagram update (eeed066) [no-log] -->
+<!-- skipped: df899ff docs(log): visual preposition diagrams redesign (95b376b) [no-log] -->
+<!-- skipped: 0d89445 docs(log): preposition study page feature (64523df) [no-log] -->
+<!-- skipped: 9b901d4 docs(log): preposition spotlight feature (02c8c57) [no-log] -->
+<!-- skipped: 5327ab9 docs(log): env-doc drift (GEMINI_API_KEY) + ROADMAP rename (5619660) [no-log] -->
+<!-- skipped: c728f39 docs(log): leaky AI abstraction + CollectionService refactor (843ec87) [no-log] -->
+<!-- skipped: d4cf1a7 docs(log): test coverage for signature pipeline + isolation (0d815cf) [no-log] -->
+<!-- skipped: c378fb1 docs(log): observability — requestId MDC + Micrometer (eec6176) [no-log] -->
+<!-- skipped: 7f1f982 docs(log): YouTube import tx boundary (d508633) [no-log] -->
+<!-- skipped: 57c8906 docs(log): JWT revocation via token_version (941369c) [no-log] -->
+<!-- skipped: 7f57d59 docs(log): AI retry + CORS hardening (7c88054) [no-log] -->
+<!-- skipped: 581fb74 docs(log): frontend i18n + review-queue staleness (1c4e17b) [no-log] -->
+<!-- skipped: e10488a docs(log): security + perf quick wins (e7e45a8) [no-log] -->
+<!-- skipped: a594e34 docs(log): scope-drift reconciliation resolved (ef860d5) [no-log] -->
+<!-- skipped: bc0d3c7 chore(infra): revert hardcoded AWS account ID to ACCOUNT_ID placeholder [no-log] -->
+<!-- skipped: 250484f docs(log): AI pipeline prod-hardening + 4xx mapping (e2defd4) [no-log] -->
+<!-- skipped: bcb0777 docs(log): private monetization/payments/tax structure memo [no-log] -->
+<!-- skipped: ee71dc6 docs(log): record README recruiter-rewrite + ROADMAP/code drift finding [no-log] -->
