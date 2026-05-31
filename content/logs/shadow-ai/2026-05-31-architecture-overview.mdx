@@ -1,0 +1,78 @@
+---
+title: "Architecture overview — TubeShadow as of 2026-05-31"
+date: "2026-05-31"
+project: "shadow-ai"
+kind: "snapshot"
+visibility: "public"
+language: "en"
+summary: "TubeShadow is a Java 21 / Spring Boot 3.3 backend and Next.js 16 frontend that turns YouTube clips into AI-generated translation + gloss + scenario cards, scheduled with SM-2 / Leitner spaced repetition."
+tags: ["architecture", "snapshot"]
+---
+
+## System shape
+
+```
+                       ┌────────────────────────────────┐
+ browser ──HTTPS──▶    │  Next.js 16 frontend (:3100)   │
+                       │  app/[locale] · next-intl      │
+                       │  React Query · Zustand         │
+                       └──────────────┬─────────────────┘
+                                      │ REST/JSON (JWT)
+                                      ▼
+                       ┌────────────────────────────────┐
+                       │  Spring Boot 3.3 backend       │
+                       │  com.tubeshadow.*              │
+                       │  auth · video · clip ·         │
+                       │  analysis · recording ·        │
+                       │  review · deck · practice ·    │
+                       │  common                        │
+                       └──────┬─────────────┬───────────┘
+                              │             │
+                              │             │  @TransactionalEventListener(AFTER_COMMIT)
+                              │             │  + @Async  ──▶  AiAnalysisClient
+                              │             │                  ├─ GeminiClient   (default)
+                              │             │                  └─ ClaudeClient   (@ConditionalOnProperty)
+                              ▼             ▼
+                       ┌──────────────┐   ┌───────────────┐
+                       │ PostgreSQL 16│   │ AWS S3        │
+                       │ (Flyway, 17  │   │ (recordings,  │
+                       │  migrations) │   │  prod only)   │
+                       └──────────────┘   └───────────────┘
+```
+
+## Key libs / modules
+
+- `backend/src/main/java/com/tubeshadow/analysis` — async LLM pipeline (`@TransactionalEventListener(AFTER_COMMIT)` + `@Async`), `AiAnalysisClient` interface with `GeminiClient` / `ClaudeClient` impls, shared `AiAnalysisParser`.
+- `backend/src/main/java/com/tubeshadow/auth` — JWT (jjwt 0.12.6) issuance + `JwtAuthenticationFilter`, bcrypt password hashing, IP-based rate limiting.
+- `backend/src/main/java/com/tubeshadow/clip` — clip lifecycle, publishes the domain event consumed by `analysis`; per-user isolation via `findByIdAndUserId`.
+- `backend/src/main/java/com/tubeshadow/review` and `.../deck` and `.../practice` — review scheduling (SM-2 / Leitner), Anki-style deck grouping, drill / pattern / collocation practice endpoints.
+- `backend/src/main/java/com/tubeshadow/common` — `RequestLoggingFilter` (MDC `requestId` + `X-Request-Id`), shared config, web exception handling.
+- `frontend/app/[locale]` — Next.js 16 App Router, `next-intl` path-based locales (5 locales per README), shadcn + Tailwind v4 UI, dev port pinned to `:3100`.
+- `frontend/lib` — `practice-srs.ts`, `patterns.ts`, `collocations.ts`, `prepositions-primer.ts`, `byoai.ts`, React Query hooks; this is where the drill / SRS client logic lives.
+
+## Why these choices
+
+- **Async LLM call outside the DB transaction.** `analysis` listens on `AFTER_COMMIT` and runs `@Async`, so the multi-second HTTP call to Gemini / Claude never pins a JDBC connection — only the `PENDING → READY / FAILED` state transitions are transactional. Verified in `com.tubeshadow.analysis` package layout and the README's "Engineering highlights" section.
+- **Pluggable AI provider behind one interface.** `AiAnalysisClient` returns a provider-neutral `AiAnalysisResult`; the previous leak (`ClaudeClient.AnalysisResult` exposed through the interface) was fixed in `843ec87` and recorded in `docs/troubleshooting.md`.
+- **PostgreSQL + Flyway, not an ORM-driven schema.** 17 versioned migrations under `backend/src/main/resources/db/migration`; `flyway-core` + `flyway-database-postgresql` declared in `build.gradle.kts`.
+- **Observability built in.** `micrometer-registry-prometheus` exposed at `/actuator/prometheus`, `tubeshadow.ai.analysis` timer tagged with `model` + `outcome`, `requestId` / `userId` MDC populated by filters (`eec6176`).
+- **Tested top to bottom.** Backend uses JUnit 5 + Testcontainers (real Postgres) per `build.gradle.kts`; frontend uses Vitest (`frontend/vitest.config.ts`); E2E is Playwright (`e2e/playwright.config.ts`, `tests/`).
+
+## Boundaries
+
+Other docs in the repo are authoritative for their slice — this snapshot is the map, not the territory:
+
+- `shadow-ai/ARCHITECTURE.md` — full backend architecture write-up.
+- `shadow-ai/CODE_WALKTHROUGH.md` — guided tour of the backend packages.
+- `shadow-ai/INFRA_DEEP_DIVE.md` — infra deep dive (ECS / Fargate / S3 specifics).
+- `shadow-ai/DEPLOY.md` and `shadow-ai/infrastructure/ecs-task-definition.json` — deploy / task definition source of truth.
+- `shadow-ai/DEVOPS.md` — devops practices.
+- `shadow-ai/HANDBOOK.md`, `shadow-ai/PROJECT_SUMMARY.md`, `shadow-ai/PRODUCT_ROADMAP.md`, `shadow-ai/ROADMAP.md` — product / roadmap framing.
+- `shadow-ai/BUILD_JOURNAL.md`, `shadow-ai/PROGRESS.md`, `shadow-ai/BLOCKERS.md` — historical narrative.
+- `shadow-ai/docs/troubleshooting.md` — Claude-facing incident reference (Symptom / Cause / Fix / Commit / Pattern).
+- `shadow-ai/content/logs/shadow-ai/` — the dated, public per-incident log entries that surface on `daeseon.ai/projects/shadow-ai`.
+
+## State of completion
+
+The core loop (paste YouTube → clip → AI-generated translation + gloss + vocabulary + scenario → spaced-repetition review) is end-to-end working locally with Docker Compose, with 31 existing log entries documenting the build to date. Recent work has been hardening rather than new domain: rate limiting on the AI compose endpoint, frontend tests for SRS logic, Leitner SRS for drills, drill streak persistence, observability, JWT revocation via token version. Live demo on AWS ECS Fargate is not yet linked from the README ("deploying to AWS ECS Fargate; link coming"), so the production URL is unverified at the time of this snapshot.
+

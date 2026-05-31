@@ -1,0 +1,40 @@
+---
+title: "Revert hardcoded AWS account ID in ECS task definition to ACCOUNT_ID placeholder"
+date: "2026-05-30"
+project: "shadow-ai"
+kind: "troubleshoot"
+
+visibility: "public"
+language: "en"
+summary: "A prior session had substituted the real 12-digit AWS account ID into 9 ARN/image/bucket references in ecs-task-definition.json; reverted to the ACCOUNT_ID placeholder before it reached git history and gitignored *.local.json for real values."
+backfilled: true
+tags: ["aws", "ecs", "secrets-hygiene", "infrastructure", "gitignore"]
+---
+
+## What was done
+
+Reverted `infrastructure/ecs-task-definition.json` so every ARN, image, and S3 bucket reference uses the literal string `ACCOUNT_ID` instead of the real 12-digit AWS account ID that a prior session had inlined. Added `infrastructure/*.local.json` to `.gitignore` so the real values can live alongside the template (`ecs-task-definition.local.json`) without ever being committed. The actual deploy-time substitution from placeholder → real value is deferred to a separate deploy session.
+
+## Why it was needed
+
+The commit message states it directly: an uncommitted edit from a prior session had substituted the real 12-digit account ID into 9 ARN / image / bucket references inside the task definition. The file was still staged-but-not-committed, so reverting kept the real ID out of git history entirely. This is the "near-miss" framing from the audit — the secret never landed in a public commit, but it was one `git add -A && git commit` away.
+
+The `.local.json` ignore pattern establishes a reusable convention: template file checked in with placeholders, real-value sibling kept local and ignored.
+
+## Files / functions changed (real paths)
+
+- `infrastructure/ecs-task-definition.json` — task-def template; all secret `valueFrom` ARNs and the `RECORDING_S3_BUCKET` env value continue to use `ACCOUNT_ID` as a literal token. The same commit also unrelated-ly added `AI_PROVIDER=gemini`, `RATE_LIMIT_TRUSTED_PROXIES=10.0.0.0/16`, a `GEMINI_API_KEY` secret entry, and tightened `CORS_ALLOWED_ORIGINS` to `https://app.daeseon.ai`.
+- `.gitignore` — added `infrastructure/*.local.json` under a new "Infra local overrides" section.
+
+## Result / verification
+
+`git show bc0d3c7 -- infrastructure/ecs-task-definition.json` confirms every `arn:aws:secretsmanager:ca-central-1:...` and the recording-bucket env still reference the `ACCOUNT_ID` placeholder, not a numeric ID. The 3-line `.gitignore` addition is present. Audit reference in the commit body: `DRIFT-1`.
+
+## Open / what didn't get done
+
+- Deploy-time substitution (placeholder → real account ID at apply time) is explicitly punted to the dedicated deploy session — the commit body calls this out.
+- No history rewrite was needed because the real ID never entered a commit; if a future near-miss does land in history, BFG / `git filter-repo` would be required and is not set up here.
+- The `infrastructure/ecs-task-definition.local.json` file itself is referenced as the keeper of real values but is, by design, not in the repo — verifying it exists and is well-formed is a local-machine concern.
+
+## Commit — `bc0d3c7`
+
