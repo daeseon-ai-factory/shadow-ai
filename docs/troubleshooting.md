@@ -217,3 +217,13 @@ Format: **Symptom** · **Cause** · **Fix** · **Commit** · (optional **Pattern
 - **Fix**: added `AI_PROVIDER` + `GEMINI_API_KEY` (and `GEMINI_MODEL`) to `.env.example` and the DEPLOY.md env table + docker-run example, marking each key provider-conditional. Also renamed `Roadmap.md` → `ROADMAP.md` (CLAUDE.md referenced the all-caps name; case-sensitive Linux would 404 the source-of-truth doc) and removed the tracked `temp.md` scratchpad.
 - **Commit**: `5619660`
 - **Pattern**: when the default changes (Claude → Gemini), the env docs are the easiest thing to forget — and a missing key that fails *silently* is worse than one that crashes. Document the selector + every provider's key, conditional on the selector.
+
+---
+
+## AI-authored learning content had nuance errors (wrong content is worse than a bug)
+
+- **Symptom**: in the pattern drill, the cue for `Have you deployed it to staging yet?` rendered **"yet"** as **"벌써"** — which the learner reads as *already*. In a learning tool, a wrong gloss gets memorized as correct.
+- **Cause**: 246 drill cues were AI-authored in parallel and only **spot-checked** on a few categories before shipping. A strict full audit then found **38 flags** — and confirmed a real gap: nuance traps (`yet` vs `already`, `get sb to do` vs `make sb do`, `twice as ~ as` = 보다 not 만큼, `be supposed to` ≠ prohibition, `had better` strength).
+- **Fix**: ran a strict bilingual audit over **every** cue + English model; applied **32** hand-reviewed cue corrections. Crucially, **all 246 English models were correct** — every error was in the Korean meaning-label, so the English the learner produces was never wrong. **2 of the audit's own suggested fixes were themselves wrong** (`"이걸을"` typo; `"교통 상황"` assumed road traffic where web traffic fits) and were rejected — the verifier is also an AI, so its output was reviewed too.
+- **Commit**: `f91bf03`
+- **Pattern**: AI-generated *learning* content is not the same risk class as AI-generated code — a wrong example is silently internalized as truth. Spot-checking is not enough; audit every item, and review the auditor too (don't auto-apply AI "fixes"). Bias the audit toward the L1 gloss / nuance, since the target-language sentences are usually the safer half.
