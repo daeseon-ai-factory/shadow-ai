@@ -313,3 +313,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 <!-- skipped: 250484f docs(log): AI pipeline prod-hardening + 4xx mapping (e2defd4) [no-log] -->
 <!-- skipped: bcb0777 docs(log): private monetization/payments/tax structure memo [no-log] -->
 <!-- skipped: ee71dc6 docs(log): record README recruiter-rewrite + ROADMAP/code drift finding [no-log] -->
+<!-- skipped: 46a121b docs(troubleshoot): CI lint vs tsc/build gap (2258fbf) [no-log] -->
