@@ -1,14 +1,13 @@
-// Curated high-frequency English sentence patterns for daily drilling — the foundational-
-// but-always-confusing frames a Korean developer needs (questions incl. indirect, the "as"
-// family, comparatives, relative clauses, tense/aspect, conditionals, modals, verb patterns,
-// connectors, passive, articles, collocations, + reactions/opinions). Each pattern is a fixed
-// frame + items pairing a Korean cue with one idiomatic English model. The cue is written in
-// ENGLISH word order, chunked with " · " (직독직해) — read it left-to-right and the English
-// just comes out. Authored + reviewed for accuracy; nothing fabricated.
+// Curated high-frequency English sentence patterns for daily drilling — foundational-but-
+// always-confusing frames (questions incl. indirect, the "as" family, comparatives, relative
+// clauses, tense/aspect, conditionals, modals, verb patterns, connectors, passive, articles,
+// collocations, + reactions/opinions). Each item: a Korean cue (English word order, chunked
+// with " · ") paired with one idiomatic English model. Authored in parallel, then audited for
+// accuracy (every cue + model strictly reviewed); flagged items corrected by hand.
 
 export interface PatternItem {
-  cue: string; // Korean meaning in ENGLISH word order, chunked with " · "
-  model: string; // one natural English sentence using the frame
+  cue: string;
+  model: string;
 }
 
 export interface Pattern {
@@ -31,7 +30,7 @@ export const PATTERNS: Pattern[] = [
         "model": "Did you already review this PR?"
       },
       {
-        "cue": "너 배포했어? · 그걸 · 스테이징에 · 이제",
+        "cue": "너 배포했어? · 그걸 · 스테이징에 · 벌써",
         "model": "Have you deployed it to staging yet?"
       },
       {
@@ -131,7 +130,7 @@ export const PATTERNS: Pattern[] = [
         "model": "Who broke the build?"
       },
       {
-        "cue": "누구를 · 너는 전화했어 · 이것에 관해?",
+        "cue": "누구한테 · 너는 전화했어 · 이것에 관해?",
         "model": "Who did you call about this?"
       },
       {
@@ -147,7 +146,7 @@ export const PATTERNS: Pattern[] = [
     "gloss": "the most ~ that can be done",
     "items": [
       {
-        "cue": "제발 고쳐줘 · 이 버그를 · 가능한 한 빨리",
+        "cue": "고쳐줘 · 이 버그를 · 가능한 한 빨리",
         "model": "Please fix this bug as soon as possible."
       },
       {
@@ -155,7 +154,7 @@ export const PATTERNS: Pattern[] = [
         "model": "Write the PR description in as much detail as possible."
       },
       {
-        "cue": "유지해 그걸 · 가능한 한 짧게 · 스탠드업에서",
+        "cue": "유지해 그걸 · 가능한 한 간결하게 · 스탠드업에서",
         "model": "Keep it as brief as possible in standup."
       }
     ]
@@ -227,7 +226,7 @@ export const PATTERNS: Pattern[] = [
     "gloss": "in addition to; also (adds B)",
     "items": [
       {
-        "cue": "이건 작동해 · 데스크톱에서 · 모바일에서도",
+        "cue": "이건 작동해 · 데스크톱에서 · 모바일에서도 (모바일뿐 아니라)",
         "model": "This works on desktop as well as mobile."
       },
       {
@@ -347,15 +346,15 @@ export const PATTERNS: Pattern[] = [
     "gloss": "express how many times bigger/etc.",
     "items": [
       {
-        "cue": "새 서버는 두 배 빨라 · 옛날 것만큼 (비교해서)",
+        "cue": "새 서버는 두 배 빨라 · 옛날 것보다",
         "model": "The new server is twice as fast as the old one."
       },
       {
-        "cue": "그 작업은 세 배 오래 걸렸어 · 우리가 예상했던 것만큼 (비교해서)",
+        "cue": "그 작업은 세 배 오래 걸렸어 · 우리가 예상했던 것보다",
         "model": "That task took three times as long as we expected."
       },
       {
-        "cue": "이 캐시는 절반의 메모리를 써 · 옛날 방식만큼 (비교해서)",
+        "cue": "이 캐시는 절반의 메모리만 써 · 옛날 방식이 쓰던 것의",
         "model": "This cache uses half as much memory as the old approach."
       }
     ]
@@ -395,7 +394,7 @@ export const PATTERNS: Pattern[] = [
         "model": "The engineer who reviewed this PR is on vacation."
       },
       {
-        "cue": "그 라이브러리 · 그건 우리가 의존했어 · 더 이상 관리되지 않아",
+        "cue": "그 라이브러리 · 우리가 의존했던 · 더 이상 관리되지 않아",
         "model": "The library that we depended on is no longer maintained."
       }
     ]
@@ -407,7 +406,7 @@ export const PATTERNS: Pattern[] = [
     "gloss": "possessive relative; 'whose X'",
     "items": [
       {
-        "cue": "그 개발자 · 그의 PR이 망가뜨린 · 메인을 · 지금 고치고 있어 · 그걸",
+        "cue": "그 개발자 · 그의 PR이 망가뜨린 · 메인을 · 지금 그걸 고치고 있어",
         "model": "The dev whose PR broke main is fixing it now."
       },
       {
@@ -431,7 +430,7 @@ export const PATTERNS: Pattern[] = [
         "model": "This is the place where the bug happens."
       },
       {
-        "cue": "그 순간 · 그때 · 그 배포가 항상 망가지는 · 바로 그때야 · 트래픽이 급증할 때",
+        "cue": "그 순간은 · 그때 · 배포가 항상 망가지는 · 바로 그때야 · 트래픽이 급증할 때",
         "model": "The moment when the deploy always breaks is when traffic spikes."
       },
       {
@@ -551,7 +550,7 @@ export const PATTERNS: Pattern[] = [
         "model": "I used to work in JavaScript."
       },
       {
-        "cue": "나는 익숙해 · 받는 거에 · 내 코드가 리뷰 · (당하는 거에)",
+        "cue": "나는 익숙해 · 내 코드를 리뷰받는 거에",
         "model": "I'm used to getting my code reviewed."
       },
       {
@@ -611,7 +610,7 @@ export const PATTERNS: Pattern[] = [
         "model": "If the tests pass, we'll deploy this afternoon."
       },
       {
-        "cue": "만약 네가 머지하면 · 지금 · 너는 충돌이 날 거야",
+        "cue": "만약 네가 지금 머지하면 · 너는 충돌이 날 거야",
         "model": "If you merge now, you'll get a conflict."
       },
       {
@@ -635,7 +634,7 @@ export const PATTERNS: Pattern[] = [
         "model": "If I had access, I'd roll it back myself."
       },
       {
-        "cue": "만약 우리가 회의가 더 적다면 · 우리는 훨씬 더 많이 해낼 텐데",
+        "cue": "만약 우리가 더 적은 회의를 한다면 · 우리는 훨씬 더 많이 해낼 텐데",
         "model": "If we had fewer meetings, we'd get a lot more done."
       }
     ]
@@ -727,7 +726,7 @@ export const PATTERNS: Pattern[] = [
     "gloss": "Precaution against a possible problem",
     "items": [
       {
-        "cue": "그 데이터베이스를 백업해 · 그 배포 전에 · 혹시 모르니까 · 뭔가 잘못될 경우에 대비해",
+        "cue": "그 데이터베이스를 백업해 · 그 배포 전에 · 뭔가 잘못될 경우에 대비해",
         "model": "Back up the database before the deploy, in case something goes wrong."
       },
       {
@@ -827,7 +826,7 @@ export const PATTERNS: Pattern[] = [
     "gloss": "Expected to (rule, plan, or what's wrong)",
     "items": [
       {
-        "cue": "이 함수는 반환하면 안 돼 · null을",
+        "cue": "이 함수는 반환하게 되어 있지 않아 · null을",
         "model": "This function isn't supposed to return null."
       },
       {
@@ -847,11 +846,11 @@ export const PATTERNS: Pattern[] = [
     "gloss": "Strong advice or warning",
     "items": [
       {
-        "cue": "너는 백업하는 게 좋아 · 그걸 · 네가 배포하기 전에",
+        "cue": "너는 백업해 두는 게 좋을 거야 · 그걸 · 네가 배포하기 전에",
         "model": "You'd better back it up before you deploy."
       },
       {
-        "cue": "너는 건드리지 않는 게 좋아 · 프로덕션을 · 금요일에",
+        "cue": "너는 건드리지 않는 게 좋을 거야 · 프로덕션을 · 금요일에",
         "model": "You'd better not touch production on a Friday."
       },
       {
@@ -887,7 +886,7 @@ export const PATTERNS: Pattern[] = [
     "gloss": "stop to do = pause to; stop doing = quit",
     "items": [
       {
-        "cue": "나는 멈췄어 · 사오려고 · 커피를",
+        "cue": "나는 멈췄어 · 잠깐 (가서) · 커피 한 잔 마시려고",
         "model": "I stopped to grab a coffee."
       },
       {
@@ -947,15 +946,15 @@ export const PATTERNS: Pattern[] = [
     "gloss": "persuade/manage to get someone to do",
     "items": [
       {
-        "cue": "나는 만들었어 · 그 리드가 · 승인하게 · 그 기능을",
+        "cue": "나는 (설득해서) ~하게 했어 · 그 리드가 · 승인하게 · 그 기능을",
         "model": "I got the lead to approve the feature."
       },
       {
-        "cue": "나는 마침내 만들었어 · 그 테스트들이 · 통과하게",
+        "cue": "나는 마침내 (~하게) 했어 · 그 테스트들이 · 통과하게",
         "model": "I finally got the tests to pass."
       },
       {
-        "cue": "나는 만들었어 · 그가 · 리뷰하게 · 그 PR을 · 다시",
+        "cue": "나는 (설득해서) ~하게 했어 · 그가 · 리뷰하게 · 그 PR을 · 다시",
         "model": "I got him to review the PR again."
       }
     ]
@@ -971,11 +970,11 @@ export const PATTERNS: Pattern[] = [
         "model": "Let's get it done by the end of the day."
       },
       {
-        "cue": "우리는 마침내 만들었어 · 그 배포 파이프라인을 · 자동화되게",
+        "cue": "우리는 마침내 (~되게) 했어 · 그 배포 파이프라인을 · 자동화되게",
         "model": "We finally got the deploy pipeline automated."
       },
       {
-        "cue": "나는 했어 · 내 노트북을 · 고치게",
+        "cue": "나는 (맡겨서) 고쳤어 · 내 노트북을",
         "model": "I got my laptop fixed."
       }
     ]
@@ -1007,7 +1006,7 @@ export const PATTERNS: Pattern[] = [
     "gloss": "Degree + result; excess, sufficiency, consequence",
     "items": [
       {
-        "cue": "이 버그는 너무 사소해 · 별도의 핫픽스를 배포하기엔 · 이것 때문에",
+        "cue": "이 버그는 너무 사소해 · 별도의 핫픽스를 배포하기엔 · 그것을 위한",
         "model": "This bug is too minor to ship a separate hotfix for."
       },
       {
@@ -1027,7 +1026,7 @@ export const PATTERNS: Pattern[] = [
     "gloss": "Pairing two items: add, include both, pick one, exclude both",
     "items": [
       {
-        "cue": "이 리팩터링은 · 만들 뿐만 아니라 · 그 코드를 더 빠르게 · 또한 만들어 · 그것을 더 읽기 쉽게",
+        "cue": "이 리팩터링은 · 만들 뿐만 아니라 · 그 코드를 더 빠르게 · 또한 만들어 · 그것을 더 읽기 쉽게도",
         "model": "This refactor not only makes the code faster but also makes it easier to read."
       },
       {
@@ -1147,15 +1146,15 @@ export const PATTERNS: Pattern[] = [
     "gloss": "Arrange for something to be done",
     "items": [
       {
-        "cue": "나는 · 받았어 · 내 코드가 리뷰되도록 · 시니어한테",
+        "cue": "나는 · 내 코드를 · 리뷰받았어 · 시니어한테",
         "model": "I got my code reviewed by a senior."
       },
       {
-        "cue": "나는 · 만들게 · 그게 고쳐지도록 · 내일까지",
+        "cue": "나는 · 고쳐 놓을게 · 그걸 · 내일까지",
         "model": "I'll have it fixed by tomorrow."
       },
       {
-        "cue": "나는 · 했어 · 내 노트북 화면이 교체되도록",
+        "cue": "나는 · 내 노트북 화면을 · 교체했어",
         "model": "I had my laptop screen replaced."
       }
     ]
@@ -1251,7 +1250,7 @@ export const PATTERNS: Pattern[] = [
         "model": "There are a few small bugs to fix before we deploy."
       },
       {
-        "cue": "우리는 가지고 있어 · 거의 없는 시간을 · 남은 · 끝내기엔 · 이 태스크를",
+        "cue": "우리는 가지고 있어 · 거의 없는 시간을 · 남은 · 끝내기 위해 · 이 태스크를",
         "model": "We have little time left to finish this task."
       },
       {
@@ -1295,7 +1294,7 @@ export const PATTERNS: Pattern[] = [
         "model": "Most of our services run in containers."
       },
       {
-        "cue": "어느 것도 아니야 · 해결책 중 · 내가 시도해 본 · 작동한 게",
+        "cue": "어느 것도 없었어 · 해결책 중 · 내가 시도해 본 · 작동한 게",
         "model": "None of the solutions I tried worked."
       }
     ]
@@ -1631,7 +1630,7 @@ export const PATTERNS: Pattern[] = [
         "model": "It depends on the traffic."
       },
       {
-        "cue": "그건 달려 있어 · 누구에게 · 네가 묻느냐에",
+        "cue": "그건 달려 있어 · 누구에게 물어보느냐에",
         "model": "It depends on who you ask."
       },
       {
