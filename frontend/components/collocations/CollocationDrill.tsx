@@ -9,6 +9,7 @@ import { usePracticeProgress } from "@/lib/hooks/use-practice-progress";
 import type { CollocationDomain } from "@/lib/collocations";
 
 export interface ColloDrillEntry {
+  key: string; // stable SRS card key, e.g. "col:on-depend-on#0"
   anchor: string; // the chunk to produce, e.g. "depend on"
   gloss: string;
   domain: CollocationDomain;
@@ -21,7 +22,7 @@ export function CollocationDrill({ items, onExit }: { items: ColloDrillEntry[]; 
   const [idx, setIdx] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [got, setGot] = useState(0);
-  const { daily, bumpRep } = usePracticeProgress();
+  const { daily, grade } = usePracticeProgress();
 
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("drillEmpty")}</p>;
 
@@ -29,7 +30,7 @@ export function CollocationDrill({ items, onExit }: { items: ColloDrillEntry[]; 
 
   const answer = (ok: boolean) => {
     if (ok) setGot((g) => g + 1);
-    bumpRep();
+    grade(items[idx].key, ok); // "Got it" → promote, "Again" → demote; both count as a rep
     setRevealed(false);
     setIdx((i) => i + 1);
   };

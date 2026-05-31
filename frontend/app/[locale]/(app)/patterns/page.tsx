@@ -1,30 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PATTERNS, PATTERN_CATEGORIES, type Pattern } from "@/lib/patterns";
 import { PatternDrill, type DrillEntry } from "@/components/patterns/PatternDrill";
+import { usePracticeSrsStates } from "@/lib/hooks/use-practice-progress";
+import { buildSession, partition, localToday, shuffle, NEW_PER_DAY } from "@/lib/practice-srs";
 
 function entriesFrom(patterns: Pattern[]): DrillEntry[] {
   return patterns.flatMap((p) =>
-    p.items.map((it) => ({ category: p.category, frame: p.frame, gloss: p.gloss, cue: it.cue, model: it.model })),
+    p.items.map((it, i) => ({
+      key: `pat:${p.id}#${i}`,
+      category: p.category,
+      frame: p.frame,
+      gloss: p.gloss,
+      cue: it.cue,
+      model: it.model,
+    })),
   );
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 }
 
 export default function PatternsPage() {
   const t = useTranslations("patterns");
   const [drill, setDrill] = useState<DrillEntry[] | null>(null);
+
+  const states = usePracticeSrsStates();
+  const today = localToday();
+  const allEntries = useMemo(() => entriesFrom(PATTERNS), []);
+  const { due, fresh } = useMemo(() => partition(allEntries, states, today), [allEntries, states, today]);
 
   if (drill) {
     return (
@@ -34,6 +40,15 @@ export default function PatternsPage() {
     );
   }
 
+  const startDaily = () => {
+    const session = buildSession(allEntries, states, today);
+    if (session.length === 0) {
+      toast.success(t("caughtUp"));
+      return;
+    }
+    setDrill(session);
+  };
+
   return (
     <div className="space-y-6">
       <header className="space-y-3">
@@ -41,9 +56,12 @@ export default function PatternsPage() {
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("intro")}</p>
         </div>
-        <Button size="lg" onClick={() => setDrill(shuffle(entriesFrom(PATTERNS)))}>
-          ▶ {t("startDaily")}
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button size="lg" onClick={startDaily}>▶ {t("startDaily")}</Button>
+          <span className="text-sm text-muted-foreground">
+            {t("dailyHint", { due: due.length, new: Math.min(fresh.length, NEW_PER_DAY) })}
+          </span>
+        </div>
       </header>
 
       {PATTERN_CATEGORIES.map((cat) => {
@@ -58,7 +76,7 @@ export default function PatternsPage() {
                   <CardHeader className="pb-2">
                     <CardTitle className="flex items-center justify-between gap-2">
                       <span className="font-mono text-base">{p.frame}</span>
-                      <Button size="sm" variant="outline" onClick={() => setDrill(entriesFrom([p]))}>
+                      <Button size="sm" variant="outline" onClick={() => setDrill(shuffle(entriesFrom([p])))}>
                         {t("drillThis")}
                       </Button>
                     </CardTitle>

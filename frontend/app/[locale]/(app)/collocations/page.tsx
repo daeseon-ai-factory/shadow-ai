@@ -2,25 +2,26 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { COLLOCATIONS, COLLOCATION_DOMAINS, type Collocation, type CollocationDomain } from "@/lib/collocations";
 import { CollocationDrill, type ColloDrillEntry } from "@/components/collocations/CollocationDrill";
+import { usePracticeSrsStates } from "@/lib/hooks/use-practice-progress";
+import { buildSession, partition, localToday, shuffle, NEW_PER_DAY } from "@/lib/practice-srs";
 
 function entriesFrom(cols: Collocation[]): ColloDrillEntry[] {
   return cols.flatMap((c) =>
-    c.items.map((it) => ({ anchor: c.anchor, gloss: c.gloss, domain: c.domain, cue: it.cue, model: it.model })),
+    c.items.map((it, i) => ({
+      key: `col:${c.id}#${i}`,
+      anchor: c.anchor,
+      gloss: c.gloss,
+      domain: c.domain,
+      cue: it.cue,
+      model: it.model,
+    })),
   );
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 }
 
 type Filter = "all" | CollocationDomain;
@@ -30,9 +31,17 @@ export default function CollocationsPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [drill, setDrill] = useState<ColloDrillEntry[] | null>(null);
 
+  const states = usePracticeSrsStates();
+  const today = localToday();
+
   const visible = useMemo(
     () => (filter === "all" ? COLLOCATIONS : COLLOCATIONS.filter((c) => c.domain === filter)),
     [filter],
+  );
+  const visibleEntries = useMemo(() => entriesFrom(visible), [visible]);
+  const { due, fresh } = useMemo(
+    () => partition(visibleEntries, states, today),
+    [visibleEntries, states, today],
   );
 
   if (drill) {
@@ -42,6 +51,15 @@ export default function CollocationsPage() {
       </div>
     );
   }
+
+  const startDaily = () => {
+    const session = buildSession(visibleEntries, states, today);
+    if (session.length === 0) {
+      toast.success(t("caughtUp"));
+      return;
+    }
+    setDrill(session);
+  };
 
   const filters: Filter[] = ["all", ...COLLOCATION_DOMAINS];
   const filterLabel = (f: Filter) =>
@@ -54,10 +72,11 @@ export default function CollocationsPage() {
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("intro")}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button size="lg" onClick={() => setDrill(shuffle(entriesFrom(visible)))}>
-            ▶ {t("startDaily")}
-          </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button size="lg" onClick={startDaily}>▶ {t("startDaily")}</Button>
+          <span className="text-sm text-muted-foreground">
+            {t("dailyHint", { due: due.length, new: Math.min(fresh.length, NEW_PER_DAY) })}
+          </span>
           <div className="flex gap-1.5">
             {filters.map((f) => (
               <Button
@@ -87,7 +106,7 @@ export default function CollocationsPage() {
                   <CardHeader className="pb-2">
                     <CardTitle className="flex items-center justify-between gap-2">
                       <span className="font-mono text-base">{c.anchor}</span>
-                      <Button size="sm" variant="outline" onClick={() => setDrill(entriesFrom([c]))}>
+                      <Button size="sm" variant="outline" onClick={() => setDrill(shuffle(entriesFrom([c])))}>
                         {t("drillThis")}
                       </Button>
                     </CardTitle>

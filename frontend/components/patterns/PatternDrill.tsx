@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { usePracticeProgress } from "@/lib/hooks/use-practice-progress";
 
 export interface DrillEntry {
+  key: string; // stable SRS card key, e.g. "pat:on-depend-on#0"
   category: string;
   frame: string;
   gloss: string;
@@ -19,7 +20,7 @@ export function PatternDrill({ items, onExit }: { items: DrillEntry[]; onExit: (
   const [idx, setIdx] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [got, setGot] = useState(0);
-  const { daily, bumpRep } = usePracticeProgress();
+  const { daily, grade } = usePracticeProgress();
 
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("drillEmpty")}</p>;
 
@@ -27,7 +28,7 @@ export function PatternDrill({ items, onExit }: { items: DrillEntry[]; onExit: (
 
   const answer = (ok: boolean) => {
     if (ok) setGot((g) => g + 1);
-    bumpRep();
+    grade(items[idx].key, ok); // "Got it" → promote, "Again" → demote; both count as a rep
     setRevealed(false);
     setIdx((i) => i + 1);
   };

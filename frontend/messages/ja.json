@@ -420,7 +420,9 @@
     "cat_connectors": "Connectors",
     "cat_passive": "Passive",
     "cat_articles": "Articles & quantifiers",
-    "cat_collocations": "Verb/adj + preposition"
+    "cat_collocations": "Verb/adj + preposition",
+    "dailyHint": "{due} due · {new} new today",
+    "caughtUp": "✅ Caught up — nothing due. Try a category below, or come back tomorrow."
   },
   "practice": {
     "title": "Practice",
@@ -457,6 +459,8 @@
     "drillExit": "Done",
     "drillEmpty": "No collocations to drill.",
     "streakDays": "{n}-day streak",
-    "todayReps": "{n} today"
+    "todayReps": "{n} today",
+    "dailyHint": "{due} due · {new} new today",
+    "caughtUp": "✅ Caught up — nothing due. Try a category below, or come back tomorrow."
   }
 }

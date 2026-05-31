@@ -420,7 +420,9 @@
     "cat_connectors": "연결어",
     "cat_passive": "수동·사역수동",
     "cat_articles": "관사·수량",
-    "cat_collocations": "동사·형용사 + 전치사"
+    "cat_collocations": "동사·형용사 + 전치사",
+    "dailyHint": "오늘 due {due}개 · 신규 {new}개",
+    "caughtUp": "✅ 다 잡았어 — 오늘 due 없음. 아래에서 골라 연습하거나 내일 다시."
   },
   "practice": {
     "title": "연습",
@@ -457,6 +459,8 @@
     "drillExit": "끝내기",
     "drillEmpty": "드릴할 콜로케이션이 없어.",
     "streakDays": "{n}일 연속",
-    "todayReps": "오늘 {n}개"
+    "todayReps": "오늘 {n}개",
+    "dailyHint": "오늘 due {due}개 · 신규 {new}개",
+    "caughtUp": "✅ 다 잡았어 — 오늘 due 없음. 아래에서 골라 연습하거나 내일 다시."
   }
 }

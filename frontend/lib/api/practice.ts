@@ -8,11 +8,26 @@ export interface PracticeProgress {
   totalReps: number;
 }
 
-// localDate is the client's own calendar date so the streak follows the learner's midnight,
-// not the server's (UTC).
+// Spaced-repetition (Leitner) state for one drill card. The client computes "due"
+// (dueDate <= today) and "new" (a card key with no state) against its own local date.
+export interface SrsCard {
+  cardKey: string;
+  box: number;
+  dueDate: string; // YYYY-MM-DD
+  correctCount: number;
+  lapseCount: number;
+}
+
+// Grading a card also counts as a rep today, so the streak comes back in the same response.
+export interface GradeResult {
+  card: SrsCard;
+  progress: PracticeProgress;
+}
+
 export const practiceApi = {
   progress: (localDate: string) =>
     apiClient.get<PracticeProgress>("/api/practice/progress", { query: { localDate } }),
-  rep: (localDate: string) =>
-    apiClient.post<PracticeProgress>("/api/practice/rep", { localDate }),
+  srsStates: () => apiClient.get<SrsCard[]>("/api/practice/srs"),
+  grade: (cardKey: string, correct: boolean, localDate: string) =>
+    apiClient.post<GradeResult>("/api/practice/srs/grade", { cardKey, correct, localDate }),
 };
