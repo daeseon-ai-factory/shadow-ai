@@ -1,0 +1,24 @@
+---
+title: "영작 mode: from recall to production, by adding one method to the AI abstraction"
+date: "2026-05-31"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The drills so far test recall — you reproduce a known model. The composition mode is the other half: you write your OWN sentence using a target, and the AI judges it and offers a better version. Built by adding a single low-level complete() to the existing provider abstraction rather than a parallel client."
+tags: ["spring-boot", "next.js", "ai", "learning", "abstraction"]
+---
+
+Every drill in the app so far is **recall**: see a cue, reproduce the known model. Useful, but fluency is built in **production** — making your *own* sentence and finding out if it's right. So: a composition ("영작") mode. You get a target pattern or chunk plus its meaning, you write your own English sentence, and the AI judges two things — is it correct and natural, and does it actually *use* the target — then offers a better version (spoken, via the TTS added earlier).
+
+## The interesting part: where to put the AI call
+
+The codebase already has a provider abstraction, `AiAnalysisClient`, with Gemini and Claude implementations. But it was **analysis-shaped**: a single `analyzeClip(transcript)` that returns a fixed `AiAnalysisResult`. A composition check is a different prompt and a different (tiny) response shape.
+
+Two options: a whole parallel client (`CompositionCheckClient` + two impls), or add one low-level method to the existing interface. I went with the second — a generic `complete(systemPrompt, userPrompt)` that returns the model's raw text with no schema coupling. Both providers implement it by mirroring their existing HTTP call (Gemini's `generateContent`, Claude's `/v1/messages`) with the new prompts and pulling the text back out. The composition logic then lives in a small `CompositionService` that owns its own prompt and parses its own `{ok, usesTarget, feedback, better}` JSON. One method, both providers, no duplicated HTTP/retry/config plumbing.
+
+## Honest about what's tested
+
+The happy path calls a real LLM, which I can't hit in CI without a key (and the integ profile points a fake key at a dead port). So the AI logic is covered by a **Mockito unit test** — feed `CompositionService` a canned provider response and assert it parses, strips a ```json fence, throws when the provider isn't configured, and throws on malformed JSON. The controller test covers validation (400) and auth. The live HTTP path is verified the honest way: against the running dev backend (no key) it returns **503 `AI_NOT_CONFIGURED`**, and the frontend shows a "add a GEMINI_API_KEY" hint rather than breaking. Drop in a key and it grades for real.
+
+That graceful no-key path matters: the default provider is Gemini (free tier), so turning this on is just an env var — and until then the feature degrades to a clear message instead of an error.
