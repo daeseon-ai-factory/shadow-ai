@@ -79,6 +79,8 @@ tubeshadow:
   rate-limit:
     # Simple per-IP+endpoint sliding-window limits on the auth endpoints.
     auth-attempts-per-minute: ${AUTH_RATE_LIMIT:20}
+    # Per-USER limit for the AI composition check (each call costs a provider request).
+    ai-per-minute: ${AI_RATE_LIMIT:15}
     # Comma-separated remote-addr prefixes from which X-Forwarded-For is trusted.
     # Empty (default) → always use Tomcat's remoteAddr, so X-F-F header spoofing
     # cannot bypass the limiter. Set this to your prod load-balancer CIDR(s).
