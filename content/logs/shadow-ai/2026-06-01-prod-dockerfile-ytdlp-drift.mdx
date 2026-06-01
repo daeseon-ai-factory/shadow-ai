@@ -1,0 +1,20 @@
+---
+title: "The prod Dockerfile was missing yt-dlp — caught by building it before the deploy"
+date: "2026-06-01"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "Prepping the AWS backend deploy, I built the production Docker image locally first. yt-dlp — which the YouTube import shells out to — wasn't in it. A months-old commit claimed it added yt-dlp to the prod Dockerfile, but the diff showed the install actually went into Dockerfile.dev. The image build caught a deploy that would have shipped a broken import feature."
+tags: ["docker", "deploy", "aws", "drift"]
+---
+
+The frontend went live on Vercel (mimi.daeseon.ai); next was the backend on AWS ECS + RDS. Before touching any billable AWS step, the cheapest de-risk is to **build the production image locally** — the #1 first-deploy failure is the container not running, and you can find that for free on your laptop.
+
+Good call, because it surfaced a bug. The image built fine, but `yt-dlp` — which the YouTube transcript fetch and the `yt-dlp -J` dimension probe shell out to via `ProcessBuilder` — **wasn't installed**. On a fresh ECS container, clip import would have failed silently after an otherwise-green deploy.
+
+The cause was textbook drift. A commit from a week earlier was titled *"yt-dlp in prod Dockerfile + PORT env var for PaaS"*, and its message described installing `python3 + py3-pip + ffmpeg` then `pip install yt-dlp` in `backend/Dockerfile`. But `git show <hash> -- backend/Dockerfile` told the truth: it only changed a comment line. The actual yt-dlp install had landed in **`backend/Dockerfile.dev`** — the dev image, not the prod one that `deploy.yml` builds and pushes to ECR. Message and diff disagreed, and the message was the one that lied.
+
+Fix: add the install to the prod runtime stage (as root, before dropping to the non-root user), mirroring the dev Dockerfile. Then verify, not assume: rebuild, `docker run --entrypoint yt-dlp … --version` → `2026.03.17`, jar and Java 21 present. 723MB image (ffmpeg is most of the bulk; kept for parity with the dev image that's known to work).
+
+This is the same lesson as an earlier README/ROADMAP drift on this project, now with teeth: a commit *message* is a claim, not evidence. `git show <hash> -- <file>` is evidence. The pattern that saved it here — **build the artifact before you deploy it** — is worth more than any amount of reading the Dockerfile, because the build runs the steps that a human eye skims past.

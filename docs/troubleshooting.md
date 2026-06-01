@@ -280,6 +280,15 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Cause**: `useMemo(buildPool, [])` passed a function *reference*; Next 16 / eslint-config-next's `react-hooks/use-memo` requires an **inline** function expression. Neither `tsc` nor `next build` runs ESLint, so the local type-check + build passed while CI's `npm run lint` (bare `eslint`, which exits 1 on any error) failed. The same lint also surfaces pre-existing `react-hooks/set-state-in-effect` *warnings* in older files — warnings don't fail `eslint`, only errors do, so those don't block CI.
 - **Fix**: `useMemo(() => buildPool(), [])`. `2258fbf`. Confirmed `npm run lint` → exit 0.
 - **Pattern**: build/type-check passing ≠ lint passing. Next 16's react-hooks rules (`use-memo`, `set-state-in-effect`) flag patterns the compiler happily accepts. Run `npm run lint` locally before pushing — it's exactly what CI gates on.
+
+---
+
+## Prod Docker image was missing yt-dlp (commit message lied about the diff)
+
+- **Symptom** (latent — caught while prepping the AWS deploy, before it shipped): the prod image `deploy.yml` builds + pushes to ECR had **no yt-dlp**, so clip import / transcript fetch / the `yt-dlp -J` dimension probe (all external `ProcessBuilder` calls) would fail on a clean ECS container.
+- **Cause**: commit `8f5bad0` ("yt-dlp in prod Dockerfile") *described* installing python3 + yt-dlp in `backend/Dockerfile`, but `git show 8f5bad0 -- backend/Dockerfile` shows it only changed a comment line — the actual install landed in **`backend/Dockerfile.dev`**, not the prod `backend/Dockerfile` that deploy.yml ships. The message and the diff drifted.
+- **Fix**: added `apk add python3 py3-pip ffmpeg && pip install --break-system-packages yt-dlp` to the runtime stage (as root, before the non-root `USER app`), mirroring Dockerfile.dev. Verified locally: `docker run --entrypoint yt-dlp … --version` → `2026.03.17`. `05333b1`.
+- **Pattern**: a commit *message* is not proof the change shipped — `git show <hash> -- <file>` is. Same class as the README/ROADMAP drift: before trusting "we added X", show the actual artifact. For prod Dockerfiles the failure is silent until a fresh container runs the missing binary.
 <!-- skipped: dfa9fe3 Add log entries for shadow-ai (arch overview + 1 backfill) [no-log] -->
 <!-- skipped: 7353f87 docs(log): hardening — AI rate limit + frontend tests (1b4fd3f) [no-log] -->
 <!-- skipped: 7f93bbe docs(log): AI composition (영작) mode (437afc7) [no-log] -->
@@ -314,3 +323,6 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 <!-- skipped: bcb0777 docs(log): private monetization/payments/tax structure memo [no-log] -->
 <!-- skipped: ee71dc6 docs(log): record README recruiter-rewrite + ROADMAP/code drift finding [no-log] -->
 <!-- skipped: 46a121b docs(troubleshoot): CI lint vs tsc/build gap (2258fbf) [no-log] -->
+<!-- skipped: 6b3b432 docs(infra): fix two first-deploy traps in the AWS bootstrap runbook [no-log] -->
+<!-- skipped: 395aa0a chore(web): rebrand user-facing name TubeShadow → Mimi [no-log] -->
+<!-- skipped: aa4bdfe docs(infra): frontend at mimi.daeseon.ai — CORS + DNS approach [no-log] -->
