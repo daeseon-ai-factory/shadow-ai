@@ -17,6 +17,13 @@ RUN ./gradlew --no-daemon bootJar -x test
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
+# yt-dlp (+ python3, ffmpeg) for the YouTube transcript fetch and the `-J` dimension probe.
+# These run as external processes (ProcessBuilder), not Java, so they must exist in the runtime
+# image — without them clip import fails on a clean container. (mirrors Dockerfile.dev; install
+# as root before dropping to the non-root app user.)
+RUN apk add --no-cache python3 py3-pip ffmpeg \
+    && pip install --break-system-packages yt-dlp
+
 # Non-root user for hardening
 RUN addgroup -S app && adduser -S app -G app
 USER app
