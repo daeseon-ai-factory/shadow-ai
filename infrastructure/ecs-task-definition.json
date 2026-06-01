@@ -26,7 +26,7 @@
         { "name": "DATABASE_USERNAME", "value": "tubeshadow_admin" },
         { "name": "AI_PROVIDER", "value": "gemini" },
         { "name": "RATE_LIMIT_TRUSTED_PROXIES", "value": "10.0.0.0/16" },
-        { "name": "CORS_ALLOWED_ORIGINS", "value": "https://app.daeseon.ai" }
+        { "name": "CORS_ALLOWED_ORIGINS", "value": "https://mimi.daeseon.ai,https://*.vercel.app" }
       ],
       "secrets": [
         { "name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:ca-central-1:ACCOUNT_ID:secret:tubeshadow/database-url" },

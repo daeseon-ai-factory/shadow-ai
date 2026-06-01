@@ -194,16 +194,20 @@ Create service (Console is easier first time):
 > endpoint** for `s3` (ECR image layers live in S3). No NAT, no public IPs on tasks — but ~4
 > more resources to create. Use public+SG-locked for the first deploy; switch to this once it's green.
 
-## 9. HTTPS + DNS (45 min, includes propagation wait)
+## 9. HTTPS + DNS (30 min, includes propagation wait)
 
-1. ACM (must be `ca-central-1` to match ALB) → request public certificate for
-   `api.YOUR_DOMAIN.com` + `*.YOUR_DOMAIN.com`. Choose DNS validation.
-2. Route 53 → create hosted zone for `YOUR_DOMAIN.com`. Copy the 4 nameservers.
-3. At your current domain registrar (Namecheap/GoDaddy/Cloudflare) → set
-   nameservers to the 4 from Route 53. Wait 5 min – 6 hr to propagate.
-4. ACM → "Add records in Route 53" button (auto-creates CNAMEs).
-5. ALB listener 443 → add ACM certificate → forward to target group.
-6. Route 53 → A record `api.YOUR_DOMAIN.com` → Alias → ALB.
+> ⚠️ **`daeseon.ai` already hosts the blog** (daeseon.ai/projects/shadow-ai) on its current DNS.
+> Do **NOT** move its nameservers to Route 53 — that forces you to re-create every existing record
+> or the blog breaks. **Keep DNS where it is; just add subdomain records** at that provider.
+
+1. ACM (must be `ca-central-1` to match the ALB) → request a public cert for `api.daeseon.ai`.
+   Choose **DNS validation** — ACM shows a CNAME (name + value).
+2. At `daeseon.ai`'s current DNS provider, add that **ACM validation CNAME**. Wait a few min
+   until ACM flips to "Issued".
+3. ALB → listener **443** → attach the ACM cert → forward to the `tubeshadow` target group (8080).
+   (Optionally add an 80→443 redirect.)
+4. At the DNS provider, add **`api.daeseon.ai` → CNAME → the ALB's DNS name**
+   (`tubeshadow-alb-…elb.amazonaws.com`). A subdomain CNAME works anywhere — no Route 53 needed.
 
 ## 10. GitHub repository secrets (5 min)
 
@@ -213,19 +217,24 @@ GitHub repo → Settings → Secrets and variables → Actions:
 Now push to `main` → `.github/workflows/deploy.yml` runs → image goes to ECR →
 ECS rolls a new task. Watch in Actions tab.
 
-## 11. Vercel for the frontend (10 min)
+## 11. Vercel for the frontend (10 min) — can be done FIRST, independent of the backend
 
 ```bash
-cd frontend && npx vercel
+cd frontend && npx vercel    # ⚠️ set Root Directory = frontend (this is a monorepo)
 ```
-Set env: `NEXT_PUBLIC_API_URL=https://api.YOUR_DOMAIN.com`
-Add custom domain `www.YOUR_DOMAIN.com` → Vercel gives you a CNAME → add in Route 53.
+- Env: `NEXT_PUBLIC_API_URL=https://api.daeseon.ai`
+- Custom domain: **`mimi.daeseon.ai`** → Vercel shows a CNAME → add it at `daeseon.ai`'s current
+  DNS provider (same place as the api + ACM records).
+- The backend CORS already allows `https://mimi.daeseon.ai` (+ `*.vercel.app` preview URLs).
+
+> Note: deploying the frontend before the backend gives a live URL + brand, but the app is
+> auth-gated — login/drills won't work until the backend (api.daeseon.ai) is up.
 
 ## 12. Smoke test
 
 ```
-https://www.YOUR_DOMAIN.com           # frontend
-https://api.YOUR_DOMAIN.com/api/health # backend
+https://mimi.daeseon.ai            # frontend
+https://api.daeseon.ai/api/health  # backend
 ```
 
 Then sign up, import a video, make a clip — verify the recording lands in S3 and
