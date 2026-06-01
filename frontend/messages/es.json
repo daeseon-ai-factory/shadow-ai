@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "TubeShadow",
+    "appName": "Mimi",
     "refresh": "Refresh",
     "loading": "Loading…",
     "back": "Back",
@@ -51,8 +51,8 @@
   "auth": {
     "signupTitle": "Sign up",
     "loginTitle": "Log in",
-    "signupDescription": "Create an account on TubeShadow and start clipping.",
-    "loginDescription": "Log in to TubeShadow and pick up where you left off.",
+    "signupDescription": "Create an account on Mimi and start clipping.",
+    "loginDescription": "Log in to Mimi and pick up where you left off.",
     "name": "Name",
     "namePlaceholder": "Jane Doe",
     "email": "Email",

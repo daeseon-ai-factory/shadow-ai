@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "TubeShadow",
+    "appName": "Mimi",
     "refresh": "새로고침",
     "loading": "불러오는 중…",
     "back": "뒤로",
@@ -51,8 +51,8 @@
   "auth": {
     "signupTitle": "회원가입",
     "loginTitle": "로그인",
-    "signupDescription": "TubeShadow에 가입하고 클립을 모으세요.",
-    "loginDescription": "TubeShadow에 로그인하고 클립을 모으세요.",
+    "signupDescription": "Mimi에 가입하고 클립을 모으세요.",
+    "loginDescription": "Mimi에 로그인하고 클립을 모으세요.",
     "name": "이름",
     "namePlaceholder": "홍길동",
     "email": "이메일",

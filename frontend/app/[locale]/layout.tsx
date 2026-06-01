@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TubeShadow",
+  title: "Mimi",
   description: "Clip directly from YouTube. Build your own library. Review with AI.",
 };
 
