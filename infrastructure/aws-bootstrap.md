@@ -73,8 +73,16 @@ Create 4 secrets (Console → Secrets Manager → Store secret → Other):
 tubeshadow/database-url         = jdbc:postgresql://<rds-endpoint>:5432/tubeshadow
 tubeshadow/database-password    = (paste from RDS-generated secret above)
 tubeshadow/jwt-secret           = (openssl rand -base64 48)
-tubeshadow/anthropic-api-key    = (your Claude key, or empty string if not using AI)
+tubeshadow/gemini-api-key       = (your Gemini key — AI_PROVIDER=gemini so this is the LIVE one; free at aistudio.google.com)
+tubeshadow/anthropic-api-key    = (Claude key, or any placeholder like "unused")
 ```
+
+> ⚠️ **The ECS task definition references ALL FIVE of these by ARN** (`database-url`,
+> `database-password`, `jwt-secret`, `gemini-api-key`, `anthropic-api-key`). If a referenced
+> secret doesn't exist, the Fargate task fails to start with `ResourceInitializationError:
+> unable to pull secrets`. Since `AI_PROVIDER=gemini`, only `gemini-api-key` needs a real value;
+> `anthropic-api-key` just needs to *exist* (any placeholder) — or delete its line from
+> `ecs-task-definition.json` if you'd rather not create it.
 
 Note each secret's ARN — they go into `ecs-task-definition.json`.
 
@@ -171,10 +179,20 @@ Create service (Console is easier first time):
 - Launch type: Fargate
 - Task definition: `tubeshadow:1`
 - Desired count: 1
-- VPC: `tubeshadow`, Private subnets, `fargate-sg`
-- Public IP: Disabled (it's behind the ALB)
+- VPC: `tubeshadow`, **Public** subnets, `fargate-sg`
+- Public IP: **Enabled** — REQUIRED. We skipped the NAT Gateway in §1, so the task needs a
+  public IP + the IGW route to pull from ECR and read Secrets Manager / write CloudWatch.
+  It is still NOT exposed: `fargate-sg` only allows 8080 *from `alb-sg`*, so only the ALB
+  reaches it. (Private subnets + Public IP Disabled would crash-loop with
+  `ResourceInitializationError: unable to pull` — no internet route to ECR.)
 - Load balancer: Application LB → create new `tubeshadow-alb` in public subnets,
   attach `alb-sg`, target group → port 8080, health check `/api/health`
+
+> 🔒 **More production-correct alternative** (do later if you want the cleaner story): keep the
+> service in **private** subnets with Public IP **Disabled**, but then you MUST add VPC
+> **interface endpoints** for `ecr.api`, `ecr.dkr`, `secretsmanager`, `logs` + a **gateway
+> endpoint** for `s3` (ECR image layers live in S3). No NAT, no public IPs on tasks — but ~4
+> more resources to create. Use public+SG-locked for the first deploy; switch to this once it's green.
 
 ## 9. HTTPS + DNS (45 min, includes propagation wait)
 
