@@ -357,3 +357,17 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: 9dd1a59
 - **Pattern**: an unauthenticated-but-secret-gated server-to-server endpoint belongs in `permitAll` *because* the secret, not Spring Security, is its gate — and such a gate must fail closed when the secret is missing, never open.
 <!-- skipped: e112e9a docs(log): entitlement skeleton — secret-gated billing webhook + read-time expiry (9dd1a59) [no-log] -->
+<!-- skipped: 13ed264 chore(log): hook skip-marker for e112e9a [no-log] -->
+
+---
+
+## Going native: monorepo + Expo app, without breaking the live web app
+
+- **Decision**: ship a real native iOS/Android app (Expo SDK 56 + expo-router), built *fresh*, not a Capacitor WebView wrap. Reasoning: wrapping a website risks App Store rejection (Guideline 4.2), and the architecture already separates cleanly — the backend (API+DB) is the shared source of truth, so a second client is the honest shape. The web app's `apiClient` was *already* platform-agnostic (token injected via `setTokenProvider`), which made this cheap.
+- **Monorepo**: introduced a root npm workspace (`packages/*` + `frontend` + `mobile`) and extracted `@shadow-ai/core` — drill content (`patterns`/`collocations`/`prepositions-primer`, ~3.4k lines), SRS logic, and the 12-module typed API layer. No DOM/Next deps in core.
+- **Zero-touch web migration**: instead of rewriting ~40 import sites, `frontend/lib/*` became one-line re-export shims (`export * from "@shadow-ai/core/..."`), so every existing `@/lib/...` import is unchanged. Web verified: `next build` OK, 29 vitest pass, lint 0 errors.
+- **Native wiring**: `metro.config.js` adds `watchFolders=[workspaceRoot]` + `nodeModulesPaths` so Metro resolves the out-of-root core package. `react-native-url-polyfill` fills RN's incomplete `URL` (core's client uses `new URL()`). JWT lives in `expo-secure-store` (OS keychain), mirrored to an in-memory zustand store that feeds `setTokenProvider` synchronously. `configureApiBaseUrl()` (added to core) points the client at the dev machine's LAN host.
+- **Verified**: `tsc` clean, `expo-doctor` 21/21, and the definitive check — `expo export --platform ios` bundles **1169 modules / 2.8MB Hermes**, proving core ships native. (Simulator run is on-device; this env has no Xcode.)
+- **Live-site safety**: all of this is on branch `feat/mobile-app`, NOT main — merging will require flipping Vercel's Root Directory to the repo root (workspace), so the live deploy isn't touched until that's coordinated.
+- **Commits**: abdd776 (core extraction) + cd4f8d0 (mobile app)
+- **Pattern**: when a client is already API-driven with an injectable auth token, "share the brain, rebuild the shell" beats both a WebView wrapper (store risk) and a copy-paste fork (drift). Re-export shims let the working client migrate to the shared package with a near-empty diff.

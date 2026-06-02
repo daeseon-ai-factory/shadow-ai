@@ -1,0 +1,58 @@
+---
+title: "Going native: turning the Mimi web app into an Expo iOS/Android app — share the brain, rebuild the shell"
+date: "2026-06-02"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Rather than wrapping the Next.js web app in a WebView (App Store rejection risk) or forking it (drift), I extracted the platform-agnostic core into a shared monorepo package and built a fresh Expo client on top of it. The web app migrated to the shared package with a near-empty diff via re-export shims."
+tags: ["mobile", "expo", "react-native", "monorepo", "architecture"]
+---
+
+Mimi is a working web app. The next move is the App Store. The tempting shortcut — wrap the existing site in a Capacitor WebView and submit — is exactly the thing Apple rejects under Guideline 4.2 ("minimum functionality / a repackaged website"). So I went the longer-but-honest way.
+
+## The architecture already pointed at the answer
+
+The realization that made this cheap: **the backend (API + DB) is the shared source of truth, and the frontend is just one client of it.** A native app isn't a fork of the web app — it's a *second client* of the same API. And the web client was already built for this without me planning it: the API layer's `apiClient` takes its auth token through an injected `setTokenProvider()`, not a hardcoded `localStorage` read. Web injects localStorage; mobile can inject the OS keychain. Same client, different platform.
+
+So the plan wrote itself: **share the brain, rebuild the shell.**
+
+## Extracting the brain
+
+I turned the repo into an npm workspace and pulled the platform-agnostic half into `@shadow-ai/core`:
+
+- the drill content — 82 sentence patterns, 101 collocations, the preposition primer (~3,400 lines of pure data),
+- the spaced-repetition logic (Leitner boxes, session building),
+- and the entire typed API layer (12 modules).
+
+No DOM, no Next, no React Native imports live in core. The one web-only escape hatch (`process.env.NEXT_PUBLIC_API_URL`) got a `configureApiBaseUrl()` setter so mobile sets its own base URL.
+
+## The part I'm proud of: a near-empty web diff
+
+The web app imports these files from ~40 places (`@/lib/patterns`, `@/lib/api/auth`, …). Rewriting all of them would be a big, risky diff on a *live* app. Instead, each moved file in `frontend/lib/` became a one-line re-export shim:
+
+```ts
+export * from "@shadow-ai/core/patterns";
+```
+
+Every existing import keeps working, untouched. The web app now consumes the shared package and I changed almost no application code. Verified before moving on: `next build` passes, all 29 Vitest tests pass, lint is clean.
+
+## Wiring the native shell
+
+The Expo app (SDK 56, expo-router) needed three monorepo-specific stitches:
+
+1. **Metro** doesn't look outside the project root by default, so `metro.config.js` adds `watchFolders=[workspaceRoot]` and the root `nodeModulesPaths` — now it resolves `@shadow-ai/core`.
+2. React Native's built-in `URL` is incomplete, and core's client calls `new URL()`. One import of `react-native-url-polyfill/auto` fixes it.
+3. The JWT lives in `expo-secure-store` (encrypted in the OS keychain — the native equivalent of the web's localStorage token), hydrated once at startup into an in-memory zustand store that feeds `setTokenProvider` synchronously.
+
+Two screens prove the whole stack end-to-end: a login screen hitting the real `authApi.login`, and an auth-gated home that renders `/me` (display name + a Free/Pro plan badge) alongside the shared `PATTERNS`/`COLLOCATIONS` counts — content bundled straight from core.
+
+## How I verified it without a simulator
+
+This environment has no Xcode, so "it runs" wasn't available. The meaningful proof is the bundle: `expo export --platform ios` builds **1,169 modules into a 2.8 MB Hermes bundle** — which means core's content and API actually compile into the native bundle, not just typecheck. Plus `tsc` is clean and `expo-doctor` reports 21/21. The simulator run (`npx expo run:ios`) is a one-liner on the Mac.
+
+## The discipline: don't break the live site
+
+All of this lives on a branch, not `main`. Merging will require pointing Vercel's Root Directory at the workspace root, so the production deploy at mimi.daeseon.ai stays untouched until that's coordinated. The web app's front door doesn't move because the mobile app is being born.
+
+Next: RevenueCat for in-app purchases, flowing into the `/api/billing/webhook` I built yesterday — Apple/Google purchases will flip the same `users.plan` the web payment path does. That was the whole point of making the entitlement model payment-source agnostic. Recorded against `abdd776` (core) and `cd4f8d0` (mobile).
