@@ -356,3 +356,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Fix files**: `V18__user_plan.sql`, `auth/domain/User.java` (applyPlan/effectivePlan), `auth/api/dto/MeResponse.java`, `billing/` slice (Controller/Service/dtos), `auth/security/SecurityConfig.java` (permitAll), `application.yml` (`tubeshadow.billing.webhook-secret`). Frontend: public `/terms` + `/privacy`, settings Plan badge.
 - **Commit**: 9dd1a59
 - **Pattern**: an unauthenticated-but-secret-gated server-to-server endpoint belongs in `permitAll` *because* the secret, not Spring Security, is its gate — and such a gate must fail closed when the secret is missing, never open.
+<!-- skipped: e112e9a docs(log): entitlement skeleton — secret-gated billing webhook + read-time expiry (9dd1a59) [no-log] -->
