@@ -342,3 +342,17 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Pattern**: copying a strong README from another project imports its *claims*, not its *code*. Every security/infra line in a recruiter-facing README must be grep-verified against *this* repo's source — the same anti-fabrication rule as the earlier README/ROADMAP drift, now for cross-repo copy-paste.
 <!-- override-trigger: 1fb8886 docs(readme): English-primary README.md + separate README.ko.md (ko/en split) [no-log] — false positive on the 394-LOC size trigger: this is a presentation split (English-primary README.md + Korean README.ko.md) of already-documented README content, with NO new technical claims. The substantive README rewrite and its lesson (cross-repo claim drift, caught by verifying every claim against code) are logged at 328f68a + d35889e (troubleshooting entry + narrative mdx). Splitting one bilingual doc into two language files is reformatting, not a new decision/fix. -->
 <!-- skipped: 0a7ec74 docs(troubleshoot): override-trigger note for 1fb8886 ko/en README split [no-log] -->
+<!-- skipped: 5843be4 chore(log): hook skip-marker for 0a7ec74 [no-log] -->
+
+---
+
+## Entitlement skeleton: who is allowed to write `users.plan`?
+
+- **Context**: Productizing toward an App Store launch. iOS digital subscriptions *must* use Apple IAP; the web can use a processor like Stripe/Toss; Google Play has its own billing. Three payment sources, one entitlement.
+- **Decision**: Mimi stores only the *outcome* — `plan` ('free'|'pro') + `plan_valid_until` + an opaque `billing_customer_id`. It never touches a card. Every payment source resolves to a Mimi user and POSTs `/api/billing/webhook` to flip the plan. One column, many sources.
+- **Auth model**: the webhook carries no JWT (the caller is a server, not the user), so it is in SecurityConfig's `permitAll` list — its gate is a constant-time `X-Billing-Secret` check (`MessageDigest.isEqual`) against `BILLING_WEBHOOK_SECRET`, **failing closed** (503 `BILLING_NOT_CONFIGURED`) when the secret is unset. A blank secret must never accept an entitlement write.
+- **Expiry is read-time, not a cron**: `User.effectivePlan(now)` degrades an expired 'pro' to 'free' on read, and `MeResponse` serves the effective value. No scheduled job needed to "downgrade" lapsed users — the column can lag, the read can't.
+- **Idempotency**: `setPlan` is a plain overwrite, so a retried webhook delivery can't corrupt state.
+- **Fix files**: `V18__user_plan.sql`, `auth/domain/User.java` (applyPlan/effectivePlan), `auth/api/dto/MeResponse.java`, `billing/` slice (Controller/Service/dtos), `auth/security/SecurityConfig.java` (permitAll), `application.yml` (`tubeshadow.billing.webhook-secret`). Frontend: public `/terms` + `/privacy`, settings Plan badge.
+- **Commit**: 9dd1a59
+- **Pattern**: an unauthenticated-but-secret-gated server-to-server endpoint belongs in `permitAll` *because* the secret, not Spring Security, is its gate — and such a gate must fail closed when the secret is missing, never open.

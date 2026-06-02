@@ -1,0 +1,42 @@
+---
+title: "Turning Mimi into a product it can charge for — an entitlement skeleton that doesn't touch a card"
+date: "2026-06-02"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "Laid the groundwork for monetization toward an App Store launch: a payment-source-agnostic entitlement model where Mimi stores only 'is this user pro, until when' and a secret-gated webhook flips it — plus the Terms and Privacy pages a real service needs."
+tags: ["monetization", "spring-boot", "architecture", "billing"]
+---
+
+Mimi was a working app with no way to charge for it. This pass added the skeleton that makes it a *product* — without committing to any one payment provider, because the eventual target is the App Store and iOS forces your hand.
+
+## The constraint that shapes everything
+
+iOS digital subscriptions **must** go through Apple's in-app purchase (and its cut). The web can use a normal processor like Stripe or Toss. Google Play has its own billing. So there is no single "payment integration" to build — there are three, and they'll arrive at different times.
+
+That ruled out baking any provider into the core. Instead, Mimi stores only the *outcome* of a payment, never the payment itself:
+
+- `users.plan` — `'free'` or `'pro'`
+- `plan_valid_until` — when a paid plan lapses
+- `billing_customer_id` — an opaque handle from whichever platform owns this user
+
+Mimi never sees a card number. Each payment source — a web checkout, an Apple server notification, a Google Play event — resolves to a Mimi user on a separate backend platform, then POSTs one endpoint to flip the plan. One column, many sources.
+
+## Two decisions I'd defend
+
+**The webhook is unauthenticated on purpose — and fails closed.** The caller is a server, not the logged-in user, so there's no JWT to present. The endpoint sits in Spring Security's `permitAll` list precisely because its real gate isn't Spring Security — it's a constant-time `X-Billing-Secret` check (`MessageDigest.isEqual`) against a configured secret. The part that matters: when the secret is *unset*, the endpoint returns 503, not 200. An unconfigured secret must never accept an entitlement write. Fail closed, never open.
+
+**Expiry is a read, not a cron job.** A naïve design schedules a nightly job to "downgrade" users whose subscription lapsed. Mimi doesn't. `User.effectivePlan(now)` computes the truth at read time — an expired `'pro'` simply reads as `'free'` — and `/api/auth/me` serves that effective value. The stored column is allowed to lag reality; the *read* never is. No background job to run, monitor, or get wrong.
+
+And the write path is idempotent: setting a plan is a plain overwrite, so a billing platform that retries a delivery can't corrupt anything.
+
+## The unglamorous half
+
+A service that charges money also needs the pages nobody reads until they have to: public, auth-free **Terms** and **Privacy** routes, English-primary (the audience and jurisdiction are North American) with localized chrome, linked from the home and settings footers, and honestly marked as a template pending legal review. Settings now shows a Plan badge so the entitlement is visible to the user it belongs to.
+
+Six integration tests pin the behavior that's easy to regress: missing secret → 401, wrong secret → 401, valid call sets `pro` and `/me` reflects it, an already-lapsed `pro` reads as `free`, unknown user → 404, invalid plan → 400.
+
+## Honest scope
+
+This is the *skeleton*, not the connection. No real provider is wired yet — that's the separate payment backend's job, and it now has a clean contract to target. Account deletion (an App Store requirement) is the deliberate next step: it needs a foreign-key cascade audit first, since today only five user-scoped tables cascade on delete and the rest would orphan rows. Better to do that one carefully than fast. Recorded against `9dd1a59`.
