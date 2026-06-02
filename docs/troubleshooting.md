@@ -374,3 +374,13 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 <!-- override-trigger: 7b697b2 docs(log): going-native monorepo + Expo pivot (abdd776, cd4f8d0) [no-log] — false positive: 7b697b2 IS the logging commit for the pivot (it added this very troubleshooting entry + the 2026-06-02-going-native-monorepo-expo.mdx narrative). The substantive work (abdd776 core extraction, cd4f8d0 mobile scaffold) is already dual-logged here and in the mdx. The "pivot" keyword fired on the doc commit's own subject. -->
 <!-- skipped: 7b697b2 docs(log): going-native monorepo + Expo pivot (abdd776, cd4f8d0) [no-log] -->
 <!-- skipped: 5b2cc08 chore(log): override-trigger note for 7b697b2 (doc commit's own keyword) [no-log] -->
+
+---
+
+## First real feature on the native app: Pattern Drill from shared core
+
+- **Context**: the Expo app had only auth (login + home). This is the first screen that does the product's actual job, and the test of whether the monorepo split pays off — can a native UI run the *same* content + SRS the web app does, with no duplicated logic?
+- **Fix**: `mobile/src/app/practice.tsx` imports `PATTERNS`, `patternKey`, `buildSession`, `localToday`, and `practiceApi` from `@shadow-ai/core` — zero drill logic re-implemented. It flattens patterns into keyed entries, builds the day's session (due cards + a capped `NEW_PER_DAY` trickle) against the account's SRS states, and runs the reveal → Again/Got-it loop natively. Grading calls the real `practiceApi.grade` (Leitner box + streak rep); missed cards requeue in-session; each card scores SRS once (first attempt), mirroring the web `PatternDrill` exactly.
+- **Verified**: `tsc` clean; Metro iOS bundle 1170 modules (was 1169 — the one new screen).
+- **Commit**: 37a1a59
+- **Pattern**: the payoff of "share the brain, rebuild the shell" — the native drill is ~290 lines of *UI only*; every piece of behavior (key format, session policy, grading) came from core unchanged, so web and mobile can't drift on the thing that matters (what counts as due, how a card is scored).

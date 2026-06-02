@@ -1,0 +1,22 @@
+---
+title: "The monorepo pays off: the native drill is UI-only — the brain came from core"
+date: "2026-06-02"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The first real feature on the Expo app — a native Pattern Drill — reuses the web app's exact content, card-key format, session policy, and grading from @shadow-ai/core. Only the UI is new."
+tags: ["mobile", "expo", "monorepo", "english-learning"]
+---
+
+Yesterday I extracted Mimi's brain into `@shadow-ai/core` and stood up an Expo app with login and a home screen. Today the native app does its first real job: a **Pattern Drill**.
+
+The point of this screen isn't the screen — it's proving the split was worth it.
+
+`mobile/src/app/practice.tsx` imports `PATTERNS`, `patternKey`, `buildSession`, `localToday`, and `practiceApi` from core and re-implements **none** of the drill logic. It flattens the bundled patterns into keyed entries, asks core to build today's session (everything due, plus a capped trickle of new cards) against the account's spaced-repetition state, and runs the reveal → *Again* / *Got it* loop. Grading calls the same `practiceApi.grade` the web app does — same Leitner box, same streak rep — and a missed card requeues within the session, scoring its SRS state only on the first attempt.
+
+That's the same behavior the web `PatternDrill` has, because it's literally the same code. The native file is ~290 lines, and they're all UI: `View`/`Pressable`/`StyleSheet`. What counts as "due," how a session is composed, what a card key looks like, how a grade maps to a box — none of that is duplicated, so web and mobile can't quietly disagree about the thing that actually matters in a learning tool.
+
+Verified the way this environment allows: `tsc` clean, and the Metro iOS bundle grows by exactly one module (1169 → 1170) for the one new screen.
+
+Still UI-only in scope — no shadowing audio yet (that's `expo-speech`, a later pass), and the collocation drill, compose check, and weak-spots views are still web-only. But the pattern is set: each new mobile screen is a thin native shell over logic that already exists and is already tested. Recorded against `37a1a59`, on the `feat/mobile-app` branch.
