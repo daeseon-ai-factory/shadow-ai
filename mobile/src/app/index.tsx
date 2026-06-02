@@ -1,6 +1,6 @@
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Redirect } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { authApi, PATTERNS, COLLOCATIONS } from '@shadow-ai/core';
 
@@ -49,13 +49,13 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Proves the shared core content is bundled and reachable on device. */}
-          <View style={styles.statsCard}>
-            <ThemedText type="smallBold">Today&apos;s drills</ThemedText>
+          {/* Tappable: runs the shared drill content (bundled from core) as a native session. */}
+          <Pressable style={styles.statsCard} onPress={() => router.push('/practice')}>
+            <ThemedText type="smallBold">Start today&apos;s drill →</ThemedText>
             <ThemedText type="small">
               {PATTERNS.length} sentence patterns · {COLLOCATIONS.length} collocations
             </ThemedText>
-          </View>
+          </Pressable>
 
           <Pressable style={styles.signOut} onPress={() => signOut()}>
             <ThemedText style={styles.signOutText}>Sign out</ThemedText>
