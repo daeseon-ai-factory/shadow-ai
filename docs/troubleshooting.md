@@ -326,3 +326,5 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 <!-- skipped: 6b3b432 docs(infra): fix two first-deploy traps in the AWS bootstrap runbook [no-log] -->
 <!-- skipped: 395aa0a chore(web): rebrand user-facing name TubeShadow → Mimi [no-log] -->
 <!-- skipped: aa4bdfe docs(infra): frontend at mimi.daeseon.ai — CORS + DNS approach [no-log] -->
+<!-- skipped: b728fc7 docs(log): prod Dockerfile yt-dlp drift fix (05333b1) [no-log] -->
+<!-- override-trigger: ddca23e docs(readme): rebrand to Mimi + full feature/architecture rewrite for recruiters [no-log] — false positive: keyword "architecture" matched, but this commit makes NO architecture decision and fixes NO bug. It only documents features/architecture already built AND already logged this session in their own commits + mdx entries (collocations e40ed78, SRS 5b971b8, compose 437afc7, hardening 1b4fd3f, yt-dlp 05333b1). A Symptom/Cause/Fix entry doesn't apply (nothing broke); a narrative mdx would duplicate those per-feature logs. README content updates are documentation of already-logged work. -->
