@@ -1,0 +1,22 @@
+---
+title: "Bringing the README to recruiter caliber — and deleting the claims the code didn't back"
+date: "2026-06-02"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Rewrote Mimi's README to a deep, portfolio-grade reference modeled on a sibling project. The part worth recording is the verification: several security/infra claims copied from the template (presigned URLs, HTTP Range) weren't true for Mimi, and got caught by grepping each one against the actual code before committing."
+tags: ["documentation", "anti-fabrication", "readme"]
+---
+
+The README is the recruiter's front door, so I rewrote it to real depth — a table of contents, an engineering summary for reviewers in a hurry, the full API surface, an eleven-table data model, an architecture diagram, a security table, honest limitations. I modeled the structure on a sibling project's README that I'd already polished.
+
+That's exactly where the interesting failure was.
+
+Copying a strong README from another repo imports its **claims**, not its **code**. The draft confidently said Mimi serves recordings via *presigned S3/R2 URLs* with *HTTP `Range`* handling for iOS audio — both true in the sibling project, neither true here. In Mimi, `S3RecordingStorage.load()` returns a streamed `ResponseInputStream` and `RecordingController.stream()` hands it to the client through an `InputStreamResource`: bytes stream straight through the backend, no presigning, no range support.
+
+Before committing, I grepped every security/infra line against the source. Six presigned/range claims were corrected and an entire "iOS audio range" row was deleted. What survived is only what's traceable to code: `BCryptPasswordEncoder`, the `token_version` revocation check in the JWT filter, `findByIdAndUserId` per-user isolation, the two distinct rate limiters (per-IP on auth, per-user on the AI endpoint), the env-gated local↔S3 storage seam, and the JSON clip export. I also did *not* claim Terraform — Mimi has a bootstrap runbook and an ECS task definition, not IaC, and saying otherwise would be the same lie in a different spot.
+
+This is the same anti-fabrication rule that bit earlier in this project (planning docs that listed shipped features as out-of-scope), now in a new shape: cross-repo copy-paste drift. A commit message, a planning doc, *and a borrowed README* are all claims — `grep` against this repo's source is the only evidence. Recorded against `328f68a`.
+
+(Follow-up, same day: split the README into an English-primary `README.md` with a separate `README.ko.md`, since the audience is a Toronto job search — English leads, Korean is one click away.)

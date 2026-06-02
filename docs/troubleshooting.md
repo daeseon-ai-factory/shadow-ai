@@ -328,3 +328,15 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 <!-- skipped: aa4bdfe docs(infra): frontend at mimi.daeseon.ai — CORS + DNS approach [no-log] -->
 <!-- skipped: b728fc7 docs(log): prod Dockerfile yt-dlp drift fix (05333b1) [no-log] -->
 <!-- override-trigger: ddca23e docs(readme): rebrand to Mimi + full feature/architecture rewrite for recruiters [no-log] — false positive: keyword "architecture" matched, but this commit makes NO architecture decision and fixes NO bug. It only documents features/architecture already built AND already logged this session in their own commits + mdx entries (collocations e40ed78, SRS 5b971b8, compose 437afc7, hardening 1b4fd3f, yt-dlp 05333b1). A Symptom/Cause/Fix entry doesn't apply (nothing broke); a narrative mdx would duplicate those per-feature logs. README content updates are documentation of already-logged work. -->
+<!-- skipped: 61a262c docs(troubleshoot): override-trigger note for ddca23e README rewrite [no-log] -->
+<!-- skipped: 815dda2 docs(blog): Mimi single-read project showcase post [no-log] -->
+
+---
+
+## README rewrite imported claims the code doesn't back (cross-repo copy drift)
+
+- **Symptom**: rewriting the README to match a sibling repo's caliber, the draft claimed recordings are served via **presigned S3/R2 URLs** with **HTTP `Range`** handling for iOS audio — neither of which Mimi actually does.
+- **Cause**: those lines were lifted from the sibling `motivation` (Beside) repo's README, where they're true. In Mimi, `S3RecordingStorage.load()` returns a streamed `ResponseInputStream` and `RecordingController.stream()` serves it via `InputStreamResource` — bytes stream straight through the backend; there is no presigning and no `Range`/`206` support.
+- **Fix**: grep-verified every imported security/infra claim against source *before* committing — corrected 6 presigned/Range spots and deleted the iOS-Range row; kept only code-traceable controls (`BCryptPasswordEncoder` in `SecurityConfig`, `token_version` check in `JwtAuthenticationFilter`, `findByIdAndUserId` isolation, two rate limiters, env-gated local↔S3 storage, JSON `ClipExportController`). Also did **not** claim Terraform — Mimi has a runbook + ECS task definition, not IaC.
+- **Commit**: `328f68a`
+- **Pattern**: copying a strong README from another project imports its *claims*, not its *code*. Every security/infra line in a recruiter-facing README must be grep-verified against *this* repo's source — the same anti-fabrication rule as the earlier README/ROADMAP drift, now for cross-repo copy-paste.
