@@ -1,0 +1,42 @@
+---
+title: "Mimi: turning YouTube into daily English practice for developers — the whole build in one read"
+date: "2026-06-02"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "A single-read overview of Mimi — a full-stack app that turns YouTube videos into spaced-repetition shadowing practice and drills the grammar, collocations, and prepositions that never come automatically. The product, the two halves, and the engineering decisions worth defending."
+tags: ["showcase", "full-stack", "spring-boot", "next.js", "english-learning"]
+---
+
+Most developers I know read English docs all day and still freeze when they have to *speak* or *write* it. Mimi is my attempt to close that gap — a full-stack web app that turns the input you already consume (YouTube) into the output practice you avoid, and drills the specific things that never come automatically (prepositions, fixed chunks, sentence frames) every day.
+
+Here's the whole project in one read.
+
+## Two halves that feed each other
+
+**Shadow from YouTube.** Paste a URL, clip a subtitle range, and one LLM call returns a translation, a word-by-word literal gloss (직독직해), vocabulary, per-preposition notes, and a real-world practice scenario — cached so you never pay for it twice. Then SM-2 spaced repetition schedules the clip, and you review it three ways: *reveal*, *write* (Korean prompt → type the English, with a token-level diff), or *scenario* (an AI-built situation that cues the clip's expression). You can even record yourself and play "original → you" back to back.
+
+**Daily drills (the Practice hub).** The grammar you "know" but never produce, forced into your mouth: 82 sentence-pattern frames (246 items), 101 word+preposition collocations (with a General / Dev filter), animated per-sense preposition diagrams, an AI composition check ("write your own sentence with this target → AI grades it + suggests a better version"), and a weak-spots dashboard. Every rep advances a spaced-repetition box and a daily streak, and the model sentence is spoken aloud so you can shadow it.
+
+## A few decisions I'd defend in an interview
+
+**Two spaced-repetition algorithms, on purpose.** Clip review uses SM-2 (the Anki four-grade scale). But the drills have a *binary* outcome — got it or not — so forcing SM-2's 0–5 scale onto two buttons would be the wrong tool. They use a Leitner box system instead. Same goal, right algorithm for the grading shape.
+
+**One LLM abstraction, reused.** A single `AiAnalysisClient` interface with Gemini and Claude implementations, picked at runtime by one env var. When I added the composition-check feature, it reused that abstraction rather than spawning a parallel client — and the whole thing defaults to Gemini's free tier, so marginal cost is ~$0.
+
+**The expensive call runs outside the transaction.** Creating a clip fires a domain event; analysis runs on a background thread *after commit*, so the multi-second HTTP call to the LLM never pins a database connection. Only the small `PENDING → READY/FAILED` writes are transactional.
+
+**Guards where money and abuse live.** Analysis is cached in a JSONB column, so reviews never re-bill the API. The one authenticated endpoint that *does* cost money — the AI composition check — is rate-limited per user, separate from the IP-based limiter on signup/login.
+
+**Content accuracy as a discipline.** The drill content (82 patterns, 101 collocations) was authored in parallel, then *strictly audited item by item* — correct preposition, idiomatic model, faithful Korean cue — before it shipped. In a learning tool a wrong example is worse than none: one bad translation gets memorized as truth.
+
+## The stack
+
+Java 21 / Spring Boot 3.3 — eight feature-sliced bounded contexts, 17 Flyway migrations, JWT auth, Micrometer → Prometheus · Next.js 16 / TypeScript (strict) / Tailwind / TanStack Query / next-intl (5 locales) · PostgreSQL 16 · Gemini / Claude · Docker + GitHub Actions CI with a keyless OIDC deploy. Tested with Testcontainers (a real Postgres per run), Vitest, and Playwright.
+
+## Honest scope
+
+Solo-built, with Claude Code as a pair programmer — the product direction, the architecture, the prompt design, and the test/content-audit strategy are mine. Deliberate non-goals: no pronunciation scoring, no AI essay grading, no social feed. The thesis is friction removal, not feature count. And yes — `yt-dlp` for subtitles sits in a YouTube ToS gray area; fine for personal use, revisit before anything commercial.
+
+Code: [github.com/Daeseon-AI-Factory/shadow-ai](https://github.com/Daeseon-AI-Factory/shadow-ai). The incremental build log — every fix and decision, with commit hashes — is the rest of this timeline.
