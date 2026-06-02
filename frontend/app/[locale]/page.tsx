@@ -11,6 +11,7 @@ import { healthApi } from "@/lib/api/health";
 export default function HomePage() {
   const t = useTranslations("home");
   const tCommon = useTranslations("common");
+  const tLegal = useTranslations("legal");
   const health = useQuery({
     queryKey: ["health"],
     queryFn: () => healthApi.get(),
@@ -55,6 +56,11 @@ export default function HomePage() {
         <Link href="/login" className={buttonVariants({ variant: "outline" })}>{t("actions.login")}</Link>
         <Link href="/library" className={buttonVariants({ variant: "secondary" })}>{t("actions.library")}</Link>
       </nav>
+
+      <footer className="mt-auto flex gap-4 border-t pt-4 text-sm text-muted-foreground">
+        <Link href="/terms" className="hover:underline">{tLegal("terms")}</Link>
+        <Link href="/privacy" className="hover:underline">{tLegal("privacy")}</Link>
+      </footer>
     </main>
   );
 }

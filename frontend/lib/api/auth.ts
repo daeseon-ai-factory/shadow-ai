@@ -35,6 +35,10 @@ export interface MeResponse {
   email: string;
   displayName: string;
   createdAt: string;
+  /** Effective entitlement: "free" | "pro" (an expired pro reads as "free"). */
+  plan: string;
+  /** When a paid plan lapses, ISO-8601; null for free / non-expiring. */
+  planValidUntil: string | null;
 }
 
 export const authApi = {

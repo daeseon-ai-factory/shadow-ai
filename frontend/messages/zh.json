@@ -174,7 +174,13 @@
     "passwordChanging": "Changing…",
     "passwordChanged": "Password changed",
     "passwordMismatch": "New password and confirmation don't match",
-    "passwordFailed": "Change failed"
+    "passwordFailed": "Change failed",
+    "planTitle": "套餐",
+    "planSubtitle": "您当前的权限。",
+    "planFree": "免费",
+    "planPro": "Pro",
+    "planValidUntilLabel": "有效期至",
+    "legalTitle": "条款与政策"
   },
   "discover": {
     "title": "Discover",
@@ -501,5 +507,12 @@
     "kindPattern": "pattern",
     "kindCollocation": "collocation",
     "listen": "Listen"
+  },
+  "legal": {
+    "terms": "服务条款",
+    "privacy": "隐私政策",
+    "lastUpdated": "最后更新",
+    "backHome": "返回首页",
+    "templateNote": "This is a template and not legal advice. Review with a professional before commercial launch."
   }
 }

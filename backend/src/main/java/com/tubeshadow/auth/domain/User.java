@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -30,6 +31,22 @@ public class User extends BaseEntity {
     /** Bumped to invalidate all previously-issued JWTs (e.g. on password change). */
     @Column(name = "token_version", nullable = false)
     private int tokenVersion;
+
+    /**
+     * Entitlement, set ONLY by the billing webhook — Mimi never processes payments itself.
+     * 'free' or 'pro'. A 'pro' value past {@link #planValidUntil} reads as free via
+     * {@link #effectivePlan(Instant)}.
+     */
+    @Column(name = "plan", nullable = false, length = 20)
+    private String plan = "free";
+
+    /** When the current paid plan lapses (null = no expiry tracked / free). */
+    @Column(name = "plan_valid_until")
+    private Instant planValidUntil;
+
+    /** Opaque customer id from whichever payment platform owns this user (Stripe/Apple/Google). */
+    @Column(name = "billing_customer_id", length = 255)
+    private String billingCustomerId;
 
     protected User() {
     }
@@ -63,6 +80,26 @@ public class User extends BaseEntity {
         this.displayName = displayName;
     }
 
+    /**
+     * Apply an entitlement decision from the billing layer. {@code customerId} is only overwritten
+     * when non-null, so a renewal webhook that omits it won't wipe the stored id.
+     */
+    public void applyPlan(String plan, Instant validUntil, String customerId) {
+        this.plan = plan;
+        this.planValidUntil = validUntil;
+        if (customerId != null) {
+            this.billingCustomerId = customerId;
+        }
+    }
+
+    /** Plan as it should be enforced right now — an expired paid plan degrades to 'free'. */
+    public String effectivePlan(Instant now) {
+        if (!"free".equals(plan) && (planValidUntil == null || planValidUntil.isAfter(now))) {
+            return plan;
+        }
+        return "free";
+    }
+
     public UUID getId() {
         return id;
     }
@@ -81,5 +118,17 @@ public class User extends BaseEntity {
 
     public int getTokenVersion() {
         return tokenVersion;
+    }
+
+    public String getPlan() {
+        return plan;
+    }
+
+    public Instant getPlanValidUntil() {
+        return planValidUntil;
+    }
+
+    public String getBillingCustomerId() {
+        return billingCustomerId;
     }
 }

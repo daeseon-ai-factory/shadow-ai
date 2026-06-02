@@ -174,7 +174,13 @@
     "passwordChanging": "Changing…",
     "passwordChanged": "Password changed",
     "passwordMismatch": "New password and confirmation don't match",
-    "passwordFailed": "Change failed"
+    "passwordFailed": "Change failed",
+    "planTitle": "Plan",
+    "planSubtitle": "Tu nivel actual.",
+    "planFree": "Gratis",
+    "planPro": "Pro",
+    "planValidUntilLabel": "Válido hasta",
+    "legalTitle": "Legal"
   },
   "discover": {
     "title": "Discover",
@@ -501,5 +507,12 @@
     "kindPattern": "pattern",
     "kindCollocation": "collocation",
     "listen": "Listen"
+  },
+  "legal": {
+    "terms": "Términos del servicio",
+    "privacy": "Política de privacidad",
+    "lastUpdated": "Última actualización",
+    "backHome": "Volver al inicio",
+    "templateNote": "This is a template and not legal advice. Review with a professional before commercial launch."
   }
 }

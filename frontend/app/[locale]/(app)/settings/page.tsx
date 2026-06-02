@@ -11,9 +11,11 @@ import { toast } from "sonner";
 import { authApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { ApiError } from "@/lib/api/client";
+import { Link } from "@/i18n/navigation";
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
+  const tLegal = useTranslations("legal");
   const setSession = useAuthStore((s) => s.setSession);
   const token = useAuthStore((s) => s.token);
 
@@ -57,6 +59,29 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </header>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("planTitle")}</CardTitle>
+          <CardDescription>{t("planSubtitle")}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex items-center justify-between gap-4">
+          <span
+            className={
+              me?.plan === "pro"
+                ? "inline-flex items-center rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground"
+                : "inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground"
+            }
+          >
+            {me?.plan === "pro" ? t("planPro") : t("planFree")}
+          </span>
+          {me?.plan === "pro" && me?.planValidUntil && (
+            <span className="text-sm text-muted-foreground">
+              {t("planValidUntilLabel")}: {new Date(me.planValidUntil).toLocaleDateString()}
+            </span>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -158,6 +183,11 @@ export default function SettingsPage() {
           </form>
         </CardContent>
       </Card>
+
+      <footer className="flex gap-4 border-t pt-4 text-sm text-muted-foreground">
+        <Link href="/terms" className="hover:underline">{tLegal("terms")}</Link>
+        <Link href="/privacy" className="hover:underline">{tLegal("privacy")}</Link>
+      </footer>
     </div>
   );
 }

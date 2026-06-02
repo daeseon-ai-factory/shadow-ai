@@ -49,6 +49,9 @@ public class SecurityConfig {
                                 "/api/health",
                                 "/api/auth/signup",
                                 "/api/auth/login",
+                                // Server-to-server entitlement webhook: no JWT (caller is the billing
+                                // platform). Gated by a constant-time X-Billing-Secret check in the controller.
+                                "/api/billing/webhook",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
