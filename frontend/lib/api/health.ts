@@ -1,9 +1,2 @@
-import { apiClient } from "./client";
-
-export interface HealthStatus {
-  status: string;
-}
-
-export const healthApi = {
-  get: () => apiClient.get<HealthStatus>("/api/health"),
-};
+// Shim: re-exports from @shadow-ai/core. Existing "@/lib/api/health" imports stay unchanged.
+export * from "@shadow-ai/core/api/health";

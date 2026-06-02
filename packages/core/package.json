@@ -1,0 +1,17 @@
+{
+  "name": "@shadow-ai/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform-agnostic brain of Mimi: drill content, SRS logic, and the typed API layer. Consumed by both the web (Next.js) and mobile (Expo) clients. No browser/DOM/Next dependencies.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./patterns": "./src/patterns.ts",
+    "./collocations": "./src/collocations.ts",
+    "./prepositions-primer": "./src/prepositions-primer.ts",
+    "./practice-srs": "./src/practice-srs.ts",
+    "./practice-cards": "./src/practice-cards.ts",
+    "./api/*": "./src/api/*.ts"
+  },
+  "dependencies": {}
+}
