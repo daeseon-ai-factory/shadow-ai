@@ -1,0 +1,99 @@
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Redirect } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
+import { authApi, PATTERNS, COLLOCATIONS } from '@shadow-ai/core';
+
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useAuthStore } from '@/lib/auth-store';
+
+export default function HomeScreen() {
+  const token = useAuthStore((s) => s.token);
+  const hydrated = useAuthStore((s) => s.hydrated);
+  const signOut = useAuthStore((s) => s.signOut);
+
+  // Hooks must run unconditionally — gate the request with `enabled`, redirect in render.
+  const me = useQuery({ queryKey: ['me'], queryFn: () => authApi.me(), enabled: !!token });
+
+  if (!hydrated) {
+    return (
+      <ThemedView style={styles.center}>
+        <ActivityIndicator />
+      </ThemedView>
+    );
+  }
+  if (!token) return <Redirect href="/login" />;
+
+  return (
+    <ThemedView style={styles.flex}>
+      <SafeAreaView style={styles.flex}>
+        <View style={styles.container}>
+          <ThemedText type="title">Mimi</ThemedText>
+
+          {me.isPending && <ActivityIndicator style={styles.gap} />}
+          {me.isError && (
+            <ThemedText style={styles.error}>{(me.error as Error).message}</ThemedText>
+          )}
+          {me.data && (
+            <View style={styles.gap}>
+              <ThemedText type="subtitle">Welcome back, {me.data.displayName}</ThemedText>
+              <View style={styles.row}>
+                <View style={me.data.plan === 'pro' ? styles.proBadge : styles.freeBadge}>
+                  <ThemedText style={styles.badgeText}>
+                    {me.data.plan === 'pro' ? 'PRO' : 'FREE'}
+                  </ThemedText>
+                </View>
+                <ThemedText type="small">{me.data.email}</ThemedText>
+              </View>
+            </View>
+          )}
+
+          {/* Proves the shared core content is bundled and reachable on device. */}
+          <View style={styles.statsCard}>
+            <ThemedText type="smallBold">Today&apos;s drills</ThemedText>
+            <ThemedText type="small">
+              {PATTERNS.length} sentence patterns · {COLLOCATIONS.length} collocations
+            </ThemedText>
+          </View>
+
+          <Pressable style={styles.signOut} onPress={() => signOut()}>
+            <ThemedText style={styles.signOutText}>Sign out</ThemedText>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    </ThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  container: { flex: 1, padding: 24, gap: 16 },
+  gap: { marginTop: 8, gap: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  error: { color: '#dc2626', marginTop: 8 },
+  proBadge: {
+    backgroundColor: '#208AEF',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  freeBadge: {
+    backgroundColor: '#9ca3af',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  badgeText: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  statsCard: {
+    marginTop: 12,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    gap: 4,
+  },
+  signOut: { marginTop: 'auto', alignSelf: 'flex-start', paddingVertical: 10 },
+  signOutText: { color: '#dc2626', fontWeight: '600' },
+});

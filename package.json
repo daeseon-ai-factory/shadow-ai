@@ -4,6 +4,7 @@
   "description": "Mimi monorepo — shared core consumed by the Next.js web app and the Expo mobile app.",
   "workspaces": [
     "packages/*",
-    "frontend"
+    "frontend",
+    "mobile"
   ]
 }
