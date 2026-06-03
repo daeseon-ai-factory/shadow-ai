@@ -1,0 +1,26 @@
+---
+title: "Mobile hits active-learning parity: SM-2 review is ported — what 'done' actually means"
+date: "2026-06-03"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The spaced-repetition clip review — the last core learning screen — is now native. Mimi's whole active learning loop runs on mobile from one shared core. A note on why I call the learning surface 'done' rather than counting screens."
+tags: ["mobile", "expo", "spaced-repetition", "monorepo"]
+---
+
+The last core learning screen made the jump: SM-2 clip review.
+
+It works the way the rest of the port does — a thin native screen over `@shadow-ai/core`. `reviewApi.queue()` gives the day's due clips; for each one the screen pulls the Korean prompt from the clip's analysis (`primaryTranslation`), you try to recall it in English, reveal the transcript, and grade Again / Hard / Good / Easy through `reviewApi.respond` with the shared `REVIEW_QUALITY` map. There's a deep link straight into the segment player, so a review you fumble flows right into shadowing it.
+
+`tsc` clean, Metro iOS bundle at 1,203 modules.
+
+## What "done" means here
+
+It's tempting to track this port as a fraction of screens — "3 of 19," "11 of 19." But that number lies in both directions. Early on it understated progress (the three screens that existed were the hard, foundational ones). Now it would overstate what's left, because the screens that remain — a prepositions primer, settings, the legal pages — aren't the product.
+
+So here's the honest status, drawn around the thing that matters: **Mimi's entire active learning loop is now on mobile.** Drill the patterns and collocations you can't produce, compose a sentence and get it graded, import a YouTube video and clip it, loop the segment and record yourself, and review it all on a spaced-repetition schedule. Every one of those runs on the same core the web app uses — same content, same SRS, same grading, same API.
+
+What's left is genuinely secondary: account deletion (which I do need before an App Store submission — it's a hard requirement, not a learning feature), plus the prepositions primer, settings, and legal screens. Those are next, but none of them change what the app *is*.
+
+The throughline of this whole port: extract the brain once, and a new platform costs you UI plus the handful of real seams — secure storage, media capture, multipart upload. The learning logic never got rewritten, not once. Recorded against `56873e2`, on `feat/mobile-app`.

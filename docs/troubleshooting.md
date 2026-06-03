@@ -430,3 +430,14 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: 1b5382f
 - **Pattern**: the shared API client carried over to native for free *except* at the multipart boundary — a file part is the one place web (`Blob`/`File`) and RN (`{ uri }` descriptor) genuinely diverge, so that one call gets a platform-specific body while everything else reuses core verbatim.
 <!-- skipped: b201e47 docs(log): mobile shadowing recording with expo-audio (1b5382f) [no-log] -->
+
+---
+
+## Mobile reaches active-learning parity: SM-2 Review ported
+
+- **Context**: the last core learning screen still web-only was the spaced-repetition clip review.
+- **Fix**: `review.tsx` drives a session from `reviewApi.queue()`; for each card it fetches the clip's Korean prompt via `analysisApi.get().primaryTranslation`, reveals the English transcript, and grades Again/Hard/Good/Easy through `reviewApi.respond` with the shared `REVIEW_QUALITY` map (SM-2). "Open clip & shadow" deep-links into the segment player.
+- **Verified**: `tsc` clean; Metro iOS bundle 1203 modules.
+- **Scope reached**: mobile now covers Mimi's entire *active learning* surface — pattern + collocation drills, compose check, weak-spots, import/library, in-app segment player with loop, voice recording, and SM-2 review — all on `@shadow-ai/core`. Remaining is non-learning: account deletion (App Store launch requirement), and secondary screens (prepositions primer, settings, legal).
+- **Commit**: 56873e2
+- **Pattern**: "parity" is worth defining narrowly — the *active learning* loop (drill, shadow, review) is the product; settings/legal/primer are table stakes that can follow. Calling the learning surface done is a truer status than a raw screen count.
