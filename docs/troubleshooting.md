@@ -442,3 +442,17 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: 56873e2
 - **Pattern**: "parity" is worth defining narrowly — the *active learning* loop (drill, shadow, review) is the product; settings/legal/primer are table stakes that can follow. Calling the learning surface done is a truer status than a raw screen count.
 <!-- skipped: 2b341a2 docs(log): mobile SM-2 review parity (56873e2) [no-log] -->
+
+---
+
+## Account deletion: audit the FK cascade before trusting it
+
+- **Context**: App Store (5.1.1v) requires in-app account deletion; a prior note *assumed* "only 5 tables cascade, the rest orphan." Before building, I audited the actual schema.
+- **Finding (verified, not assumed)**: every user-owned table already has `ON DELETE CASCADE` — `clips` (→ `clip_analyses` via clip_id, `recordings`, `review_items`), `decks`, `practice_progress`, `practice_card`. `videos` (keyed by `youtube_id`) and `collections` (editorial) have no `user_id` and are shared — correctly untouched. So a single `users` delete wipes the DB cleanly; the earlier worry was wrong.
+- **The one real gap**: recording **audio binaries** live in storage (local/S3), not the DB, so the cascade can't reach them. `AuthService.deleteAccount` purges the user's files first (rows still present to read their paths), then deletes the user.
+- **Two bugs found while testing**:
+  1. `deleteFileQuietly` only caught `IOException`, but `LocalRecordingStorage.delete` throws `SecurityException` on a path outside its root → a legacy/odd path 500'd the whole deletion. Broadened to catch all exceptions (best-effort by contract).
+  2. The integration test was `@Transactional`, so the service's delete never flushed/committed and the post-delete `JdbcTemplate` counts saw stale rows. Removed `@Transactional` — the cascade has to actually commit to be observable.
+- **Regression**: `AccountDeletionTest` plants a row in every user-owned table, deletes via `DELETE /api/auth/me`, and asserts all gone + the shared video survives. If a future migration adds a user-owned table without CASCADE, this fails.
+- **Commit**: 7028fdc
+- **Pattern**: never trust a remembered claim about a destructive cascade — `grep REFERENCES` across every migration and prove it with a test that seeds *all* children. An "assumed orphan" turned out fully wired; assuming the opposite would've meant pointless manual-delete code.

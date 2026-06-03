@@ -1,0 +1,38 @@
+---
+title: "Account deletion done right: audit the cascade, don't trust the memo"
+date: "2026-06-03"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "The App Store requires in-app account deletion. A leftover note claimed most user tables wouldn't cascade-delete — so I audited the real schema before writing a line. It was wrong: everything already cascades. The only real gap was audio files on disk, plus two bugs the test flushed out."
+tags: ["postgres", "data-deletion", "app-store", "anti-fabrication"]
+---
+
+To ship Mimi to the App Store, the app needs a "delete my account" button that actually erases everything — Apple Guideline 5.1.1(v), and the right thing to do regardless. The danger with account deletion is silent incompleteness: you delete the user, say "done," and leave their recordings sitting on a disk somewhere.
+
+I had a note from an earlier session warning that "only five tables cascade; the rest would orphan." That note is exactly the kind of thing you must not trust on a destructive operation. So before writing any deletion code, I grepped every `REFERENCES` across all 18 migrations and drew the real graph.
+
+## The memo was wrong
+
+Every user-owned table already had `ON DELETE CASCADE`:
+
+- `clips` (via `user_id`) → and `clip_analyses` hangs off `clips`, `recordings` and `review_items` off both `clips` and the user
+- `decks`, `practice_progress`, `practice_card` directly off the user
+
+And the two tables *without* a `user_id` — `videos` (keyed globally by `youtube_id`, a shared cache) and `collections` (editorial discover content) — are shared on purpose and must **not** be deleted when one user leaves. So a single `DELETE FROM users` cleans the entire database correctly. The remembered "orphan" problem didn't exist; had I trusted it, I'd have written a pile of pointless manual-delete code.
+
+## The gap that was real
+
+What a DB cascade *can't* touch is data that isn't in the DB: the recording **audio files** in storage (local disk or S3). So `deleteAccount` purges those first — while the recording rows still exist to read their file paths — and then deletes the user, letting the cascade do the rest. Password-guarded, because deletion is irreversible.
+
+## Two bugs the test caught
+
+I wrote a test that plants a row in *every* user-owned table, deletes the account, and asserts all of them are empty while the shared video survives. It failed twice, usefully:
+
+1. **A `SecurityException` 500'd the deletion.** `LocalRecordingStorage.delete` throws `SecurityException` for a path outside its root, but the "quiet" cleanup helper only caught `IOException`. One odd or legacy path could have blocked a user from ever deleting their account. The fix: a best-effort cleanup must swallow *everything* and log — never propagate.
+2. **A `@Transactional` test lied.** With the test holding the transaction open, the service's delete never flushed, so the post-delete row counts read stale data and "proved" nothing was deleted. Removing `@Transactional` let the delete actually commit — a cascade is only real once it commits, so the test has to let it.
+
+Now the regression stands guard: add a user-owned table in a future migration without `ON DELETE CASCADE`, and this test goes red.
+
+The lesson is the same one this project keeps relearning in new costumes: a remembered claim is not evidence. For a destructive cascade especially, grep the schema and prove it with a test that seeds all the children — then you know, instead of hoping. Recorded against `7028fdc`.
