@@ -1,0 +1,35 @@
+---
+title: "Full parity: the last screen ports, and the whole web app now runs native on one shared core"
+date: "2026-06-03"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The preposition primer was the last web-only screen. With it ported, every screen in Mimi has a native counterpart built on @shadow-ai/core. A note on porting visual features: ship the content, defer the decoration."
+tags: ["mobile", "expo", "monorepo", "english-learning"]
+---
+
+The preposition screen was the last one. With it native, the mobile app now mirrors the entire web feature set — and every screen of it runs on the same `@shadow-ai/core` the website does.
+
+The screen itself is straightforward: render `PREPOSITION_PRIMER` from core (each preposition, its real senses, an idiomatic example for each) and the mined view from `prepositionsApi.mined()` — the prepositions the AI flagged across clips you've analyzed.
+
+## Ship the content, defer the decoration
+
+The one judgment call: the web shows a little animated SVG diagram for each preposition sense — a dot inside a box for "in," a dot on a line for "on," an arrow for "to." Re-creating those would mean pulling in `react-native-svg` and reimplementing every archetype.
+
+I didn't. The diagram is *decoration*; the *content* is the sense and the example, and that ported verbatim from core. So the native screen shows a small archetype chip ("inside," "surface," "point") where the web draws a picture — same meaning conveyed, no new dependency, and the SVG can come back later as polish if it earns its place. Separating content from decoration is what let the last screen land in one short pass instead of a render-engine detour.
+
+## Where the port stands
+
+Every web screen now has a native counterpart, all on the shared core:
+
+- auth, and a home hub
+- pattern + collocation drills, the AI compose check, weak-spots
+- import, library, the in-app segment player with shadowing loop, voice recording
+- SM-2 clip review
+- the preposition primer
+- settings, including account deletion
+
+What's left is deliberate, not missing: the SVG preposition diagrams (polish), and live in-app purchases (RevenueCat, which needs real store credentials). The product is whole; those are the last two finishing moves.
+
+The whole port, in one sentence: extract the brain into a shared package, and a second platform costs you native UI plus a handful of real seams — secure storage, media capture, multipart upload, and the occasional "is this content or decoration?" call. The learning logic was never rewritten, not once, across eleven screens. Recorded against `fd31d1c`, on `feat/mobile-app`.

@@ -459,3 +459,14 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 <!-- override-trigger: 6527880 docs(log): account deletion + FK cascade audit (7028fdc) [no-log] — false positive: 6527880 IS the logging commit for the account-deletion work (it added this very troubleshooting entry + the 2026-06-03-account-deletion-cascade-audit.mdx narrative). The substantive change is 7028fdc, already dual-logged here and in the mdx. The "audit" keyword fired on the doc commit's own subject. -->
 <!-- skipped: 6527880 docs(log): account deletion + FK cascade audit (7028fdc) [no-log] -->
 <!-- skipped: f73ed31 chore(log): override-trigger note for 6527880 (doc commit's own keyword) [no-log] -->
+
+---
+
+## Mobile reaches full web parity: prepositions screen (the last one)
+
+- **Context**: the preposition primer + mined view were the last web-only screen.
+- **Fix**: `prepositions.tsx` renders `PREPOSITION_PRIMER` (each preposition's senses + real examples) from core, plus the mined view from `prepositionsApi.mined()` (prepositions the AI flagged across the user's clips). The web shows animated SVG diagrams per sense; mobile hints the same archetype with a small text chip instead of pulling in `react-native-svg` — the content (sense + example) is the value, the picture is a nicety.
+- **Verified**: `tsc` clean; Metro iOS bundle 1205 modules.
+- **Status**: every web screen now has a native counterpart on `@shadow-ai/core` — auth, home hub, pattern/collocation drills, compose, weak-spots, library/import, segment player, recording, SM-2 review, prepositions, settings (with account deletion). Only the SVG preposition diagrams and live IAP remain as deliberate follow-ups.
+- **Commit**: fd31d1c
+- **Pattern**: when porting a visual feature, separate the *content* from the *decoration* — the senses/examples ported verbatim from core; the SVG diagram was decoration, so a text chip kept parity on meaning without a new native dependency. Ship the content, defer the polish.
