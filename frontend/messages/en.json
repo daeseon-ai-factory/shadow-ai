@@ -180,7 +180,14 @@
     "planFree": "Free",
     "planPro": "Pro",
     "planValidUntilLabel": "Valid until",
-    "legalTitle": "Legal"
+    "legalTitle": "Legal",
+    "deleteTitle": "Delete account",
+    "deleteSubtitle": "Permanently delete your account and all data.",
+    "deleteWarning": "This cannot be undone. Your clips, recordings, drill progress, and account are erased.",
+    "deletePasswordLabel": "Enter your password to confirm",
+    "deleteButton": "Delete my account",
+    "deleting": "Deleting…",
+    "deleteFailed": "Could not delete account"
   },
   "discover": {
     "title": "Discover",

@@ -180,7 +180,14 @@
     "planFree": "無料",
     "planPro": "Pro",
     "planValidUntilLabel": "有効期限",
-    "legalTitle": "規約・ポリシー"
+    "legalTitle": "規約・ポリシー",
+    "deleteTitle": "アカウント削除",
+    "deleteSubtitle": "アカウントと全データを完全に削除します。",
+    "deleteWarning": "取り消せません。クリップ・録音・学習記録・アカウントが消去されます。",
+    "deletePasswordLabel": "確認のためパスワードを入力",
+    "deleteButton": "アカウントを削除",
+    "deleting": "削除中…",
+    "deleteFailed": "削除できませんでした"
   },
   "discover": {
     "title": "Discover",

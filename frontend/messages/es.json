@@ -180,7 +180,14 @@
     "planFree": "Gratis",
     "planPro": "Pro",
     "planValidUntilLabel": "Válido hasta",
-    "legalTitle": "Legal"
+    "legalTitle": "Legal",
+    "deleteTitle": "Eliminar cuenta",
+    "deleteSubtitle": "Elimina permanentemente tu cuenta y todos los datos.",
+    "deleteWarning": "No se puede deshacer. Tus clips, grabaciones, progreso y cuenta se borran.",
+    "deletePasswordLabel": "Escribe tu contraseña para confirmar",
+    "deleteButton": "Eliminar mi cuenta",
+    "deleting": "Eliminando…",
+    "deleteFailed": "No se pudo eliminar la cuenta"
   },
   "discover": {
     "title": "Discover",

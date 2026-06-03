@@ -130,10 +130,24 @@ public class RecordingService {
         }
     }
 
+    /**
+     * Purge every stored audio file belonging to a user. The DB rows are removed by the
+     * users→recordings ON DELETE CASCADE during account deletion; this deletes the binaries,
+     * which the cascade can't reach. Best-effort per file so one failure can't block deletion.
+     */
+    public void purgeFilesForUser(UUID userId) {
+        for (Recording r : recordingRepository.findByUserId(userId)) {
+            deleteFileQuietly(r.getFilePath());
+        }
+    }
+
     private void deleteFileQuietly(String filePath) {
+        // Best-effort by contract: a missing file, an I/O error, or a malformed/legacy path
+        // (e.g. a SecurityException on a path that escapes the storage root) must never block
+        // the caller — especially account deletion, which has to complete regardless.
         try {
             storage.delete(filePath);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             org.slf4j.LoggerFactory.getLogger(RecordingService.class)
                     .warn("Failed to delete recording file {}: {}", filePath, ex.getMessage());
         }

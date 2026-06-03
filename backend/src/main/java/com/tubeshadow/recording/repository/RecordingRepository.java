@@ -12,4 +12,7 @@ public interface RecordingRepository extends JpaRepository<Recording, UUID> {
     List<Recording> findByClipIdAndUserIdOrderByCreatedAtAsc(UUID clipId, UUID userId);
 
     Optional<Recording> findByIdAndUserId(UUID id, UUID userId);
+
+    /** All of a user's recordings — used to purge their stored audio files on account deletion. */
+    List<Recording> findByUserId(UUID userId);
 }

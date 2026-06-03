@@ -441,3 +441,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Scope reached**: mobile now covers Mimi's entire *active learning* surface — pattern + collocation drills, compose check, weak-spots, import/library, in-app segment player with loop, voice recording, and SM-2 review — all on `@shadow-ai/core`. Remaining is non-learning: account deletion (App Store launch requirement), and secondary screens (prepositions primer, settings, legal).
 - **Commit**: 56873e2
 - **Pattern**: "parity" is worth defining narrowly — the *active learning* loop (drill, shadow, review) is the product; settings/legal/primer are table stakes that can follow. Calling the learning surface done is a truer status than a raw screen count.
+<!-- skipped: 2b341a2 docs(log): mobile SM-2 review parity (56873e2) [no-log] -->

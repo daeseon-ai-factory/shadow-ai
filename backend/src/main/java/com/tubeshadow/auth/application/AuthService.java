@@ -11,6 +11,7 @@ import com.tubeshadow.auth.security.JwtTokenProvider;
 import com.tubeshadow.common.exception.ConflictException;
 import com.tubeshadow.common.exception.NotFoundException;
 import com.tubeshadow.common.exception.UnauthorizedException;
+import com.tubeshadow.recording.application.RecordingService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +24,37 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+    private final RecordingService recordingService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtTokenProvider tokenProvider) {
+                       JwtTokenProvider tokenProvider,
+                       RecordingService recordingService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.recordingService = recordingService;
+    }
+
+    /**
+     * Permanently delete the account and everything it owns (App Store / GDPR requirement).
+     * Requires the current password as a confirmation guard.
+     *
+     * <p>Audited cascade (V1–V18): deleting the {@code users} row removes, via ON DELETE CASCADE,
+     * the user's clips (→ clip_analyses, recordings, review_items), decks, practice_progress, and
+     * practice_card. Shared resources (videos, collections) are keyed globally and intentionally
+     * stay. The only thing the cascade can't reach is the recording audio binaries — purged first.
+     */
+    @Transactional
+    public void deleteAccount(UUID userId, String rawPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "사용자를 찾을 수 없습니다"));
+        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+            throw new UnauthorizedException("INVALID_PASSWORD", "비밀번호가 일치하지 않습니다");
+        }
+        // Files first (need the rows to read their paths); then one delete cascades the DB.
+        recordingService.purgeFilesForUser(userId);
+        userRepository.delete(user);
     }
 
     @Transactional

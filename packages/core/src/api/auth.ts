@@ -1,4 +1,4 @@
-import { apiClient } from "./client";
+import { apiClient, apiRequest } from "./client";
 
 export interface SignupPayload {
   email: string;
@@ -49,4 +49,7 @@ export const authApi = {
     apiClient.patch<AuthTokenResponse>("/api/auth/me", payload),
   changePassword: (payload: ChangePasswordPayload) =>
     apiClient.post<void>("/api/auth/me/password", payload),
+  /** Permanently delete the account + all its data. Requires the current password. */
+  deleteAccount: (password: string) =>
+    apiRequest<void>("/api/auth/me", { method: "DELETE", body: { password } }),
 };

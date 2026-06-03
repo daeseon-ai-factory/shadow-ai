@@ -11,13 +11,25 @@ import { toast } from "sonner";
 import { authApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { ApiError } from "@/lib/api/client";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
   const tLegal = useTranslations("legal");
   const setSession = useAuthStore((s) => s.setSession);
+  const clear = useAuthStore((s) => s.clear);
   const token = useAuthStore((s) => s.token);
+  const router = useRouter();
+  const [deletePassword, setDeletePassword] = useState("");
+
+  const deleteMutation = useMutation({
+    mutationFn: () => authApi.deleteAccount(deletePassword),
+    onSuccess: () => {
+      clear();
+      router.push("/");
+    },
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : t("deleteFailed")),
+  });
 
   const { data: me } = useQuery({
     queryKey: ["me"],
@@ -179,6 +191,42 @@ export default function SettingsPage() {
               className="self-start"
             >
               {passwordMutation.isPending ? t("passwordChanging") : t("passwordChange")}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="border-red-300/60 dark:border-red-800/50">
+        <CardHeader>
+          <CardTitle className="text-red-600 dark:text-red-400">{t("deleteTitle")}</CardTitle>
+          <CardDescription>{t("deleteSubtitle")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (window.confirm(t("deleteWarning"))) deleteMutation.mutate();
+            }}
+          >
+            <p className="text-sm text-muted-foreground">{t("deleteWarning")}</p>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="deletePassword">{t("deletePasswordLabel")}</Label>
+              <Input
+                id="deletePassword"
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                autoComplete="current-password"
+              />
+            </div>
+            <Button
+              type="submit"
+              variant="destructive"
+              disabled={deleteMutation.isPending || !deletePassword}
+              className="self-start"
+            >
+              {deleteMutation.isPending ? t("deleting") : t("deleteButton")}
             </Button>
           </form>
         </CardContent>

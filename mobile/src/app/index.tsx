@@ -81,6 +81,11 @@ export default function HomeScreen() {
               sub="The cards you keep missing"
               onPress={() => router.push('/weak')}
             />
+            <HubCard
+              title="Settings"
+              sub="Account, plan, sign out"
+              onPress={() => router.push('/settings')}
+            />
           </View>
 
           <Pressable style={styles.signOut} onPress={() => signOut()}>

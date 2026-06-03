@@ -2,6 +2,7 @@ package com.tubeshadow.auth.api;
 
 import com.tubeshadow.auth.api.dto.AuthTokenResponse;
 import com.tubeshadow.auth.api.dto.ChangePasswordRequest;
+import com.tubeshadow.auth.api.dto.DeleteAccountRequest;
 import com.tubeshadow.auth.api.dto.LoginRequest;
 import com.tubeshadow.auth.api.dto.MeResponse;
 import com.tubeshadow.auth.api.dto.SignupRequest;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,6 +73,14 @@ public class AuthController {
     public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request,
                                                 @CurrentUser AuthenticatedUser user) {
         authService.changePassword(user.id(), request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/me")
+    @Operation(summary = "계정 영구 삭제 (App Store 필수)", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Void> deleteAccount(@Valid @RequestBody DeleteAccountRequest request,
+                                               @CurrentUser AuthenticatedUser user) {
+        authService.deleteAccount(user.id(), request.password());
         return ResponseEntity.noContent().build();
     }
 }

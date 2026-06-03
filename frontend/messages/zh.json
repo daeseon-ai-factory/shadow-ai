@@ -180,7 +180,14 @@
     "planFree": "免费",
     "planPro": "Pro",
     "planValidUntilLabel": "有效期至",
-    "legalTitle": "条款与政策"
+    "legalTitle": "条款与政策",
+    "deleteTitle": "删除账户",
+    "deleteSubtitle": "永久删除您的账户和所有数据。",
+    "deleteWarning": "无法撤销。您的片段、录音、练习进度和账户都将被清除。",
+    "deletePasswordLabel": "输入密码以确认",
+    "deleteButton": "删除我的账户",
+    "deleting": "删除中…",
+    "deleteFailed": "无法删除账户"
   },
   "discover": {
     "title": "Discover",

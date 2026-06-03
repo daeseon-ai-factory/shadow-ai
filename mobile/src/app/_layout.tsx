@@ -35,6 +35,7 @@ export default function RootLayout() {
           <Stack.Screen name="library" options={{ headerShown: true, title: 'Library' }} />
           <Stack.Screen name="import" options={{ headerShown: true, title: 'Import' }} />
           <Stack.Screen name="player/[clipId]" options={{ headerShown: true, title: 'Clip' }} />
+          <Stack.Screen name="settings" options={{ headerShown: true, title: 'Settings' }} />
         </Stack>
       </ThemeProvider>
     </QueryClientProvider>

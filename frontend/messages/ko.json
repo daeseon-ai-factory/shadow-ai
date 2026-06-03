@@ -180,7 +180,14 @@
     "planFree": "무료",
     "planPro": "프로",
     "planValidUntilLabel": "유효 기간",
-    "legalTitle": "약관 및 정책"
+    "legalTitle": "약관 및 정책",
+    "deleteTitle": "계정 삭제",
+    "deleteSubtitle": "계정과 모든 데이터를 영구 삭제합니다.",
+    "deleteWarning": "되돌릴 수 없습니다. 클립·녹음·학습 기록·계정이 모두 지워집니다.",
+    "deletePasswordLabel": "확인을 위해 비밀번호를 입력하세요",
+    "deleteButton": "내 계정 삭제",
+    "deleting": "삭제 중…",
+    "deleteFailed": "계정을 삭제하지 못했습니다"
   },
   "discover": {
     "title": "둘러보기",
