@@ -456,3 +456,5 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Regression**: `AccountDeletionTest` plants a row in every user-owned table, deletes via `DELETE /api/auth/me`, and asserts all gone + the shared video survives. If a future migration adds a user-owned table without CASCADE, this fails.
 - **Commit**: 7028fdc
 - **Pattern**: never trust a remembered claim about a destructive cascade — `grep REFERENCES` across every migration and prove it with a test that seeds *all* children. An "assumed orphan" turned out fully wired; assuming the opposite would've meant pointless manual-delete code.
+<!-- override-trigger: 6527880 docs(log): account deletion + FK cascade audit (7028fdc) [no-log] — false positive: 6527880 IS the logging commit for the account-deletion work (it added this very troubleshooting entry + the 2026-06-03-account-deletion-cascade-audit.mdx narrative). The substantive change is 7028fdc, already dual-logged here and in the mdx. The "audit" keyword fired on the doc commit's own subject. -->
+<!-- skipped: 6527880 docs(log): account deletion + FK cascade audit (7028fdc) [no-log] -->
