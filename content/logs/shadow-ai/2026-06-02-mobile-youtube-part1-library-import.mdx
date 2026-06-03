@@ -1,0 +1,26 @@
+---
+title: "Porting the YouTube half to mobile, part 1: split the hard feature by dependency"
+date: "2026-06-02"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The shadowing half of Mimi needs native video and audio, which is the genuinely hard part of the mobile port. So I split it by dependency: Library, Import, and clip detail — everything that's just a core API call — shipped first, with an honest open-in-YouTube placeholder where the native player will go."
+tags: ["mobile", "expo", "monorepo", "youtube"]
+---
+
+The Practice half of Mimi is at mobile parity. The other half — turn a YouTube video into clips and shadow them — is harder, because somewhere in there you need an actual video player and a microphone, and those are native modules, not shared data.
+
+The move that kept momentum: **split the feature by dependency, not by screen.**
+
+Most of the shadowing flow isn't media at all — it's the same clip CRUD the web app already has. So that shipped immediately, reusing `@shadow-ai/core` untouched:
+
+- **Library** lists your clips through `clipsApi.list`, with pull-to-refresh; tapping one opens its detail.
+- **Import** runs the real pipeline: paste a YouTube URL → `videosApi.importByUrl` (the server fetches subtitles via yt-dlp) → tap a transcript sentence → `clipsApi.create` cuts a one-sentence clip. That's the whole import-and-clip loop, native, with no new dependencies.
+- **Clip detail** fetches the clip and — here's the honest part — until the in-app segment player exists, a "Watch on YouTube" button opens the video at the clip's exact start through `Linking`. Not the final experience, but a working one, not a dead button.
+
+What's deliberately *not* here yet is the only part that actually needs native modules: in-app segment playback (a YouTube IFrame in a WebView) and microphone recording (`expo-audio`). By isolating those to the next batch, everything else — the part that's just API calls — is already usable.
+
+Verified the usual way: `tsc` clean, Metro iOS bundle at 1,177 modules.
+
+So the rule that's emerging across this port: when a feature is part-easy and part-hard, don't sequence it by UI screens — sequence it by what each piece *depends on*. The pieces that lean only on shared core go out the door now; the pieces that pull in a native module get their own focused pass. Recorded against `bee5489`, on `feat/mobile-app`.

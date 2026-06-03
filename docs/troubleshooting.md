@@ -396,3 +396,13 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: a3d0ba2
 - **Pattern**: porting accelerates once the first screen establishes the seam — each new Practice screen was a thin native view over core data + the one `practiceApi` call it needs; no logic was re-derived. The remaining gap (YouTube import/player/review/recording) is the genuinely harder batch because it needs native video + audio modules, not just core data.
 <!-- skipped: 2eb5825 docs(log): mobile Practice-half parity (a3d0ba2) [no-log] -->
+
+---
+
+## Mobile YouTube half, part 1: Library + Import (the pure-API slice)
+
+- **Context**: the shadowing half is the harder port (needs native video/audio), so I split it — the parts that are just core API calls first, the native-media parts after.
+- **Fix**: `library.tsx` lists clips (`clipsApi.list`, pull-to-refresh) → tap opens detail. `import.tsx` runs the real pipeline: paste URL → `videosApi.importByUrl` (server fetches subtitles via yt-dlp) → tap a transcript sentence → `clipsApi.create` makes a one-sentence clip. `player/[clipId].tsx` fetches the clip; until the in-app player exists, "Watch on YouTube" opens the video at the clip's start via `Linking` — a usable interim instead of a dead button.
+- **Verified**: `tsc` clean; Metro iOS bundle 1177 modules.
+- **Commit**: bee5489
+- **Pattern**: split a hard feature by *dependency*, not by screen — the clip CRUD + import flow is identical to the web's and needed zero new native modules, so it shipped immediately; only the actual segment playback + mic recording carry the `expo-video`/`expo-audio` cost, and they're isolated to the next batch. An honest placeholder (open-in-YouTube) keeps the flow whole meanwhile.
