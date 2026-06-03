@@ -8,6 +8,7 @@ import { clipsApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { RecordPanel } from '@/components/record-panel';
 import { useAuthStore } from '@/lib/auth-store';
 
 function ms(msVal: number) {
@@ -111,6 +112,8 @@ export default function ClipPlayerScreen() {
           <ThemedText type="small">
             {c.videoTitle} · {ms(c.startMs)}–{ms(c.endMs)}
           </ThemedText>
+
+          <RecordPanel clipId={c.id} />
 
           {c.transcript ? (
             <View style={styles.transcriptBox}>

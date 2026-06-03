@@ -38,6 +38,12 @@
             "imageWidth": 76
           }
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Mimi to use the microphone to record your shadowing practice."
+        }
       ]
     ],
     "experiments": {
