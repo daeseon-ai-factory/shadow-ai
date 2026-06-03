@@ -31,6 +31,7 @@ export default function RootLayout() {
           <Stack.Screen name="collocations" options={{ headerShown: true, title: 'Collocations' }} />
           <Stack.Screen name="compose" options={{ headerShown: true, title: 'Compose check' }} />
           <Stack.Screen name="weak" options={{ headerShown: true, title: 'Weak spots' }} />
+          <Stack.Screen name="review" options={{ headerShown: true, title: 'Review' }} />
           <Stack.Screen name="library" options={{ headerShown: true, title: 'Library' }} />
           <Stack.Screen name="import" options={{ headerShown: true, title: 'Import' }} />
           <Stack.Screen name="player/[clipId]" options={{ headerShown: true, title: 'Clip' }} />

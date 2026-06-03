@@ -52,6 +52,11 @@ export default function HomeScreen() {
           {/* Practice hub — each runs shared core content/logic as a native screen. */}
           <View style={styles.hub}>
             <HubCard
+              title="Review"
+              sub="Clips due today (spaced repetition)"
+              onPress={() => router.push('/review')}
+            />
+            <HubCard
               title="Library"
               sub="Your YouTube clips — import & shadow"
               onPress={() => router.push('/library')}

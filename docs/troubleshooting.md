@@ -429,3 +429,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `tsc` clean; Metro iOS bundle 1202 modules (1191 → +11 for expo-audio). Mic permission string added to the expo-audio plugin in app.json.
 - **Commit**: 1b5382f
 - **Pattern**: the shared API client carried over to native for free *except* at the multipart boundary — a file part is the one place web (`Blob`/`File`) and RN (`{ uri }` descriptor) genuinely diverge, so that one call gets a platform-specific body while everything else reuses core verbatim.
+<!-- skipped: b201e47 docs(log): mobile shadowing recording with expo-audio (1b5382f) [no-log] -->
