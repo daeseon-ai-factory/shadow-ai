@@ -1,0 +1,162 @@
+import { useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Redirect } from 'expo-router';
+import { useMutation } from '@tanstack/react-query';
+import { COLLOCATIONS, practiceApi, ApiError } from '@shadow-ai/core';
+
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useAuthStore } from '@/lib/auth-store';
+
+// Targets to compose around: each collocation anchor + its gloss.
+const TARGETS = COLLOCATIONS.map((c) => ({ target: c.anchor, gloss: c.gloss }));
+
+function pickIndex(): number {
+  return Math.floor(Math.random() * TARGETS.length);
+}
+
+export default function ComposeScreen() {
+  const token = useAuthStore((s) => s.token);
+  const [idx, setIdx] = useState(() => pickIndex());
+  const [text, setText] = useState('');
+  const current = useMemo(() => TARGETS[idx], [idx]);
+
+  const check = useMutation({
+    mutationFn: () => practiceApi.composeCheck(current.target, current.gloss, text.trim()),
+  });
+
+  if (!token) return <Redirect href="/login" />;
+
+  const fb = check.data;
+  const errorMessage =
+    check.error instanceof ApiError ? check.error.message : check.error ? 'Check failed' : null;
+
+  const next = () => {
+    setIdx(pickIndex());
+    setText('');
+    check.reset();
+  };
+
+  return (
+    <ThemedView style={styles.flex}>
+      <SafeAreaView style={styles.flex}>
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+            <ThemedText type="title">Compose check</ThemedText>
+            <ThemedText type="small">Write your own sentence using the target. AI grades it.</ThemedText>
+
+            <View style={styles.targetBox}>
+              <ThemedText type="small">Use this</ThemedText>
+              <ThemedText style={styles.target}>{current.target}</ThemedText>
+              <ThemedText type="small">{current.gloss}</ThemedText>
+            </View>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Type an English sentence…"
+              placeholderTextColor="#9ca3af"
+              multiline
+              value={text}
+              onChangeText={setText}
+            />
+
+            {errorMessage && <ThemedText style={styles.error}>{errorMessage}</ThemedText>}
+
+            {fb && (
+              <View style={[styles.fbBox, fb.ok ? styles.fbOk : styles.fbWork]}>
+                <ThemedText type="smallBold">
+                  {fb.ok ? '✅ Good' : '✏️ Needs work'}
+                  {!fb.usesTarget ? '  ·  target not used' : ''}
+                </ThemedText>
+                <ThemedText type="small">{fb.feedback}</ThemedText>
+                {fb.better ? (
+                  <ThemedText style={styles.better}>Better: {fb.better}</ThemedText>
+                ) : null}
+              </View>
+            )}
+
+            <View style={styles.row}>
+              <Pressable
+                style={[styles.primaryBtn, (!text.trim() || check.isPending) && styles.disabled]}
+                disabled={!text.trim() || check.isPending}
+                onPress={() => check.mutate()}
+              >
+                {check.isPending ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <ThemedText style={styles.primaryText}>Check</ThemedText>
+                )}
+              </Pressable>
+              <Pressable style={styles.secondaryBtn} onPress={next}>
+                <ThemedText style={styles.secondaryText}>Next</ThemedText>
+              </Pressable>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </ThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  container: { padding: 24, gap: 14 },
+  targetBox: {
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    padding: 16,
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+  },
+  target: { fontSize: 22, color: '#208AEF', fontFamily: 'Menlo' },
+  input: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    borderRadius: 10,
+    padding: 14,
+    fontSize: 16,
+    minHeight: 90,
+    textAlignVertical: 'top',
+    color: '#111827',
+    backgroundColor: '#fff',
+  },
+  error: { color: '#dc2626' },
+  fbBox: { borderRadius: 12, borderWidth: 1, padding: 14, gap: 6 },
+  fbOk: { borderColor: '#10b98155', backgroundColor: '#10b98111' },
+  fbWork: { borderColor: '#f59e0b55', backgroundColor: '#f59e0b11' },
+  better: { fontStyle: 'italic' },
+  row: { flexDirection: 'row', gap: 12, marginTop: 4 },
+  primaryBtn: {
+    flex: 1,
+    backgroundColor: '#208AEF',
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  disabled: { opacity: 0.5 },
+  primaryText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  secondaryBtn: {
+    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#9ca3af',
+  },
+  secondaryText: { fontWeight: '600' },
+});

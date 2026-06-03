@@ -49,13 +49,29 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Tappable: runs the shared drill content (bundled from core) as a native session. */}
-          <Pressable style={styles.statsCard} onPress={() => router.push('/practice')}>
-            <ThemedText type="smallBold">Start today&apos;s drill →</ThemedText>
-            <ThemedText type="small">
-              {PATTERNS.length} sentence patterns · {COLLOCATIONS.length} collocations
-            </ThemedText>
-          </Pressable>
+          {/* Practice hub — each runs shared core content/logic as a native screen. */}
+          <View style={styles.hub}>
+            <HubCard
+              title="Pattern drill"
+              sub={`${PATTERNS.length} sentence frames`}
+              onPress={() => router.push('/practice')}
+            />
+            <HubCard
+              title="Collocations"
+              sub={`${COLLOCATIONS.length} word + preposition chunks`}
+              onPress={() => router.push('/collocations')}
+            />
+            <HubCard
+              title="Compose check"
+              sub="Write a sentence, AI grades it"
+              onPress={() => router.push('/compose')}
+            />
+            <HubCard
+              title="Weak spots"
+              sub="The cards you keep missing"
+              onPress={() => router.push('/weak')}
+            />
+          </View>
 
           <Pressable style={styles.signOut} onPress={() => signOut()}>
             <ThemedText style={styles.signOutText}>Sign out</ThemedText>
@@ -66,10 +82,27 @@ export default function HomeScreen() {
   );
 }
 
+function HubCard({ title, sub, onPress }: { title: string; sub: string; onPress: () => void }) {
+  return (
+    <Pressable style={styles.hubCard} onPress={onPress}>
+      <ThemedText type="smallBold">{title} →</ThemedText>
+      <ThemedText type="small">{sub}</ThemedText>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   container: { flex: 1, padding: 24, gap: 16 },
+  hub: { gap: 10, marginTop: 4 },
+  hubCard: {
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    gap: 3,
+  },
   gap: { marginTop: 8, gap: 8 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   error: { color: '#dc2626', marginTop: 8 },

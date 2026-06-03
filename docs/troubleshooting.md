@@ -384,3 +384,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `tsc` clean; Metro iOS bundle 1170 modules (was 1169 — the one new screen).
 - **Commit**: 37a1a59
 - **Pattern**: the payoff of "share the brain, rebuild the shell" — the native drill is ~290 lines of *UI only*; every piece of behavior (key format, session policy, grading) came from core unchanged, so web and mobile can't drift on the thing that matters (what counts as due, how a card is scored).
+<!-- skipped: 6ec990c docs(log): native Pattern Drill from shared core (37a1a59) [no-log] -->

@@ -28,6 +28,9 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="login" options={{ presentation: 'modal' }} />
           <Stack.Screen name="practice" options={{ headerShown: true, title: 'Pattern drill' }} />
+          <Stack.Screen name="collocations" options={{ headerShown: true, title: 'Collocations' }} />
+          <Stack.Screen name="compose" options={{ headerShown: true, title: 'Compose check' }} />
+          <Stack.Screen name="weak" options={{ headerShown: true, title: 'Weak spots' }} />
         </Stack>
       </ThemeProvider>
     </QueryClientProvider>
