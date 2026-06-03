@@ -1,0 +1,60 @@
+---
+title: "When the dev server became a fork bomb: a local incident that's a production failure in miniature"
+date: "2026-06-03"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Bringing up the web + backend locally to test, the Next.js dev server spawned hundreds of worker processes, exhausted memory, and made fork() fail machine-wide — ps, curl, and pkill all stopped working. It wasn't a production bug, but it's the exact shape of one: a crash-loop with no backoff and no memory limit. Notes on the triage and the defenses that contain it."
+tags: ["incident", "sre", "resource-exhaustion", "nextjs", "ops"]
+---
+
+I set out to do something boring — run the backend and the web locally so I could click through the app. Instead I got a small, instructive outage on my own machine.
+
+## What happened
+
+The backend (Spring Boot) came up clean and stayed healthy the entire time. The web dev server (`next dev`, Turbopack) printed "Ready" — and then a single request to compile the home route never returned. Within seconds, the machine started refusing to do basic things:
+
+```
+(eval): fork failed: resource temporarily unavailable
+grep:    fork failed: resource temporarily unavailable
+웹 /en = HTTP 000  (120.003895s)     # curl hung 120s, no response
+```
+
+`ps` failed. `pkill` failed. `curl` failed. I couldn't even *measure* the problem because measuring requires forking a process, and `fork()` was the thing failing.
+
+When I did get a reading: a fresh `npm run dev` had taken the `node` process count from **8 to 466 in about 18 seconds**, and a partial kill still left **864**. Each worker was ~70–105 MB. That's several gigabytes of `node` workers, stacked on top of a JVM and 61 Chrome renderer processes.
+
+## The part that surprised me
+
+My first guess was "too many processes — hit the user process limit." Wrong. `ulimit -u` was 5333 and I had about 600 processes. So this wasn't a *count* limit at all. `fork()` returns `EAGAIN` for two reasons, and the other one is **memory** — the kernel can't reserve enough to create the child. `vm_stat` confirmed it: free memory was essentially zero.
+
+So the real failure was: workers crash (out of memory), something **respawns them immediately with no backoff**, and they spawn faster than they die — a crash-loop that eats the host. The classic fork-bomb shape, arrived at by accident.
+
+## Why this is not a production bug — and why it still matters
+
+It is genuinely local-only. `next dev` and its Turbopack worker pool **do not exist in production**: the deployed site is a prebuilt bundle (Vercel), and a self-hosted build runs `next start`, a single stable server. So mimi.daeseon.ai and the backend were never at risk from this.
+
+But the *shape* is exactly a production incident I should be able to recognize and defend against:
+
+- A container exceeds its memory limit → **OOMKilled** → restarted → OOMKilled again → **CrashLoopBackOff**.
+- Worse, with **no memory limit set**, one runaway process eats the whole host's RAM and starves every other container on it — the "noisy neighbor" that turns one bad service into a multi-service outage. That's precisely what I watched happen to `ps` and `curl`.
+
+And the triage lesson is real: **when your diagnostics can't run, stop the offender first, investigate second.** I couldn't `ps` my way to understanding — I had to kill the dev task to get the host breathing again, *then* read what had happened. In an on-call setting that's the whole move: restore the host, then do forensics.
+
+## The defenses (and where this project already stands)
+
+| Defense | What it stops | Mimi today |
+| --- | --- | --- |
+| Bounded pools | Unbounded threads/connections | **Done** on the backend — async pool + Hikari are capped (there's an earlier log entry about auditing exactly this: an analysis pipeline that could have spawned unbounded threads) |
+| Per-container memory limit | One process eating the whole host | Pending — an ECS task `memory` cap, which comes with the AWS deploy |
+| Restart backoff | Tight crash-loops | Pending — ECS/k8s provide this by default |
+| Health-check eviction | Sending traffic to a dying instance | Pending — ALB health checks (in the runbook) |
+
+The thing actually going to production — the backend — is the half that's already guarded. The rest is mostly handed to you by the orchestrator once it's deployed, which is a good argument for *using* the platform's limits rather than hand-rolling.
+
+## Honest limits
+
+I did not root-cause *why* Turbopack span up that many workers — memory pressure is the proven condition, but whether the trigger was pressure alone or a monorepo/`transpilePackages` interaction I can't say without isolating it. That, plus capping the dev worker count so a teammate's laptop doesn't hit this, is a tracked follow-up. For now the workaround is real and simple: locally, run the web in production mode, not `next dev`.
+
+The reason I'm writing this up at all: it's the cleanest small example I've hit of the failure class every backend eventually meets in production — crash-loop, resource exhaustion, diagnostics-can't-run — and of the boring controls that contain it. Cheap lesson, since it only cost a hung laptop instead of a 3 a.m. page.

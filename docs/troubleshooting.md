@@ -470,3 +470,24 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Status**: every web screen now has a native counterpart on `@shadow-ai/core` — auth, home hub, pattern/collocation drills, compose, weak-spots, library/import, segment player, recording, SM-2 review, prepositions, settings (with account deletion). Only the SVG preposition diagrams and live IAP remain as deliberate follow-ups.
 - **Commit**: fd31d1c
 - **Pattern**: when porting a visual feature, separate the *content* from the *decoration* — the senses/examples ported verbatim from core; the SVG diagram was decoration, so a text chip kept parity on meaning without a new native dependency. Ship the content, defer the polish.
+<!-- skipped: 5d4566a docs(log): mobile prepositions — full web parity (fd31d1c) [no-log] -->
+
+---
+
+## `next dev` (Turbopack) worker storm exhausted host memory → fork() failed machine-wide
+
+- **Symptom** (literal, while bringing up local web + backend to test): the `next dev` server reached "Ready" but a request to `/[locale]` never finished compiling; then ordinary commands began dying:
+  ```
+  (eval):11: fork failed: resource temporarily unavailable
+  grep:9: fork failed: resource temporarily unavailable
+  웹 /en = HTTP 000  (120.003895s)        # curl: 120s, no response
+  ```
+  `ps`, `pkill`, and `curl` all failed to fork. A fresh `npm run dev` ballooned the `node` process count from **8 → 466 in ~18s**, and after a partial kill it was still **864**.
+- **Verified** (facts, not guesses):
+  - NOT a process-count limit: `ulimit -u` = 5333 but the uid had only ~600 processes. So fork's `EAGAIN` was **memory**, not max-procs.
+  - `vm_stat` showed `Pages free: 8305` (≈130 MB on a 16 KB page) — effectively out of free RAM. ~85+ Turbopack `node` workers at ~70–105 MB each ≈ several GB, on top of a JVM and 61 Chrome renderers.
+  - Stopping the dev task dropped `node` 864 → 8 and total procs 992 → ~815, and `fork` worked again immediately. The backend (JVM) was unaffected the whole time.
+- **Cause** — **Hypothesis (not root-caused)**: Turbopack dev workers OOM under memory pressure and get **respawned with no backoff** → a crash-loop that spawns processes faster than they die. The exact trigger (memory pressure alone, vs. a monorepo `transpilePackages`/`reactCompiler` interaction) was not isolated. `Verified by`: the worker-count explosion + the free-memory reading; the precise respawn mechanism is inferred, not proven.
+- **Fix / triage**: stop the offender first to save the host (`TaskStop` on the dev task; `pkill -9 -f "node_modules/next"` for orphaned workers), *then* diagnose — the correct incident order when diagnostics themselves can't fork. To actually run the web locally, use **production mode** (`next build` → `next start`): one stable server, no dev worker pool. This is local/dev-only — production (Vercel prebuilt bundle, or `next start`) has no Turbopack dev workers.
+- **Commit**: (incident/learning entry — no code change; root-cause + a worker cap are a tracked follow-up)
+- **Pattern**: this is a textbook **crash-loop → resource exhaustion → host-wide failure**, the same class as a container that OOMKills into `CrashLoopBackOff` and, without a memory limit, starves its neighbors. Defenses: **bounded pools** (the backend already caps its async threads + Hikari — see the "AI analysis pipeline could hang threads" entry above), **per-container memory limits** (ECS task `memory` — pending AWS deploy), **restart backoff**, and **health-check eviction**. When diagnostics can't fork, triage = kill the offender before you investigate.
