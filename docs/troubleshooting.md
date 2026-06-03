@@ -406,3 +406,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `tsc` clean; Metro iOS bundle 1177 modules.
 - **Commit**: bee5489
 - **Pattern**: split a hard feature by *dependency*, not by screen — the clip CRUD + import flow is identical to the web's and needed zero new native modules, so it shipped immediately; only the actual segment playback + mic recording carry the `expo-video`/`expo-audio` cost, and they're isolated to the next batch. An honest placeholder (open-in-YouTube) keeps the flow whole meanwhile.
+<!-- skipped: 6dbbab5 docs(log): mobile YouTube half part 1 — Library + Import (bee5489) [no-log] -->
