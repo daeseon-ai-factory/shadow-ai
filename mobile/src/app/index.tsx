@@ -82,6 +82,11 @@ export default function HomeScreen() {
               onPress={() => router.push('/weak')}
             />
             <HubCard
+              title="Prepositions"
+              sub="Senses + examples, and yours from clips"
+              onPress={() => router.push('/prepositions')}
+            />
+            <HubCard
               title="Settings"
               sub="Account, plan, sign out"
               onPress={() => router.push('/settings')}
