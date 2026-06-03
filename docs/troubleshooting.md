@@ -385,3 +385,13 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: 37a1a59
 - **Pattern**: the payoff of "share the brain, rebuild the shell" — the native drill is ~290 lines of *UI only*; every piece of behavior (key format, session policy, grading) came from core unchanged, so web and mobile can't drift on the thing that matters (what counts as due, how a card is scored).
 <!-- skipped: 6ec990c docs(log): native Pattern Drill from shared core (37a1a59) [no-log] -->
+
+---
+
+## Mobile reaches Practice-half parity (collocations, compose, weak-spots)
+
+- **Context**: continuing the web→mobile port. The whole Practice half of the web app needed native screens, all on `@shadow-ai/core`.
+- **Fix**: extracted a shared `DrillRunner` component from the pattern screen so the pattern and collocation drills share one reveal→Again/Got-it loop (first-attempt-only SRS grade via `practiceApi.grade`, in-session requeue on miss). Added: collocations screen with the General/Dev/All `domain` filter and `collocationKey`-built sessions; a compose screen that targets a collocation anchor and grades the user's sentence through `practiceApi.composeCheck`; a weak-spots screen joining `srsStates` to core's `cardIndex()` for seen/lapses/mastered stats + a most-missed list. Home became a Practice hub.
+- **Verified**: `tsc` clean; Metro iOS bundle 1174 modules (1170 → +4 for three screens and the shared runner).
+- **Commit**: a3d0ba2
+- **Pattern**: porting accelerates once the first screen establishes the seam — each new Practice screen was a thin native view over core data + the one `practiceApi` call it needs; no logic was re-derived. The remaining gap (YouTube import/player/review/recording) is the genuinely harder batch because it needs native video + audio modules, not just core data.

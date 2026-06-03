@@ -1,0 +1,26 @@
+---
+title: "Mobile reaches Practice-half parity — and the port keeps getting cheaper"
+date: "2026-06-02"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The Expo app now has the whole Practice hub — pattern + collocation drills, the AI compose check, and the weak-spots dashboard — every screen a thin native shell over @shadow-ai/core. The drill half is at web parity; the YouTube shadowing half is the harder batch left."
+tags: ["mobile", "expo", "monorepo", "english-learning"]
+---
+
+After the first native drill, I ported the rest of the web app's **Practice half** to the Expo app in one sitting: the collocation drill, the AI compose check, and the weak-spots dashboard, with the home screen turned into a proper Practice hub linking all four.
+
+The story here isn't any one screen — it's how the cost curve bends.
+
+The first native drill took real thought: how to feed core's token-injected API client, where the JWT lives, how to build a session. Once that seam existed, each new screen was almost mechanical:
+
+- **Collocations** reused the pattern drill's loop. I extracted a shared `DrillRunner` so both drills share the reveal → *Again* / *Got it* flow, the first-attempt-only SRS grade, and the in-session requeue. The collocation screen just builds its session from core's `COLLOCATIONS` + `collocationKey`, with a General/Dev/All domain filter on top.
+- **Compose check** is a text box and one call: it targets a collocation anchor, sends the user's sentence to `practiceApi.composeCheck`, and renders the AI's verdict (good / needs-work, plus a better version). That's the same per-user rate-limited endpoint the web uses.
+- **Weak spots** joins the account's `srsStates` to core's `cardIndex()` — the map from card key back to human-readable content — for the seen / lapses / mastered stats and a most-missed list.
+
+None of these re-derive what a card key is, what counts as "due," how a grade maps to a Leitner box, or how the compose prompt is graded. That all lives in core and is already tested. The native files are UI: `View`, `Pressable`, `FlatList`, `StyleSheet`.
+
+Verified the way this environment allows — `tsc` clean, and the Metro iOS bundle grows from 1,170 to 1,174 modules for the three new screens plus the shared runner.
+
+So the drill half of Mimi is now at parity on mobile. What's left is the genuinely harder half: the YouTube shadowing flow — import, the clip player, review, and audio recording. That batch isn't more *core* data; it's native **video and audio modules** (`expo-video`, `expo-audio`), which is a different kind of work than wrapping content. That's the next push. Recorded against `a3d0ba2`, on `feat/mobile-app`.
