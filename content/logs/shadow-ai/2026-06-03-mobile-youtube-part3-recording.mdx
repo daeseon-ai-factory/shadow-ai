@@ -1,0 +1,38 @@
+---
+title: "Mobile shadowing, complete: recording yourself — and the one place the shared client couldn't follow"
+date: "2026-06-03"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The mobile app can now record your shadowing take with expo-audio and upload it to your account. The whole shared API layer carried over to native unchanged — except the one multipart boundary where a web Blob and a React Native file URI genuinely differ."
+tags: ["mobile", "expo", "expo-audio", "react-native"]
+---
+
+The active shadowing loop is now complete on mobile: watch the clip's segment on a loop, then record yourself saying it and play your take back. This was the last native-media piece.
+
+Capture is `expo-audio` doing what it says — `useAudioRecorder` to record, `useAudioRecorderState` for the live duration counter, `useAudioPlayer` to play your take. The interesting part wasn't the recording; it was the upload.
+
+## The one place the shared client couldn't follow
+
+The whole point of `@shadow-ai/core` is that the typed API layer is platform-agnostic, and almost all of it is — the same `apiRequest`, the same endpoints, the same auth-token injection work identically in the browser and on the phone. There is exactly **one** exception, and it's the file upload.
+
+On the web, core builds a multipart body from a `Blob`/`File`:
+
+```ts
+form.append("file", new File([blob], filename, { type: blob.type }));
+```
+
+React Native has no `File` constructor over a local recording, and no `Blob` you can hand to `fetch`. What it has is a file *URI*, and its `FormData` accepts a descriptor object instead:
+
+```ts
+form.append("file", { uri, name: `rec-${clipId}.m4a`, type: "audio/mp4" });
+```
+
+So the mobile recorder builds that descriptor and sends it through core's `apiRequest` — meaning the JWT and base URL still come from the one shared place; only the body shape is native. One nice alignment fell out for free: `expo-audio`'s high-quality preset records an `.m4a` (AAC) file, and `audio/mp4` was already in the backend's allowed-content-types set, so the server didn't change at all.
+
+## Where this leaves the port
+
+Verified the usual way — `tsc` clean, Metro iOS bundle up from 1,191 to 1,202 modules for `expo-audio`, plus a microphone-permission string in the config plugin.
+
+That's the entire active half of Mimi on mobile now: the Practice drills, and the full YouTube flow — import, clip, segment-loop playback, and record-yourself. The one screen still web-only is Review (the SM-2 clip reviews: reveal / write / scenario), which is the next and last port. The lesson worth keeping: a well-drawn shared core carries almost everything to a new platform; budget your platform-specific work for the genuine seams — file I/O, media, secure storage — not the business logic. Recorded against `1b5382f`, on `feat/mobile-app`.

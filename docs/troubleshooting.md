@@ -418,3 +418,14 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `tsc` clean; Metro iOS bundle 1191 modules (1177 → +14 for webview + iframe).
 - **Commit**: 58ed646
 - **Pattern**: the segment-loop is the whole shadowing primitive — `start/end` params get you a one-shot segment, but the repeat-until-you-can-say-it loop only exists if you re-seek on `ended`. That tiny handler is the feature, not the embed.
+
+---
+
+## Mobile YouTube half, part 3: record yourself (expo-audio) — and the FormData that isn't a Blob
+
+- **Context**: the last active-shadowing piece — record your own take and play it back against the original.
+- **Fix**: `RecordPanel` (expo-audio): `useAudioRecorder(RecordingPresets.HIGH_QUALITY)` to capture, `useAudioRecorderState` for the live duration, `useAudioPlayer` to play the take back. Embedded under the segment controls in the clip player.
+- **The gotcha — RN FormData ≠ web FormData**: core's `recordingsApi.upload` builds a web `File`/`Blob`, which doesn't exist for a local file URI on React Native. The mobile upload instead appends a `{ uri, name, type }` descriptor (`form.append('file', { uri, name, type: 'audio/mp4' })`) and sends it through core's `apiRequest` so the JWT + base URL stay in one place. `audio/mp4` (the iOS/Android m4a container) is already in the backend's `ALLOWED_CONTENT_TYPES`, so no server change was needed.
+- **Verified**: `tsc` clean; Metro iOS bundle 1202 modules (1191 → +11 for expo-audio). Mic permission string added to the expo-audio plugin in app.json.
+- **Commit**: 1b5382f
+- **Pattern**: the shared API client carried over to native for free *except* at the multipart boundary — a file part is the one place web (`Blob`/`File`) and RN (`{ uri }` descriptor) genuinely diverge, so that one call gets a platform-specific body while everything else reuses core verbatim.
