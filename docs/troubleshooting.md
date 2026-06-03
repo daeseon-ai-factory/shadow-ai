@@ -407,3 +407,14 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: bee5489
 - **Pattern**: split a hard feature by *dependency*, not by screen — the clip CRUD + import flow is identical to the web's and needed zero new native modules, so it shipped immediately; only the actual segment playback + mic recording carry the `expo-video`/`expo-audio` cost, and they're isolated to the next batch. An honest placeholder (open-in-YouTube) keeps the flow whole meanwhile.
 <!-- skipped: 6dbbab5 docs(log): mobile YouTube half part 1 — Library + Import (bee5489) [no-log] -->
+
+---
+
+## Mobile YouTube half, part 2: in-app segment player (the first native-media piece)
+
+- **Context**: clip detail had an open-in-YouTube placeholder. The real shadowing experience needs the video *in* the app, looping a sub-segment.
+- **Fix**: added `react-native-youtube-iframe` (+ its `react-native-webview` peer) and rebuilt `player/[clipId].tsx` around it. The YouTube IFrame plays the clip's `[startMs, endMs]` segment via `initialPlayerParams.start/end`; for shadowing, an `onChangeState('ended')` handler seeks back to the clip start and resumes (a toggleable loop), with Play/Pause and "Replay segment" controls. Player height adapts to the clip's `videoOrientation` (portrait vs 16:9).
+- **Why IFrame, not a native video element**: YouTube terms require playback through their player; you can't pull the raw stream into `expo-video`. The IFrame-in-WebView is the sanctioned path and the same approach the web app uses.
+- **Verified**: `tsc` clean; Metro iOS bundle 1191 modules (1177 → +14 for webview + iframe).
+- **Commit**: 58ed646
+- **Pattern**: the segment-loop is the whole shadowing primitive — `start/end` params get you a one-shot segment, but the repeat-until-you-can-say-it loop only exists if you re-seek on `ended`. That tiny handler is the feature, not the embed.

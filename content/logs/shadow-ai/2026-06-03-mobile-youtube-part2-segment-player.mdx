@@ -1,0 +1,39 @@
+---
+title: "Mobile YouTube half, part 2: the in-app segment player — and why the loop is the feature"
+date: "2026-06-03"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The clip player is now in-app: a YouTube IFrame embedded via react-native-youtube-iframe, playing just the clip's segment and looping it for shadowing. The embed was easy; the re-seek-on-ended loop is the part that actually makes it a shadowing tool."
+tags: ["mobile", "expo", "youtube", "react-native"]
+---
+
+The mobile clip screen had a placeholder: a button that opened YouTube. This batch made it real — the video now plays inside the app, and only the part you're practicing.
+
+## Why an IFrame, not a video element
+
+The instinct on React Native is to reach for `expo-video` and hand it a URL. That doesn't work for YouTube: their terms require playback through *their* player, and there's no sanctioned raw stream to feed a native `<Video>`. The supported path is the YouTube IFrame Player API running inside a WebView — which is exactly what `react-native-youtube-iframe` wraps, and exactly what the web app already uses. So this is the same primitive on both platforms, just packaged for native.
+
+Playing the clip's segment is then a one-liner: `initialPlayerParams={{ start, end }}` plays from the clip's start second to its end second and stops.
+
+## The loop is the feature
+
+Here's the part worth writing down. A clip that plays once and stops is a *preview*. Shadowing means hearing the same five seconds over and over until your mouth can keep up — so the actual feature isn't the embed, it's the repeat.
+
+The IFrame's `start`/`end` give you a single pass. To loop a sub-segment, you listen for the player's `ended` state and seek back:
+
+```ts
+onChangeState={(state) => {
+  if (state === 'ended' && loop) {
+    playerRef.current?.seekTo(startSec, true);
+    setPlaying(true);
+  }
+}}
+```
+
+That tiny handler — plus a Loop toggle and a "Replay segment" button — is what turns a YouTube embed into a shadowing tool. The player height also adapts to the clip's stored orientation (Shorts are portrait, most clips are 16:9), so vertical videos don't get letterboxed into a stripe.
+
+Verified the usual way: `tsc` clean, Metro iOS bundle up from 1,177 to 1,191 modules (webview + iframe).
+
+What's left on the shadowing half is the other native-media piece: recording yourself with `expo-audio` and playing original-then-you back to back. That's the next batch. Recorded against `58ed646`, on `feat/mobile-app`.
