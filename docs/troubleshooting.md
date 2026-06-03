@@ -395,3 +395,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `tsc` clean; Metro iOS bundle 1174 modules (1170 → +4 for three screens and the shared runner).
 - **Commit**: a3d0ba2
 - **Pattern**: porting accelerates once the first screen establishes the seam — each new Practice screen was a thin native view over core data + the one `practiceApi` call it needs; no logic was re-derived. The remaining gap (YouTube import/player/review/recording) is the genuinely harder batch because it needs native video + audio modules, not just core data.
+<!-- skipped: 2eb5825 docs(log): mobile Practice-half parity (a3d0ba2) [no-log] -->
