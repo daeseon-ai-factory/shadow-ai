@@ -3,6 +3,7 @@
 // (hydrated once at startup) and mirror writes to SecureStore.
 import { create } from 'zustand';
 import { clearToken, saveToken } from './secure-token';
+import { queryClient } from './query-client';
 
 interface AuthState {
   token: string | null;
@@ -24,5 +25,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   signOut: async () => {
     await clearToken();
     set({ token: null });
+    // Drop all cached server data so the next user on this device can't see the previous
+    // user's profile/clips/SRS (keys are user-agnostic), and deleted accounts leave nothing behind.
+    queryClient.clear();
   },
 }));

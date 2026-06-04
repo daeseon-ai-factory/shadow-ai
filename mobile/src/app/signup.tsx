@@ -17,13 +17,15 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
 
-export default function LoginScreen() {
+export default function SignupScreen() {
   const [email, setEmail] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
   const signIn = useAuthStore((s) => s.signIn);
 
-  const login = useMutation({
-    mutationFn: () => authApi.login({ email: email.trim(), password }),
+  const signup = useMutation({
+    mutationFn: () =>
+      authApi.signup({ email: email.trim(), password, displayName: displayName.trim() }),
     onSuccess: async (res) => {
       await signIn(res.accessToken);
       router.replace('/');
@@ -31,7 +33,9 @@ export default function LoginScreen() {
   });
 
   const errorMessage =
-    login.error instanceof ApiError ? login.error.message : login.error ? 'Login failed' : null;
+    signup.error instanceof ApiError ? signup.error.message : signup.error ? 'Sign up failed' : null;
+
+  const canSubmit = email.trim() && password.length >= 8 && displayName.trim();
 
   return (
     <ThemedView style={styles.flex}>
@@ -41,7 +45,7 @@ export default function LoginScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.container}>
-            <ThemedText type="title">Sign in to Mimi</ThemedText>
+            <ThemedText type="title">Create your account</ThemedText>
             <ThemedText type="small">Turn YouTube into daily English practice.</ThemedText>
 
             <TextInput
@@ -56,10 +60,18 @@ export default function LoginScreen() {
             />
             <TextInput
               style={styles.input}
-              placeholder="Password"
+              placeholder="Display name"
+              placeholderTextColor="#9ca3af"
+              autoComplete="name"
+              value={displayName}
+              onChangeText={setDisplayName}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password (8+ characters)"
               placeholderTextColor="#9ca3af"
               secureTextEntry
-              autoComplete="password"
+              autoComplete="new-password"
               value={password}
               onChangeText={setPassword}
             />
@@ -67,20 +79,20 @@ export default function LoginScreen() {
             {errorMessage && <ThemedText style={styles.error}>{errorMessage}</ThemedText>}
 
             <Pressable
-              style={[styles.button, (!email || !password) && styles.buttonDisabled]}
-              disabled={!email || !password || login.isPending}
-              onPress={() => login.mutate()}
+              style={[styles.button, !canSubmit && styles.buttonDisabled]}
+              disabled={!canSubmit || signup.isPending}
+              onPress={() => signup.mutate()}
             >
-              {login.isPending ? (
+              {signup.isPending ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <ThemedText style={styles.buttonText}>Sign in</ThemedText>
+                <ThemedText style={styles.buttonText}>Create account</ThemedText>
               )}
             </Pressable>
 
-            <Pressable style={styles.linkRow} onPress={() => router.replace('/signup')}>
-              <ThemedText type="small">New here? </ThemedText>
-              <ThemedText style={styles.link}>Create an account</ThemedText>
+            <Pressable style={styles.linkRow} onPress={() => router.replace('/login')}>
+              <ThemedText type="small">Already have an account? </ThemedText>
+              <ThemedText style={styles.link}>Sign in</ThemedText>
             </Pressable>
           </View>
         </KeyboardAvoidingView>

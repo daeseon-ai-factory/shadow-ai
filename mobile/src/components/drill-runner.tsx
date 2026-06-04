@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { localToday, practiceApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
@@ -29,21 +29,29 @@ export function DrillRunner({ items }: { items: DrillItem[] }) {
   const [got, setGot] = useState(0);
   const [streak, setStreak] = useState<number | null>(null);
   const graded = useRef<Set<string>>(new Set());
+  const qc = useQueryClient();
 
   const grade = useMutation({
     mutationFn: ({ key, ok }: { key: string; ok: boolean }) =>
       practiceApi.grade(key, ok, localToday()),
-    onSuccess: (res) => setStreak(res.progress.streak),
+    onSuccess: (res) => {
+      setStreak(res.progress.streak);
+      // Due/new counts + lapse/mastered stats shift after every grade — refresh the SRS-backed
+      // screens (Pattern, Collocation, Weak spots) so they don't show pre-grade state.
+      qc.invalidateQueries({ queryKey: ['srs'] });
+    },
   });
 
   if (items.length === 0) {
     return (
-      <ThemedView style={styles.center}>
-        <ThemedText type="subtitle">All caught up 🎉</ThemedText>
-        <ThemedText type="small">Nothing due here today.</ThemedText>
-        <Pressable style={styles.linkBtn} onPress={() => router.back()}>
-          <ThemedText style={styles.linkText}>Back</ThemedText>
-        </Pressable>
+      <ThemedView style={styles.flex}>
+        <SafeAreaView style={[styles.flex, styles.center]}>
+          <ThemedText type="subtitle">All caught up 🎉</ThemedText>
+          <ThemedText type="small">Nothing due here today.</ThemedText>
+          <Pressable style={styles.linkBtn} onPress={() => router.back()}>
+            <ThemedText style={styles.linkText}>Back</ThemedText>
+          </Pressable>
+        </SafeAreaView>
       </ThemedView>
     );
   }

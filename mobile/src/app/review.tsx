@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Redirect, router } from 'expo-router';
+import { Redirect, router, useFocusEffect } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { reviewApi, analysisApi, REVIEW_QUALITY, type ReviewQueueItem } from '@shadow-ai/core';
 
@@ -26,6 +26,17 @@ export default function ReviewScreen() {
     queryFn: () => reviewApi.queue(),
     enabled: !!token,
   });
+
+  // expo-router keeps screens mounted, so a returning user would land past the end of a
+  // finished session ("Review done") even with new cards due. Reset + refetch on every focus.
+  useFocusEffect(
+    useCallback(() => {
+      setPos(0);
+      setRevealed(false);
+      queue.refetch();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
 
   const item: ReviewQueueItem | undefined = queue.data?.[pos];
 

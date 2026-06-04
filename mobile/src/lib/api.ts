@@ -8,12 +8,19 @@ import { configureApiBaseUrl, setTokenProvider } from '@shadow-ai/core';
 import { useAuthStore } from './auth-store';
 
 function resolveBaseUrl(): string {
-  // Explicit override wins (set EXPO_PUBLIC_API_URL for staging/prod builds).
+  // Explicit override wins — set EXPO_PUBLIC_API_URL (https) in the EAS build profile for
+  // staging/prod. This is REQUIRED for any release build.
   if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
-  // Dev default: reach the backend on the same machine running Metro. On a physical
-  // device "localhost" is the phone itself, so use Metro's LAN host instead.
-  const host = (Constants.expoConfig?.hostUri ?? 'localhost:8081').split(':')[0];
-  return `http://${host}:8080`;
+  // Dev-only fallback: reach the backend on the machine running Metro. On a physical device
+  // "localhost" is the phone itself, so use Metro's LAN host. NEVER used in a release build —
+  // hostUri is undefined there, and localhost:8080 would just hit the user's phone.
+  if (__DEV__) {
+    const host = (Constants.expoConfig?.hostUri ?? 'localhost:8081').split(':')[0];
+    return `http://${host}:8080`;
+  }
+  throw new Error(
+    'EXPO_PUBLIC_API_URL is not set for this build. Set it (https) in eas.json before building a release.',
+  );
 }
 
 let configured = false;

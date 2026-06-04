@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi, ApiError } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
@@ -12,9 +12,37 @@ import { useAuthStore } from '@/lib/auth-store';
 export default function SettingsScreen() {
   const token = useAuthStore((s) => s.token);
   const signOut = useAuthStore((s) => s.signOut);
+  const qc = useQueryClient();
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   const me = useQuery({ queryKey: ['me'], queryFn: () => authApi.me(), enabled: !!token });
+
+  // Seed the name field once the profile loads.
+  useEffect(() => {
+    if (me.data?.displayName && displayName === '') setDisplayName(me.data.displayName);
+  }, [me.data?.displayName, displayName]);
+
+  const profile = useMutation({
+    mutationFn: () => authApi.updateProfile({ displayName: displayName.trim() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['me'] });
+      Alert.alert('Saved', 'Your name was updated.');
+    },
+    onError: (e) => Alert.alert('Failed', e instanceof ApiError ? e.message : 'Could not save'),
+  });
+
+  const changePw = useMutation({
+    mutationFn: () => authApi.changePassword({ currentPassword, newPassword }),
+    onSuccess: () => {
+      setCurrentPassword('');
+      setNewPassword('');
+      Alert.alert('Done', 'Your password was changed.');
+    },
+    onError: (e) => Alert.alert('Failed', e instanceof ApiError ? e.message : 'Could not change password'),
+  });
 
   const del = useMutation({
     mutationFn: () => authApi.deleteAccount(password),
@@ -55,9 +83,75 @@ export default function SettingsScreen() {
                 </View>
                 <ThemedText type="small">{me.data.email}</ThemedText>
               </View>
-              <ThemedText type="small">{me.data.displayName}</ThemedText>
             </View>
           )}
+
+          <View style={styles.box}>
+            <ThemedText type="smallBold">Display name</ThemedText>
+            <TextInput
+              style={styles.input}
+              value={displayName}
+              onChangeText={setDisplayName}
+              maxLength={80}
+              placeholder="Your name"
+              placeholderTextColor="#9ca3af"
+            />
+            <Pressable
+              style={[
+                styles.saveBtn,
+                (!displayName.trim() ||
+                  profile.isPending ||
+                  displayName.trim() === me.data?.displayName) &&
+                  styles.disabled,
+              ]}
+              disabled={
+                !displayName.trim() || profile.isPending || displayName.trim() === me.data?.displayName
+              }
+              onPress={() => profile.mutate()}
+            >
+              {profile.isPending ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <ThemedText style={styles.saveText}>Save</ThemedText>
+              )}
+            </Pressable>
+          </View>
+
+          <View style={styles.box}>
+            <ThemedText type="smallBold">Change password</ThemedText>
+            <TextInput
+              style={styles.input}
+              placeholder="Current password"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry
+              autoComplete="current-password"
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="New password (8+ characters)"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry
+              autoComplete="new-password"
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+            <Pressable
+              style={[
+                styles.saveBtn,
+                (!currentPassword || newPassword.length < 8 || changePw.isPending) && styles.disabled,
+              ]}
+              disabled={!currentPassword || newPassword.length < 8 || changePw.isPending}
+              onPress={() => changePw.mutate()}
+            >
+              {changePw.isPending ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <ThemedText style={styles.saveText}>Change password</ThemedText>
+              )}
+            </Pressable>
+          </View>
 
           <Pressable style={styles.signOut} onPress={() => signOut()}>
             <ThemedText style={styles.signOutText}>Sign out</ThemedText>
@@ -145,6 +239,8 @@ const styles = StyleSheet.create({
   deleteBtn: { backgroundColor: '#dc2626', borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
   disabled: { opacity: 0.5 },
   deleteText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  saveBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
+  saveText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   legal: { flexDirection: 'row', gap: 18, paddingTop: 8 },
   link: { color: '#9ca3af', fontWeight: '600' },
 });

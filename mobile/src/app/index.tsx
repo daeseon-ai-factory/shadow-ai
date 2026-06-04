@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,6 @@ import { useAuthStore } from '@/lib/auth-store';
 export default function HomeScreen() {
   const token = useAuthStore((s) => s.token);
   const hydrated = useAuthStore((s) => s.hydrated);
-  const signOut = useAuthStore((s) => s.signOut);
 
   // Hooks must run unconditionally — gate the request with `enabled`, redirect in render.
   const me = useQuery({ queryKey: ['me'], queryFn: () => authApi.me(), enabled: !!token });
@@ -28,7 +27,7 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex}>
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
           <ThemedText type="title">Mimi</ThemedText>
 
           {me.isPending && <ActivityIndicator style={styles.gap} />}
@@ -62,6 +61,11 @@ export default function HomeScreen() {
               onPress={() => router.push('/library')}
             />
             <HubCard
+              title="Discover"
+              sub="Curated collections to start from"
+              onPress={() => router.push('/discover')}
+            />
+            <HubCard
               title="Pattern drill"
               sub={`${PATTERNS.length} sentence frames`}
               onPress={() => router.push('/practice')}
@@ -92,11 +96,7 @@ export default function HomeScreen() {
               onPress={() => router.push('/settings')}
             />
           </View>
-
-          <Pressable style={styles.signOut} onPress={() => signOut()}>
-            <ThemedText style={styles.signOutText}>Sign out</ThemedText>
-          </Pressable>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -114,7 +114,7 @@ function HubCard({ title, sub, onPress }: { title: string; sub: string; onPress:
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  container: { flex: 1, padding: 24, gap: 16 },
+  container: { padding: 24, gap: 16, paddingBottom: 40 },
   hub: { gap: 10, marginTop: 4 },
   hubCard: {
     padding: 16,

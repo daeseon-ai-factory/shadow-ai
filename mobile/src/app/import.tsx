@@ -10,8 +10,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Redirect, router } from 'expo-router';
-import { useMutation } from '@tanstack/react-query';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   videosApi,
   clipsApi,
@@ -26,7 +26,10 @@ import { useAuthStore } from '@/lib/auth-store';
 
 export default function ImportScreen() {
   const token = useAuthStore((s) => s.token);
-  const [url, setUrl] = useState('');
+  const qc = useQueryClient();
+  // Discover deep-links here with a ?url= to prefill (tap a curated video to import it).
+  const params = useLocalSearchParams<{ url?: string }>();
+  const [url, setUrl] = useState(params.url ?? '');
   const [video, setVideo] = useState<VideoResponse | null>(null);
 
   const importVideo = useMutation({
@@ -44,7 +47,11 @@ export default function ImportScreen() {
         name: seg.text.slice(0, 40),
         tags: [],
       }),
-    onSuccess: (clip) => router.replace(`/player/${clip.id}`),
+    onSuccess: (clip) => {
+      // Refresh the Library list so the just-created clip is there when the user goes back.
+      qc.invalidateQueries({ queryKey: ['clips'] });
+      router.replace(`/player/${clip.id}`);
+    },
   });
 
   if (!token) return <Redirect href="/login" />;

@@ -52,6 +52,8 @@ export function RecordPanel({ clipId }: { clipId: string }) {
   const stop = async () => {
     const durationMs = state.durationMillis ?? 0;
     await recorder.stop();
+    // Leave record mode so "Play my take" routes to the loudspeaker, not the iOS earpiece.
+    await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
     const uri = recorder.uri;
     if (uri) {
       setLastUri(uri);

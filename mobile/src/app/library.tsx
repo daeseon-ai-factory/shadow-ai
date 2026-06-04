@@ -1,8 +1,9 @@
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
-import { clipsApi } from '@shadow-ai/core';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { clipsApi, reviewApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -15,11 +16,33 @@ function ms(msVal: number) {
 
 export default function LibraryScreen() {
   const token = useAuthStore((s) => s.token);
+  const qc = useQueryClient();
+  const [q, setQ] = useState('');
+
   const clips = useQuery({
-    queryKey: ['clips', 'list'],
-    queryFn: () => clipsApi.list({ page: 0, size: 50, sort: 'createdAt,desc' }),
+    queryKey: ['clips', 'list', q],
+    queryFn: () => clipsApi.list({ page: 0, size: 50, sort: 'newest', q: q.trim() || undefined }),
     enabled: !!token,
   });
+
+  // Streak header — the daily retention hook the web surfaces prominently.
+  const streak = useQuery({
+    queryKey: ['review', 'streak'],
+    queryFn: () => reviewApi.streak(),
+    enabled: !!token,
+  });
+
+  const del = useMutation({
+    mutationFn: (id: string) => clipsApi.delete(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['clips'] }),
+  });
+
+  const confirmDelete = (id: string, name: string) => {
+    Alert.alert('Delete clip?', name, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => del.mutate(id) },
+    ]);
+  };
 
   if (!token) return <Redirect href="/login" />;
 
@@ -32,6 +55,22 @@ export default function LibraryScreen() {
             <ThemedText style={styles.importText}>+ Import</ThemedText>
           </Pressable>
         </View>
+
+        {streak.data ? (
+          <ThemedText type="small" style={styles.streak}>
+            🔥 {streak.data.streakDays}-day streak · {streak.data.dueToday} due today
+          </ThemedText>
+        ) : null}
+
+        <TextInput
+          style={styles.search}
+          placeholder="Search clips…"
+          placeholderTextColor="#9ca3af"
+          autoCapitalize="none"
+          value={q}
+          onChangeText={setQ}
+          returnKeyType="search"
+        />
 
         {clips.isPending ? (
           <ActivityIndicator style={styles.mt} />
@@ -46,11 +85,15 @@ export default function LibraryScreen() {
             refreshing={clips.isFetching}
             ListEmptyComponent={
               <ThemedText type="small" style={styles.empty}>
-                No clips yet. Import a YouTube video to make your first one.
+                {q ? 'No clips match your search.' : 'No clips yet. Import a YouTube video to make your first one.'}
               </ThemedText>
             }
             renderItem={({ item }) => (
-              <Pressable style={styles.card} onPress={() => router.push(`/player/${item.id}`)}>
+              <Pressable
+                style={styles.card}
+                onPress={() => router.push(`/player/${item.id}`)}
+                onLongPress={() => confirmDelete(item.id, item.name || item.videoTitle)}
+              >
                 <View style={styles.cardTop}>
                   <ThemedText type="smallBold" numberOfLines={1} style={styles.flex}>
                     {item.name || item.videoTitle}
@@ -88,10 +131,23 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 24,
     paddingTop: 8,
-    paddingBottom: 12,
+    paddingBottom: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  streak: { paddingHorizontal: 24, paddingBottom: 8 },
+  search: {
+    marginHorizontal: 24,
+    marginBottom: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 15,
+    color: '#111827',
+    backgroundColor: '#fff',
   },
   importBtn: {
     backgroundColor: '#208AEF',
