@@ -120,7 +120,7 @@ public class GeminiClient implements AiAnalysisClient {
     }
 
     @Override
-    public String complete(String systemPrompt, String userPrompt) {
+    public String complete(String systemPrompt, String userPrompt, int maxTokens) {
         if (!isConfigured()) {
             throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "GEMINI_NOT_CONFIGURED",
                     "Gemini API key가 설정되지 않았습니다");
@@ -130,7 +130,7 @@ public class GeminiClient implements AiAnalysisClient {
                 "contents", List.of(Map.of("parts", List.of(Map.of("text", userPrompt)))),
                 "generationConfig", Map.of(
                         "responseMimeType", "application/json",
-                        "maxOutputTokens", 600,
+                        "maxOutputTokens", maxTokens,
                         "temperature", 0.3,
                         "thinkingConfig", Map.of("thinkingBudget", 0))
         );

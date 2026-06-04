@@ -10,9 +10,14 @@ import com.tubeshadow.practice.api.dto.GradeResponse;
 import com.tubeshadow.practice.api.dto.PracticeCardResponse;
 import com.tubeshadow.practice.api.dto.PracticeProgressResponse;
 import com.tubeshadow.practice.api.dto.PracticeRepRequest;
+import com.tubeshadow.practice.api.dto.SentenceTransformSetResponse;
+import com.tubeshadow.practice.api.dto.TransformCheckRequest;
+import com.tubeshadow.practice.api.dto.TransformCheckResponse;
+import com.tubeshadow.practice.api.dto.TransformGenerateRequest;
 import com.tubeshadow.practice.application.CompositionService;
 import com.tubeshadow.practice.application.PracticeProgressService;
 import com.tubeshadow.practice.application.PracticeSrsService;
+import com.tubeshadow.practice.application.TransformService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,12 +42,14 @@ public class PracticeController {
     private final PracticeProgressService service;
     private final PracticeSrsService srsService;
     private final CompositionService compositionService;
+    private final TransformService transformService;
 
     public PracticeController(PracticeProgressService service, PracticeSrsService srsService,
-                             CompositionService compositionService) {
+                             CompositionService compositionService, TransformService transformService) {
         this.service = service;
         this.srsService = srsService;
         this.compositionService = compositionService;
+        this.transformService = transformService;
     }
 
     @GetMapping("/progress")
@@ -83,5 +90,22 @@ public class PracticeController {
     public ApiResponse<ComposeFeedback> composeCheck(@CurrentUser AuthenticatedUser user,
                                                      @Valid @RequestBody ComposeCheckRequest request) {
         return ApiResponse.ok(compositionService.check(request.target(), request.gloss(), request.sentence()));
+    }
+
+    @PostMapping("/compose/transforms")
+    @Operation(summary = "기준 문장 1개 → 15개 문법 변형 생성 (유저별 캐시, 시드당 LLM 1회)")
+    public ApiResponse<SentenceTransformSetResponse> generateTransforms(
+            @CurrentUser AuthenticatedUser user,
+            @Valid @RequestBody TransformGenerateRequest request) {
+        return ApiResponse.ok(transformService.generate(user.id(), request.baseSentence(), request.baseGloss()));
+    }
+
+    @PostMapping("/compose/transform-check")
+    @Operation(summary = "변형 1개 AI 채점 (선택) — 변형을 맞게 했는지 + 더 나은 버전")
+    public ApiResponse<TransformCheckResponse> checkTransform(
+            @CurrentUser AuthenticatedUser user,
+            @Valid @RequestBody TransformCheckRequest request) {
+        return ApiResponse.ok(transformService.check(
+                request.op(), request.baseSentence(), request.model(), request.attempt()));
     }
 }

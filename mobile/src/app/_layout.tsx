@@ -44,6 +44,7 @@ export default function RootLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="login" options={{ presentation: 'modal' }} />
             <Stack.Screen name="signup" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="gym" options={{ headerShown: true, title: t('nav.gym') }} />
             <Stack.Screen name="practice" options={{ headerShown: true, title: t('nav.practice') }} />
             <Stack.Screen name="collocations" options={{ headerShown: true, title: t('nav.collocations') }} />
             <Stack.Screen name="compose" options={{ headerShown: true, title: t('nav.compose') }} />

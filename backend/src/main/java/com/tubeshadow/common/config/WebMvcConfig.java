@@ -41,7 +41,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // per-user so a loop can't run up the bill (the auth limiter above only covers signup/login).
         ComposeRateLimitInterceptor compose = composeRateLimitInterceptor.getIfAvailable();
         if (compose != null) {
-            registry.addInterceptor(compose).addPathPatterns("/api/practice/compose/check");
+            // Every /compose/* endpoint costs a provider call (transforms generation, transform-check,
+            // and the original compose check), so all must be behind the per-user bill guard.
+            registry.addInterceptor(compose).addPathPatterns(
+                    "/api/practice/compose/check",
+                    "/api/practice/compose/transforms",
+                    "/api/practice/compose/transform-check");
         }
     }
 }

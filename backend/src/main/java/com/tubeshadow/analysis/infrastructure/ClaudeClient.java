@@ -114,14 +114,14 @@ public class ClaudeClient implements AiAnalysisClient {
     }
 
     @Override
-    public String complete(String systemPrompt, String userPrompt) {
+    public String complete(String systemPrompt, String userPrompt, int maxTokens) {
         if (!isConfigured()) {
             throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "CLAUDE_NOT_CONFIGURED",
                     "Anthropic API key가 설정되지 않았습니다");
         }
         Map<String, Object> body = Map.of(
                 "model", props.model(),
-                "max_tokens", 600,
+                "max_tokens", maxTokens,
                 "system", List.of(Map.of("type", "text", "text", systemPrompt)),
                 "messages", List.of(Map.of(
                         "role", "user",

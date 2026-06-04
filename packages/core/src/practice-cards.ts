@@ -8,6 +8,9 @@ import { COLLOCATIONS } from "./collocations";
 
 export const patternKey = (id: string, i: number) => `pat:${id}#${i}`;
 export const collocationKey = (id: string, i: number) => `col:${id}#${i}`;
+// Sentence-gym transform card. seedId is the server cache-row UUID (NOT the raw sentence), which
+// keeps the key inside the 120-char card_key budget: "tf:" + 36 + op + "#0" ≈ 59 chars.
+export const transformKey = (seedId: string, op: string, i: number) => `tf:${seedId}:${op}#${i}`;
 
 export interface CardInfo {
   kind: "pattern" | "collocation";

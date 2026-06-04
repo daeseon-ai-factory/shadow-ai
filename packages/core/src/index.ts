@@ -19,5 +19,6 @@ export * from "./api/collections";
 export * from "./api/review";
 export * from "./api/prepositions";
 export * from "./api/practice";
+export * from "./api/transforms";
 export * from "./api/recordings";
 export * from "./api/health";

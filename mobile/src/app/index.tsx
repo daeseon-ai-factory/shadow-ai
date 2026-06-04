@@ -52,6 +52,11 @@ export default function HomeScreen() {
           {/* Practice hub — each runs shared core content/logic as a native screen. */}
           <View style={styles.hub}>
             <HubCard
+              title={t('home.gym')}
+              sub={t('home.gymSub')}
+              onPress={() => router.push('/gym')}
+            />
+            <HubCard
               title={t('home.review')}
               sub={t('home.reviewSub')}
               onPress={() => router.push('/review')}
