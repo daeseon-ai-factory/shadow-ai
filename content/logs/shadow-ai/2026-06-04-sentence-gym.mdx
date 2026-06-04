@@ -1,0 +1,46 @@
+---
+title: "Daily sentence gym: bending one mined sentence 15 grammatical ways"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "A new daily drill that takes one base English sentence and rewrites it through 15 grammatical operations. The interesting part wasn't the feature — it was the shared LLM client's hardcoded 600-token cap that would have truncated the output JSON on the default provider."
+tags: ["llm", "spring-boot", "expo", "feature", "ai"]
+---
+
+## The idea
+
+The app already had pattern drills: ~70 high-frequency English frames, each with three example sentences, graded by a Leitner SRS. That trains *breadth* — recognizing and recalling many patterns.
+
+This adds the orthogonal axis: *depth on one sentence*. Take a single base statement — say `The API returns duplicate data under load` — and bend it through 15 grammatical operations: turn it into a question, negate it, shift the tense, add a modal, a perfect modal, a cause/result, an if-condition, an "as" pattern, a relative clause, a preposition chunk (the 10 core, drilled daily), then compare/contrast, passive, there-is, it-pattern, gerund/to-infinitive (the 5 extra, surfaced Mon/Wed/Fri). Same content, fifteen manipulations — the reflex of *producing* a transformation, not memorizing an example.
+
+Two product decisions were locked up front: the seed sentence is either typed or mined from one of the learner's own clips, and the 15 transforms are **AI-generated and cached** (one call per unique seed). Grading stays the app's existing self-grade reveal loop, with an **optional** per-transform AI check on top.
+
+## The part that mattered
+
+The whole feature rides the existing AI plumbing: a provider-neutral `AiAnalysisClient.complete(system, user)` already powered the "compose check" feature, with retry, timeouts, and provider selection for free. Reuse it, write a strict-JSON prompt, parse defensively — done.
+
+Except `complete()` hardcoded its output budget to **600 tokens**, in both provider implementations:
+
+- `ClaudeClient`: `"max_tokens", 600`
+- `GeminiClient`: `"maxOutputTokens", 600`
+
+600 is plenty for a one-sentence compose verdict. It is **not** plenty for fifteen English sentences plus fifteen Korean glosses. The model would emit valid JSON right up until the budget ran out, then stop mid-object — and the parser would throw `BAD_GATEWAY`.
+
+The nastier half: the **default** provider is Gemini (`tubeshadow.ai.provider` defaults to `gemini`). If you only thought about "the Claude call" and bumped Claude's cap, every local test that runs on the default provider would still truncate — and you'd ship it.
+
+The fix is boring and that's the point: add a 3-arg `complete(system, user, maxTokens)` to the interface (the old 2-arg becomes a `default` that passes 600, so nothing else changes), parameterize the literal in **both** clients, and have the new generation path ask for 2000.
+
+## The rest, briefly
+
+- **Caching is per-user, keyed by a SHA-256 of the normalized seed** (trim + lowercase + collapsed whitespace), so trivially different inputs don't each cost a fresh generation, and one learner's mined sentences never leak into another's cache.
+- **The parse is deliberately forgiving.** Models occasionally fence their JSON, reorder the array, misspell an op, or drop one. The service builds a map by op id and re-emits in canonical order, skipping unknown ops and empty entries — so a slightly wayward response degrades to "14 transforms" instead of a hard failure.
+- **The SRS key is `tf:<seedId>:<op>#0`**, where `seedId` is the cache-row UUID — not the sentence. That's load-bearing: `card_key` is `VARCHAR(120)`, and a raw natural-language seed would blow the budget. The UUID keeps it around 59 characters, and the transform cards ride the existing `/srs/grade` endpoint with zero backend SRS changes.
+- **The two new endpoints had to be added to the rate-limiter's path list.** It's path-pattern based, not annotation based, so a new provider-costing endpoint that isn't in the list is an *unlimited* one. Easy to forget; expensive to forget.
+
+## Verified
+
+`./gradlew test` across the practice and analysis packages is green — including the JPA-context tests, which means Flyway applied the new `V19` migration and Hibernate's `validate` mode accepted the entity mapping (so the DDL and the `@Entity` actually agree). A focused `TransformServiceTest` covers the strict, fenced, and truncated-JSON paths, confirms a cache hit never calls the provider, and asserts the 503 / BAD_GATEWAY failure modes. The mobile app typechecks clean once Expo regenerated its typed routes for the new `/gym` screen.
+
+What's *not* done here: a live end-to-end run against a real provider key on a simulator. That spends real tokens and needs a configured backend — a deliberate next step, not a silent gap.

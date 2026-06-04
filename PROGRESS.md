@@ -11,6 +11,17 @@
 - Docker 이미지 빌드 성공
 - 종합 스모크 ALL PASSED + 동시 signup 경합 → 409 검증
 
+## 신규 기능: 오늘의 문장 (sentence gym) — 2026-06-04
+- 기준 평서문 1개를 15개 문법 변형(코어 10 + 추가 5, 월/수/금)으로 훈련하는 일일 드릴.
+- 씨드: 직접 입력 + 클립 transcript에서 후보 추출. 변형: AI 생성 + 유저별 캐시(시드당 LLM 1회).
+- 채점: 기존 `DrillRunner` 자가채점 기본 + 선택적 변형별 AI 체크.
+- 백엔드: `complete(system,user,maxTokens)` 오버로드(600 트렁케이션 트랩 수정, Claude+Gemini 둘 다),
+  `TransformService`/`TransformPrompt`, `SentenceTransformSet` 엔티티 + `V19` 마이그레이션,
+  `POST /api/practice/compose/{transforms,transform-check}` (rate-limit 등록). core: `transformsApi`+`transformKey`.
+  모바일: `/gym` 화면 + i18n(en/ko) + 홈 카드.
+- 검증: `./gradlew test` (practice/analysis) green, `TransformServiceTest` 통과, 모바일 `tsc` clean.
+  미실행: 실제 provider 키 + 시뮬레이터 종단간 스모크. 커밋 `28c7cad`.
+
 ## 커밋 히스토리 (16 commits)
 ```
 74b3d74 [review-fixes] 코드 리뷰 HIGH/MEDIUM 이슈 수정
