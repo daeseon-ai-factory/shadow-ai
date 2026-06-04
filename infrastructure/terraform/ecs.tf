@@ -81,7 +81,7 @@ resource "aws_ecs_task_definition" "backend" {
       # localhost:4416 (same Fargate task = shared network namespace). essential=false: if it dies,
       # the backend keeps serving and transcript fetch just degrades to "unavailable".
       name      = "pot-provider"
-      image     = "brainicism/bgutil-ytdlp-pot-provider:latest"
+      image     = "brainicism/bgutil-ytdlp-pot-provider:1.3.1" # pinned to match the yt-dlp plugin (no :latest)
       essential = false
       portMappings = [
         { containerPort = 4416, protocol = "tcp" }

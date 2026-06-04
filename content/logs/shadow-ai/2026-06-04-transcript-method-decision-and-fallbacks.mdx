@@ -1,0 +1,46 @@
+---
+title: "YouTube 자막 — 검증된 방법 랭킹 + 폴백 런북 (이게 깨지면 어디로 가나)"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "ko"
+summary: "7개 방법을 적대적으로 실측 검증한 뒤 'bgutil POToken 사이드카'를 채택. 깨졌을 때 갈아탈 폴백 순서와 각 대안의 트레이드오프를 런북으로 남긴다."
+tags: ["youtube", "potoken", "decision", "runbook", "yt-dlp"]
+---
+
+> 의사결정 기록 + 폴백 런북. 자막 import가 깨지면 여기부터 읽고 아래 순서대로 갈아탄다.
+
+## 채택: yt-dlp + bgutil-ytdlp-pot-provider (POToken 사이드카)
+- **왜**: 유일하게 "무료 + 아무 URL + 데이터센터(AWS)에서 작동"이 적대적 검증을 통과한 방법. POToken을 서버에서 발행 → 토큰이 영상/세션에 묶임(IP 아님) → timedtext URL이 `ip=0.0.0.0` 서명 → AWS에서도 통과.
+- **누가**: BotGuard 챌린지 = 구글. 발행 라이브러리 bgutils-js = LuanRT(youtubei.js 저자). yt-dlp 플러그인 = Brainicism(yt-dlp 위키 공식 추천). 버전 핀: `bgutil-ytdlp-pot-provider==1.3.1`, 이미지 `brainicism/bgutil-ytdlp-pot-provider:1.3.1`.
+- **구성**: 백엔드 컨테이너에 pip 플러그인 + ECS 태스크에 provider 사이드카(포트 4416, essential=false). 같은 Fargate 태스크 = localhost.
+
+## 검증 랭킹 (전부 실측, 가정 IP)
+| 방법 | 무료 | 아무URL | **데이터센터 가능?** | prod에 서드파티 코드 | 비고 |
+|---|---|---|---|---|---|
+| **bgutil 사이드카 (채택)** | ✅ | ✅ | ✅ 검증된 메커니즘¹ | ⚠️ 있음 | 깨짐-유지보수, ToS 회색 |
+| youtubei.js + bgutils-js (in-proc) | ✅ | ✅ | ✅ 동일 원리 | ⚠️ 있음(npm) | 백엔드에 Node 추가 필요 |
+| 서드파티 API (Supadata 등) | 프리티어~100/월 | ✅ | ✅ (아키텍처상) | ❌ 없음(HTTPS 호출) | 벤더 의존, 한도 후 유료 |
+| 홈워커 (집 머신 yt-dlp) | ✅ | ✅ | n/a(가정 IP) | ❌ 없음 | 집 머신 켜둬야 |
+| 레지덴셜 프록시 + yt-dlp | ❌(~cents/건) | ✅ | ✅ | ❌ 없음 | 돈, 처리량에도 도움 |
+| youtube-transcript-api | ✅ | ✅ | ❌ IP의존 | ❌ | 집머신 전용 |
+| yt-dlp --impersonate | ✅ | ✅ | ❌ TLS만 | ❌ | 데이터센터 무용 |
+| InnerTube get_transcript | — | — | ❌ 400 사망 | — | 쓰지 말 것 |
+
+¹ 적대 검증: 다른 영상으로 재현(실제 ASR 세그먼트), no-pot 대조=0바이트, wrong-video pot 대조 실패. **단 "AWS IP에서 mint" 자체는 미검증** — 배포 첫 import가 결정적 테스트(로그 `Retrieved a gvs PO Token`).
+
+## 폴백 런북 — 채택안이 깨지면 이 순서로
+1. **YouTube가 BotGuard를 바꿔서 깨짐** → `brainicism/bgutil-ytdlp-pot-provider` 이미지 + `bgutil-ytdlp-pot-provider` 플러그인을 최신으로 bump(보통 며칠 내 패치 나옴). 버전 핀만 올리고 재배포.
+2. **AWS IP에서 mint가 거부됨**(attestation이 데이터센터 깎음) → mint 트래픽만 레지덴셜 프록시로 (`--proxy`는 mint/fetch egress에만, 토큰은 그대로 유효).
+3. **서드파티 코드를 prod에서 빼고 싶다 / 유지보수 지겹다** → **Supadata식 API**로 전환. 백엔드 `YoutubeTranscriptClient`를 yt-dlp 셸아웃 대신 HTTPS 호출로 교체(Gemini 호출과 동형). 프리티어 한도 확인.
+4. **완전 자립·무료 원하고 집 머신 OK** → 홈워커: 집 머신에서 plain yt-dlp(가정 IP라 토큰 불필요) → 백엔드의 client-transcript 엔드포인트(이미 구현됨, `importByUrl(url, {transcriptSegments})`)로 POST.
+5. **그 외 전부 실패** → 큐레이션(운영자가 집 머신에서 미리 채움) — 자막 게이트와 무관, 항상 작동.
+
+## 처리량 주의 (접근과 별개)
+POToken은 *봇 차단*을 푸는 거지 *IP 레이트리밋*을 풀지 않는다. 단일 AWS IP에서 대량이면 429가 뜬다. 개인용은 무관하나, 볼륨 생기면 요청 페이싱 + 소량 레지덴셜 프록시 필요.
+
+## 비-협상 사실 (VERIFIED)
+- tokenless timedtext = 200 + 0바이트(진짜 브라우저에서도). POToken 필요는 확정.
+- plain yt-dlp: 가정 IP ✅ / AWS ❌ (둘 다 impersonation 없이) → 지배 요인은 IP.
+- bgutil이 발행하는 토큰은 IP 비의존(서명 URL `ip=0.0.0.0`, no `pot=` on fetch).
