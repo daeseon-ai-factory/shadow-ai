@@ -1,0 +1,171 @@
+---
+title: "우리가 서울에 올린 AWS 49개 — 실제 배포된 리소스 전체 딥 정리"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "ko"
+summary: "terraform state에 실제로 박힌 49개 리소스(+ 데이터소스 7개)를 층별로 하나도 안 빼고 푼다. 각 리소스가 무엇이고 왜 있고 어디에 연결되는지."
+tags: ["aws", "terraform", "ecs", "rds", "iam", "deployment"]
+---
+
+> `GUIDE.ko.md`(큰그림)·`WALKTHROUGH.ko.md`(.tf 코드 한 줄씩)의 짝. 여기선 **실제로 떠 있는 49개 리소스 인벤토리**를
+> 층별로 푼다. 목록은 `terraform state list`에서 그대로 가져왔다(데이터소스 7 + 리소스 49 = 56줄).
+
+## 0. 한 장 큰 그림
+```
+인터넷 → [ALB :443] → [ECS Fargate 태스크 :8080] → [RDS :5432] (private)
+            ↑ ACM TLS      ↑ 시크릿주입(Secrets)      ↑ 녹음은 [S3]
+         전부 [VPC] 안. [IAM]이 누가 뭘 하는지 통제. [ECR]에 이미지, [CloudWatch]에 로그.
+```
+"49개"는 이 그림을 실제로 만드는 부품들이다. 층별로 본다.
+
+---
+
+## A. 데이터소스 7개 (만드는 게 아니라 "읽는" 것)
+`data.*`는 리소스를 생성하지 않고 AWS에서 정보를 조회한다. 그래서 "49개 리소스"엔 안 센다.
+| 데이터소스 | 읽는 것 |
+|---|---|
+| `aws_availability_zones.available` | 서울 리전의 가용영역(AZ) 목록 → 서브넷을 2 AZ에 분산할 때 씀 |
+| `aws_caller_identity.current` | 내 AWS 계정ID(420432358322) → 버킷 이름·ARN에 씀 |
+| `aws_iam_policy_document.ecs_assume` | "ECS가 이 롤을 빌릴 수 있다"는 신뢰문서(JSON) |
+| `aws_iam_policy_document.ecs_execution_secrets` | 실행롤이 *어떤 시크릿*을 읽을지 권한문서 |
+| `aws_iam_policy_document.github_assume` | "깃허브 OIDC가 이 롤을 빌릴 수 있다"는 신뢰문서 |
+| `aws_iam_policy_document.github_deploy` | 깃허브가 ECR push + ECS 배포할 권한문서 |
+| `aws_iam_policy_document.task_s3` | 앱이 S3 녹음 버킷 접근할 권한문서 |
+
+> IAM 문서가 5개나 되는 건, IAM이 "신뢰(누가 빌리나) + 권한(뭘 하나)"을 *문서로* 정의하기 때문. 코드 가독성 위해 `data` 블록으로 뺐다.
+
+---
+
+## B. 네트워크 12개 — 땅과 도로
+| # | 리소스 | 무엇 / 왜 |
+|---|---|---|
+| 1 | `aws_vpc.main` | 내 전용 가상 네트워크 `10.0.0.0/16`(6.5만 IP). 모든 게 이 안에 산다 |
+| 2 | `aws_internet_gateway.main` | VPC ↔ 인터넷 출입문. public 쪽만 이리로 나감 |
+| 3-4 | `aws_subnet.public[0/1]` | 인터넷 닿는 구역 2개(2 AZ). ALB + Fargate가 여기 |
+| 5-6 | `aws_subnet.private[0/1]` | 인터넷 차단 구역 2개(2 AZ). RDS가 여기 (DB 보호) |
+| 7 | `aws_route_table.public` | public 도로표: `0.0.0.0/0 → IGW`(인터넷 연결) |
+| 8 | `aws_route_table.private` | private 도로표: 내부만 (인터넷 경로 없음 = DB 격리) |
+| 9-12 | `aws_route_table_association.public[0/1]`, `private[0/1]` | 각 서브넷에 도로표를 *연결*하는 4개 |
+
+**핵심**: public/private를 가르는 건 *라우팅 테이블*이다. private에 "IGW로 가는 길"이 없어서 RDS가 인터넷에서 안 보인다. 왜 2 AZ? 한 데이터센터가 죽어도 다른 AZ로 버티려고(ALB·RDS는 2 AZ 필수).
+
+---
+
+## C. 보안그룹 3개 — 층층 방화벽
+| # | 리소스 | 인바운드 규칙 |
+|---|---|---|
+| 13 | `aws_security_group.alb` | 인터넷(0.0.0.0/0)에서 443/80 |
+| 14 | `aws_security_group.fargate` | **alb-sg에서만** 8080 |
+| 15 | `aws_security_group.rds` | **fargate-sg에서만** 5432 |
+
+**핵심**: 출처를 IP가 아니라 *앞 SG*로 지정. "각 층은 바로 앞 층만 믿는다." 그래서 같은 VPC 안 다른 머신도 앱이 아니면 DB에 못 닿는다.
+
+---
+
+## D. 비밀번호 생성기 2개 — 사람이 안 친다
+| # | 리소스 | 무엇 |
+|---|---|---|
+| 16 | `random_password.db` | RDS 마스터 비번을 32자 난수로 생성 |
+| 17 | `random_password.jwt` | JWT 서명용 시크릿을 64자 난수로 생성 |
+
+생성된 값은 곧장 Secrets Manager(아래 H)로 들어간다. 사람이 비번을 정하지도, 코드에 박지도 않는다. (단 이 값은 terraform state에 평문으로 남는다 → state를 시크릿처럼 다뤄야 하는 이유.)
+
+---
+
+## E. 데이터베이스 2개
+| # | 리소스 | 무엇 / 왜 |
+|---|---|---|
+| 18 | `aws_db_subnet_group.main` | RDS가 살 서브넷 묶음 = **private 2개**. 2 AZ 걸쳐야 해서 |
+| 19 | `aws_db_instance.main` | PostgreSQL 16, `db.t4g.micro`(ARM, 1GB), private, 암호화. 백업 0(프리플랜 제약), destroy 쉽게 세팅 |
+
+앱이 부팅하며 여기에 Flyway 마이그레이션을 돌려 테이블을 만들고, 회원가입 시 INSERT 한다. (배포 검증 때 201 받은 그 DB.)
+
+---
+
+## F. S3 (녹음 저장) 5개 — 버킷 + 잠금 4겹
+| # | 리소스 | 무엇 |
+|---|---|---|
+| 20 | `aws_s3_bucket.recordings` | 녹음 파일 버킷 `tubeshadow-recordings-420432358322` |
+| 21 | `aws_s3_bucket_lifecycle_configuration` | 오래된 버전 자동 삭제(비용↓) |
+| 22 | `aws_s3_bucket_public_access_block` | **공개 접근 4종 전부 차단** |
+| 23 | `aws_s3_bucket_server_side_encryption_configuration` | 저장 시 암호화 |
+| 24 | `aws_s3_bucket_versioning` | 실수 복구용 버전 관리 |
+
+> S3는 버킷 하나 + *설정을 별도 리소스로* 붙인다. 그래서 한 버킷에 4개 설정 리소스가 따라온다. 녹음은 사생활이라 무조건 private.
+
+---
+
+## G. ECR (이미지 저장소) 2개
+| # | 리소스 | 무엇 |
+|---|---|---|
+| 25 | `aws_ecr_repository.backend` | Docker 이미지 사설 창고 `.../tubeshadow`. 우리가 빌드한 228MB 이미지가 여기 |
+| 26 | `aws_ecr_lifecycle_policy.backend` | 최근 10개만 보관(옛 이미지 자동 정리) |
+
+---
+
+## H. Secrets Manager 6개 — 비밀 금고 (이름 3 + 값 3)
+| # | 리소스 | 무엇 |
+|---|---|---|
+| 27-29 | `aws_secretsmanager_secret.{database_url, database_password, jwt_secret}` | 시크릿 "통"(이름/메타) 3개 |
+| 30-32 | `aws_secretsmanager_secret_version.{...}` | 그 통에 담긴 *실제 값* 3개 |
+
+**왜 secret + version 둘?** AWS는 "비밀의 이름(통)"과 "그 안의 값(버전)"을 분리한다. ECS 태스크는 *ARN(통 주소)만* 참조하고, 실행 순간 실행롤이 값을 꺼내 컨테이너에 주입한다. → 값이 task 정의나 state·깃에 안 박힌다. (AI 키는 비워서 안 만들어짐 = 그래서 6개.)
+
+---
+
+## I. IAM 8개 — 권한 (가장 헷갈리는 층)
+| # | 리소스 | 무엇 |
+|---|---|---|
+| 33 | `aws_iam_role.ecs_execution` | **실행롤**: ECS가 태스크 띄울 때 — 이미지 pull + 시크릿 읽기 + 로그 |
+| 34 | `aws_iam_role.task` | **태스크롤**: 돌아가는 앱이 — S3 녹음 접근 |
+| 35 | `aws_iam_role.github_deploy` | **배포롤**: 깃허브가 OIDC로 빌려 ECR push + ECS 배포 |
+| 36 | `aws_iam_role_policy.ecs_execution_secrets` | 실행롤에 "이 시크릿들 읽기" 권한 부착 |
+| 37 | `aws_iam_role_policy.task_s3` | 태스크롤에 "S3 버킷 접근" 권한 부착 |
+| 38 | `aws_iam_role_policy.github_deploy` | 배포롤에 "ECR+ECS+PassRole" 권한 부착 |
+| 39 | `aws_iam_role_policy_attachment.ecs_execution_managed` | 실행롤에 AWS 표준 정책(AmazonECSTaskExecutionRolePolicy) 부착 |
+| 40 | `aws_iam_openid_connect_provider.github` | 깃허브를 "신뢰할 외부 신분증명자"로 등록(OIDC) = 키리스의 핵심 |
+
+**3롤 나누는 이유 = 최소권한.** 실행롤(셋업)·태스크롤(런타임)·배포롤(CI)이 각자 딱 필요한 것만. **OIDC**: 깃허브에 장기 AWS 키를 안 두고, 깃허브가 서명한 토큰으로 *그 순간만* 배포롤을 빌린다.
+
+---
+
+## J. ALB (HTTPS 정문) 5개
+| # | 리소스 | 무엇 |
+|---|---|---|
+| 41 | `aws_lb.main` | Application Load Balancer. public 진입점 |
+| 42 | `aws_lb_target_group.backend` | ALB가 보낼 "건강한 태스크 IP 풀". 헬스체크 `/api/health` |
+| 43 | `aws_lb_listener.http` | :80 — (지금) 443으로 301 리다이렉트 |
+| 44 | `aws_lb_listener.https[0]` | :443 — ACM 인증서로 TLS 종료 후 태스크로 포워드. `[0]`은 `count`로 조건부 생성된 흔적(2단계 HTTPS) |
+| 45 | `aws_acm_certificate.api` | `api.mimi.daeseon.ai`용 무료 TLS 인증서(재발급한 것 — CAA 함정 해결 후) |
+
+**핵심**: ALB가 HTTPS를 풀고(TLS 종료), 건강한 태스크에만 보낸다. 태스크가 죽고 떠도 도메인은 ALB로 고정.
+
+---
+
+## K. ECS (심장) 4개
+| # | 리소스 | 무엇 |
+|---|---|---|
+| 46 | `aws_ecs_cluster.main` | 컨테이너 묶음의 논리적 단위 `tubeshadow-cluster` |
+| 47 | `aws_ecs_task_definition.backend` | 컨테이너 "레시피": 이미지·CPU·env·시크릿·로그 |
+| 48 | `aws_ecs_service.backend` | 태스크 N개를 *항상 떠있게* 유지 + ALB 등록. `lifecycle ignore_changes`로 배포는 CI가 소유 |
+| 49 | `aws_cloudwatch_log_group.backend` | 컨테이너 stdout이 모이는 곳 `/ecs/tubeshadow`. yt-dlp 차단 로그를 여기서 봤다 |
+
+**핵심 패턴**: Terraform이 서비스를 *한 번* 만들고, 이후 새 이미지 배포는 깃허브 액션이 담당(`ignore_changes`). 안 그러면 apply마다 CI가 올린 최신 이미지를 옛 걸로 되돌린다.
+
+---
+
+## 비용 (지금 24시간 돌면서)
+| 부품 | 월 비용(대략) |
+|---|---|
+| ALB | ~$16 |
+| RDS db.t4g.micro | ~$13 |
+| Fargate 0.5vCPU/1GB | ~$10 |
+| S3/ECR/Secrets/로그 | ~$1-2 |
+| **합계** | **~$40/월** |
+
+→ 크레딧 ~3-4주. 학습 끝나면 `terraform destroy`로 49개 *한 번에* 내려 과금 정지, 다시 `apply`로 ~15분에 복구.
+
+## 한 줄 회고
+49개는 많아 보이지만 **층(네트워크→보안→데이터→이미지→권한→로드밸런서→실행)이 7개**일 뿐이고, 각 층이 5~12개 부품으로 이뤄진다. 이 구조를 말로 설명할 수 있으면 "AWS에 백엔드 배포해봤다"가 진짜가 된다.
