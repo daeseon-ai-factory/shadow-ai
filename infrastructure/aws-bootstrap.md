@@ -1,5 +1,10 @@
 # AWS Bootstrap — first-time setup
 
+> **Prefer Terraform.** The whole of this checklist is now codified in [`terraform/`](./terraform/)
+> — `terraform apply` builds everything below in one command, and the per-file comments explain
+> each piece. This manual runbook remains as the "what is Terraform actually creating, and why"
+> reference (and a fallback if you want to click through the console once to learn it).
+
 This is a one-time checklist to wire AWS for TubeShadow. Once done, every code change
 flows through GitHub Actions → ECR → ECS automatically.
 

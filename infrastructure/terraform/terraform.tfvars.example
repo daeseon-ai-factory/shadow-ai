@@ -1,0 +1,22 @@
+# terraform.tfvars.example — copy to terraform.tfvars and fill in. terraform.tfvars is GITIGNORED
+# because it holds secrets. Most values have sensible defaults in variables.tf; you usually only
+# need the secrets below.
+
+# --- Required: the AI key the analysis pipeline uses (default provider = gemini, free tier) -----
+gemini_api_key = "AIza...your-google-gemini-key..."
+
+# --- Optional ----------------------------------------------------------------------------------
+# Only if you switch ai_provider to "claude":
+# anthropic_api_key = "sk-ant-..."
+
+# Only once you wire up payments (RevenueCat / web). Empty = the billing webhook stays disabled (503).
+# billing_webhook_secret = "a-long-random-shared-secret"
+
+# --- Overrides (optional — everything has a default) -------------------------------------------
+# project              = "tubeshadow"
+# aws_region           = "ca-central-1"
+# api_domain           = "api.mimi.daeseon.ai"
+# github_repo          = "Daeseon-AI-Factory/shadow-ai"
+# github_branch        = "main"
+# db_instance_class    = "db.t4g.micro"
+# desired_count        = 1

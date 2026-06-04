@@ -1,0 +1,9 @@
+# NEVER commit these — they contain secrets (DB password, JWT secret) and machine-local state.
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+# NOTE: .terraform.lock.hcl IS committed on purpose — it pins provider versions/hashes for
+# reproducible installs across machines. Do not ignore it.
+*.tfplan
+crash.log
