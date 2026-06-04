@@ -660,3 +660,16 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 <!-- override-trigger: bfae14b docs(log): close the 2 audit-flagged blog gaps — AWS first-deploy gotchas (1bc48e1), monorepo workspaces (cc48293) [no-log] — false positive: bfae14b is purely two blog .mdx narratives (95 insertions, zero code/config) for work already dual-logged in troubleshooting (1bc48e1 = AWS first-deploy gotchas; cc48293 = monorepo workspaces). The "audit" keyword fired on the commit subject's own wording ("audit-flagged blog gaps"). Nothing to log as a fix/decision. -->
 <!-- skipped: 235d11f chore(log): override-trigger note for bfae14b (pure blog docs) [no-log] -->
 <!-- override-trigger: 11eaee4 docs(log): close the last audit gap — expo-lint package.json rewrite gotcha (ee3de5d) [no-log] — false positive: 11eaee4 is purely one blog .mdx narrative (48 insertions, zero code/config) for the expo-lint gotcha already logged in this file against ee3de5d. The "audit" keyword fired on the subject's own wording ("close the last audit gap"). Nothing to log as a fix/decision. -->
+<!-- skipped: 3355391 chore(log): override-trigger note for 11eaee4 (pure blog docs) [no-log] -->
+
+---
+
+## "임포트하면 저장되는데 라이브러리에 안 보인다" — 자막 실패의 하류 효과 (별개 버그 아님)
+
+- **Symptom**: 웹에서 YouTube를 임포트하면 "저장됐다"는데 라이브러리 목록엔 안 나온다.
+- **Cause** (코드 + CloudWatch로 검증): 두 겹이다.
+  1. **자막 fetch가 AWS 데이터센터 IP에서 차단**됨. CloudWatch: `yt-dlp non-zero exit ... --cookies for the authentication` → `No transcript ... 이 영상에는 자막이 없습니다`. localhost(가정 IP)에선 되던 게 클라우드에선 막힌다.
+  2. **라이브러리는 "클립" 목록이지 "영상" 목록이 아니다** (`library/page.tsx`의 `queryKey ["clips"]`, `clipsApi.list()`). 클립은 `/video/{id}`에서 자막의 문장을 선택해야 생긴다. 자막이 없으니 → 고를 문장 0개 → 클립 0개 → 라이브러리가 빈다.
+  - 영상 자체는 **저장된다**: `VideoImportService`는 자막이 없어도 `log.info("No transcript")` 후 `videoRepository.save(video)` 하고 `/video/{id}`로 보낸다. 그래서 영상은 멀쩡히 그 페이지에 있다 — 단지 클립을 못 만들 뿐.
+- **Fix**: 코드 수정 없음 (아직). 근본 해결은 자막 fetch를 **클라이언트로** 옮기는 것 — 단 웹 브라우저는 **CORS** 때문에 youtube.com 자막을 직접 못 읽고(모바일 네이티브만 가능), 웹은 큐레이션 카탈로그/유료 API가 현실적. 7개 방안 비교는 `content/logs/shadow-ai/2026-06-04-youtube-transcript-fetch-architecture.mdx`.
+- **Pattern**: "저장됐는데 목록에 없다"를 만나면, **그 목록이 실제로 무엇을 쿼리하는지**(클립 vs 영상)부터 확인하라 — save/cache 버그로 단정하기 전에. 여기선 빈 목록이 *올바른 동작*이었고, 진짜 원인은 한 단계 위의 자막 실패였다.
