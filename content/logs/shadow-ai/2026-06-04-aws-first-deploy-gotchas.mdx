@@ -1,0 +1,61 @@
+---
+title: "First AWS deploy, three walls: a CAA record, an un-issued cert, and a free-tier backup"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "The first terraform apply of the backend to ap-northeast-2 mostly came up — then RDS rejected the backup window, the HTTPS listener refused a cert that wasn't issued yet, and ACM validation FAILED on a CAA record Vercel had quietly set. Three classic first-deploy traps, in order."
+tags: ["aws", "terraform", "acm", "rds", "deploy", "dns"]
+---
+
+> Written up from the troubleshooting log of the first real `terraform apply`. The IaC itself was authored earlier ([backend terraform IaC](./2026-06-04-backend-terraform-iac)) — this is the *running it for the first time* story.
+
+## The setup
+
+First `terraform apply` of the backend stack to Seoul (`ap-northeast-2`). Most resources came up clean. Three didn't — and they failed in a way that's worth remembering, because each is a different shape of "the cloud won't let you do the obvious thing yet."
+
+## ① RDS won't take the backup window (free-tier)
+
+```
+FreeTierRestrictionError: The specified backup retention period
+exceeds the maximum available to free tier customers.
+```
+
+The new credit-based "Free Plan" account caps automated backups. **Fix:** `backup_retention_period = 0` — and also drop `backup_window`, which RDS rejects when retention is 0.
+
+## ② The HTTPS listener refuses a cert that isn't issued yet
+
+```
+UnsupportedCertificate
+```
+
+The `:443` listener couldn't be created because the ACM cert was still `PENDING_VALIDATION`. AWS won't attach an un-issued cert to a listener — and DNS validation is a **manual Cloudflare step** that happens *after* apply. Classic chicken-and-egg: the apply needs the cert, the cert needs a DNS record you add by hand after the apply.
+
+**Fix:** two-phase, gated on `var.enable_https`. Phase 1 — the `:80` listener forwards straight to the app, so you can test over `http://<alb>` immediately. Phase 2 — after the cert *issues*, flip the flag to add the `:443` listener + the HTTP→HTTPS redirect.
+
+## ③ The subtle one: ACM cert `FAILED` with `CAA_ERROR`
+
+Even after adding the DNS validation record, the cert went to `Status: FAILED`. The reason wasn't obvious until:
+
+```
+$ dig mimi.daeseon.ai CAA
+0 issue "letsencrypt.org"
+0 issue "globalsign.com"
+0 issue "pki.goog"
+0 issue "sectigo.com"
+```
+
+Vercel had pre-seeded a **CAA** record listing only its own certificate authorities — and **no `amazon.com`**. A CAA record at `mimi.daeseon.ai` covers `api.mimi.daeseon.ai`, so it was silently blocking Amazon (ACM) from issuing the API cert.
+
+**Fix:** add `0 issue "amazon.com"` CAA at `mimi` (additive — it keeps the web's CAs), then **re-issue** the cert. A FAILED ACM cert is terminal, so it's `terraform apply -replace=aws_acm_certificate.api`, not a retry.
+
+## Verified
+
+49 resources up, ECS task healthy, `http://api.mimi.daeseon.ai/api/health` → ok, and a full signup (ALB → ECS → RDS write → JWT) → HTTP 201.
+
+## The takeaway
+
+A managed-DNS provider (Cloudflare/Vercel) often pre-seeds a **CAA** record listing only its own CAs — so a *different* CA (ACM) silently can't issue until you add it. When ACM validation "FAILS" despite a correct validation record, `dig <domain> CAA` up the whole label chain before touching anything else. And anything with an issued-cert dependency (listener ← cert ← DNS-validation ← a manual step) has to be split into phases, because the provider won't accept a half-baked cert.
+
+*Commit: `1bc48e1`.*

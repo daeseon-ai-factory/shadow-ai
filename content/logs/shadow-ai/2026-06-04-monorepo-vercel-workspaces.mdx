@@ -1,0 +1,34 @@
+---
+title: "Don't co-install a React Native app and a web app in one npm workspace"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "Turning the repo into a monorepo broke the Vercel web build — installing the workspace pulled in the Expo/Metro dependency tree, including a native module with no Vercel/linux prebuild. The fix: keep the cross-platform app out of the workspace and share code through a file: link."
+tags: ["monorepo", "npm", "vercel", "expo", "react-native"]
+---
+
+## The break
+
+Making `mobile` an npm workspace alongside `frontend` and `packages/core` looked tidy — one install, shared `@shadow-ai/core`. Then Vercel's frontend build (a branch preview) failed:
+
+```
+Error: No prebuild or local build of @parcel/watcher found.
+       Tried @parcel/watcher-linux-x64-glibc.
+npm error workspace frontend@0.1.0 ... command sh -c next build ... exited 1
+```
+
+## Why
+
+Because `mobile` was a workspace, Vercel — installing the workspace root — pulled in the entire Expo / React Native / Metro dependency tree, including `@parcel/watcher`, a native module with no Linux prebuild for Vercel's build image. The **web app never needed it**; it leaked in purely because the mobile workspace was installed alongside the frontend.
+
+## The fix
+
+`mobile` is no longer an npm workspace. The root `workspaces` is narrowed to `["packages/*", "frontend"]`; `mobile` depends on the shared core through a `file:` link (`"@shadow-ai/core": "file:../packages/core"`) and is installed on its own (`cd mobile && npm install`). So the root install — the thing Vercel runs — resolves only web-compatible deps, and the React Native native tree stays out of it.
+
+## The takeaway
+
+A monorepo should only co-install, in one workspace root, the things *that* platform can build. A React Native / Expo app and a web app under the same workspace root means the web deploy installs RN's native modules — which have no Linux/serverless prebuilds — and breaks. Keep the cross-platform app out of the workspace and share code via a `file:` (or published) package.
+
+*Commit: `cc48293`. (Footnote: this killed one source of the `@parcel/watcher` break. The same error class later returned from a different dependency — next-intl — and took a different fix; see [the four-binary Vercel saga](./2026-06-04-vercel-native-binary-deploy).)*
