@@ -552,3 +552,9 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: root `npm install` leaves no `@parcel/watcher` at the root; `next build` passes; `expo export` still bundles 1214 modules (core resolves through the `file:` link); tsc clean. (prod on `main` was never affected — main doesn't have the monorepo yet.)
 - **Commit**: cc48293
 - **Pattern**: a monorepo only wants in one workspace the things that *that* platform can build. Don't co-install a React Native app with a web app under one workspace root — RN's native deps (no Linux/serverless prebuilds) will break the web deploy. Keep the cross-platform app out of the workspace and share code via a `file:`/published package instead.
+<!-- skipped: 9fb260e docs(log): monorepo Vercel @parcel/watcher break — mobile out of workspaces (cc48293) [no-log] -->
+<!-- skipped: 15bd9cc docs(infra): Korean deep-dive guide for the Terraform stack (terms + flow + file-by-file) [no-log] -->
+
+<!-- no-commit: read-only task — produced Korean walkthrough of providers.tf via StructuredOutput, no file changes -->
+<!-- override-trigger: 4734df3 docs(infra): line-by-line Korean walkthrough of all 13 Terraform files [no-log] — false positive on the >200-LOC size trigger: this is a single pure-documentation file (WALKTHROUGH.ko.md, a Korean teaching companion to GUIDE.ko.md) explaining the already-committed Terraform. No code, config, or behavior changes — large only because it's a thorough line-by-line explainer. Nothing to log as a fix/decision. -->
+<!-- skipped: 4734df3 docs(infra): line-by-line Korean walkthrough of all 13 Terraform files [no-log] -->
