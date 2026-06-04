@@ -714,3 +714,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
   5. last resort → operator curation (pre-fill the catalog from a residential machine).
 - **Commit**: dedc1b8 (decision + runbook); bbdd7dc (the sidecar integration).
 - **Pattern**: for a fragile external dependency you can't control (YouTube anti-bot), commit the *ranked fallback order* the day you adopt it — future-you debugging a 2am breakage wants the switch list, not a re-investigation.
+<!-- override-trigger: 8002f83 docs(log): troubleshooting pointer to the transcript fallback runbook (dedc1b8) [no-log] — false positive: 8002f83 IS the troubleshooting.md entry (the terse dual-write half) whose narrative counterpart already shipped in dedc1b8's mdx (transcript-method-decision-and-fallbacks). The "fallback" keyword fired on the entry's own descriptive subject. Logging the log would be circular; nothing further to record. -->
