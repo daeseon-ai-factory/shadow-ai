@@ -21,6 +21,9 @@
   모바일: `/gym` 화면 + i18n(en/ko) + 홈 카드.
 - 검증: `./gradlew test` (practice/analysis) green, `TransformServiceTest` 통과, 모바일 `tsc` clean.
   미실행: 실제 provider 키 + 시뮬레이터 종단간 스모크. 커밋 `28c7cad`.
+- 후속(커밋 `ee3de5d`): `GET /api/practice/seeds`(클립 분석→영어+한글 시드, SeedService + 테스트 4건),
+  추가5 세션 토글, DrillRunner optional `onCheck` 인라인 AI 체크(공유 컴포넌트 무해 확장, 별도 CheckMode 제거).
+  검증: practice 테스트 green, 모바일 `tsc` clean. 남은 follow-up: 추가5 서버 영속 설정, 종단간 스모크.
 
 ## 커밋 히스토리 (16 commits)
 ```

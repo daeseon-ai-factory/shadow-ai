@@ -570,3 +570,13 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `./gradlew test --tests "com.tubeshadow.practice.*" --tests "com.tubeshadow.analysis.*"` green, including JPA-context tests (Flyway applied V19 and Hibernate `validate` accepted the entity → migration↔mapping agree); `TransformServiceTest` covers strict/fenced/truncated JSON, cache-hit-skips-provider, 503, and BAD_GATEWAY; mobile `tsc --noEmit` clean after Expo regenerated typed routes for `/gym`. NOT run: live end-to-end against a real provider key + simulator.
 - **Commit**: 28c7cad
 - **Pattern**: a shared LLM `complete()` with a fixed token cap is a latent truncation bug for any later caller that needs more output than the first caller did — parameterize the cap, and fix it on **every** provider impl, because the one that bites you in prod is the default-wired provider, not the one the request happens to name.
+
+---
+
+## `expo lint` rewrites package.json + scaffolds eslint.config.js on first run
+
+- **Symptom**: after a first-ever `npx expo lint`, `git status` showed `M mobile/package.json`, `M mobile/package-lock.json`, and a new `?? mobile/eslint.config.js` — none related to the feature being built.
+- **Cause**: `expo lint` bootstraps ESLint when none is configured: it writes a flat `eslint.config.js` and adds `eslint` + `eslint-config-expo` as devDependencies, mutating `package.json` and the lockfile.
+- **Fix**: reverted the tooling churn (`git checkout -- mobile/package.json mobile/package-lock.json && rm mobile/eslint.config.js`) so the feature commit stayed scoped — dependency additions need explicit approval (CLAUDE.md §5) and weren't part of the task. (The lint run itself still reported only pre-existing issues in `settings.tsx` / `use-color-scheme.web.ts`; the new gym/DrillRunner code was clean.)
+- **Commit**: ee3de5d (sentence-gym follow-ups; the lint scaffolding was intentionally NOT committed)
+- **Pattern**: `expo lint` is not read-only on first run — it sets up ESLint and edits `package.json`. Run it expecting a dirtied tree, and revert the scaffolding unless enabling lint is the actual task.
