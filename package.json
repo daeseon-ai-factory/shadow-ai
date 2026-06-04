@@ -2,9 +2,9 @@
   "name": "shadow-ai",
   "private": true,
   "description": "Mimi monorepo — shared core consumed by the Next.js web app and the Expo mobile app.",
+  "comment": "mobile is intentionally NOT an npm workspace: its React Native / Expo native deps (e.g. @parcel/watcher) have no Vercel/linux prebuilds and would break the web deploy if installed at the workspace root. mobile depends on @shadow-ai/core via a file: link instead and is installed on its own (cd mobile && npm install).",
   "workspaces": [
     "packages/*",
-    "frontend",
-    "mobile"
+    "frontend"
   ]
 }

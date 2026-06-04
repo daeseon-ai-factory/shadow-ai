@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~56.0.15",
-    "@shadow-ai/core": "*",
+    "@shadow-ai/core": "file:../packages/core",
     "@tanstack/react-query": "^5.100.14",
     "expo": "~56.0.8",
     "expo-audio": "~56.0.11",
