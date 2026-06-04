@@ -644,3 +644,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: 49 resources up, ECS task healthy, `http://api.mimi.daeseon.ai/api/health` → ok, and signup (ALB→ECS→RDS write→JWT) → HTTP 201.
 - **Commit**: 1bc48e1
 - **Pattern**: a managed-DNS provider (Cloudflare/Vercel) often pre-seeds a **CAA** record listing only its own CAs — so a *different* CA (ACM) silently can't issue until you add it. When ACM validation "FAILS" despite a correct DNS record, `dig <domain> CAA` up the whole label chain before anything else. And an issued-cert dependency (listener←cert←DNS-validation←manual step) must be split into phases, because the provider won't accept a half-baked cert.
+<!-- skipped: dc6d9dd docs(log): first AWS deploy gotchas — CAA_ERROR, two-phase ACM, free-tier backup (1bc48e1) [no-log] -->

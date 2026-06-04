@@ -38,8 +38,10 @@
   활성화: `OPENAI_API_KEY` 설정. 미설정 시 Gemini만(동작 동일). 테스트 green.
 - 웹 배포: `feat/mobile-app` → `main` fast-forward 머지(충돌 0). Vercel 빌드 깨지던 진짜 원인 =
   next-intl→@parcel/watcher 리눅스 prebuilt가 lockfile에 없어서(mac에서 생성) → frontend
-  optionalDependencies에 linux-x64-glibc/musl 핀(커밋 `abe2bd4`). 백엔드(api.mimi.daeseon.ai)는
-  미배포(NXDOMAIN) — 다음 세션.
+  optionalDependencies에 linux-x64-glibc/musl 핀(커밋 `abe2bd4`).
+- **웹 gym 프로덕션 배포 완료**: Vercel 네이티브 바이너리(swc/oxide/lightningcss) 문제는 lockfile로 못 고쳐
+  → `frontend/vercel.json`에 `installCommand: npm install --no-package-lock`(커밋 `aae2cfa`). Vercel 빌드 success,
+  `mimi.daeseon.ai/{en,ko}/gym` = 200(실페이지 확인). 백엔드는 사용자가 AWS 배포 진행(ECS/RDS up, http api/health ok).
 
 ## 커밋 히스토리 (16 commits)
 ```
