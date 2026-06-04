@@ -48,6 +48,12 @@ export interface TransformCheckResult {
   better: string;
 }
 
+/** A base-sentence candidate mined from the learner's own clip analyses (English + optional Korean). */
+export interface SeedCandidate {
+  english: string;
+  koreanGloss: string | null;
+}
+
 export const transformsApi = {
   // One LLM call per UNIQUE seed; the server caches by (userId, normalized seed) and replays for free.
   generate: (baseSentence: string, baseGloss?: string) =>
@@ -60,4 +66,6 @@ export const transformsApi = {
       model,
       attempt,
     }),
+  // Seed candidates aggregated server-side from the learner's clips (replaces client transcript parsing).
+  seeds: () => apiClient.get<SeedCandidate[]>("/api/practice/seeds"),
 };

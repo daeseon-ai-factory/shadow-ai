@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -23,7 +23,17 @@ export interface DrillItem {
  * All behavior — first-attempt-only SRS grade, in-session requeue on miss — matches the
  * web app's drills, because the grading call and key format come from @shadow-ai/core.
  */
-export function DrillRunner({ items }: { items: DrillItem[] }) {
+export type DrillCheck = (
+  item: DrillItem,
+  attempt: string,
+) => Promise<{ ok: boolean; feedback: string; better: string }>;
+
+/**
+ * `onCheck` is optional and strictly additive: when omitted (pattern/collocation drills) the runner
+ * behaves exactly as before. When provided (sentence gym), each card offers an inline "AI check" of
+ * the learner's produced version before they reveal the model.
+ */
+export function DrillRunner({ items, onCheck }: { items: DrillItem[]; onCheck?: DrillCheck }) {
   const [queue, setQueue] = useState<DrillItem[]>(items);
   const [pos, setPos] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -116,9 +126,12 @@ export function DrillRunner({ items }: { items: DrillItem[] }) {
           </View>
 
           {!revealed ? (
-            <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>
-              <ThemedText style={styles.primaryText}>{t('drill.reveal')}</ThemedText>
-            </Pressable>
+            <View style={styles.gap}>
+              {onCheck ? <InlineCheck key={item.key} item={item} onCheck={onCheck} /> : null}
+              <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>
+                <ThemedText style={styles.primaryText}>{t('drill.reveal')}</ThemedText>
+              </Pressable>
+            </View>
           ) : (
             <View style={styles.gap}>
               <View style={styles.modelBox}>
@@ -142,6 +155,46 @@ export function DrillRunner({ items }: { items: DrillItem[] }) {
         </View>
       </SafeAreaView>
     </ThemedView>
+  );
+}
+
+/** Optional in-drill AI check: type your produced version, get a verdict before revealing. */
+function InlineCheck({ item, onCheck }: { item: DrillItem; onCheck: DrillCheck }) {
+  const [text, setText] = useState('');
+  const check = useMutation({ mutationFn: () => onCheck(item, text.trim()) });
+  const fb = check.data;
+  return (
+    <View style={styles.checkBox}>
+      <TextInput
+        style={styles.checkInput}
+        placeholder={t('drill.checkPlaceholder')}
+        placeholderTextColor="#9ca3af"
+        multiline
+        value={text}
+        onChangeText={setText}
+      />
+      {check.isError ? <ThemedText style={styles.checkError}>{t('drill.checkFailed')}</ThemedText> : null}
+      {fb ? (
+        <View style={[styles.checkVerdict, fb.ok ? styles.checkOk : styles.checkWork]}>
+          <ThemedText type="smallBold">{fb.ok ? t('drill.good') : t('drill.needsWork')}</ThemedText>
+          <ThemedText type="small">{fb.feedback}</ThemedText>
+          {fb.better ? (
+            <ThemedText style={styles.checkBetter}>{t('drill.better', { text: fb.better })}</ThemedText>
+          ) : null}
+        </View>
+      ) : null}
+      <Pressable
+        style={[styles.checkBtn, (!text.trim() || check.isPending) && styles.disabled]}
+        disabled={!text.trim() || check.isPending}
+        onPress={() => check.mutate()}
+      >
+        {check.isPending ? (
+          <ActivityIndicator color="#208AEF" />
+        ) : (
+          <ThemedText style={styles.checkBtnText}>{t('drill.aiCheck')}</ThemedText>
+        )}
+      </Pressable>
+    </View>
   );
 }
 
@@ -188,4 +241,30 @@ const styles = StyleSheet.create({
   gotIt: { backgroundColor: '#208AEF' },
   linkBtn: { paddingVertical: 10 },
   linkText: { color: '#208AEF', fontWeight: '600' },
+  disabled: { opacity: 0.5 },
+  checkBox: { gap: 8 },
+  checkInput: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 15,
+    minHeight: 64,
+    textAlignVertical: 'top',
+    color: '#111827',
+    backgroundColor: '#fff',
+  },
+  checkError: { color: '#dc2626' },
+  checkVerdict: { borderRadius: 10, borderWidth: 1, padding: 12, gap: 4 },
+  checkOk: { borderColor: '#10b98155', backgroundColor: '#10b98111' },
+  checkWork: { borderColor: '#f59e0b55', backgroundColor: '#f59e0b11' },
+  checkBetter: { fontStyle: 'italic' },
+  checkBtn: {
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#208AEF',
+  },
+  checkBtnText: { color: '#208AEF', fontWeight: '700' },
 });

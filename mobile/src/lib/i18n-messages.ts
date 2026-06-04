@@ -212,7 +212,15 @@ export const messages: Record<Locale, Record<string, string>> = {
     "gym.checkFailed": "Check failed",
     "gym.progress": "{current} / {total}",
     "gym.checkDone": "AI check done 🎉",
-    "gym.home": "Home"
+    "gym.home": "Home",
+    "gym.extraOn": "✓ Extra 5 included",
+    "gym.extraOff": "+ Add extra 5",
+    "drill.aiCheck": "AI check",
+    "drill.checkPlaceholder": "Type your English version…",
+    "drill.checkFailed": "Check failed",
+    "drill.good": "✅ Good",
+    "drill.needsWork": "✏️ Needs work",
+    "drill.better": "Better: {text}"
   },
   "ko": {
     "nav.practice": "패턴 연습",
@@ -423,6 +431,14 @@ export const messages: Record<Locale, Record<string, string>> = {
     "gym.checkFailed": "체크 실패",
     "gym.progress": "{current} / {total}",
     "gym.checkDone": "AI 체크 완료 🎉",
-    "gym.home": "홈"
+    "gym.home": "홈",
+    "gym.extraOn": "✓ 추가 5개 포함",
+    "gym.extraOff": "+ 추가 5개",
+    "drill.aiCheck": "AI 체크",
+    "drill.checkPlaceholder": "내가 만든 영어 문장…",
+    "drill.checkFailed": "체크 실패",
+    "drill.good": "✅ 좋아요",
+    "drill.needsWork": "✏️ 보완 필요",
+    "drill.better": "더 나은 표현: {text}"
   }
 };

@@ -10,6 +10,7 @@ import com.tubeshadow.practice.api.dto.GradeResponse;
 import com.tubeshadow.practice.api.dto.PracticeCardResponse;
 import com.tubeshadow.practice.api.dto.PracticeProgressResponse;
 import com.tubeshadow.practice.api.dto.PracticeRepRequest;
+import com.tubeshadow.practice.api.dto.SeedCandidateResponse;
 import com.tubeshadow.practice.api.dto.SentenceTransformSetResponse;
 import com.tubeshadow.practice.api.dto.TransformCheckRequest;
 import com.tubeshadow.practice.api.dto.TransformCheckResponse;
@@ -17,6 +18,7 @@ import com.tubeshadow.practice.api.dto.TransformGenerateRequest;
 import com.tubeshadow.practice.application.CompositionService;
 import com.tubeshadow.practice.application.PracticeProgressService;
 import com.tubeshadow.practice.application.PracticeSrsService;
+import com.tubeshadow.practice.application.SeedService;
 import com.tubeshadow.practice.application.TransformService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -43,13 +45,16 @@ public class PracticeController {
     private final PracticeSrsService srsService;
     private final CompositionService compositionService;
     private final TransformService transformService;
+    private final SeedService seedService;
 
     public PracticeController(PracticeProgressService service, PracticeSrsService srsService,
-                             CompositionService compositionService, TransformService transformService) {
+                             CompositionService compositionService, TransformService transformService,
+                             SeedService seedService) {
         this.service = service;
         this.srsService = srsService;
         this.compositionService = compositionService;
         this.transformService = transformService;
+        this.seedService = seedService;
     }
 
     @GetMapping("/progress")
@@ -107,5 +112,11 @@ public class PracticeController {
             @Valid @RequestBody TransformCheckRequest request) {
         return ApiResponse.ok(transformService.check(
                 request.op(), request.baseSentence(), request.model(), request.attempt()));
+    }
+
+    @GetMapping("/seeds")
+    @Operation(summary = "오늘의 문장 시드 후보 — 내 클립 분석에서 추출한 영어 문장(+한글)")
+    public ApiResponse<List<SeedCandidateResponse>> seeds(@CurrentUser AuthenticatedUser user) {
+        return ApiResponse.ok(seedService.seedsFor(user.id()));
     }
 }
