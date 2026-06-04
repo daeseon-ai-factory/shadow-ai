@@ -508,3 +508,14 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
   - Plus: no global 401 handler (expired JWT → stuck), cache not cleared on sign-out (next user sees prior data), deep-link hydration race bouncing logged-in users to login, missing query invalidation after grade/import, iOS record-mode left on (playback to earpiece), Review screen stuck on "done", portrait videos squished.
 - **Fix**: `dd0adfe` — 24 of 26 addressed (full i18n + clip range-selection deferred). Verified `tsc` clean, `expo-doctor` 21/21, Metro bundle 1209 modules.
 - **Pattern**: a green build is the *floor*, not the bar — none of these would fail compilation, and several (loop dead, prod points at localhost, no signup) would have shipped a broken app. For an unrunnable target (no simulator here), an adversarially-verified read-the-code audit across explicit failure dimensions is the substitute for clicking through it. The audit's own value came from the *verify* pass and the *completeness critic*: the single worst blocker (no signup) was the one the six dimensions missed and the critic caught.
+
+---
+
+## Mobile Korean localization via a per-screen parallel pass (and the &amp; gotcha)
+
+- **Context**: the app was English-only despite a Korean user base. No portable i18n existed (web uses next-intl).
+- **Fix**: a lightweight `src/lib/i18n.ts` — `t(key, vars)` with `{placeholder}` interpolation, device locale resolved once via `expo-localization`. Localized all 18 screens (en/ko, 181 keys) by fanning out one agent per file: each agent edited its screen to call `t('ns.key')` and returned its `{en, ko}` slice; the slices were merged into one `i18n-messages.ts`. Cross-checked that all 176 distinct `t()` keys used in source exist in the dictionary.
+- **Gotcha — HTML entities in a non-JSX string**: agents that converted JSX text like `import &amp; shadow` carried the `&amp;` into the dictionary *value*. In JSX, `&amp;` is decoded by the compiler; but a string returned from `t()` and rendered as a `<Text>` child is **not** — React renders entity strings verbatim, so the UI would show a literal "&amp;". Fixed by decoding `&amp;/&apos;/&quot;/&#39;/&lt;/&gt;` when generating the dictionary.
+- **Verified**: `tsc` clean, Metro iOS bundle 1214 modules, 0 missing keys, 0 residual entities, Korean spot-checked for naturalness.
+- **Commit**: 6fc46a8
+- **Pattern**: parallelize a mechanical, file-local transform (string extraction + translation) one-agent-per-file, then merge the structured slices centrally — agents touch disjoint files (no edit races) and only the merge is single-threaded. And remember entity-escaping is a *JSX* convenience: the moment a string leaves JSX for a data layer, it must hold literal characters, not entities.

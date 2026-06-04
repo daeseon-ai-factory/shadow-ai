@@ -1,0 +1,28 @@
+---
+title: "Localizing the mobile app to Korean — one agent per screen, and the entity that doesn't decode outside JSX"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The Expo app was English-only despite a Korean audience. Added a lightweight i18n layer and translated all 18 screens by fanning out one agent per file — each edits its screen and returns its dictionary slice — then merged the slices. The bug worth remembering: an HTML entity that JSX silently decodes becomes a literal once the string lives in a data layer."
+tags: ["mobile", "expo", "i18n", "multi-agent", "korean"]
+---
+
+Mimi targets Korean developers, but the mobile app shipped entirely in English. The web is localized through next-intl, which doesn't port to React Native, so the app needed its own i18n.
+
+## The layer
+
+Deliberately small: a `t(key, vars)` function that does a flat dictionary lookup with `{placeholder}` interpolation, and resolves the device language once at startup via `expo-localization` — a Korean phone gets Korean, everything else falls back to English. No heavy dependency, keyed the same way the web messages are. The whole thing is a few dozen lines plus a dictionary.
+
+## Translating 18 screens without doing it 18 times by hand
+
+String extraction is mechanical but tedious and file-local, which makes it a good fan-out. I ran one agent per screen: each read its file, replaced every user-facing English literal with `t('namespace.key')`, and **returned its own `{en, ko}` dictionary slice** — natural Korean, not machine-literal. Because each agent owns one file, there are no edit races; the only single-threaded step is merging the 18 slices into one `i18n-messages.ts`. The result: 181 keys, and a cross-check confirmed all 176 distinct `t()` keys actually used in source exist in the dictionary (so nothing renders a raw key).
+
+## The bug worth keeping
+
+Several agents had to convert JSX text like `import &amp; shadow`. In JSX, `&amp;` is an entity the compiler decodes to `&`. But these strings were leaving JSX to become *data* — values in a dictionary, returned by `t()` and rendered as a `<Text>` child. React does **not** decode HTML entities in string children, so the UI would have shown a literal "&amp;". The fix was to decode `&amp;`, `&apos;`, `&quot;`, `&#39;`, `&lt;`, `&gt;` when assembling the dictionary.
+
+The general lesson: entity-escaping is a *JSX* convenience. The instant a string crosses from markup into a data layer — a dictionary, an API payload, a config — it has to carry literal characters, because nothing downstream is going to un-escape it for you.
+
+Verified the usual ways: `tsc` clean, Metro iOS bundle at 1,214 modules, zero missing keys, zero residual entities, and a spot-check that the Korean reads naturally ("로그인", "회원가입", "{name}님, 다시 오셨네요", "직접 따라 말하기"). With this, the mobile app is feature-complete and bilingual — the deferred items from the earlier audit are now just full localization (done) and multi-sentence clip range selection. Recorded against `6fc46a8`.
