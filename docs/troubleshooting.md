@@ -491,3 +491,20 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Fix / triage**: stop the offender first to save the host (`TaskStop` on the dev task; `pkill -9 -f "node_modules/next"` for orphaned workers), *then* diagnose — the correct incident order when diagnostics themselves can't fork. To actually run the web locally, use **production mode** (`next build` → `next start`): one stable server, no dev worker pool. This is local/dev-only — production (Vercel prebuilt bundle, or `next start`) has no Turbopack dev workers.
 - **Commit**: (incident/learning entry — no code change; root-cause + a worker cap are a tracked follow-up)
 - **Pattern**: this is a textbook **crash-loop → resource exhaustion → host-wide failure**, the same class as a container that OOMKills into `CrashLoopBackOff` and, without a memory limit, starves its neighbors. Defenses: **bounded pools** (the backend already caps its async threads + Hikari — see the "AI analysis pipeline could hang threads" entry above), **per-container memory limits** (ECS task `memory` — pending AWS deploy), **restart backoff**, and **health-check eviction**. When diagnostics can't fork, triage = kill the offender before you investigate.
+<!-- skipped: 81c55dd docs(log): dev-server fork-bomb incident — crash-loop / resource-exhaustion ops lesson [no-log] -->
+
+---
+
+## Mobile app: 26-finding multi-agent audit, 24 fixed (the build-passes ≠ works gap)
+
+- **Symptom**: the Expo mobile app's 11 screens all passed `tsc` + Metro bundle, but had never run on a device. "Compiles" said nothing about runtime correctness.
+- **Method**: ran a 6-dimension adversarial audit (api-contract, state/hooks, RN/Expo, auth/session, web-parity, launch-readiness). Each finding was re-checked by a skeptic agent against the actual code; 21 raw → 20 confirmed, plus a completeness critic that caught the biggest one.
+- **What "passes the build" hid** — real bugs only a reader/runner finds:
+  - **No signup screen at all** (critic) — a new user literally could not create an account; only login existed. Hard launch blocker.
+  - **The shadowing loop never looped**: the player relied on the YouTube IFrame `'ended'` state while setting an `end` playerVar, but YouTube fires `PAUSED` (not `ENDED`) at a *mid-video* boundary — so a short clip played once and stopped. Fixed by polling `getCurrentTime()` like the web does.
+  - **Release build pointed at `http://localhost:8080`**: `resolveBaseUrl()` fell back to the Metro host, which is undefined in a standalone build → the phone's own localhost, over plaintext http (ATS-blocked). Gated behind `__DEV__`, throw otherwise, inject the prod URL via a new `eas.json`.
+  - **iOS app icon was the Expo placeholder** (an `ios.icon` override shadowing the real top-level icon) — App Review reject.
+  - **AI analysis (translation/직독직해/vocab) was absent from the mobile player** — the product's core sentence-mining value, present on web, simply never wired up.
+  - Plus: no global 401 handler (expired JWT → stuck), cache not cleared on sign-out (next user sees prior data), deep-link hydration race bouncing logged-in users to login, missing query invalidation after grade/import, iOS record-mode left on (playback to earpiece), Review screen stuck on "done", portrait videos squished.
+- **Fix**: `dd0adfe` — 24 of 26 addressed (full i18n + clip range-selection deferred). Verified `tsc` clean, `expo-doctor` 21/21, Metro bundle 1209 modules.
+- **Pattern**: a green build is the *floor*, not the bar — none of these would fail compilation, and several (loop dead, prod points at localhost, no signup) would have shipped a broken app. For an unrunnable target (no simulator here), an adversarially-verified read-the-code audit across explicit failure dimensions is the substitute for clicking through it. The audit's own value came from the *verify* pass and the *completeness critic*: the single worst blocker (no signup) was the one the six dimensions missed and the critic caught.

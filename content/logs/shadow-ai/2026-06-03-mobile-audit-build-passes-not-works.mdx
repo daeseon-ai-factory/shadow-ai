@@ -1,0 +1,40 @@
+---
+title: "Build-passes ≠ works: a 26-finding adversarial audit of the mobile app, and the bugs a green build hid"
+date: "2026-06-03"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The Expo app's eleven screens all compiled and bundled but had never run on a device. A six-dimension, adversarially-verified audit found 26 real issues — including a hard launch blocker (no signup screen) and a core feature that was silently dead (the shadowing loop never looped). 24 were fixed."
+tags: ["mobile", "expo", "audit", "multi-agent", "quality"]
+---
+
+I built the mobile app screen by screen, and every one passed `tsc` and a Metro bundle. That felt like progress. It wasn't proof of anything — I had never actually *run* it, because the simulator is on a Mac I wasn't driving. "It compiles" is the floor, not the bar.
+
+So instead of guessing, I ran an audit the way you'd review a stranger's PR you can't execute: fan out readers across explicit failure dimensions, and have a second, skeptical pass try to refute each finding against the actual code.
+
+## How it was run
+
+Six dimensions, each a separate reader: API contract (mobile calls vs. the real backend controllers), state/hooks (TanStack Query invalidation, hook rules), React-Native/Expo runtime pitfalls, auth/session robustness, web-parity gaps, and launch readiness. Every finding then went to an adversarial verifier instructed to default to "not real" unless it could confirm the claim by opening the file. 21 raw findings survived to 20 confirmed. Then a completeness critic asked the question the six dimensions hadn't — *what did we miss?* — and caught the worst one.
+
+## What a green build hid
+
+The findings that matter aren't the ones a compiler could ever catch:
+
+- **There was no way to sign up.** The mobile app had a login screen and no registration anywhere — a brand-new user was stuck at a dead end. The core API had `authApi.signup`; the UI just never called it. This is the kind of thing you only notice by pretending to be a first-time user, which is exactly what the completeness critic did. Hard launch blocker, and the six dimensions all walked right past it.
+
+- **The shadowing loop never looped.** This is the product's signature interaction — replay a five-second segment until your mouth keeps up. The player set the YouTube IFrame's `end` parameter and waited for the `'ended'` event to re-seek. But YouTube fires `PAUSED`, not `ENDED`, when it stops at a *mid-video* end point — and clips are short segments of long videos, so `'ended'` never came. The segment played once and sat there, under a button that said "Loop on." The web app polls `getCurrentTime()` instead; the mobile fix does the same.
+
+- **A shipped build would have pointed at `http://localhost:8080`.** The dev URL resolver fell back to the Metro host, which doesn't exist in a standalone build — so it resolved to the phone's own localhost, over plaintext HTTP that iOS blocks anyway. Every API call in a released app would have failed. Fixed by gating the dev fallback behind `__DEV__`, throwing otherwise, and adding an `eas.json` that injects the real HTTPS URL.
+
+- **The iOS icon was the Expo placeholder.** A leftover `ios.icon` override shadowed the real, custom app icon — an automatic App Review rejection. One deleted line.
+
+- **Sentence mining was missing from the mobile player.** The translation, 직독직해 chunks, and vocabulary that are the whole reason a Korean learner opens a clip — present on web — were simply never wired into the mobile player. The analysis API was already in the shared core and already used elsewhere on mobile; the screen just didn't call it.
+
+And a tail of quieter-but-real ones: no global 401 handler (an expired token left you stuck on an error screen forever), the query cache not cleared on sign-out (the next user on the device briefly saw the previous user's data), a cold-start deep link bouncing logged-in users to login because it rendered before the stored token loaded, missing cache invalidation after grading and importing, the iOS audio session left in record mode so played-back takes went to the earpiece, and the Review screen getting stuck on "Review done" because its position never reset.
+
+## The fix, and the honest leftovers
+
+24 of the 26 are fixed (`dd0adfe`), verified the only ways I can without a device: `tsc` clean, `expo-doctor` 21/21, Metro bundle green. Two are deliberately deferred: full Korean localization (the app is English-only despite a Korean user base — a real gap, but a large, separate effort) and multi-sentence clip range selection (single-sentence works).
+
+The lesson I'm keeping: **a passing build tells you the code is well-formed, not that the product works.** Half of these would have shipped — a broken loop, a release pointing at localhost, an app with no way to sign up — and none of them are type errors. When you can't click through the thing, an adversarially-verified audit across named failure modes is the substitute, and its real leverage is the parts that aren't the happy path: the verifier that kills plausible-but-wrong findings, and the critic that names what everyone else skipped.
