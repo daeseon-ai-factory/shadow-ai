@@ -18,8 +18,6 @@ import java.util.Map;
 
 @Component
 @EnableConfigurationProperties(ClaudeProperties.class)
-@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
-        name = "tubeshadow.ai.provider", havingValue = "claude")
 public class ClaudeClient implements AiAnalysisClient {
 
     private static final Logger log = LoggerFactory.getLogger(ClaudeClient.class);

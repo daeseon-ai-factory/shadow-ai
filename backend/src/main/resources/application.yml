@@ -58,13 +58,21 @@ tubeshadow:
   recording:
     storage-dir: ${RECORDING_STORAGE_DIR:./local-storage/recordings}
     max-bytes: 10485760  # 10MB
-  # AI provider selection. "gemini" (default, free tier) or "claude" (paid).
+  # AI providers are tried in this order; each falls back to the next on quota/429/5xx/error.
+  # Providers whose API key is unset are skipped. (AI_PROVIDER kept for back-compat; the ORDER
+  # is what selects now — e.g. free-tier Gemini first, spill over to OpenAI, then Claude.)
   ai:
+    order: ${AI_ORDER:gemini,openai,claude}
     provider: ${AI_PROVIDER:gemini}
   claude:
     api-key: ${ANTHROPIC_API_KEY:}
     base-url: ${ANTHROPIC_BASE_URL:https://api.anthropic.com}
     model: ${ANTHROPIC_MODEL:claude-haiku-4-5-20251001}
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+    # gpt-4o-mini: cheap + JSON-mode capable. Override with OPENAI_MODEL.
+    model: ${OPENAI_MODEL:gpt-4o-mini}
   gemini:
     api-key: ${GEMINI_API_KEY:}
     base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
