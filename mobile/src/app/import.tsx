@@ -24,7 +24,6 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
-import { useYoutubeTranscriptFetcher } from '@/lib/youtube-transcript-webview';
 
 export default function ImportScreen() {
   const token = useAuthStore((s) => s.token);
@@ -33,26 +32,9 @@ export default function ImportScreen() {
   const params = useLocalSearchParams<{ url?: string }>();
   const [url, setUrl] = useState(params.url ?? '');
   const [video, setVideo] = useState<VideoResponse | null>(null);
-  // Hidden WebView that fetches the transcript on-device (real browser → BotGuard → POToken).
-  const { transcriptWebView, fetchTranscript } = useYoutubeTranscriptFetcher();
 
   const importVideo = useMutation({
-    mutationFn: async () => {
-      // Fetch the transcript ON THIS DEVICE first, inside a real browser (WebView), so YouTube's
-      // POToken machinery runs and serves us the captions — something our AWS backend (a
-      // datacenter bot) can't get. The server then just stores what we send.
-      let transcriptSegments: TranscriptSegment[] | undefined;
-      let title: string | undefined;
-      try {
-        const fetched = await fetchTranscript(url.trim());
-        transcriptSegments = fetched.segments;
-        title = fetched.title;
-      } catch {
-        // WebView couldn't get captions (none, or YouTube changed shape): let the server try;
-        // worst case the video imports without a transcript and the screen says so.
-      }
-      return videosApi.importByUrl(url.trim(), { transcriptSegments, title });
-    },
+    mutationFn: () => videosApi.importByUrl(url.trim()),
     onSuccess: (v) => setVideo(v),
   });
 
@@ -120,7 +102,6 @@ export default function ImportScreen() {
 
   return (
     <ThemedView style={styles.flex}>
-      {transcriptWebView}
       <SafeAreaView style={styles.flex}>
         <KeyboardAvoidingView
           style={styles.flex}
