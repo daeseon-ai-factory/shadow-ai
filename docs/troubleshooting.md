@@ -616,4 +616,19 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `CompositeAiClientTest` (first-wins / fallback-on-failure / skip-unconfigured / all-fail / none-configured) + analysis & practice context tests green. Enable OpenAI by setting `OPENAI_API_KEY`; with no key the behaviour is unchanged (Gemini only).
 - **Commit**: 7423ef8
 - **Pattern**: to add provider fallback without touching every call site, make the providers plain beans and a `@Primary` composite that holds the ordered list (minus itself) and tries the next on failure — the rest of the app keeps injecting one interface.
+
+---
+
+## Recurring `@parcel/watcher` Vercel break — actually from next-intl, fixed via lockfile pin
+
+- **Symptom** (Vercel production build of `main`):
+  ```
+  ⨯ Failed to load next.config.ts
+  Error: No prebuild or local build of @parcel/watcher found. Tried @parcel/watcher-linux-x64-glibc.
+  npm error workspace frontend@0.1.0 ... command sh -c next build ... exited 1
+  ```
+- **Cause**: `next-intl@4.12` → `@parcel/watcher@2.5.6` (a native file-watcher) is pulled in to load `next.config.ts` (the config imports the next-intl plugin). The root `package-lock.json` was generated on macOS, so it only resolved `@parcel/watcher-darwin-arm64`; the linux prebuilt `@parcel/watcher-linux-x64-glibc` was never a resolved lockfile entry, so `npm ci` on Vercel (linux) couldn't install it. The EARLIER "@parcel/watcher" fix (dropping `mobile` from workspaces) addressed a *different* source (RN/Metro) — this break is the **frontend's own** dep, verified with `npm ls @parcel/watcher` → `frontend → next-intl → @parcel/watcher`.
+- **Fix**: declare the linux prebuilts (`@parcel/watcher-linux-x64-glibc`, `-musl`) as `optionalDependencies` in `frontend/package.json`, then `npm install --package-lock-only` so they're pinned as resolved entries (tarball + version) in the lockfile. They install on Vercel (linux) and are skipped on mac (optional + os-mismatch), so the local build is unaffected.
+- **Commit**: abe2bd4
+- **Pattern**: a lockfile generated on one OS resolves only THAT OS's optional platform binaries; cross-platform CI (`npm ci` on linux) then can't install the others and a native dep fails to load. Pin the CI platform's prebuilt as an explicit `optionalDependency`. And always confirm the real source with `npm ls <pkg>` before assuming — here it was next-intl, not the RN/mobile tree the old note blamed.
 <!-- skipped: 1617651 docs(log): gym v2 (67 slots + scoring) + expo web native-dep dead-end (d7d1d42) [no-log] -->

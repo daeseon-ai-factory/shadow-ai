@@ -36,6 +36,10 @@
 - AI provider 폴백(커밋 `7423ef8`): Gemini→OpenAI→Claude 우선순위 체인. `@Primary CompositeAiClient`가
   `tubeshadow.ai.order` 순서로 시도, 키 없는 provider 스킵, 실패 시 다음으로 폴백. OpenAiClient 추가.
   활성화: `OPENAI_API_KEY` 설정. 미설정 시 Gemini만(동작 동일). 테스트 green.
+- 웹 배포: `feat/mobile-app` → `main` fast-forward 머지(충돌 0). Vercel 빌드 깨지던 진짜 원인 =
+  next-intl→@parcel/watcher 리눅스 prebuilt가 lockfile에 없어서(mac에서 생성) → frontend
+  optionalDependencies에 linux-x64-glibc/musl 핀(커밋 `abe2bd4`). 백엔드(api.mimi.daeseon.ai)는
+  미배포(NXDOMAIN) — 다음 세션.
 
 ## 커밋 히스토리 (16 commits)
 ```
