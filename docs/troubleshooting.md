@@ -685,3 +685,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: the `Frontend (Next.js)` check on commit `6fa4994` = success (Backend + Vercel green too).
 - **Commit**: 6fa4994
 - **Pattern**: a monorepo migration breaks CI silently — every `working-directory`, lockfile cache path, and `npm ci` assumed the app *was* the repo root, and none of it errors until a push hits CI (then on every push). Re-point them at the workspace root the same day you move the code.
+<!-- override-trigger: 907354a docs(log): two deep explainers — 7 transcript-fetch approaches + the 49 deployed AWS resources [no-log] — false positive on the >200-LOC trigger: the commit is two content/logs/shadow-ai/*.mdx narrative log entries (exactly the dual-write narrative the rule asks for), zero code/config/behavior change. Large only because they are deep, from-scratch teaching explainers the user explicitly requested. Nothing to log as a fix. -->
