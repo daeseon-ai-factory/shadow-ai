@@ -698,3 +698,19 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Fix**: the mobile app fetches the transcript inside a **hidden WebView** (`react-native-webview`) — a real browser, so YouTube's BotGuard JS actually runs and the same-origin caption fetch has a real shot. The injected script reads `ytInitialPlayerResponse` → caption `baseUrl` → posts `{title, segments}` to RN, which POSTs to a new **client-supplied transcript** path on the backend (`VideoImportService.importByUrl(url, segments, title)`; the server-side yt-dlp path is preserved for web). Commit 9857f9c.
 - **Sub-gotcha**: the backend compiled locally (`gradlew compileJava` — incremental, didn't recompile the edited file) but **failed in the Docker clean build**: `local variables referenced from a lambda expression must be final or effectively final` — a `Video` reassigned in a try/catch is captured by a later `ifPresent(m -> video...)` lambda. Fixed by extracting metadata creation to a helper so `video` is assigned once. Always `gradlew clean compileJava` (or trust the container) before claiming a Java build is green.
 - **Pattern**: when "fetch the data yourself" hits a bot-gate, a real-browser WebView (which runs the gate's JS) can pass where a raw HTTP client can't — at the cost of fragility. And kill a wrong hypothesis with data: "IP block" predicted residential would work; it didn't, which pointed at POToken.
+<!-- skipped: e315c47 revert(mobile): drop WebView transcript fetch — POToken blocks it even in a real browser [no-log] -->
+
+---
+
+## Transcript import broke / need to switch the fetch method → fallback runbook
+
+- **Symptom**: YouTube clip import returns "No transcript" (works locally, fails on AWS), or the adopted POToken path stops working after a YouTube change.
+- **Cause**: YouTube gates `/api/timedtext` behind a BotGuard POToken; plain yt-dlp works from a residential IP but is blocked from AWS's datacenter IP. Adopted fix: yt-dlp + `bgutil-ytdlp-pot-provider` sidecar mints a POToken server-side (token bound to video/session, not IP). This is inherently fragile (YouTube changes BotGuard periodically).
+- **Fix / switch order** (full detail + verified ranking of 7 methods in `content/logs/shadow-ai/2026-06-04-transcript-method-decision-and-fallbacks.mdx`):
+  1. bump `bgutil-ytdlp-pot-provider` plugin + `brainicism/bgutil-ytdlp-pot-provider` image to latest, re-deploy.
+  2. if mint refused from AWS IP → route mint/fetch egress through a residential `--proxy` (token stays valid).
+  3. if tired of maintaining 3rd-party code → swap to a transcript API (Supadata) — replace the yt-dlp shell-out with an HTTPS call (like the Gemini client).
+  4. free + self-reliant → home worker: plain yt-dlp on a residential box → POST to the existing client-transcript endpoint (`importByUrl(url, {transcriptSegments})`).
+  5. last resort → operator curation (pre-fill the catalog from a residential machine).
+- **Commit**: dedc1b8 (decision + runbook); bbdd7dc (the sidecar integration).
+- **Pattern**: for a fragile external dependency you can't control (YouTube anti-bot), commit the *ranked fallback order* the day you adopt it — future-you debugging a 2am breakage wants the switch list, not a re-investigation.
