@@ -10,6 +10,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { RecordPanel } from '@/components/record-panel';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 function ms(msVal: number) {
   const s = Math.round(msVal / 1000);
@@ -90,7 +91,7 @@ export default function ClipPlayerScreen() {
     return (
       <ThemedView style={styles.center}>
         <ThemedText style={styles.error}>
-          {clip.error ? (clip.error as Error).message : 'Clip not found'}
+          {clip.error ? (clip.error as Error).message : t('player.clipNotFound')}
         </ThemedText>
       </ThemedView>
     );
@@ -124,17 +125,17 @@ export default function ClipPlayerScreen() {
 
           <View style={styles.controls}>
             <Pressable style={styles.primaryBtn} onPress={() => setPlaying((p) => !p)}>
-              <ThemedText style={styles.primaryText}>{playing ? '⏸ Pause' : '▶ Play'}</ThemedText>
+              <ThemedText style={styles.primaryText}>{playing ? t('player.pause') : t('player.play')}</ThemedText>
             </Pressable>
             <Pressable style={styles.secondaryBtn} onPress={replay}>
-              <ThemedText style={styles.secondaryText}>↺ Replay segment</ThemedText>
+              <ThemedText style={styles.secondaryText}>{t('player.replaySegment')}</ThemedText>
             </Pressable>
             <Pressable
               style={[styles.loopBtn, loop && styles.loopOn]}
               onPress={() => setLoop((l) => !l)}
             >
               <ThemedText style={loop ? styles.primaryText : styles.secondaryText}>
-                Loop {loop ? 'on' : 'off'}
+                {loop ? t('player.loopOn') : t('player.loopOff')}
               </ThemedText>
             </Pressable>
           </View>
@@ -148,7 +149,7 @@ export default function ClipPlayerScreen() {
 
           {c.transcript ? (
             <View style={styles.box}>
-              <ThemedText type="smallBold">Transcript</ThemedText>
+              <ThemedText type="smallBold">{t('player.transcript')}</ThemedText>
               <ThemedText>{c.transcript}</ThemedText>
             </View>
           ) : null}
@@ -173,7 +174,7 @@ function AnalysisSection({ data, pending }: { data?: ClipAnalysis; pending: bool
   if (data.status === 'PENDING') {
     return (
       <View style={styles.box}>
-        <ThemedText type="small">Analyzing this clip… (translation + vocabulary)</ThemedText>
+        <ThemedText type="small">{t('player.analyzing')}</ThemedText>
       </View>
     );
   }
@@ -182,14 +183,14 @@ function AnalysisSection({ data, pending }: { data?: ClipAnalysis; pending: bool
     <View style={styles.gap}>
       {data.primaryTranslation ? (
         <View style={styles.box}>
-          <ThemedText type="smallBold">Translation</ThemedText>
+          <ThemedText type="smallBold">{t('player.translation')}</ThemedText>
           <ThemedText>{data.primaryTranslation}</ThemedText>
         </View>
       ) : null}
 
       {data.chunkedTranslation.length > 0 ? (
         <View style={styles.box}>
-          <ThemedText type="smallBold">직독직해</ThemedText>
+          <ThemedText type="smallBold">{t('player.literal')}</ThemedText>
           {data.chunkedTranslation.map((ch, i) => (
             <View key={i} style={styles.chunkRow}>
               <ThemedText style={styles.chunkEn}>{ch.en}</ThemedText>
@@ -201,7 +202,7 @@ function AnalysisSection({ data, pending }: { data?: ClipAnalysis; pending: bool
 
       {data.vocabulary.length > 0 ? (
         <View style={styles.box}>
-          <ThemedText type="smallBold">Vocabulary</ThemedText>
+          <ThemedText type="smallBold">{t('player.vocabulary')}</ThemedText>
           {data.vocabulary.map((v, i) => (
             <ThemedText key={i} type="small">
               <ThemedText style={styles.bold}>{v.word}</ThemedText> — {v.meaning}
@@ -212,7 +213,7 @@ function AnalysisSection({ data, pending }: { data?: ClipAnalysis; pending: bool
 
       {data.keyExpressions.length > 0 ? (
         <View style={styles.box}>
-          <ThemedText type="smallBold">Key expressions</ThemedText>
+          <ThemedText type="smallBold">{t('player.keyExpressions')}</ThemedText>
           {data.keyExpressions.map((k, i) => (
             <ThemedText key={i} type="small">
               <ThemedText style={styles.bold}>{k.phrase}</ThemedText> — {k.meaning}
@@ -223,10 +224,10 @@ function AnalysisSection({ data, pending }: { data?: ClipAnalysis; pending: bool
 
       {data.prepositionNotes.length > 0 ? (
         <View style={styles.box}>
-          <ThemedText type="smallBold">Prepositions</ThemedText>
+          <ThemedText type="smallBold">{t('player.prepositions')}</ThemedText>
           {data.prepositionNotes.map((p, i) => (
             <ThemedText key={i} type="small">
-              <ThemedText style={styles.bold}>{p.preposition}</ThemedText> in “{p.phrase}” — {p.sense}
+              <ThemedText style={styles.bold}>{p.preposition}</ThemedText>{t('player.prepLine', { phrase: p.phrase, sense: p.sense })}
             </ThemedText>
           ))}
         </View>

@@ -8,6 +8,7 @@ import { clipsApi, reviewApi } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 function ms(msVal: number) {
   const s = Math.round(msVal / 1000);
@@ -38,9 +39,9 @@ export default function LibraryScreen() {
   });
 
   const confirmDelete = (id: string, name: string) => {
-    Alert.alert('Delete clip?', name, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => del.mutate(id) },
+    Alert.alert(t('library.deleteTitle'), name, [
+      { text: t('library.cancel'), style: 'cancel' },
+      { text: t('library.delete'), style: 'destructive', onPress: () => del.mutate(id) },
     ]);
   };
 
@@ -50,21 +51,21 @@ export default function LibraryScreen() {
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={['bottom']}>
         <View style={styles.header}>
-          <ThemedText type="title">Library</ThemedText>
+          <ThemedText type="title">{t('library.title')}</ThemedText>
           <Pressable style={styles.importBtn} onPress={() => router.push('/import')}>
-            <ThemedText style={styles.importText}>+ Import</ThemedText>
+            <ThemedText style={styles.importText}>{t('library.import')}</ThemedText>
           </Pressable>
         </View>
 
         {streak.data ? (
           <ThemedText type="small" style={styles.streak}>
-            🔥 {streak.data.streakDays}-day streak · {streak.data.dueToday} due today
+            {t('library.streak', { days: streak.data.streakDays, due: streak.data.dueToday })}
           </ThemedText>
         ) : null}
 
         <TextInput
           style={styles.search}
-          placeholder="Search clips…"
+          placeholder={t('library.searchPlaceholder')}
           placeholderTextColor="#9ca3af"
           autoCapitalize="none"
           value={q}
@@ -85,7 +86,7 @@ export default function LibraryScreen() {
             refreshing={clips.isFetching}
             ListEmptyComponent={
               <ThemedText type="small" style={styles.empty}>
-                {q ? 'No clips match your search.' : 'No clips yet. Import a YouTube video to make your first one.'}
+                {q ? t('library.emptySearch') : t('library.empty')}
               </ThemedText>
             }
             renderItem={({ item }) => (

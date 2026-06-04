@@ -8,12 +8,13 @@ import { reviewApi, analysisApi, REVIEW_QUALITY, type ReviewQueueItem } from '@s
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 const GRADES = [
-  { label: 'Again', quality: REVIEW_QUALITY.AGAIN, color: '#dc2626' },
-  { label: 'Hard', quality: REVIEW_QUALITY.HARD, color: '#f59e0b' },
-  { label: 'Good', quality: REVIEW_QUALITY.GOOD, color: '#208AEF' },
-  { label: 'Easy', quality: REVIEW_QUALITY.EASY, color: '#10b981' },
+  { label: 'Again', labelKey: 'review.again', quality: REVIEW_QUALITY.AGAIN, color: '#dc2626' },
+  { label: 'Hard', labelKey: 'review.hard', quality: REVIEW_QUALITY.HARD, color: '#f59e0b' },
+  { label: 'Good', labelKey: 'review.good', quality: REVIEW_QUALITY.GOOD, color: '#208AEF' },
+  { label: 'Easy', labelKey: 'review.easy', quality: REVIEW_QUALITY.EASY, color: '#10b981' },
 ];
 
 export default function ReviewScreen() {
@@ -78,12 +79,12 @@ export default function ReviewScreen() {
     return (
       <ThemedView style={styles.flex}>
         <SafeAreaView style={[styles.flex, styles.center]}>
-          <ThemedText type="title">{total === 0 ? 'Nothing due 🎉' : 'Review done 🎉'}</ThemedText>
+          <ThemedText type="title">{total === 0 ? t('review.nothingDue') : t('review.reviewDone')}</ThemedText>
           <ThemedText type="small">
-            {total === 0 ? 'No clips are due for review today.' : `${total} reviewed.`}
+            {total === 0 ? t('review.nothingDueSub') : t('review.reviewedCount', { n: total })}
           </ThemedText>
           <Pressable style={styles.primaryBtn} onPress={() => router.replace('/')}>
-            <ThemedText style={styles.primaryText}>Home</ThemedText>
+            <ThemedText style={styles.primaryText}>{t('review.home')}</ThemedText>
           </Pressable>
         </SafeAreaView>
       </ThemedView>
@@ -98,32 +99,32 @@ export default function ReviewScreen() {
       <SafeAreaView style={styles.flex} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.container}>
           <ThemedText type="small">
-            {pos + 1} / {total} · {clip.videoTitle}
+            {t('review.progress', { current: pos + 1, total })} · {clip.videoTitle}
           </ThemedText>
 
           <View style={styles.promptBox}>
-            <ThemedText type="small">Recall in English</ThemedText>
+            <ThemedText type="small">{t('review.recallInEnglish')}</ThemedText>
             <ThemedText style={styles.prompt}>
-              {koPrompt ?? clip.name ?? 'Recall this clip'}
+              {koPrompt ?? clip.name ?? t('review.recallThisClip')}
             </ThemedText>
           </View>
 
           {!revealed ? (
             <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>
-              <ThemedText style={styles.primaryText}>Reveal</ThemedText>
+              <ThemedText style={styles.primaryText}>{t('review.reveal')}</ThemedText>
             </Pressable>
           ) : (
             <View style={styles.gap}>
               <View style={styles.answerBox}>
                 <ThemedText style={styles.answer}>
-                  {clip.transcript ?? '(no transcript)'}
+                  {clip.transcript ?? t('review.noTranscript')}
                 </ThemedText>
               </View>
               <Pressable
                 style={styles.linkBtn}
                 onPress={() => router.push(`/player/${clip.id}`)}
               >
-                <ThemedText style={styles.linkText}>▶ Open clip & shadow</ThemedText>
+                <ThemedText style={styles.linkText}>{t('review.openClip')}</ThemedText>
               </Pressable>
 
               <View style={styles.gradeRow}>
@@ -134,7 +135,7 @@ export default function ReviewScreen() {
                     disabled={respond.isPending}
                     onPress={() => respond.mutate(g.quality)}
                   >
-                    <ThemedText style={styles.gradeText}>{g.label}</ThemedText>
+                    <ThemedText style={styles.gradeText}>{t(g.labelKey)}</ThemedText>
                   </Pressable>
                 ))}
               </View>

@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest, recordingsApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
+import { t } from '@/lib/i18n';
 
 /**
  * Record yourself shadowing the clip, upload to the account, play your take back.
@@ -64,29 +65,31 @@ export function RecordPanel({ clipId }: { clipId: string }) {
   return (
     <View style={styles.box}>
       <View style={styles.headerRow}>
-        <ThemedText type="smallBold">Shadow yourself</ThemedText>
-        {recs.data ? <ThemedText type="small">{recs.data.length} saved</ThemedText> : null}
+        <ThemedText type="smallBold">{t('record.title')}</ThemedText>
+        {recs.data ? (
+          <ThemedText type="small">{t('record.saved', { n: recs.data.length })}</ThemedText>
+        ) : null}
       </View>
 
       {state.isRecording ? (
         <Pressable style={[styles.recBtn, styles.recording]} onPress={stop}>
           <ThemedText style={styles.recText}>
-            ■ Stop · {Math.floor((state.durationMillis ?? 0) / 1000)}s
+            {t('record.stop', { s: Math.floor((state.durationMillis ?? 0) / 1000) })}
           </ThemedText>
         </Pressable>
       ) : (
         <Pressable style={styles.recBtn} onPress={start}>
-          <ThemedText style={styles.recText}>● Record</ThemedText>
+          <ThemedText style={styles.recText}>{t('record.record')}</ThemedText>
         </Pressable>
       )}
 
       {upload.isPending && (
         <View style={styles.statusRow}>
           <ActivityIndicator size="small" />
-          <ThemedText type="small">Uploading…</ThemedText>
+          <ThemedText type="small">{t('record.uploading')}</ThemedText>
         </View>
       )}
-      {upload.isError && <ThemedText style={styles.error}>Upload failed</ThemedText>}
+      {upload.isError && <ThemedText style={styles.error}>{t('record.uploadFailed')}</ThemedText>}
 
       {lastUri && !upload.isPending && (
         <Pressable
@@ -96,7 +99,7 @@ export function RecordPanel({ clipId }: { clipId: string }) {
             player.play();
           }}
         >
-          <ThemedText style={styles.playText}>▶ Play my take</ThemedText>
+          <ThemedText style={styles.playText}>{t('record.play')}</ThemedText>
         </Pressable>
       )}
     </View>

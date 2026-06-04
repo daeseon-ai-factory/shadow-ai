@@ -17,6 +17,7 @@ import { COLLOCATIONS, practiceApi, ApiError } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 // Targets to compose around: each collocation anchor + its gloss.
 const TARGETS = COLLOCATIONS.map((c) => ({ target: c.anchor, gloss: c.gloss }));
@@ -39,7 +40,7 @@ export default function ComposeScreen() {
 
   const fb = check.data;
   const errorMessage =
-    check.error instanceof ApiError ? check.error.message : check.error ? 'Check failed' : null;
+    check.error instanceof ApiError ? check.error.message : check.error ? t('compose.checkFailed') : null;
 
   const next = () => {
     setIdx(pickIndex());
@@ -55,18 +56,18 @@ export default function ComposeScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-            <ThemedText type="title">Compose check</ThemedText>
-            <ThemedText type="small">Write your own sentence using the target. AI grades it.</ThemedText>
+            <ThemedText type="title">{t('compose.title')}</ThemedText>
+            <ThemedText type="small">{t('compose.subtitle')}</ThemedText>
 
             <View style={styles.targetBox}>
-              <ThemedText type="small">Use this</ThemedText>
+              <ThemedText type="small">{t('compose.useThis')}</ThemedText>
               <ThemedText style={styles.target}>{current.target}</ThemedText>
               <ThemedText type="small">{current.gloss}</ThemedText>
             </View>
 
             <TextInput
               style={styles.input}
-              placeholder="Type an English sentence…"
+              placeholder={t('compose.inputPlaceholder')}
               placeholderTextColor="#9ca3af"
               multiline
               value={text}
@@ -78,12 +79,12 @@ export default function ComposeScreen() {
             {fb && (
               <View style={[styles.fbBox, fb.ok ? styles.fbOk : styles.fbWork]}>
                 <ThemedText type="smallBold">
-                  {fb.ok ? '✅ Good' : '✏️ Needs work'}
-                  {!fb.usesTarget ? '  ·  target not used' : ''}
+                  {fb.ok ? t('compose.good') : t('compose.needsWork')}
+                  {!fb.usesTarget ? t('compose.targetNotUsed') : ''}
                 </ThemedText>
                 <ThemedText type="small">{fb.feedback}</ThemedText>
                 {fb.better ? (
-                  <ThemedText style={styles.better}>Better: {fb.better}</ThemedText>
+                  <ThemedText style={styles.better}>{t('compose.better', { text: fb.better })}</ThemedText>
                 ) : null}
               </View>
             )}
@@ -97,11 +98,11 @@ export default function ComposeScreen() {
                 {check.isPending ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <ThemedText style={styles.primaryText}>Check</ThemedText>
+                  <ThemedText style={styles.primaryText}>{t('compose.check')}</ThemedText>
                 )}
               </Pressable>
               <Pressable style={styles.secondaryBtn} onPress={next}>
-                <ThemedText style={styles.secondaryText}>Next</ThemedText>
+                <ThemedText style={styles.secondaryText}>{t('compose.next')}</ThemedText>
               </Pressable>
             </View>
           </ScrollView>

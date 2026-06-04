@@ -8,6 +8,7 @@ import { authApi, ApiError } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 export default function SettingsScreen() {
   const token = useAuthStore((s) => s.token);
@@ -29,9 +30,10 @@ export default function SettingsScreen() {
     mutationFn: () => authApi.updateProfile({ displayName: displayName.trim() }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['me'] });
-      Alert.alert('Saved', 'Your name was updated.');
+      Alert.alert(t('settings.savedTitle'), t('settings.savedMsg'));
     },
-    onError: (e) => Alert.alert('Failed', e instanceof ApiError ? e.message : 'Could not save'),
+    onError: (e) =>
+      Alert.alert(t('settings.failedTitle'), e instanceof ApiError ? e.message : t('settings.saveError')),
   });
 
   const changePw = useMutation({
@@ -39,9 +41,10 @@ export default function SettingsScreen() {
     onSuccess: () => {
       setCurrentPassword('');
       setNewPassword('');
-      Alert.alert('Done', 'Your password was changed.');
+      Alert.alert(t('settings.doneTitle'), t('settings.pwChangedMsg'));
     },
-    onError: (e) => Alert.alert('Failed', e instanceof ApiError ? e.message : 'Could not change password'),
+    onError: (e) =>
+      Alert.alert(t('settings.failedTitle'), e instanceof ApiError ? e.message : t('settings.pwChangeError')),
   });
 
   const del = useMutation({
@@ -51,18 +54,21 @@ export default function SettingsScreen() {
       router.replace('/login');
     },
     onError: (e) =>
-      Alert.alert('Delete failed', e instanceof ApiError ? e.message : 'Could not delete account'),
+      Alert.alert(
+        t('settings.deleteFailedTitle'),
+        e instanceof ApiError ? e.message : t('settings.deleteError'),
+      ),
   });
 
   if (!token) return <Redirect href="/login" />;
 
   const confirmDelete = () => {
     Alert.alert(
-      'Delete account?',
-      'This cannot be undone. Your clips, recordings, drill progress, and account are erased.',
+      t('settings.deleteConfirmTitle'),
+      t('settings.deleteConfirmMsg'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => del.mutate() },
+        { text: t('settings.cancel'), style: 'cancel' },
+        { text: t('settings.delete'), style: 'destructive', onPress: () => del.mutate() },
       ],
     );
   };
@@ -71,14 +77,14 @@ export default function SettingsScreen() {
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.container}>
-          <ThemedText type="title">Settings</ThemedText>
+          <ThemedText type="title">{t('settings.title')}</ThemedText>
 
           {me.data && (
             <View style={styles.box}>
               <View style={styles.row}>
                 <View style={me.data.plan === 'pro' ? styles.proBadge : styles.freeBadge}>
                   <ThemedText style={styles.badgeText}>
-                    {me.data.plan === 'pro' ? 'PRO' : 'FREE'}
+                    {me.data.plan === 'pro' ? t('settings.planPro') : t('settings.planFree')}
                   </ThemedText>
                 </View>
                 <ThemedText type="small">{me.data.email}</ThemedText>
@@ -87,13 +93,13 @@ export default function SettingsScreen() {
           )}
 
           <View style={styles.box}>
-            <ThemedText type="smallBold">Display name</ThemedText>
+            <ThemedText type="smallBold">{t('settings.displayName')}</ThemedText>
             <TextInput
               style={styles.input}
               value={displayName}
               onChangeText={setDisplayName}
               maxLength={80}
-              placeholder="Your name"
+              placeholder={t('settings.namePlaceholder')}
               placeholderTextColor="#9ca3af"
             />
             <Pressable
@@ -112,16 +118,16 @@ export default function SettingsScreen() {
               {profile.isPending ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <ThemedText style={styles.saveText}>Save</ThemedText>
+                <ThemedText style={styles.saveText}>{t('settings.save')}</ThemedText>
               )}
             </Pressable>
           </View>
 
           <View style={styles.box}>
-            <ThemedText type="smallBold">Change password</ThemedText>
+            <ThemedText type="smallBold">{t('settings.changePassword')}</ThemedText>
             <TextInput
               style={styles.input}
-              placeholder="Current password"
+              placeholder={t('settings.currentPwPlaceholder')}
               placeholderTextColor="#9ca3af"
               secureTextEntry
               autoComplete="current-password"
@@ -130,7 +136,7 @@ export default function SettingsScreen() {
             />
             <TextInput
               style={styles.input}
-              placeholder="New password (8+ characters)"
+              placeholder={t('settings.newPwPlaceholder')}
               placeholderTextColor="#9ca3af"
               secureTextEntry
               autoComplete="new-password"
@@ -148,25 +154,25 @@ export default function SettingsScreen() {
               {changePw.isPending ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <ThemedText style={styles.saveText}>Change password</ThemedText>
+                <ThemedText style={styles.saveText}>{t('settings.changePassword')}</ThemedText>
               )}
             </Pressable>
           </View>
 
           <Pressable style={styles.signOut} onPress={() => signOut()}>
-            <ThemedText style={styles.signOutText}>Sign out</ThemedText>
+            <ThemedText style={styles.signOutText}>{t('settings.signOut')}</ThemedText>
           </Pressable>
 
           <View style={styles.danger}>
             <ThemedText type="smallBold" style={styles.dangerTitle}>
-              Delete account
+              {t('settings.deleteAccount')}
             </ThemedText>
             <ThemedText type="small">
-              Permanently delete your account and all data. This cannot be undone.
+              {t('settings.deleteDescription')}
             </ThemedText>
             <TextInput
               style={styles.input}
-              placeholder="Enter your password to confirm"
+              placeholder={t('settings.confirmPwPlaceholder')}
               placeholderTextColor="#9ca3af"
               secureTextEntry
               autoComplete="current-password"
@@ -181,17 +187,17 @@ export default function SettingsScreen() {
               {del.isPending ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <ThemedText style={styles.deleteText}>Delete my account</ThemedText>
+                <ThemedText style={styles.deleteText}>{t('settings.deleteMyAccount')}</ThemedText>
               )}
             </Pressable>
           </View>
 
           <View style={styles.legal}>
             <Pressable onPress={() => Linking.openURL('https://mimi.daeseon.ai/en/terms')}>
-              <ThemedText style={styles.link}>Terms</ThemedText>
+              <ThemedText style={styles.link}>{t('settings.terms')}</ThemedText>
             </Pressable>
             <Pressable onPress={() => Linking.openURL('https://mimi.daeseon.ai/en/privacy')}>
-              <ThemedText style={styles.link}>Privacy</ThemedText>
+              <ThemedText style={styles.link}>{t('settings.privacy')}</ThemedText>
             </Pressable>
           </View>
         </ScrollView>

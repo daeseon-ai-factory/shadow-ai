@@ -15,6 +15,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { DrillRunner, type DrillItem } from '@/components/drill-runner';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 // Flatten the bundled patterns into keyed drill items (same key format the web app + SRS use).
 function allItems(): DrillItem[] {
@@ -61,7 +62,7 @@ export default function PatternDrillScreen() {
       <ThemedView style={styles.center}>
         <ThemedText style={styles.error}>{(srs.error as Error).message}</ThemedText>
         <Pressable style={styles.linkBtn} onPress={() => router.back()}>
-          <ThemedText style={styles.linkText}>Back</ThemedText>
+          <ThemedText style={styles.linkText}>{t('practice.back')}</ThemedText>
         </Pressable>
       </ThemedView>
     );

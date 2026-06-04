@@ -12,6 +12,7 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 function Sense({ sense }: { sense: PrimerSense }) {
   return (
@@ -49,10 +50,8 @@ export default function PrepositionsScreen() {
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.container}>
-          <ThemedText type="title">Prepositions</ThemedText>
-          <ThemedText type="small">
-            A preposition isn&apos;t chosen by logic — learn each sense with a real example.
-          </ThemedText>
+          <ThemedText type="title">{t('prepositions.title')}</ThemedText>
+          <ThemedText type="small">{t('prepositions.intro')}</ThemedText>
 
           {PREPOSITION_PRIMER.map((p) => (
             <View key={p.key} style={styles.card}>
@@ -65,14 +64,12 @@ export default function PrepositionsScreen() {
 
           {/* Mined: prepositions the AI flagged in clips the user analyzed. */}
           <ThemedText type="subtitle" style={styles.minedHeader}>
-            From your clips
+            {t('prepositions.fromYourClips')}
           </ThemedText>
           {mined.isPending ? (
             <ActivityIndicator />
           ) : minedList.length === 0 ? (
-            <ThemedText type="small">
-              Analyze clips and the prepositions you meet show up here.
-            </ThemedText>
+            <ThemedText type="small">{t('prepositions.empty')}</ThemedText>
           ) : (
             minedList.map((m) => (
               <View key={m.preposition} style={styles.card}>
@@ -81,7 +78,7 @@ export default function PrepositionsScreen() {
                   <View key={i} style={styles.sense}>
                     <ThemedText style={styles.example}>{o.phrase}</ThemedText>
                     <ThemedText type="small">
-                      {o.sense} · {o.clipName}
+                      {t('prepositions.occurrenceMeta', { sense: o.sense, clip: o.clipName })}
                     </ThemedText>
                   </View>
                 ))}

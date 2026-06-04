@@ -23,6 +23,7 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 export default function ImportScreen() {
   const token = useAuthStore((s) => s.token);
@@ -60,7 +61,7 @@ export default function ImportScreen() {
     importVideo.error instanceof ApiError
       ? importVideo.error.message
       : importVideo.error
-        ? 'Import failed'
+        ? t('import.importFailed')
         : null;
 
   if (video) {
@@ -72,7 +73,7 @@ export default function ImportScreen() {
             <ThemedText type="subtitle" numberOfLines={2}>
               {video.title}
             </ThemedText>
-            <ThemedText type="small">Tap a sentence to clip it.</ThemedText>
+            <ThemedText type="small">{t('import.tapSentence')}</ThemedText>
           </View>
           {makeClip.isPending && <ActivityIndicator style={styles.mt} />}
           <FlatList
@@ -90,7 +91,7 @@ export default function ImportScreen() {
             )}
             ListEmptyComponent={
               <ThemedText type="small" style={styles.empty}>
-                No transcript available for this video.
+                {t('import.noTranscript')}
               </ThemedText>
             }
           />
@@ -107,12 +108,12 @@ export default function ImportScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.container}>
-            <ThemedText type="title">Import a video</ThemedText>
-            <ThemedText type="small">Paste a YouTube URL. We fetch its subtitles to clip from.</ThemedText>
+            <ThemedText type="title">{t('import.title')}</ThemedText>
+            <ThemedText type="small">{t('import.subtitle')}</ThemedText>
 
             <TextInput
               style={styles.input}
-              placeholder="https://youtube.com/watch?v=…"
+              placeholder={t('import.urlPlaceholder')}
               placeholderTextColor="#9ca3af"
               autoCapitalize="none"
               autoCorrect={false}
@@ -131,7 +132,7 @@ export default function ImportScreen() {
               {importVideo.isPending ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <ThemedText style={styles.primaryText}>Import</ThemedText>
+                <ThemedText style={styles.primaryText}>{t('import.importBtn')}</ThemedText>
               )}
             </Pressable>
           </View>

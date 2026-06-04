@@ -7,6 +7,7 @@ import { localToday, practiceApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { t } from '@/lib/i18n';
 
 export interface DrillItem {
   key: string; // SRS card key (pat:… / col:…)
@@ -46,10 +47,10 @@ export function DrillRunner({ items }: { items: DrillItem[] }) {
     return (
       <ThemedView style={styles.flex}>
         <SafeAreaView style={[styles.flex, styles.center]}>
-          <ThemedText type="subtitle">All caught up 🎉</ThemedText>
-          <ThemedText type="small">Nothing due here today.</ThemedText>
+          <ThemedText type="subtitle">{t('drill.allCaughtUp')}</ThemedText>
+          <ThemedText type="small">{t('drill.nothingDue')}</ThemedText>
           <Pressable style={styles.linkBtn} onPress={() => router.back()}>
-            <ThemedText style={styles.linkText}>Back</ThemedText>
+            <ThemedText style={styles.linkText}>{t('drill.back')}</ThemedText>
           </Pressable>
         </SafeAreaView>
       </ThemedView>
@@ -74,13 +75,15 @@ export function DrillRunner({ items }: { items: DrillItem[] }) {
     return (
       <ThemedView style={styles.flex}>
         <SafeAreaView style={[styles.flex, styles.center]}>
-          <ThemedText type="title">Done</ThemedText>
+          <ThemedText type="title">{t('drill.done')}</ThemedText>
           <ThemedText type="small">
-            {got} / {items.length} on the first try
+            {t('drill.firstTry', { got, total: items.length })}
           </ThemedText>
-          {streak !== null && <ThemedText type="small">🔥 {streak}-day streak</ThemedText>}
+          {streak !== null && (
+            <ThemedText type="small">{t('drill.streak', { n: streak })}</ThemedText>
+          )}
           <Pressable style={styles.primaryBtn} onPress={() => router.replace('/')}>
-            <ThemedText style={styles.primaryText}>Home</ThemedText>
+            <ThemedText style={styles.primaryText}>{t('drill.home')}</ThemedText>
           </Pressable>
         </SafeAreaView>
       </ThemedView>
@@ -108,13 +111,13 @@ export function DrillRunner({ items }: { items: DrillItem[] }) {
           </View>
 
           <View style={styles.cueBox}>
-            <ThemedText type="small">Say this</ThemedText>
+            <ThemedText type="small">{t('drill.sayThis')}</ThemedText>
             <ThemedText style={styles.cue}>{item.cue}</ThemedText>
           </View>
 
           {!revealed ? (
             <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>
-              <ThemedText style={styles.primaryText}>Reveal</ThemedText>
+              <ThemedText style={styles.primaryText}>{t('drill.reveal')}</ThemedText>
             </Pressable>
           ) : (
             <View style={styles.gap}>
@@ -128,10 +131,10 @@ export function DrillRunner({ items }: { items: DrillItem[] }) {
               </View>
               <View style={styles.row}>
                 <Pressable style={[styles.gradeBtn, styles.again]} onPress={() => answer(false)}>
-                  <ThemedText style={styles.againText}>Again</ThemedText>
+                  <ThemedText style={styles.againText}>{t('drill.again')}</ThemedText>
                 </Pressable>
                 <Pressable style={[styles.gradeBtn, styles.gotIt]} onPress={() => answer(true)}>
-                  <ThemedText style={styles.primaryText}>Got it</ThemedText>
+                  <ThemedText style={styles.primaryText}>{t('drill.gotIt')}</ThemedText>
                 </Pressable>
               </View>
             </View>

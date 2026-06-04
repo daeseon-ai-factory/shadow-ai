@@ -17,6 +17,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { DrillRunner, type DrillItem } from '@/components/drill-runner';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 type Filter = 'all' | (typeof COLLOCATION_DOMAINS)[number];
 const FILTERS: Filter[] = ['all', ...COLLOCATION_DOMAINS];
@@ -63,7 +64,7 @@ export default function CollocationDrillScreen() {
       <ThemedView style={styles.center}>
         <ThemedText style={styles.error}>{(srs.error as Error).message}</ThemedText>
         <Pressable style={styles.linkBtn} onPress={() => router.back()}>
-          <ThemedText style={styles.linkText}>Back</ThemedText>
+          <ThemedText style={styles.linkText}>{t('collocations.back')}</ThemedText>
         </Pressable>
       </ThemedView>
     );
@@ -77,9 +78,9 @@ export default function CollocationDrillScreen() {
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex}>
         <View style={styles.container}>
-          <ThemedText type="title">Collocations</ThemedText>
+          <ThemedText type="title">{t('collocations.title')}</ThemedText>
           <ThemedText type="small">
-            Learn each word + preposition as one fixed chunk.
+            {t('collocations.subtitle')}
           </ThemedText>
 
           <View style={styles.chips}>
@@ -90,13 +91,13 @@ export default function CollocationDrillScreen() {
                 onPress={() => setFilter(f)}
               >
                 <ThemedText style={filter === f ? styles.chipTextActive : styles.chipText}>
-                  {f === 'all' ? 'All' : f === 'dev' ? 'Dev' : 'General'}
+                  {f === 'all' ? t('collocations.filterAll') : f === 'dev' ? t('collocations.filterDev') : t('collocations.filterGeneral')}
                 </ThemedText>
               </Pressable>
             ))}
           </View>
 
-          <ThemedText type="small">{session.length} cards due / new today</ThemedText>
+          <ThemedText type="small">{t('collocations.due', { n: session.length })}</ThemedText>
 
           <Pressable
             style={[styles.primaryBtn, session.length === 0 && styles.disabled]}
@@ -104,7 +105,7 @@ export default function CollocationDrillScreen() {
             onPress={() => setStarted(true)}
           >
             <ThemedText style={styles.primaryText}>
-              {session.length === 0 ? 'All caught up 🎉' : 'Begin drill'}
+              {session.length === 0 ? t('collocations.allCaughtUp') : t('collocations.beginDrill')}
             </ThemedText>
           </Pressable>
         </View>

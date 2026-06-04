@@ -7,6 +7,7 @@ import { authApi, PATTERNS, COLLOCATIONS } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 export default function HomeScreen() {
   const token = useAuthStore((s) => s.token);
@@ -36,11 +37,11 @@ export default function HomeScreen() {
           )}
           {me.data && (
             <View style={styles.gap}>
-              <ThemedText type="subtitle">Welcome back, {me.data.displayName}</ThemedText>
+              <ThemedText type="subtitle">{t('home.welcome', { name: me.data.displayName })}</ThemedText>
               <View style={styles.row}>
                 <View style={me.data.plan === 'pro' ? styles.proBadge : styles.freeBadge}>
                   <ThemedText style={styles.badgeText}>
-                    {me.data.plan === 'pro' ? 'PRO' : 'FREE'}
+                    {me.data.plan === 'pro' ? t('home.planPro') : t('home.planFree')}
                   </ThemedText>
                 </View>
                 <ThemedText type="small">{me.data.email}</ThemedText>
@@ -51,48 +52,48 @@ export default function HomeScreen() {
           {/* Practice hub — each runs shared core content/logic as a native screen. */}
           <View style={styles.hub}>
             <HubCard
-              title="Review"
-              sub="Clips due today (spaced repetition)"
+              title={t('home.review')}
+              sub={t('home.reviewSub')}
               onPress={() => router.push('/review')}
             />
             <HubCard
-              title="Library"
-              sub="Your YouTube clips — import & shadow"
+              title={t('home.library')}
+              sub={t('home.librarySub')}
               onPress={() => router.push('/library')}
             />
             <HubCard
-              title="Discover"
-              sub="Curated collections to start from"
+              title={t('home.discover')}
+              sub={t('home.discoverSub')}
               onPress={() => router.push('/discover')}
             />
             <HubCard
-              title="Pattern drill"
-              sub={`${PATTERNS.length} sentence frames`}
+              title={t('home.patternDrill')}
+              sub={t('home.patternDrillSub', { n: PATTERNS.length })}
               onPress={() => router.push('/practice')}
             />
             <HubCard
-              title="Collocations"
-              sub={`${COLLOCATIONS.length} word + preposition chunks`}
+              title={t('home.collocations')}
+              sub={t('home.collocationsSub', { n: COLLOCATIONS.length })}
               onPress={() => router.push('/collocations')}
             />
             <HubCard
-              title="Compose check"
-              sub="Write a sentence, AI grades it"
+              title={t('home.composeCheck')}
+              sub={t('home.composeCheckSub')}
               onPress={() => router.push('/compose')}
             />
             <HubCard
-              title="Weak spots"
-              sub="The cards you keep missing"
+              title={t('home.weakSpots')}
+              sub={t('home.weakSpotsSub')}
               onPress={() => router.push('/weak')}
             />
             <HubCard
-              title="Prepositions"
-              sub="Senses + examples, and yours from clips"
+              title={t('home.prepositions')}
+              sub={t('home.prepositionsSub')}
               onPress={() => router.push('/prepositions')}
             />
             <HubCard
-              title="Settings"
-              sub="Account, plan, sign out"
+              title={t('home.settings')}
+              sub={t('home.settingsSub')}
               onPress={() => router.push('/settings')}
             />
           </View>

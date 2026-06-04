@@ -16,6 +16,7 @@ import { authApi, ApiError } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -31,7 +32,7 @@ export default function LoginScreen() {
   });
 
   const errorMessage =
-    login.error instanceof ApiError ? login.error.message : login.error ? 'Login failed' : null;
+    login.error instanceof ApiError ? login.error.message : login.error ? t('login.failed') : null;
 
   return (
     <ThemedView style={styles.flex}>
@@ -41,12 +42,12 @@ export default function LoginScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.container}>
-            <ThemedText type="title">Sign in to Mimi</ThemedText>
-            <ThemedText type="small">Turn YouTube into daily English practice.</ThemedText>
+            <ThemedText type="title">{t('login.title')}</ThemedText>
+            <ThemedText type="small">{t('login.subtitle')}</ThemedText>
 
             <TextInput
               style={styles.input}
-              placeholder="Email"
+              placeholder={t('login.email')}
               placeholderTextColor="#9ca3af"
               autoCapitalize="none"
               keyboardType="email-address"
@@ -56,7 +57,7 @@ export default function LoginScreen() {
             />
             <TextInput
               style={styles.input}
-              placeholder="Password"
+              placeholder={t('login.password')}
               placeholderTextColor="#9ca3af"
               secureTextEntry
               autoComplete="password"
@@ -74,13 +75,13 @@ export default function LoginScreen() {
               {login.isPending ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <ThemedText style={styles.buttonText}>Sign in</ThemedText>
+                <ThemedText style={styles.buttonText}>{t('login.signIn')}</ThemedText>
               )}
             </Pressable>
 
             <Pressable style={styles.linkRow} onPress={() => router.replace('/signup')}>
-              <ThemedText type="small">New here? </ThemedText>
-              <ThemedText style={styles.link}>Create an account</ThemedText>
+              <ThemedText type="small">{t('login.newHere')} </ThemedText>
+              <ThemedText style={styles.link}>{t('login.createAccount')}</ThemedText>
             </Pressable>
           </View>
         </KeyboardAvoidingView>

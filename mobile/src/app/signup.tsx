@@ -16,6 +16,7 @@ import { authApi, ApiError } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
@@ -33,7 +34,7 @@ export default function SignupScreen() {
   });
 
   const errorMessage =
-    signup.error instanceof ApiError ? signup.error.message : signup.error ? 'Sign up failed' : null;
+    signup.error instanceof ApiError ? signup.error.message : signup.error ? t('signup.failed') : null;
 
   const canSubmit = email.trim() && password.length >= 8 && displayName.trim();
 
@@ -45,12 +46,12 @@ export default function SignupScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.container}>
-            <ThemedText type="title">Create your account</ThemedText>
-            <ThemedText type="small">Turn YouTube into daily English practice.</ThemedText>
+            <ThemedText type="title">{t('signup.title')}</ThemedText>
+            <ThemedText type="small">{t('signup.subtitle')}</ThemedText>
 
             <TextInput
               style={styles.input}
-              placeholder="Email"
+              placeholder={t('signup.email')}
               placeholderTextColor="#9ca3af"
               autoCapitalize="none"
               keyboardType="email-address"
@@ -60,7 +61,7 @@ export default function SignupScreen() {
             />
             <TextInput
               style={styles.input}
-              placeholder="Display name"
+              placeholder={t('signup.displayName')}
               placeholderTextColor="#9ca3af"
               autoComplete="name"
               value={displayName}
@@ -68,7 +69,7 @@ export default function SignupScreen() {
             />
             <TextInput
               style={styles.input}
-              placeholder="Password (8+ characters)"
+              placeholder={t('signup.password')}
               placeholderTextColor="#9ca3af"
               secureTextEntry
               autoComplete="new-password"
@@ -86,13 +87,13 @@ export default function SignupScreen() {
               {signup.isPending ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <ThemedText style={styles.buttonText}>Create account</ThemedText>
+                <ThemedText style={styles.buttonText}>{t('signup.createAccount')}</ThemedText>
               )}
             </Pressable>
 
             <Pressable style={styles.linkRow} onPress={() => router.replace('/login')}>
-              <ThemedText type="small">Already have an account? </ThemedText>
-              <ThemedText style={styles.link}>Sign in</ThemedText>
+              <ThemedText type="small">{t('signup.haveAccount')} </ThemedText>
+              <ThemedText style={styles.link}>{t('signup.signIn')}</ThemedText>
             </Pressable>
           </View>
         </KeyboardAvoidingView>

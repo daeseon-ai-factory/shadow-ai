@@ -8,6 +8,7 @@ import { practiceApi, cardIndex, type SrsCard } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 export default function WeakSpotsScreen() {
   const token = useAuthStore((s) => s.token);
@@ -45,11 +46,11 @@ export default function WeakSpotsScreen() {
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex}>
         <View style={styles.header}>
-          <ThemedText type="title">Weak spots</ThemedText>
+          <ThemedText type="title">{t('weak.title')}</ThemedText>
           <View style={styles.statsRow}>
-            <Stat n={stats.seen} label="seen" />
-            <Stat n={stats.lapses} label="lapses" />
-            <Stat n={stats.mastered} label="mastered" />
+            <Stat n={stats.seen} label={t('weak.seen')} />
+            <Stat n={stats.lapses} label={t('weak.lapses')} />
+            <Stat n={stats.mastered} label={t('weak.mastered')} />
           </View>
         </View>
 
@@ -59,7 +60,7 @@ export default function WeakSpotsScreen() {
           contentContainerStyle={styles.list}
           ListEmptyComponent={
             <ThemedText type="small" style={styles.empty}>
-              No weak cards yet — keep drilling and the ones you miss show up here.
+              {t('weak.empty')}
             </ThemedText>
           }
           renderItem={({ item }) => (
@@ -68,7 +69,7 @@ export default function WeakSpotsScreen() {
                 <ThemedText type="smallBold">{item.info.title}</ThemedText>
                 <View style={styles.badge}>
                   <ThemedText style={styles.badgeText}>
-                    ✗{item.state.lapseCount} · box {item.state.box}
+                    {t('weak.badge', { lapses: item.state.lapseCount, box: item.state.box })}
                   </ThemedText>
                 </View>
               </View>

@@ -41,7 +41,8 @@
         {
           "microphonePermission": "Allow Mimi to use the microphone to record your shadowing practice."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

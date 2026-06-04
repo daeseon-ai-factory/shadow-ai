@@ -7,6 +7,7 @@ import { collectionsApi } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 export default function DiscoverScreen() {
   const token = useAuthStore((s) => s.token);
@@ -32,23 +33,23 @@ export default function DiscoverScreen() {
             contentContainerStyle={styles.list}
             ListHeaderComponent={
               <ThemedText type="small" style={styles.intro}>
-                Curated sets of videos to start practicing with.
+                {t('discover.intro')}
               </ThemedText>
             }
             ListEmptyComponent={
               <ThemedText type="small" style={styles.empty}>
-                No collections yet.
+                {t('discover.empty')}
               </ThemedText>
             }
             renderItem={({ item }) => (
               <Pressable style={styles.card} onPress={() => router.push(`/discover/${item.slug}`)}>
-                <ThemedText type="smallBold">{item.name} →</ThemedText>
+                <ThemedText type="smallBold">{t('discover.cardName', { name: item.name })}</ThemedText>
                 {item.description ? (
                   <ThemedText type="small" numberOfLines={2}>
                     {item.description}
                   </ThemedText>
                 ) : null}
-                <ThemedText type="small">{item.videos.length} videos</ThemedText>
+                <ThemedText type="small">{t('discover.videoCount', { n: item.videos.length })}</ThemedText>
               </Pressable>
             )}
           />

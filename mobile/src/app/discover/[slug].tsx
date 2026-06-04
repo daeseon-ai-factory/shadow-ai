@@ -7,6 +7,7 @@ import { collectionsApi } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
+import { t } from '@/lib/i18n';
 
 export default function CollectionScreen() {
   const token = useAuthStore((s) => s.token);
@@ -30,7 +31,7 @@ export default function CollectionScreen() {
     return (
       <ThemedView style={styles.center}>
         <ThemedText style={styles.error}>
-          {collection.error ? (collection.error as Error).message : 'Not found'}
+          {collection.error ? (collection.error as Error).message : t('collection.notFound')}
         </ThemedText>
       </ThemedView>
     );
@@ -49,7 +50,7 @@ export default function CollectionScreen() {
             <View style={styles.header}>
               <ThemedText type="title">{c.name}</ThemedText>
               {c.description ? <ThemedText type="small">{c.description}</ThemedText> : null}
-              <ThemedText type="small">Tap a video to import & clip it.</ThemedText>
+              <ThemedText type="small">{t('collection.tapToImport')}</ThemedText>
             </View>
           }
           renderItem={({ item }) => (

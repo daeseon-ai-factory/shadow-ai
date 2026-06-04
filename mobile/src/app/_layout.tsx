@@ -4,6 +4,7 @@ import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from 'expo-rout
 import { useColorScheme } from 'react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
 
+import { t } from '@/lib/i18n';
 import { bootstrapApi } from '@/lib/api';
 import { queryClient, setUnauthorizedHandler } from '@/lib/query-client';
 import { useAuthStore } from '@/lib/auth-store';
@@ -43,18 +44,18 @@ export default function RootLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="login" options={{ presentation: 'modal' }} />
             <Stack.Screen name="signup" options={{ presentation: 'modal' }} />
-            <Stack.Screen name="practice" options={{ headerShown: true, title: 'Pattern drill' }} />
-            <Stack.Screen name="collocations" options={{ headerShown: true, title: 'Collocations' }} />
-            <Stack.Screen name="compose" options={{ headerShown: true, title: 'Compose check' }} />
-            <Stack.Screen name="weak" options={{ headerShown: true, title: 'Weak spots' }} />
-            <Stack.Screen name="prepositions" options={{ headerShown: true, title: 'Prepositions' }} />
-            <Stack.Screen name="review" options={{ headerShown: true, title: 'Review' }} />
-            <Stack.Screen name="library" options={{ headerShown: true, title: 'Library' }} />
-            <Stack.Screen name="import" options={{ headerShown: true, title: 'Import' }} />
-            <Stack.Screen name="discover" options={{ headerShown: true, title: 'Discover' }} />
-            <Stack.Screen name="discover/[slug]" options={{ headerShown: true, title: 'Collection' }} />
-            <Stack.Screen name="player/[clipId]" options={{ headerShown: true, title: 'Clip' }} />
-            <Stack.Screen name="settings" options={{ headerShown: true, title: 'Settings' }} />
+            <Stack.Screen name="practice" options={{ headerShown: true, title: t('nav.practice') }} />
+            <Stack.Screen name="collocations" options={{ headerShown: true, title: t('nav.collocations') }} />
+            <Stack.Screen name="compose" options={{ headerShown: true, title: t('nav.compose') }} />
+            <Stack.Screen name="weak" options={{ headerShown: true, title: t('nav.weak') }} />
+            <Stack.Screen name="prepositions" options={{ headerShown: true, title: t('nav.prepositions') }} />
+            <Stack.Screen name="review" options={{ headerShown: true, title: t('nav.review') }} />
+            <Stack.Screen name="library" options={{ headerShown: true, title: t('nav.library') }} />
+            <Stack.Screen name="import" options={{ headerShown: true, title: t('nav.import') }} />
+            <Stack.Screen name="discover" options={{ headerShown: true, title: t('nav.discover') }} />
+            <Stack.Screen name="discover/[slug]" options={{ headerShown: true, title: t('nav.collection') }} />
+            <Stack.Screen name="player/[clipId]" options={{ headerShown: true, title: t('nav.clip') }} />
+            <Stack.Screen name="settings" options={{ headerShown: true, title: t('nav.settings') }} />
           </Stack>
         )}
       </ThemeProvider>
