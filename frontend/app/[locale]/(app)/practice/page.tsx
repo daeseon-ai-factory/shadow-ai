@@ -19,6 +19,11 @@ export default function PracticePage() {
 
   const drills: Drill[] = [
     {
+      href: "/gym",
+      title: t("gymTitle"),
+      desc: t("gymDesc"),
+    },
+    {
       href: "/patterns",
       title: t("patternsTitle"),
       desc: t("patternsDesc"),

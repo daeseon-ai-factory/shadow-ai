@@ -454,7 +454,9 @@
     "weakTitle": "Weak spots",
     "weakDesc": "The cards you keep missing — what to focus on. Updates as you drill.",
     "composeTitle": "Compose (영작)",
-    "composeDesc": "Write your own sentences with a pattern or chunk; AI checks them. Active production, not recall."
+    "composeDesc": "Write your own sentences with a pattern or chunk; AI checks them. Active production, not recall.",
+    "gymTitle": "Sentence gym",
+    "gymDesc": "Bend one sentence through ~50 grammar moves — master it."
   },
   "collocations": {
     "title": "Collocations",
@@ -521,5 +523,41 @@
     "lastUpdated": "Última actualización",
     "backHome": "Volver al inicio",
     "templateNote": "This is a template and not legal advice. Review with a professional before commercial launch."
+  },
+  "gym": {
+    "title": "Today's sentence",
+    "subtitle": "Take one base sentence and bend it through ~50 grammar moves until it's automatic.",
+    "inputLabel": "Base sentence",
+    "inputPlaceholder": "Type one English statement…",
+    "generate": "Build sentence",
+    "generating": "Generating…",
+    "generateFailed": "Generation failed",
+    "notConfigured": "AI isn't configured (a provider API key is required).",
+    "fromClips": "From your clips",
+    "noClipSeeds": "No sentences to pull from clips yet. Type one yourself.",
+    "ready": "Your sentence is ready",
+    "extraOn": "✓ Extra categories included",
+    "extraOff": "+ Add extra categories",
+    "transformCount": "{n} transforms ready",
+    "startDrill": "Start drill",
+    "newSentence": "Different sentence",
+    "drillEmpty": "Nothing to drill.",
+    "drillDone": "Done 🎉",
+    "drillSummary": "{got} / {total} on the first try",
+    "todayReps": "{n} reps today",
+    "drillExit": "Back",
+    "drillProgress": "{n} / {total}",
+    "sayThis": "Say this in English:",
+    "reveal": "Reveal",
+    "listen": "Listen",
+    "markAgain": "Again",
+    "markGot": "Got it",
+    "aiCheck": "AI check",
+    "checking": "Checking…",
+    "checkPlaceholder": "Type your English version…",
+    "checkFailed": "Check failed",
+    "good": "Good",
+    "needsWork": "Needs work",
+    "betterLabel": "Better:"
   }
 }

@@ -454,7 +454,9 @@
     "weakTitle": "약점",
     "weakDesc": "자꾸 틀리는 카드 — 집중할 곳. 드릴할수록 갱신돼.",
     "composeTitle": "영작",
-    "composeDesc": "패턴/청크로 네 문장을 직접 써보고 AI가 채점. 인식이 아니라 능동 산출."
+    "composeDesc": "패턴/청크로 네 문장을 직접 써보고 AI가 채점. 인식이 아니라 능동 산출.",
+    "gymTitle": "오늘의 문장",
+    "gymDesc": "문장 하나를 ~50가지 문법으로 — 완전 숙달."
   },
   "collocations": {
     "title": "콜로케이션",
@@ -521,5 +523,41 @@
     "lastUpdated": "최종 업데이트",
     "backHome": "홈으로",
     "templateNote": "본 문서는 출발점으로 제공되는 템플릿이며 법률 자문이 아닙니다. 상업적 출시 전 전문가의 검토를 받으세요."
+  },
+  "gym": {
+    "title": "오늘의 문장",
+    "subtitle": "기준 문장 하나를 ~50가지 문법으로 바꿔가며 입에 붙을 때까지 훈련하세요.",
+    "inputLabel": "기준 문장",
+    "inputPlaceholder": "영어 평서문 하나를 입력하세요…",
+    "generate": "문장 만들기",
+    "generating": "생성 중…",
+    "generateFailed": "생성 실패",
+    "notConfigured": "AI가 설정되지 않았습니다 (API 키 필요).",
+    "fromClips": "내 클립에서 가져오기",
+    "noClipSeeds": "클립에서 가져올 문장이 아직 없어요. 직접 입력해 보세요.",
+    "ready": "오늘의 문장이 준비됐어요",
+    "extraOn": "✓ 추가 카테고리 포함",
+    "extraOff": "+ 추가 카테고리",
+    "transformCount": "변형 {n}개 준비됨",
+    "startDrill": "드릴 시작",
+    "newSentence": "다른 문장",
+    "drillEmpty": "드릴할 항목이 없어요.",
+    "drillDone": "완료 🎉",
+    "drillSummary": "첫 시도 정답 {got} / {total}",
+    "todayReps": "오늘 {n}회",
+    "drillExit": "뒤로",
+    "drillProgress": "{n} / {total}",
+    "sayThis": "이 의미를 영어로:",
+    "reveal": "정답 보기",
+    "listen": "듣기",
+    "markAgain": "다시",
+    "markGot": "맞음",
+    "aiCheck": "AI 체크",
+    "checking": "확인 중…",
+    "checkPlaceholder": "내가 만든 영어 문장…",
+    "checkFailed": "체크 실패",
+    "good": "좋아요",
+    "needsWork": "보완 필요",
+    "betterLabel": "더 나은 표현:"
   }
 }
