@@ -536,3 +536,19 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `terraform fmt`, `terraform init`, and `terraform validate` all pass. `plan`/`apply` need the user's AWS creds (their step). No `*.tfstate`/`terraform.tfvars` committed; `.terraform.lock.hcl` is committed on purpose.
 - **Commit**: 47ba028
 - **Pattern**: codify infra you intend to *learn* with one file per concern + comments that explain the "why" (no NAT, SG-by-reference, who-owns-deploys), and validate locally before spending a cent — `fmt`+`init`+`validate` catch the HCL/schema/reference errors for free; only `plan`/`apply` touch the account.
+<!-- skipped: a9440c0 docs(log): backend Terraform IaC — full deploy as code (47ba028) [no-log] -->
+
+---
+
+## Vercel build breaks after monorepo: `@parcel/watcher-linux-x64-glibc` not found
+
+- **Symptom**: Vercel's frontend build (branch preview) failed:
+  ```
+  Error: No prebuild or local build of @parcel/watcher found. Tried @parcel/watcher-linux-x64-glibc.
+  npm error workspace frontend@0.1.0 ... command sh -c next build ... exited 1
+  ```
+- **Cause**: making `mobile` an npm workspace meant Vercel, installing the workspace, pulled in the Expo/React-Native/Metro dependency tree — including `@parcel/watcher`, a native module with no Linux prebuild for Vercel's environment. The web app never needed it; it leaked in purely because the mobile workspace was installed alongside.
+- **Fix**: `mobile` is no longer an npm workspace. Root `workspaces` is now `["packages/*", "frontend"]`; `mobile` depends on the shared core via `"@shadow-ai/core": "file:../packages/core"` and is installed on its own (`cd mobile && npm install`). So the root install (what Vercel runs) resolves only web deps — no `@parcel/watcher`.
+- **Verified**: root `npm install` leaves no `@parcel/watcher` at the root; `next build` passes; `expo export` still bundles 1214 modules (core resolves through the `file:` link); tsc clean. (prod on `main` was never affected — main doesn't have the monorepo yet.)
+- **Commit**: cc48293
+- **Pattern**: a monorepo only wants in one workspace the things that *that* platform can build. Don't co-install a React Native app with a web app under one workspace root — RN's native deps (no Linux/serverless prebuilds) will break the web deploy. Keep the cross-platform app out of the workspace and share code via a `file:`/published package instead.
