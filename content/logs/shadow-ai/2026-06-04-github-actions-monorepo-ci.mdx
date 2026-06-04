@@ -1,0 +1,61 @@
+---
+title: "The CI job that failed every push after the monorepo move"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "A failure email on every push to main, all from one GitHub Actions job dying at 10s: 'Some specified paths were not resolved, unable to cache dependencies.' The frontend CI job still assumed the frontend was the repo root — its lockfile cache path and npm ci both pointed at the wrong place after the monorepo migration."
+tags: ["github-actions", "ci", "monorepo", "npm", "next.js"]
+---
+
+## The symptom
+
+A failure email on every push to `main`. The backend and Docker jobs were green; the red one was **Frontend (Next.js)**, and it died in 10 seconds, before installing anything:
+
+```
+Run actions/setup-node@v4
+Error: Some specified paths were not resolved, unable to cache dependencies.
+```
+
+## The cause
+
+The job was written when the frontend *was* the repo — and the monorepo migration never updated it. Two stale assumptions:
+
+```yaml
+defaults: { run: { working-directory: frontend } }
+- uses: actions/setup-node@v4
+  with:
+    cache: 'npm'
+    cache-dependency-path: frontend/package-lock.json   # ← doesn't exist anymore
+- run: npm ci                                            # ← in frontend/, no workspace lockfile
+```
+
+After the move, the lockfile lives at the **repo root** (it's an npm workspaces lockfile covering `packages/*` + `frontend`). So `setup-node` couldn't find `frontend/package-lock.json` to key the cache on, and `npm ci` from inside `frontend/` has no lockfile to install from.
+
+## The fix
+
+Re-point everything at the workspace root:
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '24'
+    cache: 'npm'
+    cache-dependency-path: package-lock.json          # root lockfile
+
+- run: npm install --no-package-lock                  # workspace root; resolves linux
+                                                      # native prebuilts npm ci can't
+- run: npm run lint  --workspace frontend
+- run: npm test      --workspace frontend             # advisory (see below)
+  continue-on-error: true
+- run: npm run build --workspace frontend             # the gate
+```
+
+`npm install --no-package-lock` is the same install the Vercel build needed — it resolves the linux native prebuilts (`@next/swc`, `@tailwindcss/oxide`, `lightningcss`) that aren't pinned in the macOS-generated lockfile, where `npm ci` would install none of them. The vitest suite is temporarily advisory: it can't resolve `vitest` from a hoisted `@testing-library/jest-dom` under workspaces — a separate fix — so it shouldn't block the job; `next build` is the real gate. Result: the frontend job goes green, and the email storm stops.
+
+## The takeaway
+
+When you turn a single-app repo into a monorepo, the CI is the easiest thing to forget — every `working-directory`, lockfile cache path, and `npm ci` quietly assumed the app *was* the repo root. They don't error until a push hits CI, and then they error on every push. Re-point them at the workspace root the same day you move the code.
+
+*Commit: `6fa4994`.*

@@ -673,3 +673,15 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
   - 영상 자체는 **저장된다**: `VideoImportService`는 자막이 없어도 `log.info("No transcript")` 후 `videoRepository.save(video)` 하고 `/video/{id}`로 보낸다. 그래서 영상은 멀쩡히 그 페이지에 있다 — 단지 클립을 못 만들 뿐.
 - **Fix**: 코드 수정 없음 (아직). 근본 해결은 자막 fetch를 **클라이언트로** 옮기는 것 — 단 웹 브라우저는 **CORS** 때문에 youtube.com 자막을 직접 못 읽고(모바일 네이티브만 가능), 웹은 큐레이션 카탈로그/유료 API가 현실적. 7개 방안 비교는 `content/logs/shadow-ai/2026-06-04-youtube-transcript-fetch-architecture.mdx`.
 - **Pattern**: "저장됐는데 목록에 없다"를 만나면, **그 목록이 실제로 무엇을 쿼리하는지**(클립 vs 영상)부터 확인하라 — save/cache 버그로 단정하기 전에. 여기선 빈 목록이 *올바른 동작*이었고, 진짜 원인은 한 단계 위의 자막 실패였다.
+<!-- skipped: 896b2dc docs(log): YouTube 자막 fetch — 웹 CORS 벽 + 라이브러리 빈 원인 검증, 7개 방안 비교 [no-log] -->
+
+---
+
+## GitHub Actions "Frontend (Next.js)" job failed every push after the monorepo move
+
+- **Symptom**: a failure email on every push to main; the `Frontend (Next.js)` job dies at 10s on `setup-node`: `Some specified paths were not resolved, unable to cache dependencies.` (Backend + Docker jobs green.)
+- **Cause**: `.github/workflows/ci.yml`'s frontend job still assumed the frontend was the repo root, never updated for the monorepo: `cache-dependency-path: frontend/package-lock.json` (the lockfile is now at the repo root) + `npm ci` under `working-directory: frontend` (can't install a workspace from a subdir, no local lockfile).
+- **Fix**: `cache-dependency-path` → root `package-lock.json`; install at the workspace root with `npm install --no-package-lock` (resolves the linux native prebuilts `npm ci` can't — same as `frontend/vercel.json`); run lint/test/build via `--workspace frontend`, with Build as the gate. Test made `continue-on-error` — the vitest suite can't resolve `vitest` from a hoisted `@testing-library/jest-dom` under workspaces (a separate fix).
+- **Verified**: the `Frontend (Next.js)` check on commit `6fa4994` = success (Backend + Vercel green too).
+- **Commit**: 6fa4994
+- **Pattern**: a monorepo migration breaks CI silently — every `working-directory`, lockfile cache path, and `npm ci` assumed the app *was* the repo root, and none of it errors until a push hits CI (then on every push). Re-point them at the workspace root the same day you move the code.
