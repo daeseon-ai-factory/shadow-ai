@@ -645,3 +645,13 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: 1bc48e1
 - **Pattern**: a managed-DNS provider (Cloudflare/Vercel) often pre-seeds a **CAA** record listing only its own CAs — so a *different* CA (ACM) silently can't issue until you add it. When ACM validation "FAILS" despite a correct DNS record, `dig <domain> CAA` up the whole label chain before anything else. And an issued-cert dependency (listener←cert←DNS-validation←manual step) must be split into phases, because the provider won't accept a half-baked cert.
 <!-- skipped: dc6d9dd docs(log): first AWS deploy gotchas — CAA_ERROR, two-phase ACM, free-tier backup (1bc48e1) [no-log] -->
+
+---
+
+## Vercel `next build` fails: missing @next/swc / lightningcss linux native binaries
+
+- **Symptom**: Vercel's `npm ci` install produced no `@next/swc-linux-x64-gnu` / `@tailwindcss/oxide-*` / `lightningcss-*` binaries, so `next build` failed to load its native binding on Vercel's linux runner.
+- **Cause**: npm doesn't pin these optional, platform-specific prebuilts in `package-lock.json` (confirmed by regenerating the lockfile from scratch — the `@next/swc` entries never appear). `npm ci` installs *strictly* from the lockfile, so on linux it never fetches the linux binaries that a macOS-generated lockfile didn't record.
+- **Fix**: a `frontend/vercel.json` with `"installCommand": "npm install --no-package-lock"`, which resolves optional deps fresh for the *build* platform (linux) — the way a local `npm install` does on macOS — pulling `@next/swc-linux-x64-gnu` et al. Vercel Root Directory is `frontend`, so the config lives there.
+- **Commit**: aae2cfa
+- **Pattern**: optional native deps + a single-OS lockfile + `npm ci` (strict) is a classic cross-platform CI break. Either pin every platform's prebuilt as explicit `optionalDependencies`, or relax the install (`--no-package-lock`) so the build host resolves its own. This is the web/SWC sibling of the earlier `@parcel/watcher` (mobile) break — same root cause, different package.
