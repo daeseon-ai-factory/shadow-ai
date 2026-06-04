@@ -24,6 +24,11 @@
 - 후속(커밋 `ee3de5d`): `GET /api/practice/seeds`(클립 분석→영어+한글 시드, SeedService + 테스트 4건),
   추가5 세션 토글, DrillRunner optional `onCheck` 인라인 AI 체크(공유 컴포넌트 무해 확장, 별도 CheckMode 제거).
   검증: practice 테스트 green, 모바일 `tsc` clean. 남은 follow-up: 추가5 서버 영속 설정, 종단간 스모크.
+- v2(커밋 `d7d1d42`): 카테고리별 고정 슬롯 67개(코어 52 + 추가 15)로 확장 — 한 문장 → ~50-60 변형(숙달),
+  채점에 0~100 점수 추가. **라이브 검증**: 실제 Gemini로 'The API returns duplicate data under load'
+  → 62변형 생성(전 카테고리). 주의: 키는 .env에 있으나 bootRun이 .env 자동로드 안 함 → 재시작 시 env 주입 필요.
+- 웹 미지원 확인: native-first(youtube/audio/secure-store) + expo-router 동적라우트 `.web` 미적용 →
+  `expo start --web` 번들 실패. 웹은 별도 포팅 과제. 데모는 iOS 시뮬레이터에서.
 
 ## 커밋 히스토리 (16 commits)
 ```
