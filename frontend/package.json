@@ -44,5 +44,9 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.7"
+  },
+  "optionalDependencies": {
+    "@parcel/watcher-linux-x64-glibc": "2.5.6",
+    "@parcel/watcher-linux-x64-musl": "2.5.6"
   }
 }
