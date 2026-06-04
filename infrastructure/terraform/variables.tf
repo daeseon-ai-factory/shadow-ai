@@ -66,9 +66,9 @@ variable "container_cpu" {
 }
 
 variable "container_memory" {
-  description = "Fargate task memory in MB. Must be a valid pairing with CPU (512 CPU -> 1024-4096 MB)."
+  description = "Fargate task memory in MB (shared by the backend + pot-provider sidecar). 512 CPU -> 1024-4096 MB."
   type        = number
-  default     = 1024
+  default     = 2048
 }
 
 variable "container_port" {

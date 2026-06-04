@@ -22,7 +22,11 @@ WORKDIR /app
 # image — without them clip import fails on a clean container. (mirrors Dockerfile.dev; install
 # as root before dropping to the non-root app user.)
 RUN apk add --no-cache python3 py3-pip ffmpeg \
-    && pip install --break-system-packages yt-dlp
+    && pip install --break-system-packages yt-dlp bgutil-ytdlp-pot-provider
+# bgutil-ytdlp-pot-provider: the yt-dlp PLUGIN side. It mints a YouTube POToken (needed to fetch
+# captions from a datacenter IP, where a tokenless request returns 200 + 0 bytes) by talking to the
+# POToken provider sidecar over http://localhost:4416 (same Fargate task = shared netns). The pot is
+# bound to the video/session, not the IP, so it works from AWS. Auto-engages once installed.
 
 # Non-root user for hardening
 RUN addgroup -S app && adduser -S app -G app

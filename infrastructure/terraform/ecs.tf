@@ -74,6 +74,26 @@ resource "aws_ecs_task_definition" "backend" {
           "awslogs-stream-prefix" = "backend"
         }
       }
+    },
+    {
+      # POToken provider: mints YouTube POTokens (runs BotGuard) so yt-dlp can fetch captions from
+      # this datacenter IP. The yt-dlp bgutil plugin in the backend container reaches it at
+      # localhost:4416 (same Fargate task = shared network namespace). essential=false: if it dies,
+      # the backend keeps serving and transcript fetch just degrades to "unavailable".
+      name      = "pot-provider"
+      image     = "brainicism/bgutil-ytdlp-pot-provider:latest"
+      essential = false
+      portMappings = [
+        { containerPort = 4416, protocol = "tcp" }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.backend.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "pot-provider"
+        }
+      }
     }
   ])
 }
