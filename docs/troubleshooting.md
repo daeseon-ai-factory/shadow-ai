@@ -655,3 +655,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Fix**: a `frontend/vercel.json` with `"installCommand": "npm install --no-package-lock"`, which resolves optional deps fresh for the *build* platform (linux) — the way a local `npm install` does on macOS — pulling `@next/swc-linux-x64-gnu` et al. Vercel Root Directory is `frontend`, so the config lives there.
 - **Commit**: aae2cfa
 - **Pattern**: optional native deps + a single-OS lockfile + `npm ci` (strict) is a classic cross-platform CI break. Either pin every platform's prebuilt as explicit `optionalDependencies`, or relax the install (`--no-package-lock`) so the build host resolves its own. This is the web/SWC sibling of the earlier `@parcel/watcher` (mobile) break — same root cause, different package.
+<!-- skipped: 9d3d60e docs(log): Vercel @next/swc linux native-dep build break (aae2cfa) [no-log] -->
