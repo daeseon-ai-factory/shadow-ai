@@ -29,6 +29,10 @@
   → 62변형 생성(전 카테고리). 주의: 키는 .env에 있으나 bootRun이 .env 자동로드 안 함 → 재시작 시 env 주입 필요.
 - 웹 미지원 확인: native-first(youtube/audio/secure-store) + expo-router 동적라우트 `.web` 미적용 →
   `expo start --web` 번들 실패. 웹은 별도 포팅 과제. 데모는 iOS 시뮬레이터에서.
+- 웹 gym(커밋 `eb0fa8e`): Next.js `frontend/`에도 gym 추가(web/app 병행 서비스). `@shadow-ai/core` shim 재사용,
+  SentenceGym(시드입력+클립picker+드릴+인라인 AI체크+점수), practice 허브 카드, i18n 5로케일.
+  **브라우저 라이브 검증**: 한 문장 → 48슬롯 드릴 화면 캡처(한국어). `next build` green.
+  주의: frontend·mobile은 별개 surface(공유는 core뿐) — 한쪽 기능은 다른쪽에 포팅 전엔 없음.
 
 ## 커밋 히스토리 (16 commits)
 ```

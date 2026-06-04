@@ -595,3 +595,14 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Fix**: none shipped — the shims were reverted. Web is a separate porting task (web variants for the 3 native deps + a non-dynamic-route workaround), out of scope for the sentence gym. The gym was verified LIVE via the backend API instead (signup → generate → 62/67 transforms across all 15 categories).
 - **Commit**: d7d1d42 (gym v2; web shims NOT committed)
 - **Pattern**: an Expo app importing native-only modules at startup or in eagerly-bundled routes can't `expo start --web` without per-module web shims — and `.web.tsx` route variants don't apply to dynamic `[param]` segments, so a native screen behind a dynamic route still breaks the web bundle. Demo native-first apps on the simulator, not web.
+
+---
+
+## Web gym parity + stacking dev servers froze the shell
+
+- **Symptom**: while building/screenshotting the web (Next.js `frontend/`) gym, `/ko/gym` returned **404 on :3100** even though `next build` emitted the route; then `echo` itself started returning exit 1 with no output (the shell couldn't fork).
+- **Cause**: (1) a `next dev` was already running on :3100 serving a **pre-gym build**, so a second `npm run dev` died with `EADDRINUSE` and the 404 came from the stale server — the gym was never missing, just not on that server; (2) stacking metro (8081) + backend (8080) + two Next dev servers + foreground poll loops that spawned a `node -e setTimeout` **per tick** exhausted the machine, so new shells couldn't fork (the fork-bomb pattern again).
+- **Fix**: `TaskStop` the runaway background task; serve the **production** build instead of a second dev server — `next start -p 3200` (no compile, light) on a free port; drive it with Playwright (token injected into localStorage `tubeshadow.auth` to skip login). One sentence rendered **48 live transforms** + inline AI check in the browser. The gym itself: `frontend/lib/api/transforms.ts` shim + `components/gym/SentenceGym.tsx` reusing `@shadow-ai/core` via `@/lib` shims (no logic dup).
+- **Commit**: eb0fa8e
+- **Pattern**: the frontend (`frontend/`, Next.js) and the mobile app (`mobile/`, Expo) are separate surfaces — a feature built in one is NOT on the other until ported; they share only `@shadow-ai/core`. To demo the web build, reuse the dev server that's already up or `next start` the existing `next build` on a fresh port — don't stack dev servers, and never poll with a per-tick `node` spawn loop while other servers run.
+<!-- skipped: 1617651 docs(log): gym v2 (67 slots + scoring) + expo web native-dep dead-end (d7d1d42) [no-log] -->
