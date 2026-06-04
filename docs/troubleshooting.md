@@ -519,3 +519,20 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Verified**: `tsc` clean, Metro iOS bundle 1214 modules, 0 missing keys, 0 residual entities, Korean spot-checked for naturalness.
 - **Commit**: 6fc46a8
 - **Pattern**: parallelize a mechanical, file-local transform (string extraction + translation) one-agent-per-file, then merge the structured slices centrally — agents touch disjoint files (no edit races) and only the merge is single-threaded. And remember entity-escaping is a *JSX* convenience: the moment a string leaves JSX for a data layer, it must hold literal characters, not entities.
+<!-- skipped: 635b503 docs(log): mobile Korean i18n via per-screen parallel pass (6fc46a8) [no-log] -->
+
+---
+
+## Backend AWS deployment as Terraform (the whole thing, validated)
+
+- **Context**: the backend deploy existed only as a manual console runbook (`aws-bootstrap.md`). Wanted it as reviewable, reproducible IaC — and as a thing to *study* line by line.
+- **Fix**: `infrastructure/terraform/` — the full stack, split by concern (network/security/rds/s3/secrets/ecr/iam/alb/ecs + variables/outputs/versions), each file heavily commented. Covers VPC, RDS Postgres (private), S3, Secrets Manager, ECR, IAM (execution + task + keyless GitHub OIDC deploy role), ALB + ACM, ECS Fargate.
+- **Decisions worth keeping**:
+  - **No NAT gateway** — Fargate in *public* subnets with a public IP pulls ECR/Secrets directly, saving ~$32/mo; the DB stays private and the SG chain (alb→fargate→rds, by SG reference not CIDR) keeps tasks unexposed.
+  - **TF creates the ECS service once; CI owns the image** — `lifecycle { ignore_changes = [task_definition, desired_count] }` so `terraform apply` and the GitHub Actions deploy don't fight over the running revision.
+  - **Secrets generated, not typed** — `random_password` for the DB master + JWT, written to Secrets Manager; the Gemini key comes from a gitignored `terraform.tfvars`. State holds these, so state is gitignored too.
+  - **Cloudflare DNS** — TF can't write Cloudflare records, so ACM cert-validation + the api CNAME are emitted as `outputs` to add by hand (no `aws_acm_certificate_validation`, which would otherwise block `apply`).
+  - **First-apply reality** — the service points at `ECR:latest` before any image exists; tasks fail to start until CI pushes the first image. Documented, not a bug.
+- **Verified**: `terraform fmt`, `terraform init`, and `terraform validate` all pass. `plan`/`apply` need the user's AWS creds (their step). No `*.tfstate`/`terraform.tfvars` committed; `.terraform.lock.hcl` is committed on purpose.
+- **Commit**: 47ba028
+- **Pattern**: codify infra you intend to *learn* with one file per concern + comments that explain the "why" (no NAT, SG-by-reference, who-owns-deploys), and validate locally before spending a cent — `fmt`+`init`+`validate` catch the HCL/schema/reference errors for free; only `plan`/`apply` touch the account.

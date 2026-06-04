@@ -1,0 +1,40 @@
+---
+title: "The whole backend deploy, as Terraform you can read line by line"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Turned the manual AWS console runbook into complete, validated Infrastructure as Code: VPC, RDS, S3, Secrets, ECR, IAM with keyless GitHub OIDC, ALB+ACM, and ECS Fargate — one file per concern, commented to teach. The design decisions (no NAT, who-owns-deploys, secrets generated not typed) are the part worth keeping."
+tags: ["terraform", "aws", "iac", "ecs", "rds", "devops"]
+---
+
+The backend deploy lived as a 12-step "click here, then here" console runbook. That's fine to do once, but you can't review it, can't reproduce it, and can't *study* it. So I rewrote the whole thing as Terraform — and specifically as Terraform meant to be read, one file per concern, with comments that explain the *why*, not just the *what*.
+
+## What it builds
+
+The full request path, provisioned end to end: a VPC with public + private subnets, three chained security groups, an RDS PostgreSQL (private), an S3 bucket for recordings (private), Secrets Manager, an ECR registry, three IAM roles, an Application Load Balancer with an ACM TLS cert, and an ECS Fargate service. `terraform apply` is the whole deploy.
+
+## The decisions, not the resources
+
+The resources are the boring part — any tutorial lists those. The decisions are what I'd want to explain in an interview:
+
+**No NAT gateway.** The textbook layout puts app servers in private subnets behind a NAT gateway for outbound internet. NAT is ~$32/month for, here, no benefit. Instead Fargate runs in *public* subnets with a public IP, so it pulls its image from ECR and reads Secrets Manager directly. The database is still private, and the security-group chain keeps the tasks unexposed — so the only thing the public IP buys is outbound, which is exactly what's needed.
+
+**Security groups reference security groups, not IP ranges.** The database doesn't allow "Postgres from 10.0.x.x"; it allows "Postgres from *whatever is in the fargate security group*." So even another box inside the VPC can't reach the DB unless it's the app. `internet → alb-sg → fargate-sg → rds-sg`, each layer trusting only the one in front.
+
+**Terraform creates the service once; CI owns the image.** This is the subtle one. If Terraform managed the ECS task definition's image, then every `terraform apply` would roll the service back to whatever image was in the code, fighting the GitHub Actions deploy that just shipped a new one. The fix is `lifecycle { ignore_changes = [task_definition, desired_count] }`: Terraform owns the *infrastructure*, CI owns the *running revision*. Drawing that line cleanly is most of what makes IaC + CI/CD coexist.
+
+**Secrets are generated, not typed.** The database master password and the JWT signing key are created by `random_password` and written straight into Secrets Manager — no human ever sees or pastes them. The one human-supplied secret (the Gemini key) comes from a gitignored `terraform.tfvars`. Which raises the thing people forget: Terraform *state* now contains those secrets in plaintext, so the state file is gitignored too, and the README notes how to move it to an encrypted S3 backend.
+
+**Keyless CI.** The GitHub Actions deploy role is assumed via OIDC — GitHub proves "I'm a workflow from this repo, on this branch," and AWS hands back temporary credentials. No long-lived AWS access key stored in GitHub secrets, ever.
+
+## The honest seams
+
+Two things Terraform can't do cleanly here, called out rather than hidden. DNS is on Cloudflare, which Terraform isn't managing, so the ACM cert-validation records and the API CNAME are *outputs* you paste into Cloudflare by hand (and I deliberately left out `aws_acm_certificate_validation`, which would otherwise hang `apply` waiting for a record that doesn't exist yet). And the very first `apply` creates an ECS service pointing at an image tag that doesn't exist until CI pushes it — so the service is unhealthy until the first deploy. Both are documented in the README as expected, because "it looks broken but isn't" is exactly the kind of thing that eats an afternoon if no one wrote it down.
+
+## Verified without spending a cent
+
+`terraform fmt`, `init`, and `validate` all pass — that catches HCL syntax, provider-schema, and cross-reference errors for free, before any `plan` or `apply` touches the account. And because the cost is real (~$40/month for ALB + RDS + Fargate on a credit account), the README's parting advice is to treat it as "apply, study the running system, `terraform destroy` to stop the meter" — the learning is in doing it once, not in leaving it running.
+
+Recorded against `47ba028`. The infra is code now; the next move is the user's `terraform apply`.
