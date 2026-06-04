@@ -1,0 +1,55 @@
+---
+title: "YouTube 자막의 진짜 벽은 IP가 아니라 POToken이었다 — 그리고 WebView 우회"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "ko"
+summary: "AWS 배포 후 깨진 YouTube import. '데이터센터 IP 차단'인 줄 알았는데, 가정 IP에서도 raw fetch는 빈 응답이었다. 진짜 벽은 POToken(BotGuard)이었고, yt-dlp만 통과한다. 폰은 yt-dlp를 못 돌리니 — 진짜 브라우저인 WebView로 우회한다."
+tags: ["youtube", "potoken", "botguard", "webview", "react-native", "yt-dlp"]
+---
+
+## 가설이 틀렸다
+
+배포 후 import가 깨졌을 때 첫 진단은 "데이터센터 IP 차단"이었다. 맞는 말이지만 **절반만** 맞았다. 그러면 *가정 IP(내 맥)에서는 raw fetch가 돼야* 하는데 — 안 됐다.
+
+테스트로 하나씩 확인:
+
+| 방법 | 어디서 | 결과 |
+|---|---|---|
+| watch페이지 → `baseUrl&fmt=json3` raw fetch | 맥(가정 IP) | ❌ **200인데 0 bytes** |
+| InnerTube `player` (IOS/ANDROID/MWEB/TVHTML5) | 맥 | ❌ UNPLAYABLE / 빈 트랙 |
+| `youtubei.js` (가장 성숙한 JS 라이브러리) | 맥 | ❌ 파서 깨짐(`TicketShelf not found`) |
+| **yt-dlp** | 맥(가정 IP) | ✅ **32KB 자막 다운로드** |
+| yt-dlp | AWS(데이터센터) | ❌ 차단 |
+
+**결론: 진짜 벽은 IP가 아니라 POToken이다.** YouTube는 timedtext 엔드포인트를 **BotGuard JS가 생성하는 proof-of-origin token(POToken)** 으로 가둔다. raw HTTP 클라이언트는 그 JS를 실행 못 하니 토큰이 없고 → 빈 응답. yt-dlp만 되는 건 수천 명이 매달려 이 우회를 끊임없이 패치하기 때문(그래서 백엔드가 자체 스크래퍼를 버리고 yt-dlp로 갔던 것).
+
+## 왜 그래서 "폰이 직접" 이 까다로운가
+
+- 폰은 yt-dlp(파이썬)를 못 돌린다.
+- 폰의 raw `fetch`도 결국 같은 POToken 벽 → 빈 응답.
+
+즉 단순 "네이티브 fetch는 CORS 없으니 된다"는 *절반의 진실*이었다. CORS는 통과해도 POToken은 못 넘는다.
+
+## 우회: 진짜 브라우저(WebView)
+
+핵심 통찰 — **WebView는 진짜 브라우저다.** 그 안에서 youtube.com을 로드하면 **YouTube 자기 JS(BotGuard 포함)가 실제로 돌고**, 세션이 "신뢰됨" 상태가 되어 같은-출처 자막 fetch가 통할 여지가 생긴다. raw fetch가 못 하는 걸 WebView는 할 수 있다.
+
+구현:
+1. 모바일에 **숨은 `<WebView>`** (`react-native-webview`, Mimi에 이미 있음)가 `watch?v=ID`를 로드.
+2. 주입 스크립트가 `ytInitialPlayerResponse`에서 자막 트랙을 읽고, BotGuard가 돌 시간을 잠깐 준 뒤, 페이지 내부에서 `baseUrl&fmt=json3`를 fetch.
+3. `{title, segments}`(또는 에러 사유)를 `postMessage`로 RN에 전달.
+4. RN은 그걸 백엔드의 **새 client-transcript 경로**로 POST → 백엔드는 yt-dlp 없이 저장만.
+
+백엔드 변경은 하위호환: `importByUrl(url)`(서버 yt-dlp 경로)는 그대로, 클라가 `transcriptSegments`를 주면 그걸 쓰는 오버로드만 추가. 그래서 웹/큐레이션은 무영향.
+
+## 정직한 상태
+
+- ✅ 백엔드 client-transcript 경로 + 모바일 WebView 추출기 — 구현·컴파일 통과.
+- ⚠️ **WebView가 POToken을 실제로 통과하는지는 device 테스트로 확정해야 한다.** YouTube가 정확히 이걸 막으려 하므로 100% 보장은 없다. raw fetch보다 가능성이 높을 뿐(진짜 브라우저 세션).
+- 안 되면 fallback = 레지덴셜 프록시 백엔드(유료) 또는 운영자 큐레이션(맥 yt-dlp가 되니까).
+
+## 면접 한 줄
+
+> "localhost에서 되던 게 AWS에서 깨져 'IP 차단'으로 봤는데, 가정 IP에서도 raw fetch가 0바이트라 가설을 버렸습니다. 진짜 원인은 POToken(BotGuard)이었고, 그래서 *진짜 브라우저인 WebView 안에서* 그 JS가 돌게 해 우회했습니다." — 잘못된 가설을 데이터로 기각하고 한 단계 더 들어간 사례.
