@@ -31,14 +31,14 @@ import static org.mockito.Mockito.when;
 class TransformServiceTest {
 
     private static final UUID USER = UUID.randomUUID();
+    private static final int SLOTS = TransformPrompt.OPS.size();
 
     private final AiAnalysisClient ai = mock(AiAnalysisClient.class);
-    @SuppressWarnings("unchecked")
     private final SentenceTransformSetRepository repo = mock(SentenceTransformSetRepository.class);
     private final TransformService service = new TransformService(ai, new ObjectMapper(), repo);
 
     @Test
-    void generatesAllFifteenInCanonicalOrderAndCaches() {
+    void generatesAllSlotsInCanonicalOrderWithCategoryAndCaches() {
         when(ai.isConfigured()).thenReturn(true);
         when(repo.findByUserIdAndBaseHash(any(), anyString())).thenReturn(Optional.empty());
         when(ai.complete(anyString(), anyString(), anyInt())).thenReturn(strictGenJson());
@@ -47,11 +47,14 @@ class TransformServiceTest {
         SentenceTransformSetResponse res =
                 service.generate(USER, "The API returns duplicate data under load", null);
 
-        assertThat(res.transforms()).hasSize(15);
-        assertThat(res.transforms().get(0).op()).isEqualTo("question");
-        assertThat(res.transforms().get(9).op()).isEqualTo("prepositionChunk");
-        assertThat(res.transforms().get(14).op()).isEqualTo("gerundInfinitive");
-        assertThat(res.transforms().get(8).english()).isEqualTo("E-relativeClause");
+        assertThat(res.transforms()).hasSize(SLOTS);
+        assertThat(res.transforms().get(0).op()).isEqualTo(TransformPrompt.OPS.get(0).op());
+        assertThat(res.transforms().get(0).category()).isEqualTo(TransformPrompt.OPS.get(0).category());
+        assertThat(res.transforms().get(SLOTS - 1).op())
+                .isEqualTo(TransformPrompt.OPS.get(SLOTS - 1).op());
+        // categories are carried through (server-assigned from the slot taxonomy, not the model).
+        assertThat(res.transforms()).extracting(SentenceTransform::category)
+                .contains("question", "tense", "modal", "prepositionChunk");
         assertThat(res.seedId()).isNotBlank();
         verify(repo).save(any());
     }
@@ -65,18 +68,18 @@ class TransformServiceTest {
 
         SentenceTransformSetResponse res = service.generate(USER, "x", "g");
 
-        // 15 ops minus the one we dropped ("passive"); the unknown op is ignored.
-        assertThat(res.transforms()).hasSize(14);
+        // all slots minus the one we dropped; the unknown op is ignored.
+        assertThat(res.transforms()).hasSize(SLOTS - 1);
         assertThat(res.transforms()).extracting(SentenceTransform::op)
-                .doesNotContain("passive", "frobnicate");
-        // Output is always canonical order regardless of the model's input order.
-        assertThat(res.transforms().get(0).op()).isEqualTo("question");
+                .doesNotContain("passive_bepp", "frobnicate");
+        // output stays canonical order regardless of the model's input order.
+        assertThat(res.transforms().get(0).op()).isEqualTo(TransformPrompt.OPS.get(0).op());
     }
 
     @Test
     void cacheHitSkipsProviderAndSave() {
         SentenceTransformSet existing = SentenceTransformSet.create(USER, "hash", "base", null,
-                "[{\"op\":\"question\",\"label\":\"Question\",\"english\":\"E\",\"koreanGloss\":\"K\"}]");
+                "[{\"op\":\"question_yesno\",\"category\":\"question\",\"label\":\"Question · yes/no\",\"english\":\"E\",\"koreanGloss\":\"K\"}]");
         when(repo.findByUserIdAndBaseHash(any(), anyString())).thenReturn(Optional.of(existing));
 
         SentenceTransformSetResponse res = service.generate(USER, "base", null);
@@ -101,9 +104,9 @@ class TransformServiceTest {
     void generateThrowsBadGatewayOnTruncatedJson() {
         when(ai.isConfigured()).thenReturn(true);
         when(repo.findByUserIdAndBaseHash(any(), anyString())).thenReturn(Optional.empty());
-        // The exact 600-token-truncation failure mode this whole feature had to defend against.
+        // The truncation failure mode the bigger token budget defends against.
         when(ai.complete(anyString(), anyString(), anyInt()))
-                .thenReturn("{\"transforms\":[{\"op\":\"question\",\"english\":\"E");
+                .thenReturn("{\"transforms\":[{\"op\":\"question_yesno\",\"english\":\"E");
 
         assertThatThrownBy(() -> service.generate(USER, "base", null))
                 .isInstanceOf(BusinessException.class);
@@ -111,14 +114,15 @@ class TransformServiceTest {
     }
 
     @Test
-    void checkParsesVerdict() {
+    void checkParsesVerdictWithScore() {
         when(ai.isConfigured()).thenReturn(true);
-        when(ai.complete(anyString(), anyString()))
-                .thenReturn("{\"ok\":true,\"feedback\":\"natural\",\"better\":\"Does the API return duplicates?\"}");
+        when(ai.complete(anyString(), anyString())).thenReturn(
+                "{\"ok\":true,\"score\":90,\"feedback\":\"natural\",\"better\":\"Does the API return duplicates?\"}");
 
-        TransformCheckResponse r = service.check("question", "base", "model", "attempt");
+        TransformCheckResponse r = service.check("Question · why", "base", "model", "attempt");
 
         assertThat(r.ok()).isTrue();
+        assertThat(r.score()).isEqualTo(90);
         assertThat(r.feedback()).isEqualTo("natural");
         assertThat(r.better()).isEqualTo("Does the API return duplicates?");
     }
@@ -127,38 +131,36 @@ class TransformServiceTest {
     void checkThrows503WhenAiNotConfigured() {
         when(ai.isConfigured()).thenReturn(false);
 
-        assertThatThrownBy(() -> service.check("question", "b", "m", "a"))
+        assertThatThrownBy(() -> service.check("Question · why", "b", "m", "a"))
                 .isInstanceOf(BusinessException.class);
         verify(ai, never()).complete(anyString(), anyString());
     }
 
-    // --- helpers: build provider payloads from the canonical op list so they stay in sync ---
+    // --- helpers: build provider payloads from the canonical slot list so they stay in sync ---
 
     private static String strictGenJson() {
         StringBuilder sb = new StringBuilder("{\"transforms\":[");
-        List<TransformPrompt.OpSpec> ops = TransformPrompt.OPS;
-        for (int i = 0; i < ops.size(); i++) {
+        for (int i = 0; i < TransformPrompt.OPS.size(); i++) {
             if (i > 0) sb.append(',');
-            sb.append(opNode(ops.get(i).op(), ops.get(i).label()));
+            sb.append(opNode(TransformPrompt.OPS.get(i).op()));
         }
         return sb.append("]}").toString();
     }
 
-    /** Fenced + reordered + an unknown op + one canonical op ("passive") omitted. */
+    /** Fenced + reordered + an unknown op + one real slot ("passive_bepp") omitted. */
     private static String messyGenJson() {
         List<TransformPrompt.OpSpec> ops = new ArrayList<>(TransformPrompt.OPS);
-        ops.removeIf(s -> s.op().equals("passive"));
+        ops.removeIf(s -> s.op().equals("passive_bepp"));
         Collections.reverse(ops);
         StringBuilder sb = new StringBuilder("```json\n{\"transforms\":[");
         sb.append("{\"op\":\"frobnicate\",\"english\":\"junk\",\"koreanGloss\":\"x\"}");
         for (TransformPrompt.OpSpec s : ops) {
-            sb.append(',').append(opNode(s.op(), s.label()));
+            sb.append(',').append(opNode(s.op()));
         }
         return sb.append("]}\n```").toString();
     }
 
-    private static String opNode(String op, String label) {
-        return "{\"op\":\"" + op + "\",\"label\":\"" + label
-                + "\",\"english\":\"E-" + op + "\",\"koreanGloss\":\"K-" + op + "\"}";
+    private static String opNode(String op) {
+        return "{\"op\":\"" + op + "\",\"english\":\"E-" + op + "\",\"koreanGloss\":\"K-" + op + "\"}";
     }
 }

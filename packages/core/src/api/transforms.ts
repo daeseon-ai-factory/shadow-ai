@@ -1,9 +1,10 @@
 import { apiClient } from "./client";
 
-// The daily "sentence gym": take ONE base sentence and bend it through 15 grammatical operations.
-// First 10 = core (drilled every day); last 5 = extra (surfaced 2-3x/week). Op ids here MUST match
-// the server's TransformPrompt.OPS exactly — they key both the generated content and the SRS cards.
-export const TRANSFORM_OPS = [
+// The daily "sentence gym": take ONE base sentence and bend it through a FIXED taxonomy of
+// grammatical slots — each category split into its essential sub-variations (~52 core + ~15 extra,
+// ~67 total). The slot `op` ids, categories, and labels are defined server-side (TransformPrompt);
+// the client only groups by category to decide what to drill on a given day.
+export const CORE_CATEGORIES = [
   "question",
   "negative",
   "tense",
@@ -14,36 +15,37 @@ export const TRANSFORM_OPS = [
   "asPattern",
   "relativeClause",
   "prepositionChunk",
+] as const;
+export const EXTRA_CATEGORIES = [
   "compareContrast",
   "passive",
   "thereIs",
   "itPattern",
   "gerundInfinitive",
 ] as const;
-export type TransformOp = (typeof TRANSFORM_OPS)[number];
+export type TransformCategory = (typeof CORE_CATEGORIES)[number] | (typeof EXTRA_CATEGORIES)[number];
 
-export const CORE_OPS: readonly TransformOp[] = TRANSFORM_OPS.slice(0, 10);
-export const EXTRA_OPS: readonly TransformOp[] = TRANSFORM_OPS.slice(10);
-
-/** One produced sentence for one grammatical operation. */
+/** One produced sentence for one slot. */
 export interface SentenceTransform {
-  op: TransformOp;
-  label: string; // short English label, e.g. "Relative clause"
-  english: string; // the transformed English model answer
-  koreanGloss: string; // short Korean gloss (the cue the learner produces from)
+  op: string; // unique slot id, e.g. "question_why"
+  category: string; // grouping category, e.g. "question"
+  label: string; // human label, e.g. "Question · why"
+  english: string;
+  koreanGloss: string;
 }
 
-/** The full server-cached transform set for one seed sentence. */
+/** The full server-cached transform set for one seed sentence (~52 core slots + ~15 extra). */
 export interface SentenceTransformSet {
-  seedId: string; // cache row UUID — mints the SRS card keys (tf:<seedId>:<op>#0)
+  seedId: string;
   baseSentence: string;
   baseGloss: string | null;
-  transforms: SentenceTransform[]; // canonical order; fewer than 15 if the model dropped any
+  transforms: SentenceTransform[];
 }
 
-/** AI verdict on a learner's attempt at one transform (optional, opt-in). */
+/** AI verdict on a learner's attempt at one slot: pass/fail + a 0-100 score + feedback + better. */
 export interface TransformCheckResult {
   ok: boolean;
+  score: number;
   feedback: string;
   better: string;
 }
@@ -58,10 +60,11 @@ export const transformsApi = {
   // One LLM call per UNIQUE seed; the server caches by (userId, normalized seed) and replays for free.
   generate: (baseSentence: string, baseGloss?: string) =>
     apiClient.post<SentenceTransformSet>("/api/practice/compose/transforms", { baseSentence, baseGloss }),
-  // Optional self-check of the learner's attempt for one op against the reference model.
-  check: (op: TransformOp, baseSentence: string, model: string, attempt: string) =>
+  // Optional self-check of the learner's attempt at one slot against the reference model.
+  // `target` is the slot label (e.g. "Question · why") — what transformation they were asked to do.
+  check: (target: string, baseSentence: string, model: string, attempt: string) =>
     apiClient.post<TransformCheckResult>("/api/practice/compose/transform-check", {
-      op,
+      op: target,
       baseSentence,
       model,
       attempt,

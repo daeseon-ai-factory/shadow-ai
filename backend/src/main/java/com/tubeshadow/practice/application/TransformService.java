@@ -33,8 +33,8 @@ import java.util.UUID;
 @Service
 public class TransformService {
 
-    /** 15 transforms × Korean glosses overflow the 600-token default and truncate the JSON. Give headroom. */
-    private static final int GENERATE_MAX_TOKENS = 2000;
+    /** ~67 slot transforms × Korean glosses far overflow the 600-token default. Give generous headroom. */
+    private static final int GENERATE_MAX_TOKENS = 6000;
 
     private final AiAnalysisClient ai;
     private final ObjectMapper objectMapper;
@@ -83,6 +83,7 @@ public class TransformService {
             JsonNode n = objectMapper.readTree(CompositionService.stripFence(raw));
             return new TransformCheckResponse(
                     n.path("ok").asBoolean(false),
+                    n.path("score").asInt(0),
                     n.path("feedback").asText(""),
                     n.path("better").asText(""));
         } catch (Exception ex) {
@@ -114,7 +115,7 @@ public class TransformService {
             if (node == null) continue;
             String english = node.path("english").asText("").trim();
             if (english.isBlank()) continue;
-            out.add(new SentenceTransform(spec.op(), spec.label(), english,
+            out.add(new SentenceTransform(spec.op(), spec.category(), spec.label(), english,
                     node.path("koreanGloss").asText("").trim()));
         }
         return out;

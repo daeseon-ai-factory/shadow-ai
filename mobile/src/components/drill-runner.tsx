@@ -26,7 +26,7 @@ export interface DrillItem {
 export type DrillCheck = (
   item: DrillItem,
   attempt: string,
-) => Promise<{ ok: boolean; feedback: string; better: string }>;
+) => Promise<{ ok: boolean; score: number; feedback: string; better: string }>;
 
 /**
  * `onCheck` is optional and strictly additive: when omitted (pattern/collocation drills) the runner
@@ -176,7 +176,9 @@ function InlineCheck({ item, onCheck }: { item: DrillItem; onCheck: DrillCheck }
       {check.isError ? <ThemedText style={styles.checkError}>{t('drill.checkFailed')}</ThemedText> : null}
       {fb ? (
         <View style={[styles.checkVerdict, fb.ok ? styles.checkOk : styles.checkWork]}>
-          <ThemedText type="smallBold">{fb.ok ? t('drill.good') : t('drill.needsWork')}</ThemedText>
+          <ThemedText type="smallBold">
+            {fb.ok ? t('drill.good') : t('drill.needsWork')}  ·  {fb.score}/100
+          </ThemedText>
           <ThemedText type="small">{fb.feedback}</ThemedText>
           {fb.better ? (
             <ThemedText style={styles.checkBetter}>{t('drill.better', { text: fb.better })}</ThemedText>

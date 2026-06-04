@@ -14,10 +14,10 @@ import { Redirect } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   ApiError,
-  CORE_OPS,
+  CORE_CATEGORIES,
+  EXTRA_CATEGORIES,
   transformKey,
   transformsApi,
-  TRANSFORM_OPS,
   type SeedCandidate,
 } from '@shadow-ai/core';
 
@@ -27,9 +27,14 @@ import { DrillRunner, type DrillItem } from '@/components/drill-runner';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
-// Mon/Wed/Fri default to also drilling the 5 extra transforms; the learner can override per session.
+// Mon/Wed/Fri default to also drilling the 5 extra categories; the learner can override per session.
 function extraDefault(): boolean {
   return [1, 3, 5].includes(new Date().getDay());
+}
+
+// Which categories to drill today: core always, extra only when the toggle is on.
+function activeCategories(includeExtra: boolean): Set<string> {
+  return new Set<string>(includeExtra ? [...CORE_CATEGORIES, ...EXTRA_CATEGORIES] : CORE_CATEGORIES);
 }
 
 export default function SentenceGymScreen() {
@@ -56,9 +61,9 @@ export default function SentenceGymScreen() {
 
   // DRILL — self-grade via the shared runner, with an opt-in inline AI check per transform.
   if (drilling && set) {
-    const ops = includeExtra ? TRANSFORM_OPS : CORE_OPS;
+    const cats = activeCategories(includeExtra);
     const items: DrillItem[] = set.transforms
-      .filter((tr) => ops.includes(tr.op))
+      .filter((tr) => cats.has(tr.category))
       .map((tr) => ({
         key: transformKey(set.seedId, tr.op, 0),
         title: set.baseSentence,
@@ -72,7 +77,7 @@ export default function SentenceGymScreen() {
         items={items}
         onCheck={(item, attempt) => {
           const tr = set.transforms.find((x) => transformKey(set.seedId, x.op, 0) === item.key);
-          return transformsApi.check(tr!.op, set.baseSentence, tr!.english, attempt);
+          return transformsApi.check(tr!.label, set.baseSentence, tr!.english, attempt);
         }}
       />
     );
@@ -80,9 +85,9 @@ export default function SentenceGymScreen() {
 
   const errorMessage =
     gen.error instanceof ApiError ? gen.error.message : gen.error ? t('gym.generateFailed') : null;
-  const transformCount = includeExtra
-    ? set?.transforms.length ?? 0
-    : Math.min(set?.transforms.length ?? 0, CORE_OPS.length);
+  const transformCount = set
+    ? set.transforms.filter((tr) => activeCategories(includeExtra).has(tr.category)).length
+    : 0;
 
   const pickSeed = (s: SeedCandidate) => {
     setText(s.english);
