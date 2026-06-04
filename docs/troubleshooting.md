@@ -605,4 +605,15 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Fix**: `TaskStop` the runaway background task; serve the **production** build instead of a second dev server — `next start -p 3200` (no compile, light) on a free port; drive it with Playwright (token injected into localStorage `tubeshadow.auth` to skip login). One sentence rendered **48 live transforms** + inline AI check in the browser. The gym itself: `frontend/lib/api/transforms.ts` shim + `components/gym/SentenceGym.tsx` reusing `@shadow-ai/core` via `@/lib` shims (no logic dup).
 - **Commit**: eb0fa8e
 - **Pattern**: the frontend (`frontend/`, Next.js) and the mobile app (`mobile/`, Expo) are separate surfaces — a feature built in one is NOT on the other until ported; they share only `@shadow-ai/core`. To demo the web build, reuse the dev server that's already up or `next start` the existing `next build` on a fresh port — don't stack dev servers, and never poll with a per-tick `node` spawn loop while other servers run.
+
+---
+
+## Single-provider AI client → priority fallback chain (Gemini → OpenAI → Claude)
+
+- **Context**: wanted the free-tier Gemini key to serve everyday traffic and spill over to OpenAI (then Claude) only when Gemini is full/down — not a single hardcoded provider.
+- **Change**: removed `@ConditionalOnProperty` (which made exactly one of Gemini/Claude a bean) so all providers are plain beans; added `OpenAiClient` (chat completions, `response_format: json_object`) + a `@Primary CompositeAiClient` that orders providers by `tubeshadow.ai.order` (default `gemini,openai,claude`), skips ones with no key (`isConfigured()=false`), and on any failure from the current provider falls back to the next. Every `AiAnalysisClient` injection now transparently gets the chain.
+- **Gotcha**: a `@Primary` bean that injects `List<AiAnalysisClient>` gets **itself** in that list → filter `c != this` in the constructor or it recurses. Provider order is derived from the class simple name (`GeminiClient` → `gemini`) to avoid an interface change rippling into every mock.
+- **Verified**: `CompositeAiClientTest` (first-wins / fallback-on-failure / skip-unconfigured / all-fail / none-configured) + analysis & practice context tests green. Enable OpenAI by setting `OPENAI_API_KEY`; with no key the behaviour is unchanged (Gemini only).
+- **Commit**: 7423ef8
+- **Pattern**: to add provider fallback without touching every call site, make the providers plain beans and a `@Primary` composite that holds the ordered list (minus itself) and tries the next on failure — the rest of the app keeps injecting one interface.
 <!-- skipped: 1617651 docs(log): gym v2 (67 slots + scoring) + expo web native-dep dead-end (d7d1d42) [no-log] -->

@@ -33,6 +33,9 @@
   SentenceGym(시드입력+클립picker+드릴+인라인 AI체크+점수), practice 허브 카드, i18n 5로케일.
   **브라우저 라이브 검증**: 한 문장 → 48슬롯 드릴 화면 캡처(한국어). `next build` green.
   주의: frontend·mobile은 별개 surface(공유는 core뿐) — 한쪽 기능은 다른쪽에 포팅 전엔 없음.
+- AI provider 폴백(커밋 `7423ef8`): Gemini→OpenAI→Claude 우선순위 체인. `@Primary CompositeAiClient`가
+  `tubeshadow.ai.order` 순서로 시도, 키 없는 provider 스킵, 실패 시 다음으로 폴백. OpenAiClient 추가.
+  활성화: `OPENAI_API_KEY` 설정. 미설정 시 Gemini만(동작 동일). 테스트 green.
 
 ## 커밋 히스토리 (16 commits)
 ```
