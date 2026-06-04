@@ -1,0 +1,48 @@
+---
+title: "`expo lint` isn't read-only — it rewrites package.json on first run"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "Running `npx expo lint` once to check a new screen quietly added eslint + eslint-config-expo to package.json, regenerated the lockfile, and scaffolded an eslint.config.js — none of it part of the change being made. A reminder that 'lint' commands can mutate the repo."
+tags: ["expo", "eslint", "tooling", "npm"]
+---
+
+## The surprise
+
+While building the sentence gym on mobile, I ran `npx expo lint` once — just to check the new screen for lint errors before committing. It reported only pre-existing issues in unrelated files (good). But then `git status` showed three changes I never made:
+
+```
+ M mobile/package.json
+ M mobile/package-lock.json
+?? mobile/eslint.config.js
+```
+
+None of it had anything to do with the gym.
+
+## Why
+
+`expo lint` bootstraps ESLint when the project isn't configured yet. On that first run it:
+
+- writes a flat `eslint.config.js`, and
+- adds `eslint` + `eslint-config-expo` as `devDependencies` — mutating `package.json` and regenerating the lockfile.
+
+So a command I treated as a read-only check actually *installed dependencies and wrote config*.
+
+## The fix
+
+Revert the tooling churn so the feature commit stays scoped to the feature:
+
+```bash
+git checkout -- mobile/package.json mobile/package-lock.json
+rm mobile/eslint.config.js
+```
+
+Dependency additions deserve their own deliberate change (and, on this project, explicit approval) — they shouldn't ride in silently on a "let me just lint real quick." (The actual lint run still surfaced the pre-existing issues it found, so it wasn't wasted — only the scaffolding got reverted.)
+
+## The takeaway
+
+`expo lint` is not read-only on its first run — it sets up ESLint and edits `package.json`. Run it expecting a dirtied tree, and revert the scaffolding unless *enabling lint* is the task you actually meant to do. More broadly: a "check" command that can install deps or write config is a different beast than one that only reads — diff the working tree after, don't assume.
+
+*Surfaced while building the gym follow-ups (`ee3de5d`); the lint scaffolding was reverted, not committed.*
