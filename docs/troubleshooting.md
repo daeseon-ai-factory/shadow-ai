@@ -580,3 +580,18 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Fix**: reverted the tooling churn (`git checkout -- mobile/package.json mobile/package-lock.json && rm mobile/eslint.config.js`) so the feature commit stayed scoped — dependency additions need explicit approval (CLAUDE.md §5) and weren't part of the task. (The lint run itself still reported only pre-existing issues in `settings.tsx` / `use-color-scheme.web.ts`; the new gym/DrillRunner code was clean.)
 - **Commit**: ee3de5d (sentence-gym follow-ups; the lint scaffolding was intentionally NOT committed)
 - **Pattern**: `expo lint` is not read-only on first run — it sets up ESLint and edits `package.json`. Run it expecting a dirtied tree, and revert the scaffolding unless enabling lint is the actual task.
+
+---
+
+## `expo start --web` crash-loops: native-only deps + dynamic-route `.web` not swapped
+
+- **Symptom**: `npx expo start --web` repeatedly fails the bundle:
+  ```
+  Metro error: Unable to resolve module react-native-web-webview from
+  node_modules/react-native-youtube-iframe/lib/commonjs/WebView.web.js
+   | import "react-native-youtube-iframe"   ← src/app/player/[clipId].tsx
+  ```
+- **Cause**: the app is native-first. Three modules have no web build: `react-native-youtube-iframe` (player), `expo-audio` (record-panel, imported only by the player), and `expo-secure-store` (secure-token, loaded at startup in `_layout`). A `secure-token.web.ts` (localStorage) shim fixes the startup blocker, but a `player/[clipId].web.tsx` stub did **not** override the native route — Expo Router does not apply `.web.tsx` platform variants to **dynamic** route segments (`[clipId]`), so the native player (and its youtube/audio imports) stayed in the eagerly-bundled web graph.
+- **Fix**: none shipped — the shims were reverted. Web is a separate porting task (web variants for the 3 native deps + a non-dynamic-route workaround), out of scope for the sentence gym. The gym was verified LIVE via the backend API instead (signup → generate → 62/67 transforms across all 15 categories).
+- **Commit**: d7d1d42 (gym v2; web shims NOT committed)
+- **Pattern**: an Expo app importing native-only modules at startup or in eagerly-bundled routes can't `expo start --web` without per-module web shims — and `.web.tsx` route variants don't apply to dynamic `[param]` segments, so a native screen behind a dynamic route still breaks the web bundle. Demo native-first apps on the simulator, not web.
