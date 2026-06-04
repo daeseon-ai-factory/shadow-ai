@@ -18,8 +18,9 @@ locals {
       aws_secretsmanager_secret.database_url.arn,
       aws_secretsmanager_secret.database_password.arn,
       aws_secretsmanager_secret.jwt_secret.arn,
-      aws_secretsmanager_secret.gemini_api_key.arn,
     ],
+    aws_secretsmanager_secret.gemini_api_key[*].arn,
+    aws_secretsmanager_secret.openai_api_key[*].arn,
     aws_secretsmanager_secret.anthropic_api_key[*].arn,
     aws_secretsmanager_secret.billing_webhook_secret[*].arn,
   )

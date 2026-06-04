@@ -41,8 +41,10 @@ resource "aws_db_instance" "main" {
   publicly_accessible    = false # NEVER expose a database to the internet
   multi_az               = false # single-AZ for cost; flip to true for production HA (~2x cost)
 
-  backup_retention_period = 7 # daily automated backups kept 7 days
-  backup_window           = "08:00-09:00"
+  # 0 = automated backups OFF. The new credit-based "Free Plan" caps backup retention, so 7 is
+  # rejected (FreeTierRestrictionError). Fine for a learning deploy (skip_final_snapshot is on too).
+  # For a real DB: bump to 7 and set a backup_window (and upgrade the account plan).
+  backup_retention_period = 0
   maintenance_window      = "Mon:09:00-Mon:10:00"
 
   # --- Teardown ergonomics (so you can `terraform destroy` cleanly while learning) ----------

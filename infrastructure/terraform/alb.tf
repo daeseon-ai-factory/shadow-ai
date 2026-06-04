@@ -52,24 +52,33 @@ resource "aws_acm_certificate" "api" {
 }
 
 # --- Listeners -----------------------------------------------------------------------------
-# Port 80: redirect everything to HTTPS (so http:// links still work).
+# Port 80: behavior depends on the phase (see var.enable_https).
+#   phase 1 (false): forward straight to the app, so you can test over http://<alb-dns>.
+#   phase 2 (true):  redirect to HTTPS once the cert is issued.
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    type = "redirect"
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
+    type             = var.enable_https ? "redirect" : "forward"
+    target_group_arn = var.enable_https ? null : aws_lb_target_group.backend.arn
+
+    dynamic "redirect" {
+      for_each = var.enable_https ? [1] : []
+      content {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
     }
   }
 }
 
-# Port 443: terminate TLS with the ACM cert, forward to the task target group.
+# Port 443: only created in phase 2, AFTER the ACM cert has ISSUED (AWS rejects an un-issued
+# cert on a listener, which is why this is gated behind enable_https).
 resource "aws_lb_listener" "https" {
+  count             = var.enable_https ? 1 : 0
   load_balancer_arn = aws_lb.main.arn
   port              = 443
   protocol          = "HTTPS"

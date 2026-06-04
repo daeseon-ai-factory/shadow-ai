@@ -96,6 +96,18 @@ variable "api_domain" {
   default     = "api.mimi.daeseon.ai"
 }
 
+variable "enable_https" {
+  description = <<-EOT
+    Two-phase TLS. ACM can't issue the cert until its DNS-validation record exists in Cloudflare,
+    and AWS refuses to attach an un-issued cert to a listener. So:
+      false (phase 1): HTTP :80 forwards straight to the app (test over http://<alb-dns>). No HTTPS.
+      true  (phase 2): after you add the Cloudflare records and the cert ISSUES, flip this and
+                       re-apply → creates the HTTPS :443 listener and makes :80 redirect to it.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "cors_allowed_origins" {
   description = "Comma-separated origins the backend accepts (the web app + Vercel previews)."
   type        = string
@@ -123,9 +135,17 @@ variable "github_branch" {
 
 # --- Secrets (NEVER commit real values; put them in terraform.tfvars, which is gitignored) --
 variable "gemini_api_key" {
-  description = "Google Gemini API key (the default, free AI provider)."
+  description = "Google Gemini API key (the default, free AI provider). Empty = AI analysis is off (app still runs); add it later and re-apply."
   type        = string
   sensitive   = true
+  default     = ""
+}
+
+variable "openai_api_key" {
+  description = "OpenAI API key. Optional fallback in the AI provider order (gemini -> openai -> claude)."
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 variable "anthropic_api_key" {

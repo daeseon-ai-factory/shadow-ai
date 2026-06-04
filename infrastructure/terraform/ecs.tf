@@ -36,9 +36,10 @@ locals {
     { name = "DATABASE_URL", valueFrom = aws_secretsmanager_secret.database_url.arn },
     { name = "DATABASE_PASSWORD", valueFrom = aws_secretsmanager_secret.database_password.arn },
     { name = "JWT_SECRET", valueFrom = aws_secretsmanager_secret.jwt_secret.arn },
-    { name = "GEMINI_API_KEY", valueFrom = aws_secretsmanager_secret.gemini_api_key.arn },
   ]
   optional_secrets = concat(
+    [for s in aws_secretsmanager_secret.gemini_api_key : { name = "GEMINI_API_KEY", valueFrom = s.arn }],
+    [for s in aws_secretsmanager_secret.openai_api_key : { name = "OPENAI_API_KEY", valueFrom = s.arn }],
     [for s in aws_secretsmanager_secret.anthropic_api_key : { name = "ANTHROPIC_API_KEY", valueFrom = s.arn }],
     [for s in aws_secretsmanager_secret.billing_webhook_secret : { name = "BILLING_WEBHOOK_SECRET", valueFrom = s.arn }],
   )
@@ -102,7 +103,7 @@ resource "aws_ecs_service" "backend" {
   health_check_grace_period_seconds = 120
 
   # Don't create the service until the HTTPS listener exists (the LB must be ready to register it).
-  depends_on = [aws_lb_listener.https]
+  depends_on = [aws_lb_listener.http]
 
   # IMPORTANT — who owns deploys: Terraform creates the service ONCE. After that, the GitHub
   # Actions workflow registers new task-definition revisions and updates the service on each push.
