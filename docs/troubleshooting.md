@@ -632,3 +632,15 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: abe2bd4
 - **Pattern**: a lockfile generated on one OS resolves only THAT OS's optional platform binaries; cross-platform CI (`npm ci` on linux) then can't install the others and a native dep fails to load. Pin the CI platform's prebuilt as an explicit `optionalDependency`. And always confirm the real source with `npm ls <pkg>` before assuming — here it was next-intl, not the RN/mobile tree the old note blamed.
 <!-- skipped: 1617651 docs(log): gym v2 (67 slots + scoring) + expo web native-dep dead-end (d7d1d42) [no-log] -->
+
+---
+
+## First AWS deploy (Seoul): three real gotchas — CAA, un-issued ACM cert, free-tier backup
+
+- **Context**: first `terraform apply` of the backend to `ap-northeast-2`. Most resources came up; two failed, and HTTPS hit a third wall.
+- **① RDS `FreeTierRestrictionError`** (apply error): `The specified backup retention period exceeds the maximum available to free tier customers.` The new credit-based "Free Plan" account caps automated backups. **Fix**: `backup_retention_period = 0` (and remove `backup_window`, which RDS rejects when retention is 0).
+- **② ACM `UnsupportedCertificate`** (apply error): the HTTPS listener couldn't be created because the cert was still `PENDING_VALIDATION` — AWS refuses to attach an un-issued cert to a listener, and DNS validation is a *manual* Cloudflare step that happens after apply. **Fix**: two-phase via `var.enable_https` — phase 1 the `:80` listener forwards straight to the app (test over `http://<alb>`), phase 2 (after the cert ISSUES) flips it to add the `:443` listener + redirect.
+- **③ ACM cert `Status: FAILED`, `FailureReason: CAA_ERROR`** (the subtle one): even after adding the DNS validation record, the cert failed. `dig mimi.daeseon.ai CAA` showed `0 issue "letsencrypt.org" / "globalsign.com" / "pki.goog" / "sectigo.com"` — set by Vercel — but **no `amazon.com`**. A CAA record at `mimi.daeseon.ai` covers `api.mimi.daeseon.ai` and was blocking Amazon (ACM) from issuing. **Fix**: add `0 issue "amazon.com"` CAA at `mimi` (additive — keeps the web's CAs), then *re-issue* the cert (a FAILED ACM cert is terminal; `terraform apply -replace=aws_acm_certificate.api`).
+- **Verified**: 49 resources up, ECS task healthy, `http://api.mimi.daeseon.ai/api/health` → ok, and signup (ALB→ECS→RDS write→JWT) → HTTP 201.
+- **Commit**: 1bc48e1
+- **Pattern**: a managed-DNS provider (Cloudflare/Vercel) often pre-seeds a **CAA** record listing only its own CAs — so a *different* CA (ACM) silently can't issue until you add it. When ACM validation "FAILS" despite a correct DNS record, `dig <domain> CAA` up the whole label chain before anything else. And an issued-cert dependency (listener←cert←DNS-validation←manual step) must be split into phases, because the provider won't accept a half-baked cert.
