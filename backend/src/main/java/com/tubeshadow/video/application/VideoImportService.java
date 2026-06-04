@@ -49,13 +49,23 @@ public class VideoImportService {
      * Do not add {@code @Transactional} back here.
      */
     public Video importByUrl(String urlOrId) {
+        return importByUrl(urlOrId, null, null);
+    }
+
+    /**
+     * @param clientSegments transcript fetched on the user's DEVICE (mobile). When present we use
+     *   it directly and skip yt-dlp — this is how the mobile app bypasses YouTube's datacenter-IP
+     *   block (the phone fetches on a residential IP; the server, on AWS, gets blocked). Web passes null.
+     * @param clientTitle    title the device read off the watch page; used only if oEmbed fails.
+     */
+    public Video importByUrl(String urlOrId, List<TranscriptSegment> clientSegments, String clientTitle) {
         String videoId = YoutubeUrlParser.extractVideoId(urlOrId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.BAD_REQUEST,
                         "INVALID_YOUTUBE_URL", "유효한 YouTube URL이 아닙니다"));
 
         return videoRepository.findByYoutubeId(videoId)
-                .map(this::recoverIfNeeded)
-                .orElseGet(() -> fetchAndPersist(videoId));
+                .map(existing -> recoverIfNeeded(existing, clientSegments))
+                .orElseGet(() -> fetchAndPersist(videoId, clientSegments, clientTitle));
     }
 
     /**
@@ -64,18 +74,25 @@ public class VideoImportService {
      *  - missing dimensions → run probe
      * Neither call touches metadata (oEmbed) — that's set once at first import.
      */
-    private Video recoverIfNeeded(Video existing) {
+    private Video recoverIfNeeded(Video existing, List<TranscriptSegment> clientSegments) {
         boolean changed = false;
         if (existing.getTranscriptStatus() != Video.TranscriptStatus.READY) {
-            try {
-                List<TranscriptSegment> segments = transcriptClient.fetch(existing.getYoutubeId());
-                if (!segments.isEmpty()) {
-                    existing.attachTranscript(segments);
-                    log.info("Recovered transcript for {} ({} segments)", existing.getYoutubeId(), segments.size());
-                    changed = true;
+            if (clientSegments != null && !clientSegments.isEmpty()) {
+                existing.attachTranscript(clientSegments);
+                log.info("Attached client transcript for {} ({} segments)",
+                        existing.getYoutubeId(), clientSegments.size());
+                changed = true;
+            } else {
+                try {
+                    List<TranscriptSegment> segments = transcriptClient.fetch(existing.getYoutubeId());
+                    if (!segments.isEmpty()) {
+                        existing.attachTranscript(segments);
+                        log.info("Recovered transcript for {} ({} segments)", existing.getYoutubeId(), segments.size());
+                        changed = true;
+                    }
+                } catch (NoTranscriptAvailableException ex) {
+                    log.debug("Re-fetch still has no transcript for {}", existing.getYoutubeId());
                 }
-            } catch (NoTranscriptAvailableException ex) {
-                log.debug("Re-fetch still has no transcript for {}", existing.getYoutubeId());
             }
         }
         if (existing.getWidthPx() == null || existing.getHeightPx() == null) {
@@ -91,28 +108,53 @@ public class VideoImportService {
         return changed ? videoRepository.save(existing) : existing;
     }
 
-    private Video fetchAndPersist(String youtubeId) {
-        YoutubeMetadataClient.YoutubeMetadata meta = metadataClient.fetch(youtubeId);
-        Video video = Video.createNew(youtubeId, meta.title());
-        video.applyMetadata(meta.authorName(), null, meta.thumbnailUrl());
+    private Video fetchAndPersist(String youtubeId, List<TranscriptSegment> clientSegments, String clientTitle) {
+        // Assigned once (so the lambda below can capture it as effectively final).
+        Video video = createWithMetadata(youtubeId, clientTitle);
 
         // Probe is best-effort; if it fails the video still saves with unknown orientation.
         probe.probe(youtubeId).ifPresent(m ->
                 video.applyDimensions(m.widthPx(), m.heightPx(), m.durationSeconds()));
 
-        try {
-            List<TranscriptSegment> segments = transcriptClient.fetch(youtubeId);
-            if (segments.isEmpty()) {
+        if (clientSegments != null && !clientSegments.isEmpty()) {
+            // Device-fetched transcript (mobile, residential IP) — store it, skip yt-dlp.
+            video.attachTranscript(clientSegments);
+            log.info("Imported {} with client transcript ({} segments)", youtubeId, clientSegments.size());
+        } else {
+            try {
+                List<TranscriptSegment> segments = transcriptClient.fetch(youtubeId);
+                if (segments.isEmpty()) {
+                    video.markTranscriptUnavailable();
+                } else {
+                    video.attachTranscript(segments);
+                }
+            } catch (NoTranscriptAvailableException ex) {
+                log.info("No transcript for {}: {}", youtubeId, ex.getMessage());
                 video.markTranscriptUnavailable();
-            } else {
-                video.attachTranscript(segments);
             }
-        } catch (NoTranscriptAvailableException ex) {
-            log.info("No transcript for {}: {}", youtubeId, ex.getMessage());
-            video.markTranscriptUnavailable();
         }
 
         return videoRepository.save(video);
+    }
+
+    /**
+     * Build the Video shell with metadata. oEmbed (title/thumbnail) is a light public endpoint that
+     * usually works even from AWS; if it fails and the device supplied a title, fall back to that
+     * rather than aborting the whole import.
+     */
+    private Video createWithMetadata(String youtubeId, String clientTitle) {
+        try {
+            YoutubeMetadataClient.YoutubeMetadata meta = metadataClient.fetch(youtubeId);
+            Video video = Video.createNew(youtubeId, meta.title());
+            video.applyMetadata(meta.authorName(), null, meta.thumbnailUrl());
+            return video;
+        } catch (RuntimeException ex) {
+            if (clientTitle != null && !clientTitle.isBlank()) {
+                log.info("oEmbed failed for {} ({}); using device-provided title", youtubeId, ex.getMessage());
+                return Video.createNew(youtubeId, clientTitle);
+            }
+            throw ex;
+        }
     }
 
     @Transactional(readOnly = true)

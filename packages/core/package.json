@@ -11,7 +11,8 @@
     "./prepositions-primer": "./src/prepositions-primer.ts",
     "./practice-srs": "./src/practice-srs.ts",
     "./practice-cards": "./src/practice-cards.ts",
-    "./api/*": "./src/api/*.ts"
+    "./api/*": "./src/api/*.ts",
+    "./youtube/*": "./src/youtube/*.ts"
   },
   "dependencies": {}
 }

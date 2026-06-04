@@ -24,6 +24,16 @@ export interface VideoResponse {
 }
 
 export const videosApi = {
-  importByUrl: (url: string) => apiClient.post<VideoResponse>("/api/videos/import", { url }),
+  /**
+   * Import a YouTube video.
+   * @param opts.transcriptSegments transcript fetched on the device (mobile, via
+   *   {@link fetchYoutubeTranscript}). When provided the server stores it directly and skips
+   *   yt-dlp — this is how mobile bypasses YouTube's datacenter-IP block. Web omits it.
+   * @param opts.title device-read title; used by the server only if its own oEmbed lookup fails.
+   */
+  importByUrl: (
+    url: string,
+    opts?: { transcriptSegments?: TranscriptSegment[]; title?: string },
+  ) => apiClient.post<VideoResponse>("/api/videos/import", { url, ...opts }),
   get: (id: string) => apiClient.get<VideoResponse>(`/api/videos/${id}`),
 };

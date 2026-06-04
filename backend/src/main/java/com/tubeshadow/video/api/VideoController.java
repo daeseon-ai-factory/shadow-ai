@@ -35,7 +35,8 @@ public class VideoController {
     @Operation(summary = "YouTube URL 임포트")
     public ApiResponse<VideoResponse> importVideo(@Valid @RequestBody VideoImportRequest request,
                                                   @CurrentUser AuthenticatedUser user) {
-        return ApiResponse.ok(VideoResponse.from(importService.importByUrl(request.url())));
+        return ApiResponse.ok(VideoResponse.from(
+                importService.importByUrl(request.url(), request.transcriptSegments(), request.title())));
     }
 
     @GetMapping("/{id}")

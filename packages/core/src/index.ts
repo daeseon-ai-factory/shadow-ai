@@ -22,3 +22,6 @@ export * from "./api/practice";
 export * from "./api/transforms";
 export * from "./api/recordings";
 export * from "./api/health";
+
+// On-device YouTube transcript fetch (used by the mobile client to bypass the datacenter-IP block)
+export * from "./youtube/transcript";
