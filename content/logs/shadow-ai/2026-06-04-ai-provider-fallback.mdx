@@ -1,0 +1,38 @@
+---
+title: "A provider fallback chain so a free Gemini key can spill over to OpenAI"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The app called a single AI provider chosen by config. Turned it into a priority chain — Gemini → OpenAI → Claude — that falls back on quota/error, so free-tier Gemini serves everyday traffic and spills over only when it's full."
+tags: ["ai", "spring-boot", "architecture", "resilience"]
+---
+
+## The want
+
+The sentence gym generates ~60 grammar transforms per sentence through an LLM. I wanted my free-tier Gemini key to carry everyday traffic and only spill over to OpenAI (and then Claude) when Gemini is full or down — not a single hardcoded provider, and without touching every call site.
+
+## Before
+
+Two clients, `GeminiClient` and `ClaudeClient`, each `@ConditionalOnProperty(tubeshadow.ai.provider)` — so exactly one bean existed, selected by config. Everything injected that one `AiAnalysisClient`. No fallback; if the active provider 429'd after its retries, the request failed.
+
+## After
+
+The trick to adding fallback without rewriting callers is a `@Primary` composite that *is* the `AiAnalysisClient` everyone injects, while the concrete clients become plain beans it chooses between:
+
+- Dropped `@ConditionalOnProperty` from Gemini/Claude so all providers are beans.
+- Added `OpenAiClient` (Chat Completions with `response_format: json_object`, so the same strict-JSON prompts parse identically) — enabled only when `OPENAI_API_KEY` is set.
+- Added `CompositeAiClient` (`@Primary`): it collects `List<AiAnalysisClient>`, orders them by `tubeshadow.ai.order` (default `gemini,openai,claude`), skips any whose key is unset (`isConfigured()` false), and on **any** failure from the current provider, tries the next.
+
+One gotcha worth remembering: a `@Primary` bean that injects `List<AiAnalysisClient>` gets **itself** in that list — filter `c != this` in the constructor or it recurses. Provider order is derived from the class name (`GeminiClient` → `gemini`) to avoid an interface change rippling into every test mock.
+
+## The nice side effect
+
+Because the `.env` already had both a Gemini and an Anthropic key, the chain became **Gemini → Claude** the moment the backend restarted — no OpenAI key needed. Drop in `OPENAI_API_KEY` and it becomes **Gemini → OpenAI → Claude**. With no keys for a provider, it's simply skipped; behavior is unchanged from before.
+
+## The takeaway
+
+To add provider fallback without touching call sites, make the providers plain beans and a `@Primary` composite that holds the ordered list (minus itself) and tries the next on failure. The rest of the app keeps injecting one interface and never learns there's a chain behind it.
+
+*Commit: `7423ef8`. Covered by `CompositeAiClientTest` (first-wins, fallback-on-failure, skip-unconfigured, all-fail, none-configured).*

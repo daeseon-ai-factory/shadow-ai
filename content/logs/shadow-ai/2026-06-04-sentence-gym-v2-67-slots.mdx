@@ -1,0 +1,32 @@
+---
+title: "Sentence gym v2: one sentence, ~60 graded sub-variations"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "v1 bent a base sentence through 15 grammatical categories. v2 splits each category into its essential sub-variations — ~52 core + ~15 extra — and adds a 0-100 AI score on the optional self-check, turning one sentence into a ~60-rep mastery drill."
+tags: ["feature", "llm", "language-learning", "expo", "next.js"]
+---
+
+## From 15 to ~60
+
+The first cut of the sentence gym took one base sentence (e.g. *"The API returns duplicate data under load"*) and produced 15 transforms — one per grammatical category (question, negative, tense, modal, …). The insight that drove v2: within each category there are *essential sub-variations* a learner needs to drill, not just one. A question alone is ~10 forms (yes/no, why, how, when, where, what, who-subject, tag, indirect, negative). Tense is the full ladder (present, past, present perfect, present continuous, past perfect, will, going-to). Modals, perfect modals, conditionals, the "as" family — each fans out.
+
+So v2 is a **fixed slot taxonomy**: ~52 core slots (10 categories) + ~15 extra (5 categories) = ~67. *Fixed*, not AI-chosen, on purpose — mastery needs the essential forms to show up every single time, not a model improvising a different subset each day. One sentence becomes a 50-60 item drill.
+
+## What changed under the hood
+
+- **The prompt** carries the full slot list with a terse instruction per slot; the generator returns strict JSON keyed by slot id. The token budget went from 600 → 6000 because ~60 transforms + Korean glosses overflow anything smaller (a lesson from v1, where 15 already truncated the default 600).
+- **The data model** gained a `category` per slot (drives core-vs-extra filtering) and the optional self-check now returns a **0-100 score** alongside pass/fail + feedback + a better version.
+- **Defensive parsing** stayed: the model occasionally drops a few slots or fences its JSON, so the server maps what came back into canonical order and tolerates a short set rather than failing. Live Gemini returned 62 of 67 on the test sentence — well within the mastery target.
+
+## Verified live
+
+Against the running backend with a real Gemini key, *"The API returns duplicate data under load"* generated 62 transforms across all 15 categories — the Question slots came back as a clean ladder (yes/no, why, how, when, what, who, tag, indirect, negative), modals as can/could/should/must/might/have-to. Drilled on both the Expo app and the Next.js web build.
+
+## The takeaway
+
+When the goal is *mastery* of one unit rather than breadth, a fixed taxonomy beats a generative one — guaranteed coverage of the essential forms is the whole point. And the cost of more slots is real: the output token budget is the first thing that breaks, long before the prompt does.
+
+*Commit: `d7d1d42`.*

@@ -656,3 +656,4 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: aae2cfa
 - **Pattern**: optional native deps + a single-OS lockfile + `npm ci` (strict) is a classic cross-platform CI break. Either pin every platform's prebuilt as explicit `optionalDependencies`, or relax the install (`--no-package-lock`) so the build host resolves its own. This is the web/SWC sibling of the earlier `@parcel/watcher` (mobile) break — same root cause, different package.
 <!-- skipped: 9d3d60e docs(log): Vercel @next/swc linux native-dep build break (aae2cfa) [no-log] -->
+<!-- skipped: c0c1f85 chore(log): hook marker [no-log] -->

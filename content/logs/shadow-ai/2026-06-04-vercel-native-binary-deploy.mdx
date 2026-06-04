@@ -1,0 +1,59 @@
+---
+title: "The Vercel deploy that failed four native binaries deep"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "Merging the monorepo to main and pushing to Vercel surfaced a chain of missing linux native prebuilts — @parcel/watcher, then @next/swc, then Tailwind's oxide and lightningcss. The lesson: when lockfile pins turn into whack-a-mole, change the install itself."
+tags: ["vercel", "npm", "monorepo", "next.js", "deploy"]
+---
+
+## The setup
+
+The whole sentence-gym feature was built and verified locally — `next build` green, tests passing. Merging `feat/mobile-app` into `main` was a clean fast-forward (main hadn't diverged at all). Push to main, Vercel auto-deploys, done. Except the production site (`mimi.daeseon.ai`) kept serving the old build with no gym, and the Vercel build status said `failure`.
+
+I couldn't read the Vercel build log directly (it's behind the dashboard login), so the first move was the public GitHub commit-status API: `GET /repos/.../commits/<sha>/status` — which, for a public repo, returns Vercel's deploy state and the build URL without auth. State: `failure`. That confirmed the merge was right but the build was broken.
+
+## Four binaries, one at a time
+
+The build log, once I had it, was a relay race of the same error class:
+
+```
+⨯ Failed to load next.config.ts
+Error: No prebuild or local build of @parcel/watcher found.
+       Tried @parcel/watcher-linux-x64-glibc.
+```
+
+`@parcel/watcher` is a native file-watcher, pulled in transitively by `next-intl` to load `next.config.ts`. The root `package-lock.json` was generated on macOS, so it only resolved the **darwin** binary; on Vercel's linux box, `npm ci` couldn't find the linux one. (The earlier "fix" for this — dropping the mobile app from npm workspaces — addressed a *different* source of @parcel/watcher; `npm ls @parcel/watcher` showed this one came from next-intl in the frontend.)
+
+Pinning the linux prebuilt as an `optionalDependency` and regenerating the lockfile fixed it — and the next deploy failed on:
+
+```
+Error: Cannot find module './swc.linux-x64-gnu.node'
+```
+
+`@next/swc` — Next.js's Rust compiler. Same root cause: linux binary missing. Behind it waited `@tailwindcss/oxide` and `lightningcss` (Tailwind v4's native bits). Four native dependencies, each shipping a different binary per platform, none of them in the mac-generated lockfile's resolved tree.
+
+## Why the lockfile couldn't be fixed
+
+I tried everything to make the lockfile carry the linux binaries: explicit `optionalDependencies` pins, `npm install --os=linux --cpu=x64 --libc=glibc`, and a from-scratch regeneration (`rm package-lock.json && npm install`). Parcel, oxide, and lightningcss could be pinned. **`@next/swc-linux-x64-gnu` refused** — npm would not materialize a resolved lockfile entry for it on any of those paths. A fresh lockfile didn't even contain `@next/swc` entries for *any* platform; npm simply doesn't pin Next's swc optionals, resolving them at install time instead.
+
+So `npm ci` (Vercel's strict, lockfile-only install) installs none of them, and the linux build can't load its native binding. Local `npm install` works only because it resolves those optionals fresh for darwin at install time.
+
+## The fix: stop pinning, change the install
+
+When the whack-a-mole won't end — each fixed binary reveals the next — the move is to stop chasing binaries and switch the install itself:
+
+```json
+// frontend/vercel.json
+{ "installCommand": "npm install --no-package-lock" }
+```
+
+`npm install` resolves **all** optional platform binaries for the build OS (linux), where `npm ci` only installs what's pinned. Vercel's Root Directory is `frontend`, so the config lives there. Next deploy: `success`. `mimi.daeseon.ai/en/gym` and `/ko/gym` both 200, serving the real page.
+
+## The takeaway
+
+A lockfile generated on one OS resolves only that OS's optional platform binaries, and some packages (notably `@next/swc`) aren't pinned at all. For a Next.js + Tailwind monorepo deploying from a mac-made lockfile to linux CI, don't pin binaries one by one — set the install command to `npm install` and let it resolve per-platform. And when you can't see the CI log, the public GitHub commit-status / check-runs API is your window in.
+
+*Commits: `abe2bd4` (parcel pin), `aae2cfa` (the install-command fix).*

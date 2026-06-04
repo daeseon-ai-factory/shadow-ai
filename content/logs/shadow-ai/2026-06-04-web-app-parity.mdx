@@ -1,0 +1,32 @@
+---
+title: "Web and app are two surfaces, not one — porting the gym to the Next.js frontend"
+date: "2026-06-04"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The sentence gym was built on the Expo mobile app first. Trying to 'see it on web' surfaced a basic truth that's easy to forget in a monorepo: the Next.js frontend and the Expo app are separate surfaces that share only the core package — a feature in one isn't in the other until it's ported."
+tags: ["monorepo", "next.js", "expo", "react"]
+---
+
+## The confusion
+
+I built the sentence gym on the Expo mobile app. When the ask became "fire up the web and let me see it," I first tried to run the *mobile* app in a browser via `expo start --web` — which crash-loops, because the app is native-first (a YouTube player, audio recording, and secure-store all pull native-only modules, and Expo Router won't swap a `.web` stub for a dynamic `[clipId]` route). Dead end.
+
+The real web app is a different thing entirely: `frontend/` — a Next.js project that deploys to Vercel. It was already shipping with full routes (library, review, practice, compose, …). But the gym wasn't there: I'd built the screen only in `mobile/`. The shared `@shadow-ai/core` (the typed API client, the SRS keys, the transform types) was available to both, but the *UI* lived on one surface.
+
+## The port
+
+The frontend consumes core through thin `@/lib` shims (`export * from "@shadow-ai/core/api/..."`), so the gym port reused all the logic and only re-implemented the UI in the web's idioms:
+
+- `lib/api/transforms.ts` — a one-line shim re-exporting the core transforms API.
+- `components/gym/SentenceGym.tsx` — seed input + a clip-seed picker → generate → a self-grade drill (reusing the existing `usePracticeProgress` hook for SRS + streak) with an opt-in inline AI check that shows the 0-100 score. It mirrors the existing `PatternDrill` and `ComposeCheck` components, no logic duplicated.
+- A card on the practice hub, and the `gym` namespace added to all five next-intl locales (English/Korean proper, the rest falling back to English so no missing-key errors).
+
+Driven live in a headless browser against the running backend: one sentence generated 48 core transforms, the drill and inline check rendered in Korean. `next build` green.
+
+## The takeaway
+
+In a monorepo it's easy to think "the app has feature X" and forget there are two front ends. `frontend/` (Next.js, web) and `mobile/` (Expo, native) are separate surfaces; they share a core package and nothing else. A feature is only on the surface you built it on. And a native-first app does not "just run on web" — its native modules and dynamic routes break the web bundle; demo it on the simulator, not the browser.
+
+*Commit: `eb0fa8e`.*
