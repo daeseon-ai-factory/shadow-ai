@@ -30,6 +30,13 @@ export function YoutubeTranscriptWebView({ url, timeoutMs = 18000, onResult }: P
   const finish = useCallback((result: DeviceTranscriptResult) => {
     if (finished.current) return;
     finished.current = true;
+    if (__DEV__) {
+      console.info(
+        result.ok
+          ? `[youtube transcript] device success: ${result.segments.length} segments`
+          : `[youtube transcript] device failed: ${result.error}`,
+      );
+    }
     onResultRef.current(result);
   }, []);
 
