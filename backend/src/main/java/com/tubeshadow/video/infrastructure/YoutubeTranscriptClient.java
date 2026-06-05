@@ -3,6 +3,7 @@ package com.tubeshadow.video.infrastructure;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tubeshadow.video.domain.TranscriptSegment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,19 +52,47 @@ public class YoutubeTranscriptClient {
     private final String ytDlpBinary;
     private final long timeoutSeconds;
     private final String potProviderBaseUrl;
+    private final String ytDlpProxy;
+    private final SupadataTranscriptClient supadataClient;
 
+    @Autowired
     public YoutubeTranscriptClient(ObjectMapper objectMapper,
                                    @Value("${tubeshadow.youtube.yt-dlp-binary:yt-dlp}") String ytDlpBinary,
                                    @Value("${tubeshadow.youtube.yt-dlp-timeout-seconds:30}") long timeoutSeconds,
                                    @Value("${tubeshadow.youtube.pot-provider-base-url:http://localhost:4417}")
-                                   String potProviderBaseUrl) {
+                                   String potProviderBaseUrl,
+                                   @Value("${tubeshadow.youtube.yt-dlp-proxy:}") String ytDlpProxy,
+                                   SupadataTranscriptClient supadataClient) {
         this.objectMapper = objectMapper;
         this.ytDlpBinary = ytDlpBinary;
         this.timeoutSeconds = timeoutSeconds;
         this.potProviderBaseUrl = potProviderBaseUrl;
+        this.ytDlpProxy = ytDlpProxy;
+        this.supadataClient = supadataClient;
     }
 
     public List<TranscriptSegment> fetch(String videoId) {
+        try {
+            return fetchWithYtDlp(videoId);
+        } catch (NoTranscriptAvailableException primary) {
+            if (supadataClient == null || !supadataClient.isConfigured()) {
+                throw primary;
+            }
+            try {
+                List<TranscriptSegment> fallback = supadataClient.fetch(videoId);
+                if (!fallback.isEmpty()) {
+                    log.info("Fetched transcript for {} via Supadata fallback ({} segments)",
+                            videoId, fallback.size());
+                    return fallback;
+                }
+            } catch (NoTranscriptAvailableException ex) {
+                log.info("Supadata fallback also has no transcript for {}: {}", videoId, ex.getMessage());
+            }
+            throw primary;
+        }
+    }
+
+    private List<TranscriptSegment> fetchWithYtDlp(String videoId) {
         Path tempDir;
         try {
             tempDir = Files.createTempDirectory("tubeshadow-yt-");
@@ -72,7 +101,7 @@ public class YoutubeTranscriptClient {
         }
 
         Path outBase = tempDir.resolve("sub");
-        ProcessBuilder pb = new ProcessBuilder(
+        List<String> command = new ArrayList<>(List.of(
                 ytDlpBinary,
                 "--write-subs",
                 "--write-auto-subs",   // fall back to auto-generated when manual missing
@@ -84,9 +113,14 @@ public class YoutubeTranscriptClient {
                 // container-local provider. The provider arg must be a separate extractor-args flag.
                 "--extractor-args", YOUTUBE_EXTRACTOR_ARGS,
                 "--extractor-args", potProviderExtractorArgs(),
-                "-o", outBase.toString(),
-                "https://www.youtube.com/watch?v=" + videoId
-        ).redirectErrorStream(true);
+                "-o", outBase.toString()
+        ));
+        if (ytDlpProxy != null && !ytDlpProxy.isBlank()) {
+            command.add("--proxy");
+            command.add(ytDlpProxy);
+        }
+        command.add("https://www.youtube.com/watch?v=" + videoId);
+        ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
 
         try {
             ProcessRunner.Result result = ProcessRunner.run(pb, timeoutSeconds);
@@ -146,6 +180,11 @@ public class YoutubeTranscriptClient {
 
     private String potProviderExtractorArgs() {
         return "youtubepot-bgutilhttp:base_url=" + potProviderBaseUrl;
+    }
+
+    /** Test hook only. */
+    YoutubeTranscriptClient(ObjectMapper objectMapper, String ytDlpBinary, long timeoutSeconds, String potProviderBaseUrl) {
+        this(objectMapper, ytDlpBinary, timeoutSeconds, potProviderBaseUrl, "", null);
     }
 
     private Path findFirstJson3(Path dir) throws IOException {

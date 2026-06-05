@@ -83,10 +83,24 @@ tubeshadow:
     oembed-url: https://www.youtube.com/oembed
     yt-dlp-binary: ${YT_DLP_BINARY:yt-dlp}
     yt-dlp-timeout-seconds: ${YT_DLP_TIMEOUT_SECONDS:30}
+    yt-dlp-proxy: ${YT_DLP_PROXY:}
     pot-provider-base-url: ${YT_DLP_POT_PROVIDER_BASE_URL:http://localhost:4417}
+    supadata:
+      api-key: ${SUPADATA_API_KEY:}
+      base-url: ${SUPADATA_BASE_URL:https://api.supadata.ai/v1}
+      lang: ${SUPADATA_LANG:en}
+      # native = existing captions only. Set SUPADATA_TRANSCRIPT_MODE=auto to allow paid AI fallback.
+      mode: ${SUPADATA_TRANSCRIPT_MODE:native}
+      poll-attempts: ${SUPADATA_POLL_ATTEMPTS:20}
+      poll-interval-ms: ${SUPADATA_POLL_INTERVAL_MS:1000}
+      timeout-seconds: ${SUPADATA_TIMEOUT_SECONDS:45}
     # Probe only supplies portrait/duration metadata. Keep it shorter than transcript fetch so a
     # stuck metadata probe cannot make the import feel frozen behind the load balancer.
     yt-dlp-probe-timeout-seconds: ${YT_DLP_PROBE_TIMEOUT_SECONDS:10}
+  seed:
+    curated:
+      # Importing YouTube at startup makes prod deploy health depend on YouTube anti-bot state.
+      enabled: ${CURATED_SEED_ENABLED:false}
   cors:
     # Comma-separated allowed origin patterns. Defaults are good for local dev + Vercel previews.
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:*,https://*.vercel.app}

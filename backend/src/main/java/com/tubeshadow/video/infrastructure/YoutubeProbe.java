@@ -2,6 +2,7 @@ package com.tubeshadow.video.infrastructure;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,30 +33,39 @@ public class YoutubeProbe {
     private final String ytDlpBinary;
     private final long timeoutSeconds;
     private final String potProviderBaseUrl;
+    private final String ytDlpProxy;
 
+    @Autowired
     public YoutubeProbe(ObjectMapper objectMapper,
                         @Value("${tubeshadow.youtube.yt-dlp-binary:yt-dlp}") String ytDlpBinary,
                         @Value("${tubeshadow.youtube.yt-dlp-probe-timeout-seconds:${tubeshadow.youtube.yt-dlp-timeout-seconds:10}}")
                         long timeoutSeconds,
                         @Value("${tubeshadow.youtube.pot-provider-base-url:http://localhost:4417}")
-                        String potProviderBaseUrl) {
+                        String potProviderBaseUrl,
+                        @Value("${tubeshadow.youtube.yt-dlp-proxy:}") String ytDlpProxy) {
         this.objectMapper = objectMapper;
         this.ytDlpBinary = ytDlpBinary;
         this.timeoutSeconds = timeoutSeconds;
         this.potProviderBaseUrl = potProviderBaseUrl;
+        this.ytDlpProxy = ytDlpProxy;
     }
 
     public Optional<VideoMetadata> probe(String videoId) {
-        ProcessBuilder pb = new ProcessBuilder(
+        java.util.List<String> command = new java.util.ArrayList<>(java.util.List.of(
                 ytDlpBinary,
                 "-J",
                 "--skip-download",
                 "--ignore-no-formats-error",
                 "--no-warnings",
                 "--extractor-args", YOUTUBE_EXTRACTOR_ARGS,
-                "--extractor-args", potProviderExtractorArgs(),
-                "https://www.youtube.com/watch?v=" + videoId
-        );
+                "--extractor-args", potProviderExtractorArgs()
+        ));
+        if (ytDlpProxy != null && !ytDlpProxy.isBlank()) {
+            command.add("--proxy");
+            command.add(ytDlpProxy);
+        }
+        command.add("https://www.youtube.com/watch?v=" + videoId);
+        ProcessBuilder pb = new ProcessBuilder(command);
 
         ProcessRunner.Result result;
         try {
@@ -103,6 +113,11 @@ public class YoutubeProbe {
 
     private String potProviderExtractorArgs() {
         return "youtubepot-bgutilhttp:base_url=" + potProviderBaseUrl;
+    }
+
+    /** Test hook only. */
+    YoutubeProbe(ObjectMapper objectMapper, String ytDlpBinary, long timeoutSeconds, String potProviderBaseUrl) {
+        this(objectMapper, ytDlpBinary, timeoutSeconds, potProviderBaseUrl, "");
     }
 
     public record VideoMetadata(Integer widthPx, Integer heightPx, Integer durationSeconds) {}
