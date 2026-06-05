@@ -24,6 +24,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
+import {
+  YoutubeTranscriptWebView,
+  type DeviceTranscriptResult,
+} from '@/lib/youtube-transcript-webview';
 
 export default function ImportScreen() {
   const token = useAuthStore((s) => s.token);
@@ -32,9 +36,18 @@ export default function ImportScreen() {
   const params = useLocalSearchParams<{ url?: string }>();
   const [url, setUrl] = useState(params.url ?? '');
   const [video, setVideo] = useState<VideoResponse | null>(null);
+  const [deviceFetchUrl, setDeviceFetchUrl] = useState<string | null>(null);
 
   const importVideo = useMutation({
-    mutationFn: () => videosApi.importByUrl(url.trim()),
+    mutationFn: (request: {
+      sourceUrl: string;
+      transcriptSegments?: TranscriptSegment[];
+      title?: string;
+    }) =>
+      videosApi.importByUrl(request.sourceUrl, {
+        transcriptSegments: request.transcriptSegments,
+        title: request.title,
+      }),
     onSuccess: (v) => setVideo(v),
   });
 
@@ -63,6 +76,27 @@ export default function ImportScreen() {
       : importVideo.error
         ? t('import.importFailed')
         : null;
+  const isImporting = importVideo.isPending || deviceFetchUrl !== null;
+
+  const startImport = () => {
+    const trimmed = url.trim();
+    if (!trimmed || isImporting) return;
+    setDeviceFetchUrl(trimmed);
+  };
+
+  const handleDeviceTranscript = (result: DeviceTranscriptResult) => {
+    const sourceUrl = deviceFetchUrl ?? url.trim();
+    setDeviceFetchUrl(null);
+    if (result.ok && result.segments.length > 0) {
+      importVideo.mutate({
+        sourceUrl,
+        transcriptSegments: result.segments,
+        title: result.title,
+      });
+      return;
+    }
+    importVideo.mutate({ sourceUrl });
+  };
 
   if (video) {
     const lines = video.sentences.length > 0 ? video.sentences : video.transcriptSegments;
@@ -108,6 +142,13 @@ export default function ImportScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.container}>
+            {deviceFetchUrl && (
+              <YoutubeTranscriptWebView
+                url={deviceFetchUrl}
+                onResult={handleDeviceTranscript}
+              />
+            )}
+
             <ThemedText type="title">{t('import.title')}</ThemedText>
             <ThemedText type="small">{t('import.subtitle')}</ThemedText>
 
@@ -125,11 +166,11 @@ export default function ImportScreen() {
             {importError && <ThemedText style={styles.error}>{importError}</ThemedText>}
 
             <Pressable
-              style={[styles.primaryBtn, (!url.trim() || importVideo.isPending) && styles.disabled]}
-              disabled={!url.trim() || importVideo.isPending}
-              onPress={() => importVideo.mutate()}
+              style={[styles.primaryBtn, (!url.trim() || isImporting) && styles.disabled]}
+              disabled={!url.trim() || isImporting}
+              onPress={startImport}
             >
-              {importVideo.isPending ? (
+              {isImporting ? (
                 <ActivityIndicator color="#fff" />
               ) : (
                 <ThemedText style={styles.primaryText}>{t('import.importBtn')}</ThemedText>
