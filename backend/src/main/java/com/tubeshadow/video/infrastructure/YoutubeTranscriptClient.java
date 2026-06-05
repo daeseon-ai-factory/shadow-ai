@@ -71,13 +71,13 @@ public class YoutubeTranscriptClient {
                 "--write-subs",
                 "--write-auto-subs",   // fall back to auto-generated when manual missing
                 "--skip-download",
+                "--ignore-no-formats-error",
                 "--sub-format", "json3",
-                "--sub-langs", "en",   // single lang to avoid YouTube 429
+                "--sub-langs", "en",   // keep this narrow; broad regexes download translated captions
                 // Force a client that requests a POToken from the bgutil provider; the default
                 // clients (tv/ios) don't, so they hit the datacenter bot wall and the provider is
                 // never called. web_safari is the client the verification saw mint a token.
                 "--extractor-args", "youtube:player_client=web_safari",
-                "-v",                  // TEMP: surface bgutil POToken provider status in logs
                 "-o", outBase.toString(),
                 "https://www.youtube.com/watch?v=" + videoId
         ).redirectErrorStream(true);

@@ -45,6 +45,7 @@ public class YoutubeProbe {
                 ytDlpBinary,
                 "-J",
                 "--skip-download",
+                "--ignore-no-formats-error",
                 "--no-warnings",
                 "--extractor-args", "youtube:player_client=web_safari",
                 "https://www.youtube.com/watch?v=" + videoId
