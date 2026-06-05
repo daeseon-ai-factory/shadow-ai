@@ -20,10 +20,17 @@ class YoutubeTranscriptClientTest {
         Files.writeString(script, """
                 #!/bin/sh
                 has_ignore=0
+                has_provider_base_url=0
                 out=
                 while [ "$#" -gt 0 ]; do
                   if [ "$1" = "--ignore-no-formats-error" ]; then
                     has_ignore=1
+                  fi
+                  if [ "$1" = "--extractor-args" ]; then
+                    shift
+                    case "$1" in
+                      *youtubepot-bgutilhttp:base_url=http://localhost:4417*) has_provider_base_url=1 ;;
+                    esac
                   fi
                   if [ "$1" = "-o" ]; then
                     shift
@@ -36,6 +43,10 @@ class YoutubeTranscriptClientTest {
                   printf 'ERROR: Requested format is not available\\n'
                   exit 1
                 fi
+                if [ "$has_provider_base_url" != "1" ]; then
+                  printf 'ERROR: bgutil provider base_url was not passed\\n'
+                  exit 2
+                fi
 
                 mkdir -p "$(dirname "$out")"
                 cat > "${out}.en.json3" <<'JSON'
@@ -46,7 +57,7 @@ class YoutubeTranscriptClientTest {
         assertThat(script.toFile().setExecutable(true)).isTrue();
 
         YoutubeTranscriptClient client = new YoutubeTranscriptClient(
-                new ObjectMapper(), script.toString(), 3);
+                new ObjectMapper(), script.toString(), 3, "http://localhost:4417");
 
         var segments = client.fetch("abcdefghijk");
 

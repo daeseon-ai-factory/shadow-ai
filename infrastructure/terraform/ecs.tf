@@ -76,10 +76,10 @@ resource "aws_ecs_task_definition" "backend" {
       }
     },
     {
-      # POToken provider: mints YouTube POTokens (runs BotGuard) so yt-dlp can fetch captions from
-      # this datacenter IP. The yt-dlp bgutil plugin in the backend container reaches it at
-      # localhost:4416 (same Fargate task = shared network namespace). essential=false: if it dies,
-      # the backend keeps serving and transcript fetch just degrades to "unavailable".
+      # Legacy task-level POToken provider. The backend image now also starts a container-local
+      # provider on 4417 because the caption path must not depend on Fargate sidecar localhost
+      # behavior. Keep this non-essential sidecar as a harmless fallback until the task definition is
+      # cleaned up in Terraform.
       name      = "pot-provider"
       image     = "brainicism/bgutil-ytdlp-pot-provider:1.3.1" # pinned to match the yt-dlp plugin (no :latest)
       essential = false

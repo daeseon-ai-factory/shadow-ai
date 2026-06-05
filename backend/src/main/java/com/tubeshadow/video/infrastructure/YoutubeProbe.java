@@ -26,18 +26,23 @@ import java.util.Optional;
 public class YoutubeProbe {
 
     private static final Logger log = LoggerFactory.getLogger(YoutubeProbe.class);
+    private static final String YOUTUBE_EXTRACTOR_ARGS = "youtube:player_client=web_safari";
 
     private final ObjectMapper objectMapper;
     private final String ytDlpBinary;
     private final long timeoutSeconds;
+    private final String potProviderBaseUrl;
 
     public YoutubeProbe(ObjectMapper objectMapper,
                         @Value("${tubeshadow.youtube.yt-dlp-binary:yt-dlp}") String ytDlpBinary,
                         @Value("${tubeshadow.youtube.yt-dlp-probe-timeout-seconds:${tubeshadow.youtube.yt-dlp-timeout-seconds:10}}")
-                        long timeoutSeconds) {
+                        long timeoutSeconds,
+                        @Value("${tubeshadow.youtube.pot-provider-base-url:http://localhost:4417}")
+                        String potProviderBaseUrl) {
         this.objectMapper = objectMapper;
         this.ytDlpBinary = ytDlpBinary;
         this.timeoutSeconds = timeoutSeconds;
+        this.potProviderBaseUrl = potProviderBaseUrl;
     }
 
     public Optional<VideoMetadata> probe(String videoId) {
@@ -47,7 +52,8 @@ public class YoutubeProbe {
                 "--skip-download",
                 "--ignore-no-formats-error",
                 "--no-warnings",
-                "--extractor-args", "youtube:player_client=web_safari",
+                "--extractor-args", YOUTUBE_EXTRACTOR_ARGS,
+                "--extractor-args", potProviderExtractorArgs(),
                 "https://www.youtube.com/watch?v=" + videoId
         );
 
@@ -90,7 +96,13 @@ public class YoutubeProbe {
 
     private static Integer optInt(JsonNode root, String field) {
         JsonNode n = root.path(field);
-        return n.isInt() ? n.asInt() : (n.isNumber() ? (int) Math.round(n.asDouble()) : null);
+        if (n.isInt()) return n.asInt();
+        if (n.isNumber()) return (int) Math.round(n.asDouble());
+        return null;
+    }
+
+    private String potProviderExtractorArgs() {
+        return "youtubepot-bgutilhttp:base_url=" + potProviderBaseUrl;
     }
 
     public record VideoMetadata(Integer widthPx, Integer heightPx, Integer durationSeconds) {}

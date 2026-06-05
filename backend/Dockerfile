@@ -13,7 +13,10 @@ RUN ./gradlew --no-daemon dependencies > /dev/null 2>&1 || true
 COPY src /workspace/src
 RUN ./gradlew --no-daemon bootJar -x test
 
-######################### Stage 2: runtime #########################
+######################### Stage 2: POT provider #########################
+FROM brainicism/bgutil-ytdlp-pot-provider:1.3.1 AS pot-provider
+
+######################### Stage 3: runtime #########################
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
@@ -21,18 +24,19 @@ WORKDIR /app
 # These run as external processes (ProcessBuilder), not Java, so they must exist in the runtime
 # image — without them clip import fails on a clean container. (mirrors Dockerfile.dev; install
 # as root before dropping to the non-root app user.)
-RUN apk add --no-cache python3 py3-pip ffmpeg deno \
+RUN apk add --no-cache python3 py3-pip ffmpeg deno nodejs \
     && pip install --break-system-packages yt-dlp bgutil-ytdlp-pot-provider==1.3.1
 # deno = the JavaScript runtime yt-dlp needs for current YouTube extraction. Without it yt-dlp
 # fails ("No supported JavaScript runtime") and never even reaches the POToken step, so the
 # bgutil provider is never called. yt-dlp auto-detects deno on PATH (its default runtime).
 # bgutil-ytdlp-pot-provider: the yt-dlp PLUGIN side. It mints a YouTube POToken (needed to fetch
-# captions from a datacenter IP, where a tokenless request returns 200 + 0 bytes) by talking to the
-# POToken provider sidecar over http://localhost:4416 (same Fargate task = shared netns). The pot is
-# bound to the video/session, not the IP, so it works from AWS. Auto-engages once installed.
+# captions from a datacenter IP, where a tokenless request returns 200 + 0 bytes). The Node provider
+# runs inside this same container on 4417 so Fargate sidecar networking cannot break the token path.
+COPY --from=pot-provider /app /opt/pot-provider
 
 # Non-root user for hardening
-RUN addgroup -S app && adduser -S app -G app
+RUN addgroup -S app && adduser -S app -G app \
+    && chown -R app:app /opt/pot-provider
 USER app
 
 COPY --from=build --chown=app:app /workspace/build/libs/*.jar /app/tubeshadow.jar
@@ -41,6 +45,8 @@ COPY --from=build --chown=app:app /workspace/build/libs/*.jar /app/tubeshadow.ja
 VOLUME ["/app/local-storage/recordings"]
 
 ENV SPRING_PROFILES_ACTIVE=prod \
+    POT_PROVIDER_PORT=4417 \
+    YT_DLP_POT_PROVIDER_BASE_URL=http://localhost:4417 \
     JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
 # PORT (Render/Fly/Heroku) or SERVER_PORT (fallback) is read at runtime via application.yml.
 
@@ -48,4 +54,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD wget -qO- http://localhost:8080/api/health || exit 1
 
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/tubeshadow.jar"]
+ENTRYPOINT ["sh", "-c", "node /opt/pot-provider/build/main.js --port ${POT_PROVIDER_PORT:-4417} & exec java $JAVA_OPTS -jar /app/tubeshadow.jar"]

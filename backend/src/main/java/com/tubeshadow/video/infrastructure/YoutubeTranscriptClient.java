@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -44,17 +45,22 @@ import java.util.stream.Stream;
 public class YoutubeTranscriptClient {
 
     private static final Logger log = LoggerFactory.getLogger(YoutubeTranscriptClient.class);
+    private static final String YOUTUBE_EXTRACTOR_ARGS = "youtube:player_client=web_safari";
 
     private final ObjectMapper objectMapper;
     private final String ytDlpBinary;
     private final long timeoutSeconds;
+    private final String potProviderBaseUrl;
 
     public YoutubeTranscriptClient(ObjectMapper objectMapper,
                                    @Value("${tubeshadow.youtube.yt-dlp-binary:yt-dlp}") String ytDlpBinary,
-                                   @Value("${tubeshadow.youtube.yt-dlp-timeout-seconds:30}") long timeoutSeconds) {
+                                   @Value("${tubeshadow.youtube.yt-dlp-timeout-seconds:30}") long timeoutSeconds,
+                                   @Value("${tubeshadow.youtube.pot-provider-base-url:http://localhost:4417}")
+                                   String potProviderBaseUrl) {
         this.objectMapper = objectMapper;
         this.ytDlpBinary = ytDlpBinary;
         this.timeoutSeconds = timeoutSeconds;
+        this.potProviderBaseUrl = potProviderBaseUrl;
     }
 
     public List<TranscriptSegment> fetch(String videoId) {
@@ -74,10 +80,10 @@ public class YoutubeTranscriptClient {
                 "--ignore-no-formats-error",
                 "--sub-format", "json3",
                 "--sub-langs", "en",   // keep this narrow; broad regexes download translated captions
-                // Force a client that requests a POToken from the bgutil provider; the default
-                // clients (tv/ios) don't, so they hit the datacenter bot wall and the provider is
-                // never called. web_safari is the client the verification saw mint a token.
-                "--extractor-args", "youtube:player_client=web_safari",
+                // Force a client that requests a POToken and point yt-dlp's bgutil plugin at the
+                // container-local provider. The provider arg must be a separate extractor-args flag.
+                "--extractor-args", YOUTUBE_EXTRACTOR_ARGS,
+                "--extractor-args", potProviderExtractorArgs(),
                 "-o", outBase.toString(),
                 "https://www.youtube.com/watch?v=" + videoId
         ).redirectErrorStream(true);
@@ -90,20 +96,15 @@ public class YoutubeTranscriptClient {
             }
             if (result.exitCode() != 0) {
                 String output = result.combinedOutput();
-                // TEMP diagnostic: log the POToken-provider + bot lines (they appear early in -v output).
-                String diag = output.lines()
-                        .filter(l -> l.contains("pot") || l.contains("PO Token") || l.contains("Retrieved")
-                                || l.contains("WARNING") || l.contains("Sign in") || l.contains("provider"))
-                        .limit(25)
-                        .collect(java.util.stream.Collectors.joining(" || "));
                 log.info("yt-dlp non-zero exit for {} | POT-DIAG: {}", videoId,
-                        diag.isBlank() ? output.substring(Math.max(0, output.length() - 300)) : diag);
+                        diagnostic(output));
                 throw new NoTranscriptAvailableException(videoId);
             }
 
             Path subFile = findFirstJson3(tempDir);
             if (subFile == null) {
-                log.info("No .json3 produced for {}", videoId);
+                log.info("No .json3 produced for {} | YTDLP-DIAG: {}", videoId,
+                        diagnostic(result.combinedOutput()));
                 throw new NoTranscriptAvailableException(videoId);
             }
             String json3 = Files.readString(subFile);
@@ -126,6 +127,25 @@ public class YoutubeTranscriptClient {
     private static String tail(String value) {
         if (value == null || value.isBlank()) return "";
         return value.substring(Math.max(0, value.length() - 300));
+    }
+
+    private static String diagnostic(String output) {
+        if (output == null || output.isBlank()) return "";
+        String diag = output.lines()
+                .filter(l -> {
+                    String lower = l.toLowerCase(Locale.ROOT);
+                    return lower.contains("pot") || lower.contains("po token")
+                            || lower.contains("warning") || lower.contains("sign in")
+                            || lower.contains("provider") || lower.contains("subtitle")
+                            || lower.contains("caption") || lower.contains("format is not available");
+                })
+                .limit(30)
+                .collect(java.util.stream.Collectors.joining(" || "));
+        return diag.isBlank() ? tail(output) : diag;
+    }
+
+    private String potProviderExtractorArgs() {
+        return "youtubepot-bgutilhttp:base_url=" + potProviderBaseUrl;
     }
 
     private Path findFirstJson3(Path dir) throws IOException {

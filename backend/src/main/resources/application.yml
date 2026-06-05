@@ -83,6 +83,7 @@ tubeshadow:
     oembed-url: https://www.youtube.com/oembed
     yt-dlp-binary: ${YT_DLP_BINARY:yt-dlp}
     yt-dlp-timeout-seconds: ${YT_DLP_TIMEOUT_SECONDS:30}
+    pot-provider-base-url: ${YT_DLP_POT_PROVIDER_BASE_URL:http://localhost:4417}
     # Probe only supplies portrait/duration metadata. Keep it shorter than transcript fetch so a
     # stuck metadata probe cannot make the import feel frozen behind the load balancer.
     yt-dlp-probe-timeout-seconds: ${YT_DLP_PROBE_TIMEOUT_SECONDS:10}
