@@ -37,6 +37,7 @@ export default function ImportScreen() {
   const [url, setUrl] = useState(params.url ?? '');
   const [video, setVideo] = useState<VideoResponse | null>(null);
   const [deviceFetchUrl, setDeviceFetchUrl] = useState<string | null>(null);
+  const [deviceError, setDeviceError] = useState<string | null>(null);
 
   const importVideo = useMutation({
     mutationFn: (request: {
@@ -81,6 +82,7 @@ export default function ImportScreen() {
   const startImport = () => {
     const trimmed = url.trim();
     if (!trimmed || isImporting) return;
+    setDeviceError(null);
     setDeviceFetchUrl(trimmed);
   };
 
@@ -88,6 +90,7 @@ export default function ImportScreen() {
     const sourceUrl = deviceFetchUrl ?? url.trim();
     setDeviceFetchUrl(null);
     if (result.ok && result.segments.length > 0) {
+      setDeviceError(null);
       importVideo.mutate({
         sourceUrl,
         transcriptSegments: result.segments,
@@ -95,6 +98,7 @@ export default function ImportScreen() {
       });
       return;
     }
+    setDeviceError(result.ok ? 'device transcript returned no segments' : result.error);
     importVideo.mutate({ sourceUrl });
   };
 
@@ -164,6 +168,11 @@ export default function ImportScreen() {
             />
 
             {importError && <ThemedText style={styles.error}>{importError}</ThemedText>}
+            {deviceError && __DEV__ && (
+              <ThemedText type="small" style={styles.error}>
+                device transcript: {deviceError}
+              </ThemedText>
+            )}
 
             <Pressable
               style={[styles.primaryBtn, (!url.trim() || isImporting) && styles.disabled]}
