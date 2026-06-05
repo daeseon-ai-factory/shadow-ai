@@ -81,6 +81,11 @@ tubeshadow:
     model: ${GEMINI_MODEL:gemini-2.5-flash}
   youtube:
     oembed-url: https://www.youtube.com/oembed
+    yt-dlp-binary: ${YT_DLP_BINARY:yt-dlp}
+    yt-dlp-timeout-seconds: ${YT_DLP_TIMEOUT_SECONDS:30}
+    # Probe only supplies portrait/duration metadata. Keep it shorter than transcript fetch so a
+    # stuck metadata probe cannot make the import feel frozen behind the load balancer.
+    yt-dlp-probe-timeout-seconds: ${YT_DLP_PROBE_TIMEOUT_SECONDS:10}
   cors:
     # Comma-separated allowed origin patterns. Defaults are good for local dev + Vercel previews.
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:*,https://*.vercel.app}

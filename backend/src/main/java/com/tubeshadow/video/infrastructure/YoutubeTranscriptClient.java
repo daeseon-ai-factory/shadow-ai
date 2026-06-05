@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -74,42 +73,34 @@ public class YoutubeTranscriptClient {
                 "--skip-download",
                 "--sub-format", "json3",
                 "--sub-langs", "en",   // single lang to avoid YouTube 429
-                "--no-warnings",
+                // Force a client that requests a POToken from the bgutil provider; the default
+                // clients (tv/ios) don't, so they hit the datacenter bot wall and the provider is
+                // never called. web_safari is the client the verification saw mint a token.
+                "--extractor-args", "youtube:player_client=web_safari",
+                "-v",                  // TEMP: surface bgutil POToken provider status in logs
                 "-o", outBase.toString(),
                 "https://www.youtube.com/watch?v=" + videoId
         ).redirectErrorStream(true);
 
-        Process process;
         try {
-            process = pb.start();
-        } catch (IOException ex) {
-            log.warn("yt-dlp not available ({}): {}", ytDlpBinary, ex.getMessage());
-            cleanup(tempDir);
-            throw new NoTranscriptAvailableException(videoId);
-        }
-
-        try {
-            boolean finished = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
-            if (!finished) {
-                process.destroyForcibly();
-                log.warn("yt-dlp timed out for {}", videoId);
+            ProcessRunner.Result result = ProcessRunner.run(pb, timeoutSeconds);
+            if (result.timedOut()) {
+                log.warn("yt-dlp timed out for {}: {}", videoId, tail(result.combinedOutput()));
                 throw new NoTranscriptAvailableException(videoId);
             }
-            if (process.exitValue() != 0) {
-                String output = new String(process.getInputStream().readAllBytes()).strip();
-                log.info("yt-dlp non-zero exit for {}: {}", videoId,
-                        output.length() > 300 ? output.substring(output.length() - 300) : output);
+            if (result.exitCode() != 0) {
+                String output = result.combinedOutput();
+                // TEMP diagnostic: log the POToken-provider + bot lines (they appear early in -v output).
+                String diag = output.lines()
+                        .filter(l -> l.contains("pot") || l.contains("PO Token") || l.contains("Retrieved")
+                                || l.contains("WARNING") || l.contains("Sign in") || l.contains("provider"))
+                        .limit(25)
+                        .collect(java.util.stream.Collectors.joining(" || "));
+                log.info("yt-dlp non-zero exit for {} | POT-DIAG: {}", videoId,
+                        diag.isBlank() ? output.substring(Math.max(0, output.length() - 300)) : diag);
                 throw new NoTranscriptAvailableException(videoId);
             }
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            process.destroyForcibly();
-            throw new NoTranscriptAvailableException(videoId);
-        } catch (IOException ex) {
-            throw new NoTranscriptAvailableException(videoId);
-        }
 
-        try {
             Path subFile = findFirstJson3(tempDir);
             if (subFile == null) {
                 log.info("No .json3 produced for {}", videoId);
@@ -121,11 +112,20 @@ public class YoutubeTranscriptClient {
                 throw new NoTranscriptAvailableException(videoId);
             }
             return segments;
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new NoTranscriptAvailableException(videoId);
         } catch (IOException ex) {
+            log.warn("yt-dlp transcript IO failed for {}: {}", videoId, ex.getMessage());
             throw new NoTranscriptAvailableException(videoId);
         } finally {
             cleanup(tempDir);
         }
+    }
+
+    private static String tail(String value) {
+        if (value == null || value.isBlank()) return "";
+        return value.substring(Math.max(0, value.length() - 300));
     }
 
     private Path findFirstJson3(Path dir) throws IOException {

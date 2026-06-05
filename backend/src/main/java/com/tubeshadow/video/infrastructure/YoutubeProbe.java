@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Cheap "tell me about this video" call. Wraps {@code yt-dlp -J --skip-download} —
@@ -34,7 +33,8 @@ public class YoutubeProbe {
 
     public YoutubeProbe(ObjectMapper objectMapper,
                         @Value("${tubeshadow.youtube.yt-dlp-binary:yt-dlp}") String ytDlpBinary,
-                        @Value("${tubeshadow.youtube.yt-dlp-timeout-seconds:30}") long timeoutSeconds) {
+                        @Value("${tubeshadow.youtube.yt-dlp-probe-timeout-seconds:${tubeshadow.youtube.yt-dlp-timeout-seconds:10}}")
+                        long timeoutSeconds) {
         this.objectMapper = objectMapper;
         this.ytDlpBinary = ytDlpBinary;
         this.timeoutSeconds = timeoutSeconds;
@@ -46,39 +46,32 @@ public class YoutubeProbe {
                 "-J",
                 "--skip-download",
                 "--no-warnings",
+                "--extractor-args", "youtube:player_client=web_safari",
                 "https://www.youtube.com/watch?v=" + videoId
         );
 
-        Process process;
+        ProcessRunner.Result result;
         try {
-            process = pb.start();
+            result = ProcessRunner.run(pb, timeoutSeconds);
         } catch (IOException ex) {
             log.warn("yt-dlp not available for probe ({}): {}", ytDlpBinary, ex.getMessage());
             return Optional.empty();
-        }
-
-        String json;
-        try {
-            json = new String(process.getInputStream().readAllBytes());
-            boolean finished = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
-            if (!finished) {
-                process.destroyForcibly();
-                return Optional.empty();
-            }
-            if (process.exitValue() != 0) {
-                log.debug("yt-dlp probe non-zero exit for {}", videoId);
-                return Optional.empty();
-            }
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            process.destroyForcibly();
             return Optional.empty();
-        } catch (IOException ex) {
+        }
+
+        if (result.timedOut()) {
+            log.warn("yt-dlp probe timed out for {}", videoId);
+            return Optional.empty();
+        }
+        if (result.exitCode() != 0) {
+            log.debug("yt-dlp probe non-zero exit for {}: {}", videoId, tail(result.combinedOutput()));
             return Optional.empty();
         }
 
         try {
-            JsonNode root = objectMapper.readTree(json);
+            JsonNode root = objectMapper.readTree(result.stdout());
             Integer width = optInt(root, "width");
             Integer height = optInt(root, "height");
             Integer duration = optInt(root, "duration");
@@ -87,6 +80,11 @@ public class YoutubeProbe {
             log.warn("yt-dlp probe JSON parse failed for {}: {}", videoId, ex.getMessage());
             return Optional.empty();
         }
+    }
+
+    private static String tail(String value) {
+        if (value == null || value.isBlank()) return "";
+        return value.substring(Math.max(0, value.length() - 300));
     }
 
     private static Integer optInt(JsonNode root, String field) {

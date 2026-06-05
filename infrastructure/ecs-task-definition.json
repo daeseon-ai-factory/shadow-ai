@@ -3,7 +3,7 @@
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "512",
-  "memory": "1024",
+  "memory": "2048",
   "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
   "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/tubeshadowTaskRole",
   "runtimePlatform": {
@@ -48,6 +48,23 @@
           "awslogs-group": "/ecs/tubeshadow-backend",
           "awslogs-region": "ca-central-1",
           "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      }
+    },
+    {
+      "name": "pot-provider",
+      "image": "brainicism/bgutil-ytdlp-pot-provider:1.3.1",
+      "essential": false,
+      "portMappings": [
+        { "containerPort": 4416, "protocol": "tcp" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/tubeshadow-backend",
+          "awslogs-region": "ca-central-1",
+          "awslogs-stream-prefix": "pot-provider",
           "awslogs-create-group": "true"
         }
       }

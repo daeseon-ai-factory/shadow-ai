@@ -21,8 +21,11 @@ WORKDIR /app
 # These run as external processes (ProcessBuilder), not Java, so they must exist in the runtime
 # image — without them clip import fails on a clean container. (mirrors Dockerfile.dev; install
 # as root before dropping to the non-root app user.)
-RUN apk add --no-cache python3 py3-pip ffmpeg \
-    && pip install --break-system-packages yt-dlp bgutil-ytdlp-pot-provider
+RUN apk add --no-cache python3 py3-pip ffmpeg deno \
+    && pip install --break-system-packages yt-dlp bgutil-ytdlp-pot-provider==1.3.1
+# deno = the JavaScript runtime yt-dlp needs for current YouTube extraction. Without it yt-dlp
+# fails ("No supported JavaScript runtime") and never even reaches the POToken step, so the
+# bgutil provider is never called. yt-dlp auto-detects deno on PATH (its default runtime).
 # bgutil-ytdlp-pot-provider: the yt-dlp PLUGIN side. It mints a YouTube POToken (needed to fetch
 # captions from a datacenter IP, where a tokenless request returns 200 + 0 bytes) by talking to the
 # POToken provider sidecar over http://localhost:4416 (same Fargate task = shared netns). The pot is
