@@ -738,3 +738,13 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Pattern**: a global resource cache (videos+transcripts shared across users for scale) and a per-user library are *different concerns* — don't conflate them. The shared cache stays keyed by content (`youtube_id`); ownership/recency/"my stuff" goes in a thin per-user join table. Trying to fake a library out of the derived artifact (clips) is what made the UX a dead-end.
 <!-- skipped: decb557 docs(log): narrative — mobile TubeShad-style video library flow (ed58caf) [no-log] -->
 <!-- skipped: c2d2205 feat(mobile): tap a transcript line to LOOP it on the video screen — small UX add (reuses the existing clip-player loop pattern: getCurrentTime poll + seek-back-on-end) on video/[id].tsx, no backend/schema change; the Phase-1 architecture it builds on is logged in ed58caf / 2026-06-07-mobile-video-library-tubeshad-flow.mdx -->
+<!-- skipped: cec9b6b chore(log): mark c2d2205 routine — small loop-line UX add on the logged Phase-1 base [no-log] -->
+<!-- skipped: ded87ba feat(mobile): playback speed control on the video screen (0.5x–1.5x) for shadowing [no-log] -->
+
+---
+
+## Shadowing loop on the video screen: single-line / A-B range / auto-advance (one poll, three modes)
+
+- **Context (UX)**: user wanted TubeShad-grade shadowing on the imported-video screen — repeat a line, repeat an A-B range, and auto-walk line-by-line N times each. ("문장 반복", "A-B 구간이랑 자동 다음 줄도 넣자".)
+- **Design**: one loop model = a line-index range `{a, b}` (single line when `a===b`) plus `autoAdvance` + `reps`. A single `setInterval(getCurrentTime, 200ms)` drives everything (the IFrame fires PAUSED not ENDED at a mid-video boundary, so polling is the reliable re-seek). Two branches: auto OFF → when position passes `lines[b].endMs`, seek back to `lines[a].startMs` (whole-block repeat); auto ON → repeat `lines[cursor]` until `repCount >= reps`, then advance `cursor` (wrapping `b→a`) — the line-by-line drill. Live values read via refs (`loopRef/autoRef/repsRef/cursorRef/repCountRef`) so the interval doesn't re-subscribe on every state change. Plus a playback-rate row (0.5–1.5×) via the library's `playbackRate` prop. Commits c2d2205 (line loop), ded87ba (speed), ee8d78f (A-B + auto).
+- **Pattern**: when an interval must react to fast-changing UI state, keep ONE interval keyed on a stable dep (here `playing`) and read mutable values through refs — don't put the changing values in the effect deps or you thrash the timer. Model the three loop UX modes as one range + flags, not three code paths.
