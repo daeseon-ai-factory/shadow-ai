@@ -41,24 +41,25 @@ export default function RootLayout() {
           </View>
         ) : (
           <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
+            {/* Home / My Videos / Review / Practice / Settings live in the (tabs) group's own
+                bottom-tab navigator. Everything below is pushed on top of the tab bar. */}
+            <Stack.Screen name="(tabs)" />
             <Stack.Screen name="login" options={{ presentation: 'modal' }} />
             <Stack.Screen name="signup" options={{ presentation: 'modal' }} />
             <Stack.Screen name="gym" options={{ headerShown: true, title: t('nav.gym') }} />
-            <Stack.Screen name="practice" options={{ headerShown: true, title: t('nav.practice') }} />
             <Stack.Screen name="collocations" options={{ headerShown: true, title: t('nav.collocations') }} />
             <Stack.Screen name="compose" options={{ headerShown: true, title: t('nav.compose') }} />
             <Stack.Screen name="weak" options={{ headerShown: true, title: t('nav.weak') }} />
             <Stack.Screen name="prepositions" options={{ headerShown: true, title: t('nav.prepositions') }} />
-            <Stack.Screen name="review" options={{ headerShown: true, title: t('nav.review') }} />
-            <Stack.Screen name="videos" options={{ headerShown: true, title: t('nav.videos') }} />
             <Stack.Screen name="video/[id]" options={{ headerShown: true, title: t('nav.videos') }} />
             <Stack.Screen name="library" options={{ headerShown: true, title: t('nav.library') }} />
             <Stack.Screen name="import" options={{ headerShown: true, title: t('nav.import') }} />
             <Stack.Screen name="discover" options={{ headerShown: true, title: t('nav.discover') }} />
             <Stack.Screen name="discover/[slug]" options={{ headerShown: true, title: t('nav.collection') }} />
             <Stack.Screen name="player/[clipId]" options={{ headerShown: true, title: t('nav.clip') }} />
-            <Stack.Screen name="settings" options={{ headerShown: true, title: t('nav.settings') }} />
+            {/* Drills run as full-screen pushes so iOS swipe-back works; their own header handles exit. */}
+            <Stack.Screen name="interview-run" options={{ headerShown: false }} />
+            <Stack.Screen name="code-run" options={{ headerShown: false }} />
           </Stack>
         )}
       </ThemeProvider>

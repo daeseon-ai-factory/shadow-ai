@@ -7,6 +7,8 @@ import com.tubeshadow.practice.api.dto.ComposeCheckRequest;
 import com.tubeshadow.practice.api.dto.ComposeFeedback;
 import com.tubeshadow.practice.api.dto.GradeRequest;
 import com.tubeshadow.practice.api.dto.GradeResponse;
+import com.tubeshadow.practice.api.dto.InterviewCheckRequest;
+import com.tubeshadow.practice.api.dto.InterviewCheckResponse;
 import com.tubeshadow.practice.api.dto.PracticeCardResponse;
 import com.tubeshadow.practice.api.dto.PracticeProgressResponse;
 import com.tubeshadow.practice.api.dto.PracticeRepRequest;
@@ -95,6 +97,13 @@ public class PracticeController {
     public ApiResponse<ComposeFeedback> composeCheck(@CurrentUser AuthenticatedUser user,
                                                      @Valid @RequestBody ComposeCheckRequest request) {
         return ApiResponse.ok(compositionService.check(request.target(), request.gloss(), request.sentence()));
+    }
+
+    @PostMapping("/interview/check")
+    @Operation(summary = "인터뷰 답변 AI 채점 (관대) — 핵심만 맞으면 통과, 억지 교정 X")
+    public ApiResponse<InterviewCheckResponse> interviewCheck(@CurrentUser AuthenticatedUser user,
+                                                              @Valid @RequestBody InterviewCheckRequest request) {
+        return ApiResponse.ok(compositionService.interviewCheck(request.question(), request.answer()));
     }
 
     @PostMapping("/compose/transforms")

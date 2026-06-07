@@ -2,7 +2,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { authApi, PATTERNS, COLLOCATIONS } from '@shadow-ai/core';
+import { authApi, COLLOCATIONS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -27,7 +27,8 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.flex}>
-      <SafeAreaView style={styles.flex}>
+      {/* Top inset only — the bottom tab bar already clears the bottom safe area. */}
+      <SafeAreaView style={styles.flex} edges={['top']}>
         <ScrollView contentContainerStyle={styles.container}>
           <ThemedText type="title">Mimi</ThemedText>
 
@@ -49,62 +50,53 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* Practice hub — each runs shared core content/logic as a native screen. */}
-          <View style={styles.hub}>
-            <HubCard
-              title={t('home.gym')}
-              sub={t('home.gymSub')}
-              onPress={() => router.push('/gym')}
-            />
-            <HubCard
-              title={t('home.review')}
-              sub={t('home.reviewSub')}
-              onPress={() => router.push('/review')}
-            />
-            <HubCard
-              title={t('home.videos')}
-              sub={t('home.videosSub')}
-              onPress={() => router.push('/videos')}
-            />
-            <HubCard
-              title={t('home.library')}
-              sub={t('home.librarySub')}
-              onPress={() => router.push('/library')}
-            />
-            <HubCard
-              title={t('home.discover')}
-              sub={t('home.discoverSub')}
-              onPress={() => router.push('/discover')}
-            />
-            <HubCard
-              title={t('home.patternDrill')}
-              sub={t('home.patternDrillSub', { n: PATTERNS.length })}
-              onPress={() => router.push('/practice')}
-            />
-            <HubCard
+          {/* Primary destinations (Review / My Videos / Practice / Settings) now live in the
+              bottom tab bar, so Home only surfaces the secondary shortcuts that have no tab. */}
+
+          {/* Today — the daily anchor. */}
+          <ThemedText type="smallBold" style={styles.section}>{t('home.todaySection')}</ThemedText>
+          <Pressable style={styles.featured} onPress={() => router.push('/gym')}>
+            <ThemedText type="smallBold">{t('home.gym')} →</ThemedText>
+            <ThemedText type="small">{t('home.gymSub')}</ThemedText>
+          </Pressable>
+
+          {/* Practice tools — sentence-level drills beyond the Pattern-drill tab. */}
+          <ThemedText type="smallBold" style={styles.section}>{t('home.toolsSection')}</ThemedText>
+          <View style={styles.grid}>
+            <GridCard
               title={t('home.collocations')}
               sub={t('home.collocationsSub', { n: COLLOCATIONS.length })}
               onPress={() => router.push('/collocations')}
             />
-            <HubCard
+            <GridCard
               title={t('home.composeCheck')}
               sub={t('home.composeCheckSub')}
               onPress={() => router.push('/compose')}
             />
-            <HubCard
+            <GridCard
               title={t('home.weakSpots')}
               sub={t('home.weakSpotsSub')}
               onPress={() => router.push('/weak')}
             />
-            <HubCard
+            <GridCard
               title={t('home.prepositions')}
               sub={t('home.prepositionsSub')}
               onPress={() => router.push('/prepositions')}
             />
-            <HubCard
-              title={t('home.settings')}
-              sub={t('home.settingsSub')}
-              onPress={() => router.push('/settings')}
+          </View>
+
+          {/* Your clips — content sources not in the tab bar. */}
+          <ThemedText type="smallBold" style={styles.section}>{t('home.contentSection')}</ThemedText>
+          <View style={styles.grid}>
+            <GridCard
+              title={t('home.library')}
+              sub={t('home.librarySub')}
+              onPress={() => router.push('/library')}
+            />
+            <GridCard
+              title={t('home.discover')}
+              sub={t('home.discoverSub')}
+              onPress={() => router.push('/discover')}
             />
           </View>
         </ScrollView>
@@ -113,11 +105,13 @@ export default function HomeScreen() {
   );
 }
 
-function HubCard({ title, sub, onPress }: { title: string; sub: string; onPress: () => void }) {
+function GridCard({ title, sub, onPress }: { title: string; sub: string; onPress: () => void }) {
   return (
-    <Pressable style={styles.hubCard} onPress={onPress}>
-      <ThemedText type="smallBold">{title} →</ThemedText>
-      <ThemedText type="small">{sub}</ThemedText>
+    <Pressable style={styles.gridCard} onPress={onPress}>
+      <ThemedText type="smallBold">{title}</ThemedText>
+      <ThemedText type="small" numberOfLines={2}>
+        {sub}
+      </ThemedText>
     </Pressable>
   );
 }
@@ -125,18 +119,28 @@ function HubCard({ title, sub, onPress }: { title: string; sub: string; onPress:
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  container: { padding: 24, gap: 16, paddingBottom: 40 },
-  hub: { gap: 10, marginTop: 4 },
-  hubCard: {
-    padding: 16,
+  container: { padding: 24, gap: 12, paddingBottom: 32 },
+  gap: { marginTop: 8, gap: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  error: { color: '#dc2626', marginTop: 8 },
+  section: { marginTop: 14, opacity: 0.55, letterSpacing: 0.5 },
+  featured: {
+    padding: 18,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#208AEF',
+    backgroundColor: '#208AEF0d',
+    gap: 4,
+  },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10 },
+  gridCard: {
+    width: '48%',
+    padding: 14,
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#9ca3af',
     gap: 3,
   },
-  gap: { marginTop: 8, gap: 8 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  error: { color: '#dc2626', marginTop: 8 },
   proBadge: {
     backgroundColor: '#208AEF',
     borderRadius: 999,
@@ -150,14 +154,4 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   badgeText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  statsCard: {
-    marginTop: 12,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#9ca3af',
-    gap: 4,
-  },
-  signOut: { marginTop: 'auto', alignSelf: 'flex-start', paddingVertical: 10 },
-  signOutText: { color: '#dc2626', fontWeight: '600' },
 });
