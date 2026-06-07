@@ -25,6 +25,7 @@ export default function VideoDetailScreen() {
   const [playing, setPlaying] = useState(false);
   const [currentMs, setCurrentMs] = useState(0);
   const [mode, setMode] = useState<'sentences' | 'full'>('sentences');
+  const [rate, setRate] = useState(1); // playback speed — 0.5x..1.5x for shadowing
   // The line currently being shadow-looped. null = free play (no loop). Tapping a line loops it.
   const [loopLine, setLoopLine] = useState<TranscriptSegment | null>(null);
   const loopRef = useRef<TranscriptSegment | null>(null);
@@ -128,6 +129,7 @@ export default function VideoDetailScreen() {
             height={height}
             width={playerWidth}
             play={playing}
+            playbackRate={rate}
             videoId={v.youtubeId}
             initialPlayerParams={{ rel: false, modestbranding: true }}
             onChangeState={(s: string) => {
@@ -161,6 +163,21 @@ export default function VideoDetailScreen() {
               </ThemedText>
             </Pressable>
           </View>
+        </View>
+
+        {/* Playback speed — slow down for shadowing, speed up to skim */}
+        <View style={styles.speedRow}>
+          {[0.5, 0.75, 1, 1.25, 1.5].map((r) => (
+            <Pressable
+              key={r}
+              style={[styles.speedBtn, rate === r && styles.speedOn]}
+              onPress={() => setRate(r)}
+            >
+              <ThemedText type="small" style={rate === r ? styles.speedOnText : undefined}>
+                {r}×
+              </ThemedText>
+            </Pressable>
+          ))}
         </View>
 
         <ThemedText type="small" style={styles.hint}>
@@ -236,6 +253,22 @@ const styles = StyleSheet.create({
   toggleItem: { paddingVertical: 8, paddingHorizontal: 14 },
   toggleOn: { backgroundColor: '#208AEF' },
   toggleOnText: { color: '#fff', fontWeight: '700' },
+  speedRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  speedBtn: {
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  speedOn: { backgroundColor: '#111827', borderColor: '#111827' },
+  speedOnText: { color: '#fff', fontWeight: '700' },
   hint: { textAlign: 'center', color: '#6b7280', paddingBottom: 6 },
   list: { paddingHorizontal: 16, paddingBottom: 24, gap: 6 },
   lineRow: {
