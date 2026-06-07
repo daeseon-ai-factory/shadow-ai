@@ -15,6 +15,7 @@ import { clipsApi, videosApi, type TranscriptSegment } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { LineRecorder } from '@/components/line-recorder';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
@@ -305,8 +306,21 @@ export default function VideoDetailScreen() {
         </View>
 
         <ThemedText type="small" style={styles.hint}>
-          {arming !== 'none' ? t('video.tapToPlay') : t('video.tapToPlay')}
+          {t('video.tapToPlay')}
         </ThemedText>
+
+        {/* Record yourself shadowing the looped line, then A/B it against the original */}
+        <LineRecorder
+          disabled={loop == null || loop.a !== loop.b}
+          onPlayOriginal={() => {
+            const seg = lines[cursorRef.current] ?? (loop ? lines[loop.a] : null);
+            if (seg) {
+              playerRef.current?.seekTo(seg.startMs / 1000, true);
+              setCurrentMs(seg.startMs);
+              setPlaying(true);
+            }
+          }}
+        />
 
         {/* Full transcript — tap a line to play from there; active line highlighted */}
         <FlatList
