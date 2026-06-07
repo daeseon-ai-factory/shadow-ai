@@ -9,6 +9,7 @@ import com.tubeshadow.video.infrastructure.YoutubeProbe;
 import com.tubeshadow.video.infrastructure.YoutubeTranscriptClient;
 import com.tubeshadow.video.repository.VideoRepository;
 import com.tubeshadow.video.util.YoutubeUrlParser;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -65,7 +66,25 @@ public class VideoImportService {
 
         return videoRepository.findByYoutubeId(videoId)
                 .map(existing -> recoverIfNeeded(existing, clientSegments))
-                .orElseGet(() -> fetchAndPersist(videoId, clientSegments, clientTitle));
+                .orElseGet(() -> fetchAndPersistRaceSafe(videoId, clientSegments, clientTitle));
+    }
+
+    /**
+     * Cache-fill that survives a concurrent first import. {@code videos.youtube_id} is globally
+     * UNIQUE (the table is a shared cache, not per-user), so if two users import the same NEW video
+     * at the same moment both miss the cache and both try to insert — the loser hits a unique
+     * violation. Instead of 500-ing, we re-read the row the winner just wrote and heal it. At 10M
+     * users on a popular video this race is routine, not exceptional.
+     */
+    private Video fetchAndPersistRaceSafe(String videoId, List<TranscriptSegment> clientSegments, String clientTitle) {
+        try {
+            return fetchAndPersist(videoId, clientSegments, clientTitle);
+        } catch (DataIntegrityViolationException raceLost) {
+            log.info("Concurrent import race for {} — reusing the row the other request inserted", videoId);
+            return videoRepository.findByYoutubeId(videoId)
+                    .map(existing -> recoverIfNeeded(existing, clientSegments))
+                    .orElseThrow(() -> raceLost); // unique violation but no row = a different constraint; surface it
+        }
     }
 
     /**
@@ -78,20 +97,31 @@ public class VideoImportService {
         boolean changed = false;
         if (existing.getTranscriptStatus() != Video.TranscriptStatus.READY) {
             if (clientSegments != null && !clientSegments.isEmpty()) {
+                // A device (mobile, residential IP) always gets to heal the cache — it can fetch
+                // captions the server can't, even for a row we'd marked UNAVAILABLE from AWS.
                 existing.attachTranscript(clientSegments);
                 log.info("Attached client transcript for {} ({} segments)",
                         existing.getYoutubeId(), clientSegments.size());
                 changed = true;
-            } else {
+            } else if (existing.getTranscriptStatus() == Video.TranscriptStatus.PENDING) {
+                // Only server-scrape when we've NEVER resolved this video. A row already marked
+                // UNAVAILABLE means we tried and YouTube had no captions (or blocked us) — re-scraping
+                // it on every re-import would hammer YouTube and invite rate-limits. At 10M users a
+                // popular no-caption video would otherwise be re-scraped endlessly.
                 try {
                     List<TranscriptSegment> segments = transcriptClient.fetch(existing.getYoutubeId());
                     if (!segments.isEmpty()) {
                         existing.attachTranscript(segments);
                         log.info("Recovered transcript for {} ({} segments)", existing.getYoutubeId(), segments.size());
                         changed = true;
+                    } else {
+                        existing.markTranscriptUnavailable();
+                        changed = true;
                     }
                 } catch (NoTranscriptAvailableException ex) {
-                    log.debug("Re-fetch still has no transcript for {}", existing.getYoutubeId());
+                    log.debug("First server fetch found no transcript for {}", existing.getYoutubeId());
+                    existing.markTranscriptUnavailable();
+                    changed = true;
                 }
             }
         }
