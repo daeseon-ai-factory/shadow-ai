@@ -3,7 +3,7 @@ import { renderHook } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import { useShortcuts } from "@/lib/use-shortcuts";
 
-function press(key: string, target: EventTarget = document.body) {
+function press(key: string, target: Element | Window | Document = document.body) {
   fireEvent.keyDown(target, { key });
 }
 
