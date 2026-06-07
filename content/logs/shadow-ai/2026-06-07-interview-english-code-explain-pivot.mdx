@@ -1,0 +1,47 @@
+---
+title: "Interview-English drill: the 'text bomb' trap and the code-explain pivot"
+date: "2026-06-07"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "unlisted"
+language: "en"
+summary: "Built an Opendoor interview-English prep feature into the Mimi mobile app. The content kept ballooning into text bombs; the fix was one code-centric flow — look at real Java, say the core in English, get a short model answer + a deliberately lenient AI check."
+tags: ["mobile", "expo-router", "llm", "ux", "interview-prep"]
+---
+
+The ask started small — "src/app is a flat Stack with 11 cards on the home screen, refactor it into a tabs group" — and turned into a whole interview-prep surface inside the Mimi mobile app. The build was a good lesson in *letting the user delete my over-engineering*.
+
+## The shape that worked, eventually
+
+A new **면접 (Interview)** tab with one job: **look at real Java → say the core in English out loud → see a short model answer**, with an optional, lenient AI check on what you said. Plus a speaking-drill side (reflex one-liners, concept/scenario cards, three retrieval modes) reusing the existing SRS/`DrillRunner` engine, so streaks and the weak-spots screen come for free.
+
+But that's the *fourth* shape. The first three were too much.
+
+## Where it went wrong: text bombs
+
+I kept mistaking "thorough" for "good." I authored:
+
+- 8 Opendoor LLD problems, each with a problem essay, a multi-paragraph design narration, a Java skeleton, *and* follow-up Q&A.
+- 35 "explain a data structure / algorithm / pattern" cards — as text-only definitions.
+
+The user's feedback, three times, escalating: *"페어프로그래밍 뭔 텍스트가 저리 많냐"* → *"코드가 있으면 그걸 영어로 풀어 설명하는것만 원한거다"* → *"텍스트 폭탄을 원하는게 아니고 핵심만 말하게 되는걸 원한다."*
+
+He was right. For a tool whose whole point is *say the core concisely*, a long model answer silently teaches you to ramble. The model answer **is** the target behavior.
+
+## The fix: enforce brevity in the pipeline
+
+I regenerated the entire technical deck (46 cards across ds/algo/pattern/method/design) as one code-centric shape: a real, focused Java snippet + a **1–2 sentence** core explanation + 2–3 key points. The brevity wasn't just requested in the authoring prompt — it was **enforced**: the card `answer` schema is capped at `maxLength: 280`, and the adversarial verify pass was told its job was to *reject and cut* any answer that ran past two sentences. Then I deleted the heavy LLD walkthrough screen and the text-only cards entirely.
+
+The HashMap card is the whole philosophy in one example: a few lines of real Java indexing homes by zip, and the answer is just *"average O(1) put and get by key, no ordering guarantee."* That's it. That's what you should be able to say in eight seconds.
+
+## The AI check: lenient on purpose
+
+The user was emphatic that the grader must not nitpick — *"억지 교정 말고 핵심 오류만."* So the new `POST /api/practice/interview/check` runs a deliberately tolerant prompt: pass if the core idea is understandable, ignore speech-to-text noise, and never "improve" an answer that already works — only flag a genuinely wrong claim or unintelligible English. A grader that red-pens every sentence is a grader you stop using. It's Gemini-first through the existing provider-fallback client, behind the per-user AI rate limiter.
+
+## The deploy reality check
+
+"Is it working now? The backend's already up." Not quite. The dev build on a physical phone talks to `api.mimi.daeseon.ai` (prod), not the Mac's Metro — so the bundled content, the reveal, and SRS grading all work on a reload, but the *new* AI-check endpoint needs a real ECS deploy (`backend/**` pushed to `main` triggers the GitHub Actions OIDC pipeline). And the Gemini free-tier key has to live in the prod account's Secrets Manager at `tubeshadow/gemini-api-key` — the task definition and `gemini-2.5-flash` config were already wired for it; the secret just has to be set by the owner, in the right account.
+
+## Takeaway
+
+When a user says "text bomb" twice, the move isn't to write a better paragraph — it's to delete the paragraph. And for any "do it concisely" trainer, brevity has to be a hard constraint in the content pipeline (a schema limit + a verifier whose only job is to cut), because the model will always drift long and the long answer becomes the lesson.
