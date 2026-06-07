@@ -749,3 +749,17 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Design**: one loop model = a line-index range `{a, b}` (single line when `a===b`) plus `autoAdvance` + `reps`. A single `setInterval(getCurrentTime, 200ms)` drives everything (the IFrame fires PAUSED not ENDED at a mid-video boundary, so polling is the reliable re-seek). Two branches: auto OFF → when position passes `lines[b].endMs`, seek back to `lines[a].startMs` (whole-block repeat); auto ON → repeat `lines[cursor]` until `repCount >= reps`, then advance `cursor` (wrapping `b→a`) — the line-by-line drill. Live values read via refs (`loopRef/autoRef/repsRef/cursorRef/repCountRef`) so the interval doesn't re-subscribe on every state change. Plus a playback-rate row (0.5–1.5×) via the library's `playbackRate` prop. Commits c2d2205 (line loop), ded87ba (speed), ee8d78f (A-B + auto).
 - **Pattern**: when an interval must react to fast-changing UI state, keep ONE interval keyed on a stable dep (here `playing`) and read mutable values through refs — don't put the changing values in the effect deps or you thrash the timer. Model the three loop UX modes as one range + flags, not three code paths.
 <!-- skipped: f257aa3 docs(log): narrative — video shadowing loop modes (ee8d78f) [no-log] -->
+<!-- skipped: b38adaf chore(log): hook marker [no-log] -->
+
+---
+
+## Claude Code 400 "no low surrogate in string" mid-session (CLI/harness, not app code)
+
+- **Symptom**: while working, the CLI started repeatedly failing every request with:
+  ```
+  API Error: 400 The request body is not valid JSON: no low surrogate in string: line 1 column 1627829 (char 1627828)
+  ```
+- **Cause**: a UTF-16 surrogate-pair error in the request the CLI serializes to the Anthropic API — NOT the project's code. Emoji (and other astral-plane chars) are stored as two code units (a high + low surrogate). In a very long session (~1.6M-char request body) the harness truncates large tool outputs; a truncation landed in the *middle* of an emoji, leaving a lone high surrogate. JSON can't encode a lone surrogate → 400. The broken string is now in the conversation history, so it re-serializes and fails on every subsequent turn.
+- **Contributing factors (this session)**: many emoji in replies (🎉🔁🎙) + huge tool outputs pulled into context (workflow result JSON, a 45 KB handoff doc, Metro bundle dumps). The truncation point split an emoji.
+- **Fix**: nothing to change in the repo — it's a harness/context-serialization edge case. Recover by dropping the corrupted history: `/compact` (summarize → replaces the raw broken string, keeps continuity) or a fresh session / `/clear` (all work was committed: b38adaf). Prevention: avoid echoing very large blobs (full bundles, whole exported docs) into the chat, and go lighter on emoji in long sessions, so a truncation can't split a surrogate pair.
+- **Pattern**: a "no low/high surrogate" JSON error is always a *lone UTF-16 surrogate*, almost always from a string truncated at a non-codepoint boundary — look for where text got cut (log/tool-output truncation), not for a logic bug.
