@@ -25,6 +25,10 @@ export default function VideoDetailScreen() {
   const [playing, setPlaying] = useState(false);
   const [currentMs, setCurrentMs] = useState(0);
   const [mode, setMode] = useState<'sentences' | 'full'>('sentences');
+  // The line currently being shadow-looped. null = free play (no loop). Tapping a line loops it.
+  const [loopLine, setLoopLine] = useState<TranscriptSegment | null>(null);
+  const loopRef = useRef<TranscriptSegment | null>(null);
+  loopRef.current = loopLine;
 
   const video = useQuery({
     queryKey: ['video', id],
@@ -45,17 +49,33 @@ export default function VideoDetailScreen() {
     onSuccess: (clip) => router.push(`/player/${clip.id}`),
   });
 
-  // Poll the player position so we can highlight the line currently being spoken.
+  // Poll the player position to (a) highlight the line being spoken and (b) loop the selected line:
+  // when playback passes the loop line's end, seek back to its start. The IFrame fires PAUSED (not
+  // ENDED) at a mid-video boundary, so polling getCurrentTime is the reliable way to re-loop.
   useEffect(() => {
     if (!playing) return;
     const handle = setInterval(async () => {
       const sec = await playerRef.current?.getCurrentTime?.();
-      if (typeof sec === 'number') setCurrentMs(sec * 1000);
-    }, 300);
+      if (typeof sec !== 'number') return;
+      const ms = sec * 1000;
+      setCurrentMs(ms);
+      const loop = loopRef.current;
+      if (loop && ms >= loop.endMs) {
+        playerRef.current?.seekTo(loop.startMs / 1000, true);
+        setCurrentMs(loop.startMs);
+      }
+    }, 200);
     return () => clearInterval(handle);
   }, [playing]);
 
-  const seekToLine = useCallback((seg: TranscriptSegment) => {
+  // Tap a line → loop just that line (the core shadowing gesture). Tap the same line again to stop looping.
+  const toggleLoopLine = useCallback((seg: TranscriptSegment) => {
+    const same = loopRef.current && loopRef.current.startMs === seg.startMs;
+    if (same) {
+      setLoopLine(null); // stop looping, keep playing
+      return;
+    }
+    setLoopLine(seg);
     playerRef.current?.seekTo(seg.startMs / 1000, true);
     setCurrentMs(seg.startMs);
     setPlaying(true);
@@ -154,10 +174,13 @@ export default function VideoDetailScreen() {
           contentContainerStyle={styles.list}
           renderItem={({ item, index }) => {
             const active = index === activeIndex;
+            const looping = loopLine != null && loopLine.startMs === item.startMs;
             return (
-              <View style={[styles.lineRow, active && styles.lineRowActive]}>
-                <Pressable style={styles.lineText} onPress={() => seekToLine(item)}>
-                  <ThemedText style={active ? styles.lineActiveText : undefined}>{item.text}</ThemedText>
+              <View style={[styles.lineRow, active && styles.lineRowActive, looping && styles.lineRowLoop]}>
+                <Pressable style={styles.lineText} onPress={() => toggleLoopLine(item)}>
+                  <ThemedText style={active || looping ? styles.lineActiveText : undefined}>
+                    {looping ? '🔁  ' : ''}{item.text}
+                  </ThemedText>
                 </Pressable>
                 <Pressable
                   style={styles.clipBtn}
@@ -226,6 +249,7 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
   },
   lineRowActive: { backgroundColor: 'rgba(32,138,239,0.12)', borderColor: '#208AEF' },
+  lineRowLoop: { backgroundColor: 'rgba(32,138,239,0.22)', borderColor: '#208AEF', borderWidth: 1.5 },
   lineText: { flex: 1 },
   lineActiveText: { fontWeight: '700' },
   clipBtn: {
