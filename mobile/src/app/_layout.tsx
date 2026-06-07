@@ -51,6 +51,8 @@ export default function RootLayout() {
             <Stack.Screen name="weak" options={{ headerShown: true, title: t('nav.weak') }} />
             <Stack.Screen name="prepositions" options={{ headerShown: true, title: t('nav.prepositions') }} />
             <Stack.Screen name="review" options={{ headerShown: true, title: t('nav.review') }} />
+            <Stack.Screen name="videos" options={{ headerShown: true, title: t('nav.videos') }} />
+            <Stack.Screen name="video/[id]" options={{ headerShown: true, title: t('nav.videos') }} />
             <Stack.Screen name="library" options={{ headerShown: true, title: t('nav.library') }} />
             <Stack.Screen name="import" options={{ headerShown: true, title: t('nav.import') }} />
             <Stack.Screen name="discover" options={{ headerShown: true, title: t('nav.discover') }} />

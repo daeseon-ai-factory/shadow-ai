@@ -62,6 +62,11 @@ export default function HomeScreen() {
               onPress={() => router.push('/review')}
             />
             <HubCard
+              title={t('home.videos')}
+              sub={t('home.videosSub')}
+              onPress={() => router.push('/videos')}
+            />
+            <HubCard
               title={t('home.library')}
               sub={t('home.librarySub')}
               onPress={() => router.push('/library')}

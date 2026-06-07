@@ -12,6 +12,7 @@ export * from "./practice-cards";
 export * from "./api/client";
 export * from "./api/auth";
 export * from "./api/clips";
+export * from "./api/library";
 export * from "./api/analysis";
 export * from "./api/videos";
 export * from "./api/decks";

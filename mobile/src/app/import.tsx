@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -14,9 +13,7 @@ import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   videosApi,
-  clipsApi,
   ApiError,
-  type VideoResponse,
   type TranscriptSegment,
 } from '@shadow-ai/core';
 
@@ -35,7 +32,6 @@ export default function ImportScreen() {
   // Discover deep-links here with a ?url= to prefill (tap a curated video to import it).
   const params = useLocalSearchParams<{ url?: string }>();
   const [url, setUrl] = useState(params.url ?? '');
-  const [video, setVideo] = useState<VideoResponse | null>(null);
   const [deviceFetchUrl, setDeviceFetchUrl] = useState<string | null>(null);
   const [deviceError, setDeviceError] = useState<string | null>(null);
 
@@ -49,23 +45,12 @@ export default function ImportScreen() {
         transcriptSegments: request.transcriptSegments,
         title: request.title,
       }),
-    onSuccess: (v) => setVideo(v),
-  });
-
-  // Tap a sentence → make a one-sentence clip from it.
-  const makeClip = useMutation({
-    mutationFn: (seg: TranscriptSegment) =>
-      clipsApi.create({
-        videoId: video!.id,
-        startMs: seg.startMs,
-        endMs: seg.endMs,
-        name: seg.text.slice(0, 40),
-        tags: [],
-      }),
-    onSuccess: (clip) => {
-      // Refresh the Library list so the just-created clip is there when the user goes back.
-      qc.invalidateQueries({ queryKey: ['clips'] });
-      router.replace(`/player/${clip.id}`);
+    onSuccess: (v) => {
+      // The video is saved (auto-added to the user's library server-side). Land on the video
+      // detail screen — full transcript, tap-to-seek, and clip from any line — instead of forcing
+      // a single clip. The video stays in "My Videos" to reopen anytime.
+      qc.invalidateQueries({ queryKey: ['library', 'videos'] });
+      router.replace(`/video/${v.id}`);
     },
   });
 
@@ -101,42 +86,6 @@ export default function ImportScreen() {
     setDeviceError(result.ok ? 'device transcript returned no segments' : result.error);
     importVideo.mutate({ sourceUrl });
   };
-
-  if (video) {
-    const lines = video.sentences.length > 0 ? video.sentences : video.transcriptSegments;
-    return (
-      <ThemedView style={styles.flex}>
-        <SafeAreaView style={styles.flex} edges={['bottom']}>
-          <View style={styles.resultHeader}>
-            <ThemedText type="subtitle" numberOfLines={2}>
-              {video.title}
-            </ThemedText>
-            <ThemedText type="small">{t('import.tapSentence')}</ThemedText>
-          </View>
-          {makeClip.isPending && <ActivityIndicator style={styles.mt} />}
-          <FlatList
-            data={lines}
-            keyExtractor={(_, i) => String(i)}
-            contentContainerStyle={styles.list}
-            renderItem={({ item }) => (
-              <Pressable
-                style={styles.line}
-                disabled={makeClip.isPending}
-                onPress={() => makeClip.mutate(item)}
-              >
-                <ThemedText>{item.text}</ThemedText>
-              </Pressable>
-            )}
-            ListEmptyComponent={
-              <ThemedText type="small" style={styles.empty}>
-                {t('import.noTranscript')}
-              </ThemedText>
-            }
-          />
-        </SafeAreaView>
-      </ThemedView>
-    );
-  }
 
   return (
     <ThemedView style={styles.flex}>

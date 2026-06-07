@@ -3,9 +3,11 @@ package com.tubeshadow.video.api;
 import com.tubeshadow.auth.security.AuthenticatedUser;
 import com.tubeshadow.auth.security.CurrentUser;
 import com.tubeshadow.common.web.ApiResponse;
+import com.tubeshadow.library.application.LibraryVideoService;
 import com.tubeshadow.video.api.dto.VideoImportRequest;
 import com.tubeshadow.video.api.dto.VideoResponse;
 import com.tubeshadow.video.application.VideoImportService;
+import com.tubeshadow.video.domain.Video;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,17 +28,21 @@ import java.util.UUID;
 public class VideoController {
 
     private final VideoImportService importService;
+    private final LibraryVideoService libraryService;
 
-    public VideoController(VideoImportService importService) {
+    public VideoController(VideoImportService importService, LibraryVideoService libraryService) {
         this.importService = importService;
+        this.libraryService = libraryService;
     }
 
     @PostMapping("/import")
     @Operation(summary = "YouTube URL 임포트")
     public ApiResponse<VideoResponse> importVideo(@Valid @RequestBody VideoImportRequest request,
                                                   @CurrentUser AuthenticatedUser user) {
-        return ApiResponse.ok(VideoResponse.from(
-                importService.importByUrl(request.url(), request.transcriptSegments(), request.title())));
+        Video video = importService.importByUrl(request.url(), request.transcriptSegments(), request.title());
+        // Every import lands in the user's library automatically (zero-friction "save"); idempotent.
+        libraryService.save(user.id(), video.getId());
+        return ApiResponse.ok(VideoResponse.from(video));
     }
 
     @GetMapping("/{id}")

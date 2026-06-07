@@ -21,6 +21,9 @@ public interface ClipRepository extends JpaRepository<Clip, UUID> {
 
     long countByUserId(UUID userId);
 
+    /** How many clips this user has made from a given video (for the "N clips" badge in My Videos). */
+    long countByUserIdAndVideoId(UUID userId, UUID videoId);
+
     /** Count clips inside a specific deck. */
     long countByUserIdAndDeckId(UUID userId, UUID deckId);
 
