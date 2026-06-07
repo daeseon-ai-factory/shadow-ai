@@ -715,3 +715,14 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Commit**: dedc1b8 (decision + runbook); bbdd7dc (the sidecar integration).
 - **Pattern**: for a fragile external dependency you can't control (YouTube anti-bot), commit the *ranked fallback order* the day you adopt it — future-you debugging a 2am breakage wants the switch list, not a re-investigation.
 <!-- override-trigger: 8002f83 docs(log): troubleshooting pointer to the transcript fallback runbook (dedc1b8) [no-log] — false positive: 8002f83 IS the troubleshooting.md entry (the terse dual-write half) whose narrative counterpart already shipped in dedc1b8's mdx (transcript-method-decision-and-fallbacks). The "fallback" keyword fired on the entry's own descriptive subject. Logging the log would be circular; nothing further to record. -->
+<!-- skipped: e189512 chore(log): override-trigger note for 8002f83 (the entry is itself the log) [no-log] -->
+
+---
+
+## Scaling the transcript cache to 10M users: concurrent-insert race + endless re-scrape
+
+- **Context**: designing import to survive 10M users. `videos` is already a *global* shared cache (`youtube_id` UNIQUE, no `user_id`) so a transcript is fetched once and reused by everyone — correct. Two gaps surfaced under concurrency/repeat load.
+- **Gap 1 — concurrent first import**: two users importing the same NEW video at once both miss the cache (`findByYoutubeId` empty) and both `save()` → the loser hits `uk_videos_youtube_id` and throws `DataIntegrityViolationException` → 500. On a popular video at scale this is routine, not exceptional.
+- **Gap 2 — endless re-scrape**: `recoverIfNeeded` re-ran the yt-dlp scraper on every re-import of any non-READY video, including ones already `UNAVAILABLE`. A popular no-caption video would be re-scraped on every attempt → wasted calls + self-inflicted YouTube rate-limits.
+- **Fix** (df4e4d2): (1) wrap the cache-fill in `fetchAndPersistRaceSafe` — catch `DataIntegrityViolationException`, re-read the winner's row, heal it. (2) server-scrape only when status is `PENDING` (never resolved); a row marked `UNAVAILABLE` is not re-scraped server-side. Client-supplied segments (mobile, residential IP) can still always heal the cache — even an `UNAVAILABLE` row — since the phone fetches captions the AWS server can't.
+- **Pattern**: a UNIQUE-keyed shared cache filled outside a transaction needs a lost-race path (catch the constraint, re-read) — `find-then-insert` is not atomic across requests. And "self-heal on re-import" must distinguish *never-tried* (PENDING, retry) from *tried-and-failed* (UNAVAILABLE, don't hammer) or it becomes a load amplifier at scale.
