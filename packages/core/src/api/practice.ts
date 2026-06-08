@@ -40,6 +40,11 @@ export interface InterviewFeedback {
   better: string;
 }
 
+// Whisper transcript of an uploaded audio clip (dev-jargon-aware).
+export interface TranscribeResult {
+  text: string;
+}
+
 export const practiceApi = {
   progress: (localDate: string) =>
     apiClient.get<PracticeProgress>("/api/practice/progress", { query: { localDate } }),
@@ -51,4 +56,10 @@ export const practiceApi = {
   // Lenient grade of a spoken explanation — `question` is the code/topic, `answer` is what the learner said.
   interviewCheck: (question: string, answer: string) =>
     apiClient.post<InterviewFeedback>("/api/practice/interview/check", { question, answer }),
+  // Upload an audio clip → Whisper transcript. `file` is a React Native file descriptor.
+  transcribe: (file: { uri: string; name: string; type: string }) => {
+    const form = new FormData();
+    form.append("file", file as unknown as Blob);
+    return apiClient.post<TranscribeResult>("/api/practice/transcribe", form);
+  },
 };

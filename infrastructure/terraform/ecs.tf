@@ -39,6 +39,7 @@ locals {
   ]
   optional_secrets = concat(
     [for s in aws_secretsmanager_secret.gemini_api_key : { name = "GEMINI_API_KEY", valueFrom = s.arn }],
+    [for s in aws_secretsmanager_secret.groq_api_key : { name = "GROQ_API_KEY", valueFrom = s.arn }],
     [for s in aws_secretsmanager_secret.openai_api_key : { name = "OPENAI_API_KEY", valueFrom = s.arn }],
     [for s in aws_secretsmanager_secret.anthropic_api_key : { name = "ANTHROPIC_API_KEY", valueFrom = s.arn }],
     [for s in aws_secretsmanager_secret.billing_webhook_secret : { name = "BILLING_WEBHOOK_SECRET", valueFrom = s.arn }],

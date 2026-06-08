@@ -17,7 +17,9 @@ import com.tubeshadow.practice.api.dto.SentenceTransformSetResponse;
 import com.tubeshadow.practice.api.dto.TransformCheckRequest;
 import com.tubeshadow.practice.api.dto.TransformCheckResponse;
 import com.tubeshadow.practice.api.dto.TransformGenerateRequest;
+import com.tubeshadow.practice.api.dto.TranscribeResponse;
 import com.tubeshadow.practice.application.CompositionService;
+import com.tubeshadow.practice.infrastructure.GroqTranscriptionClient;
 import com.tubeshadow.practice.application.PracticeProgressService;
 import com.tubeshadow.practice.application.PracticeSrsService;
 import com.tubeshadow.practice.application.SeedService;
@@ -26,6 +28,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -48,15 +53,17 @@ public class PracticeController {
     private final CompositionService compositionService;
     private final TransformService transformService;
     private final SeedService seedService;
+    private final GroqTranscriptionClient transcriptionClient;
 
     public PracticeController(PracticeProgressService service, PracticeSrsService srsService,
                              CompositionService compositionService, TransformService transformService,
-                             SeedService seedService) {
+                             SeedService seedService, GroqTranscriptionClient transcriptionClient) {
         this.service = service;
         this.srsService = srsService;
         this.compositionService = compositionService;
         this.transformService = transformService;
         this.seedService = seedService;
+        this.transcriptionClient = transcriptionClient;
     }
 
     @GetMapping("/progress")
@@ -97,6 +104,14 @@ public class PracticeController {
     public ApiResponse<ComposeFeedback> composeCheck(@CurrentUser AuthenticatedUser user,
                                                      @Valid @RequestBody ComposeCheckRequest request) {
         return ApiResponse.ok(compositionService.check(request.target(), request.gloss(), request.sentence()));
+    }
+
+    @PostMapping(value = "/transcribe", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "음성 전사 (Whisper) — 개발 용어 정확 인식")
+    public ApiResponse<TranscribeResponse> transcribe(@CurrentUser AuthenticatedUser user,
+                                                      @RequestParam("file") MultipartFile file) throws IOException {
+        return ApiResponse.ok(new TranscribeResponse(
+                transcriptionClient.transcribe(file.getBytes(), file.getOriginalFilename())));
     }
 
     @PostMapping("/interview/check")

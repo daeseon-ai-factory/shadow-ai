@@ -778,3 +778,7 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 
 <!-- skipped: 0a5aa82 chore(log): mark cba606c routine — log-of-a-log false positive [no-log] -->
 <!-- skipped: 6152625 chore: add missing imports in CompositionService (interview-check compile fix) [no-log] -->
+<!-- skipped: 5eee252 fix(interview): abort speech recognition on MicInput unmount (mic stayed hot after swipe-back) [no-log] -->
+<!-- skipped: ae6b966 fix(mobile): add NSSpeechRecognitionUsageDescription (mic Speak crashed — missing iOS permission string) [no-log] -->
+<!-- skipped: fe5803d fix(interview): mic 'audio session interrupted' with AirPods — drop allowBluetoothA2DP (HFP/A2DP route conflict on playAndRecord); friendlier error [no-log] -->
+<!-- skipped: 2a2bb4e feat(interview): bias mic STT toward dev jargon — contextualStrings dictionary (~120 CS/backend terms) + Apple network recognizer for accuracy [no-log] -->
