@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import {
   ExpoSpeechRecognitionModule,
@@ -19,6 +19,11 @@ import { t } from '@/lib/i18n';
 export function MicInput({ onText }: { onText: (text: string) => void }) {
   const [listening, setListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // If the screen unmounts mid-listen (swipe-back / navigate away), kill the native recognizer so
+  // the mic + audio session don't stay hot and orphaned global 'result' events don't fire into a
+  // dead tree. abort() is a safe no-op when idle and discards the final result (no 'result' emit).
+  useEffect(() => () => ExpoSpeechRecognitionModule.abort(), []);
 
   useSpeechRecognitionEvent('start', () => setListening(true));
   useSpeechRecognitionEvent('end', () => setListening(false));
