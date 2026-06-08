@@ -1,17 +1,17 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { localToday, practiceApi, type CodeCard } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { SpokenCheck } from '@/components/spoken-check';
 import { t } from '@/lib/i18n';
 
 /**
- * Look at real Java → say the CORE in English → (optional lenient AI check) → reveal a short model
- * answer + the key points to hit. No text bombs: the model answer is 1-2 sentences. Pushed route,
- * so iOS swipe-back works; grading feeds the same SRS as every other card.
+ * Look at real Java → SAY the core in English (mic) → lenient AI check → reveal a short model
+ * answer + the key points. Pushed route, so iOS swipe-back works; grading feeds the same SRS.
  */
 export function CodeDrill({ cards, onExit }: { cards: CodeCard[]; onExit: () => void }) {
   const [queue, setQueue] = useState<CodeCard[]>(cards);
@@ -102,7 +102,7 @@ export function CodeDrill({ cards, onExit }: { cards: CodeCard[]; onExit: () => 
           {!revealed ? (
             <View style={styles.gap}>
               <ThemedText type="small" style={styles.hint}>{t('code.explain')}</ThemedText>
-              <AiCheck card={card} />
+              <SpokenCheck question={card.code} />
               <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>
                 <ThemedText style={styles.primaryText}>{t('code.reveal')}</ThemedText>
               </Pressable>
@@ -130,48 +130,6 @@ export function CodeDrill({ cards, onExit }: { cards: CodeCard[]; onExit: () => 
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
-  );
-}
-
-/** Optional lenient AI check: type your explanation, get core-only feedback before revealing. */
-function AiCheck({ card }: { card: CodeCard }) {
-  const [text, setText] = useState('');
-  const check = useMutation({ mutationFn: () => practiceApi.interviewCheck(card.code, text.trim()) });
-  const fb = check.data;
-  return (
-    <View style={styles.checkBox}>
-      <TextInput
-        style={styles.checkInput}
-        placeholder={t('code.myAnswer')}
-        placeholderTextColor="#9ca3af"
-        multiline
-        value={text}
-        onChangeText={setText}
-      />
-      {check.isError ? <ThemedText style={styles.checkErr}>{t('code.checkFailed')}</ThemedText> : null}
-      {fb ? (
-        <View style={[styles.verdict, fb.ok ? styles.vOk : styles.vWork]}>
-          <ThemedText type="smallBold">
-            {fb.ok ? t('code.good') : t('code.needsWork')}  ·  {fb.score}/100
-          </ThemedText>
-          <ThemedText type="small">{fb.feedback}</ThemedText>
-          {fb.better ? (
-            <ThemedText style={styles.better}>{t('code.better', { text: fb.better })}</ThemedText>
-          ) : null}
-        </View>
-      ) : null}
-      <Pressable
-        style={[styles.checkBtn, (!text.trim() || check.isPending) && styles.disabled]}
-        disabled={!text.trim() || check.isPending}
-        onPress={() => check.mutate()}
-      >
-        {check.isPending ? (
-          <ActivityIndicator color="#208AEF" />
-        ) : (
-          <ThemedText style={styles.checkBtnText}>{t('code.aiCheck')}</ThemedText>
-        )}
-      </Pressable>
-    </View>
   );
 }
 
@@ -213,30 +171,4 @@ const styles = StyleSheet.create({
   gotIt: { backgroundColor: '#208AEF' },
   linkBtn: { paddingVertical: 10 },
   linkText: { color: '#208AEF', fontWeight: '600' },
-  disabled: { opacity: 0.5 },
-  checkBox: { gap: 8 },
-  checkInput: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#9ca3af',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 15,
-    minHeight: 64,
-    textAlignVertical: 'top',
-    color: '#111827',
-    backgroundColor: '#fff',
-  },
-  checkErr: { color: '#dc2626' },
-  verdict: { borderRadius: 10, borderWidth: 1, padding: 12, gap: 4 },
-  vOk: { borderColor: '#10b98155', backgroundColor: '#10b98111' },
-  vWork: { borderColor: '#f59e0b55', backgroundColor: '#f59e0b11' },
-  better: { fontStyle: 'italic' },
-  checkBtn: {
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#208AEF',
-  },
-  checkBtnText: { color: '#208AEF', fontWeight: '700' },
 });

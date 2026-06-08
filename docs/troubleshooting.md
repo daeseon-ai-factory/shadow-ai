@@ -776,3 +776,5 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 
 <!-- override-trigger: cba606c docs(log): interview-English code-explain pivot + lenient AI check (21400b9) [no-log] — false positive: cba606c IS the docs(log) commit that logs feature 21400b9 (the entry above + the mdx both reference 21400b9). The "pivot" keyword is only in this log commit's own subject describing the already-logged work; logging a log-of-a-log is recursive. -->
 
+<!-- skipped: 0a5aa82 chore(log): mark cba606c routine — log-of-a-log false positive [no-log] -->
+<!-- skipped: 6152625 chore: add missing imports in CompositionService (interview-check compile fix) [no-log] -->

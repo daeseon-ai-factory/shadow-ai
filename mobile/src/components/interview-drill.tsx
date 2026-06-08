@@ -6,6 +6,7 @@ import { localToday, practiceApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { SpokenCheck } from '@/components/spoken-check';
 import { t } from '@/lib/i18n';
 
 export type IvMode = 'shadow' | 'produce' | 'respond';
@@ -163,9 +164,12 @@ export function InterviewDrill({
                 </View>
               )}
               {!revealed ? (
-                <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>
-                  <ThemedText style={styles.primaryText}>{t('drill.reveal')}</ThemedText>
-                </Pressable>
+                <View style={styles.gap}>
+                  <SpokenCheck question={item.answer} />
+                  <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>
+                    <ThemedText style={styles.primaryText}>{t('drill.reveal')}</ThemedText>
+                  </Pressable>
+                </View>
               ) : (
                 <View style={styles.gap}>
                   <View style={styles.modelBox}>
