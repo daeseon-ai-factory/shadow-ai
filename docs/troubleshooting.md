@@ -794,3 +794,23 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 <!-- skipped: ae6b966 fix(mobile): add NSSpeechRecognitionUsageDescription (mic Speak crashed — missing iOS permission string) [no-log] -->
 <!-- skipped: fe5803d fix(interview): mic 'audio session interrupted' with AirPods — drop allowBluetoothA2DP (HFP/A2DP route conflict on playAndRecord); friendlier error [no-log] -->
 <!-- skipped: 2a2bb4e feat(interview): bias mic STT toward dev jargon — contextualStrings dictionary (~120 CS/backend terms) + Apple network recognizer for accuracy [no-log] -->
+<!-- skipped: a33b853 fix(interview): native multipart upload for Whisper mic — RN fetch FormData rejects file-URI parts ('Unsupported FormDataPart'); use expo-file-system uploadAsync + stage-tagged diagnostic errors [no-log] -->
+
+---
+
+## Region migration Seoul→ca-central-1: a SIGKILL wiped terraform state, plus import/S3 gotchas
+
+Migrating the prod backend ap-northeast-2 (Seoul) → ca-central-1 (Toronto-area) for lower mic latency. Four issues hit in sequence:
+
+- **S3 bucket hung the apply for 36 min.** `terraform apply` sat on `aws_s3_bucket.recordings: Still creating... [36m41s elapsed]` while everything else finished. Cause: the bucket name `${project}-recordings-${account_id}` is GLOBALLY unique and identical to the just-destroyed Seoul bucket; S3 rejects `CreateBucket` for a freshly-deleted name with `OperationAborted: A conflicting conditional operation is currently in progress` and terraform retries indefinitely (`head-bucket` returns 404 during this window — misleading). The task def + ECS service `depends_on` the bucket (RECORDING_S3_BUCKET env), so they were blocked too. **Fix:** region-suffix the name → `...-${var.aws_region}` (fresh name = instant). `s3.tf`, commit `cdba49f`.
+
+- **SIGKILL on terraform truncated the state to 0 bytes (self-inflicted, worst one).** To unstick the apply I `pkill -9`'d terraform mid-state-write → `terraform.tfstate` = **0 bytes**; `.backup` held only the 2-resource pre-apply state while ~49 resources existed in AWS = orphaned. Manual `aws rds/ecs delete...` cleanup was (correctly) blocked by the safety classifier. **Fix:** non-destructive recovery — `terraform import` all 49 orphans back into state (they were tagged with their index, e.g. `tubeshadow-public-0/1`, so indexed imports mapped reliably); `terraform plan` then showed **0 to destroy/replace** = clean; `apply` created only the 3 truly-missing (bucket, task def, service).
+
+- **`terraform import` blocked GLOBALLY by "Invalid count argument".** Every import (even `aws_vpc.main`) failed because `aws_route_table_association` had `count = length(aws_subnet.public)` — a not-yet-in-state dependency makes count unknown during import, which aborts the whole operation. **Fix:** count off a static var, `count = length(var.public_subnet_cidrs)`. `network.tf`, commit `cdba49f`.
+
+- **`EntityAlreadyExists` IAM role on the finishing apply.** `aws_iam_role.github_deploy`'s real name is `GitHubActionsDeploy`; my import query searched `tubeshadow*deploy*` and missed it, so terraform tried to create it → 409. **Fix:** `terraform import aws_iam_role.github_deploy GitHubActionsDeploy` + re-apply.
+
+- **Result:** ca-central-1 fully terraform-managed, `/api/health` 200, transcribe live. ACM needed ZERO DNS work — ACM reuses the SAME deterministic DNS-validation CNAME per domain, so the existing Cloudflare record auto-validated the new-region cert; only the `api.mimi.daeseon.ai` CNAME repoint was manual.
+- **Patterns:** (1) NEVER `SIGKILL` terraform mid-apply — it truncates local state; use TaskStop/SIGINT and recover via `import`, not delete. (2) `count = length(<resource>)` makes the whole config un-`import`able — count off a static var/local. (3) S3 + Secrets Manager hold a deleted NAME for a while; a region migration must use region/random-suffixed names. (4) zsh quirks bite: `$ECR:latest`→`${ECR:l}atest`, and unquoted `$VAR` doesn't word-split — run multi-arg-var AWS scripts under `bash`.
+
+<!-- migration logged: cdba49f + content/logs/shadow-ai/2026-06-08-region-migration-state-recovery.mdx -->
