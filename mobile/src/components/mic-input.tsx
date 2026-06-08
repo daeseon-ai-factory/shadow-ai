@@ -31,8 +31,9 @@ export function MicInput({ onText }: { onText: (text: string) => void }) {
     const txt = e.results?.[0]?.transcript ?? '';
     if (txt) onText(txt);
   });
-  useSpeechRecognitionEvent('error', (e) => {
-    setError(e.message || t('mic.error'));
+  useSpeechRecognitionEvent('error', () => {
+    // Friendly retry message instead of raw iOS errors like "Audio session was interrupted".
+    setError(t('mic.error'));
     setListening(false);
   });
 
@@ -49,13 +50,14 @@ export function MicInput({ onText }: { onText: (text: string) => void }) {
       continuous: true,
       requiresOnDeviceRecognition: true, // free + offline + private
       addsPunctuation: true,
-      // Route input through Bluetooth (AirPods) instead of only the built-in mic.
+      // Route input through Bluetooth (AirPods) — the library's tested default. NOTE: do NOT add
+      // allowBluetoothA2DP here; mixing it with allowBluetooth on playAndRecord makes iOS fight over
+      // the route (HFP mic-input vs A2DP stereo-output) and fires an "audio session interrupted" error.
       iosCategory: {
         category: AVAudioSessionCategory.playAndRecord,
         categoryOptions: [
-          AVAudioSessionCategoryOptions.allowBluetooth,
-          AVAudioSessionCategoryOptions.allowBluetoothA2DP,
           AVAudioSessionCategoryOptions.defaultToSpeaker,
+          AVAudioSessionCategoryOptions.allowBluetooth,
         ],
         mode: AVAudioSessionMode.measurement,
       },
