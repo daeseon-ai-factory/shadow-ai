@@ -7,6 +7,7 @@ import {
   AVAudioSessionCategoryOptions,
   AVAudioSessionMode,
 } from 'expo-speech-recognition';
+import { INTERVIEW_DEV_TERMS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { t } from '@/lib/i18n';
@@ -48,8 +49,11 @@ export function MicInput({ onText }: { onText: (text: string) => void }) {
       lang: 'en-US',
       interimResults: true,
       continuous: true,
-      requiresOnDeviceRecognition: true, // free + offline + private
+      // Apple's network recognizer is far more accurate on dev jargon than on-device (free, needs net).
+      requiresOnDeviceRecognition: false,
       addsPunctuation: true,
+      // Bias the recognizer toward developer/CS vocabulary so it stops hearing "deque" as "deck".
+      contextualStrings: INTERVIEW_DEV_TERMS,
       // Route input through Bluetooth (AirPods) — the library's tested default. NOTE: do NOT add
       // allowBluetoothA2DP here; mixing it with allowBluetooth on playAndRecord makes iOS fight over
       // the route (HFP mic-input vs A2DP stereo-output) and fires an "audio session interrupted" error.
