@@ -84,7 +84,9 @@ export function CodeDrill({ cards, onExit }: { cards: CodeCard[]; onExit: () => 
       graded.current.add(card.key);
       if (ok) setGot((g) => g + 1);
     }
-    if (!ok) setQueue((q) => [...q, card]);
+    // "Again" re-shows the card ~2 cards later (Anki-style short interval), NOT at the very end,
+    // so a missed card actually comes back within the session instead of feeling skipped.
+    if (!ok) setQueue((q) => { const n = [...q]; n.splice(pos + 3, 0, card); return n; });
     setPos((p) => p + 1);
     setRevealed(false);
   };

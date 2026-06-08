@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { useAudioRecorder, AudioModule, RecordingPresets, setAudioModeAsync } from 'expo-audio';
 import { useMutation } from '@tanstack/react-query';
@@ -9,24 +9,37 @@ import { getApiBaseUrl } from '@/lib/api';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
+// Whisper hallucinates stock phrases when it's fed silence / no clear speech — most infamously
+// "Thank you for watching" (it was trained on YouTube). Treat these (and near-empty output) as
+// "no speech" so the learner gets a retry prompt instead of garbage.
+const HALLUCINATIONS = new Set([
+  'thank you', 'thank you for watching', 'thanks for watching', 'thank you very much',
+  'thank you so much', 'please subscribe', 'subscribe', 'you', 'bye', "i'm sorry",
+  'so', 'the', 'okay', 'ok', 'thanks', 'thank you.',
+]);
+function looksHallucinated(raw: string): boolean {
+  const n = raw.toLowerCase().replace(/[.!?]+$/g, '').trim();
+  if (n.length < 2) return true;
+  if (HALLUCINATIONS.has(n)) return true;
+  if (/^[\[(].*[\])]$/.test(n)) return true; // "[music]", "(upbeat music)"
+  return false;
+}
+
+const MIN_MS = 900; // recordings shorter than this are almost always an accidental tap → silence
+
 /**
- * Tap-to-talk → record audio → upload → Whisper (Groq) transcription. Whisper is far more accurate
- * on developer jargon than the on-device iOS recognizer ("idempotency", "deque", "BFS" come through).
- * Recording uses the system mic, so AirPods are used automatically when they're connected — no audio
- * session category fight. Flow: tap → speak → tap → "transcribing…" → transcript → onText.
+ * Tap-to-talk → record audio → upload → Whisper (Groq) transcription. Records via the system mic
+ * (AirPods used automatically when connected). Guards against Whisper's silence-hallucination and
+ * too-short taps so a bad clip prompts a retry instead of transcribing "Thank you for watching".
  */
 export function MicInput({ onText }: { onText: (text: string) => void }) {
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [recording, setRecording] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // DIAGNOSTIC: surface the real error + which stage failed (recording vs upload), so a screenshot
-  // pinpoints the cause instead of a generic message. Revert to friendly text once the bug is found.
-  const msg = (e: unknown) => (e instanceof Error ? e.message : String(e));
+  const startedAt = useRef(0);
 
   const transcribe = useMutation({
-    // Native multipart upload via expo-file-system. RN's fetch FormData can't send a file-URI part
-    // ("Unsupported FormDataPart"), so we read + post the file natively instead.
+    // Native multipart upload via expo-file-system — RN's fetch FormData can't send a file-URI part.
     mutationFn: async (uri: string) => {
       const token = useAuthStore.getState().token;
       const res = await uploadAsync(`${getApiBaseUrl()}/api/practice/transcribe`, uri, {
@@ -37,17 +50,17 @@ export function MicInput({ onText }: { onText: (text: string) => void }) {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (res.status < 200 || res.status >= 300) {
-        throw new Error(`HTTP ${res.status}: ${(res.body || '').slice(0, 180)}`);
+        throw new Error(`HTTP ${res.status}`);
       }
       const env = JSON.parse(res.body) as { data?: { text?: string }; error?: { message?: string } };
       if (env.error) throw new Error(env.error.message || 'transcribe error');
       return env.data?.text ?? '';
     },
     onSuccess: (text) => {
-      if (text) onText(text);
-      else setError('전사 결과 비어있음 (200, text empty)');
+      if (looksHallucinated(text)) setError(t('mic.noSpeech'));
+      else onText(text);
     },
-    onError: (e) => setError('전사실패(UPLOAD): ' + msg(e)),
+    onError: () => setError(t('mic.error')),
   });
 
   const start = async () => {
@@ -61,24 +74,30 @@ export function MicInput({ onText }: { onText: (text: string) => void }) {
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
       await recorder.prepareToRecordAsync();
       recorder.record();
+      startedAt.current = Date.now();
       setRecording(true);
-    } catch (e) {
-      setError('녹음실패(REC): ' + msg(e));
+    } catch {
+      setError(t('mic.error'));
       setRecording(false);
     }
   };
 
   const stop = async () => {
     setRecording(false);
+    const elapsed = Date.now() - startedAt.current;
     try {
       await recorder.stop();
-    } catch (e) {
-      setError('정지실패(STOP): ' + msg(e));
+    } catch {
+      setError(t('mic.error'));
+      return;
+    }
+    if (elapsed < MIN_MS) {
+      setError(t('mic.tooShort'));
       return;
     }
     const uri = recorder.uri;
     if (!uri) {
-      setError('녹음파일 없음 (recorder.uri = null)');
+      setError(t('mic.error'));
       return;
     }
     transcribe.mutate(uri);
