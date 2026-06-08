@@ -19,7 +19,7 @@ import com.tubeshadow.practice.api.dto.TransformCheckResponse;
 import com.tubeshadow.practice.api.dto.TransformGenerateRequest;
 import com.tubeshadow.practice.api.dto.TranscribeResponse;
 import com.tubeshadow.practice.application.CompositionService;
-import com.tubeshadow.practice.infrastructure.GroqTranscriptionClient;
+import com.tubeshadow.practice.infrastructure.TranscriptionClient;
 import com.tubeshadow.practice.application.PracticeProgressService;
 import com.tubeshadow.practice.application.PracticeSrsService;
 import com.tubeshadow.practice.application.SeedService;
@@ -53,11 +53,11 @@ public class PracticeController {
     private final CompositionService compositionService;
     private final TransformService transformService;
     private final SeedService seedService;
-    private final GroqTranscriptionClient transcriptionClient;
+    private final TranscriptionClient transcriptionClient;
 
     public PracticeController(PracticeProgressService service, PracticeSrsService srsService,
                              CompositionService compositionService, TransformService transformService,
-                             SeedService seedService, GroqTranscriptionClient transcriptionClient) {
+                             SeedService seedService, TranscriptionClient transcriptionClient) {
         this.service = service;
         this.srsService = srsService;
         this.compositionService = compositionService;

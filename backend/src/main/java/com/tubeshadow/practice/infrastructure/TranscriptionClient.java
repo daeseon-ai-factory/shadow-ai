@@ -15,16 +15,15 @@ import org.springframework.web.client.RestClient;
 import java.time.Duration;
 
 /**
- * Speech-to-text via Groq-hosted Whisper large-v3 (OpenAI-compatible multipart endpoint). Whisper
- * is far more accurate on developer jargon than the on-device iOS recognizer; the {@code prompt}
- * biases it further toward CS/backend vocabulary. Provider-swappable — point base-url/model at
- * OpenAI's {@code /v1/audio/transcriptions} (gpt-4o-transcribe) to upgrade with the same code.
+ * Speech-to-text via an OpenAI-compatible transcription endpoint (default OpenAI gpt-4o-transcribe).
+ * gpt-4o-transcribe is far more accurate on developer jargon and far less prone to Whisper's
+ * silence-hallucinations; the {@code prompt} biases it further toward CS/backend vocabulary.
  */
 @Component
-@EnableConfigurationProperties(GroqProperties.class)
-public class GroqTranscriptionClient {
+@EnableConfigurationProperties(TranscriptionProperties.class)
+public class TranscriptionClient {
 
-    /** Whisper prompt: a hint listing the jargon so it stops hearing "deque" as "deck". */
+    /** Transcription prompt: a hint listing jargon so it stops hearing "deque" as "deck". */
     static final String DEV_PROMPT =
             "A software engineer explaining code in English in a technical interview. Common terms: "
             + "idempotency, idempotent, HashMap, HashSet, ArrayList, deque, ArrayDeque, PriorityQueue, trie, "
@@ -34,14 +33,13 @@ public class GroqTranscriptionClient {
             + "upsert, indexing, throughput, latency, deduplication, dead letter queue, source of truth, "
             + "reconciliation, state machine, Redis, Postgres, Kafka, microservice, endpoint, LRU cache.";
 
-    private final GroqProperties props;
+    private final TranscriptionProperties props;
     private final ObjectMapper objectMapper;
     private final RestClient http;
 
-    public GroqTranscriptionClient(GroqProperties props, ObjectMapper objectMapper) {
+    public TranscriptionClient(TranscriptionProperties props, ObjectMapper objectMapper) {
         this.props = props;
         this.objectMapper = objectMapper;
-        // Transcription is one synchronous call; bound it so a stalled provider can't hang the request.
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofSeconds(10));
         factory.setReadTimeout(Duration.ofSeconds(60));
@@ -56,7 +54,7 @@ public class GroqTranscriptionClient {
     public String transcribe(byte[] audio, String filename) {
         if (!isConfigured()) {
             throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "TRANSCRIBE_NOT_CONFIGURED",
-                    "음성 전사가 설정되지 않았습니다 (Groq API 키 필요)");
+                    "음성 전사가 설정되지 않았습니다 (전사 API 키 필요)");
         }
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", new ByteArrayResource(audio) {
@@ -74,7 +72,7 @@ public class GroqTranscriptionClient {
         String raw;
         try {
             raw = http.post()
-                    .uri("/openai/v1/audio/transcriptions")
+                    .uri(props.path())
                     .header("Authorization", "Bearer " + props.apiKey())
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(body)
