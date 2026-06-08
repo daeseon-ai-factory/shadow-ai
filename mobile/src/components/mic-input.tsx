@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { useAudioRecorder, AudioModule, RecordingPresets, setAudioModeAsync } from 'expo-audio';
 import { useMutation } from '@tanstack/react-query';
-import { practiceApi } from '@shadow-ai/core';
+import { uploadAsync, FileSystemUploadType } from 'expo-file-system/legacy';
 
 import { ThemedText } from '@/components/themed-text';
+import { getApiBaseUrl } from '@/lib/api';
+import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
 /**
@@ -18,13 +20,34 @@ export function MicInput({ onText }: { onText: (text: string) => void }) {
   const [recording, setRecording] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // DIAGNOSTIC: surface the real error + which stage failed (recording vs upload), so a screenshot
+  // pinpoints the cause instead of a generic message. Revert to friendly text once the bug is found.
+  const msg = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
   const transcribe = useMutation({
-    mutationFn: (file: { uri: string; name: string; type: string }) => practiceApi.transcribe(file),
-    onSuccess: (res) => {
-      if (res.text) onText(res.text);
-      else setError(t('mic.error'));
+    // Native multipart upload via expo-file-system. RN's fetch FormData can't send a file-URI part
+    // ("Unsupported FormDataPart"), so we read + post the file natively instead.
+    mutationFn: async (uri: string) => {
+      const token = useAuthStore.getState().token;
+      const res = await uploadAsync(`${getApiBaseUrl()}/api/practice/transcribe`, uri, {
+        httpMethod: 'POST',
+        uploadType: FileSystemUploadType.MULTIPART,
+        fieldName: 'file',
+        mimeType: 'audio/m4a',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.status < 200 || res.status >= 300) {
+        throw new Error(`HTTP ${res.status}: ${(res.body || '').slice(0, 180)}`);
+      }
+      const env = JSON.parse(res.body) as { data?: { text?: string }; error?: { message?: string } };
+      if (env.error) throw new Error(env.error.message || 'transcribe error');
+      return env.data?.text ?? '';
     },
-    onError: () => setError(t('mic.error')),
+    onSuccess: (text) => {
+      if (text) onText(text);
+      else setError('전사 결과 비어있음 (200, text empty)');
+    },
+    onError: (e) => setError('전사실패(UPLOAD): ' + msg(e)),
   });
 
   const start = async () => {
@@ -39,8 +62,8 @@ export function MicInput({ onText }: { onText: (text: string) => void }) {
       await recorder.prepareToRecordAsync();
       recorder.record();
       setRecording(true);
-    } catch {
-      setError(t('mic.error'));
+    } catch (e) {
+      setError('녹음실패(REC): ' + msg(e));
       setRecording(false);
     }
   };
@@ -49,14 +72,16 @@ export function MicInput({ onText }: { onText: (text: string) => void }) {
     setRecording(false);
     try {
       await recorder.stop();
-    } catch {
-      /* stop can throw if already stopped — ignore */
+    } catch (e) {
+      setError('정지실패(STOP): ' + msg(e));
+      return;
     }
     const uri = recorder.uri;
-    if (uri) {
-      const name = uri.split('/').pop() || 'audio.m4a';
-      transcribe.mutate({ uri, name, type: 'audio/m4a' });
+    if (!uri) {
+      setError('녹음파일 없음 (recorder.uri = null)');
+      return;
     }
+    transcribe.mutate(uri);
   };
 
   const busy = transcribe.isPending;
