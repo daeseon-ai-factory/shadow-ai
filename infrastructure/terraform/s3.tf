@@ -4,7 +4,9 @@
 # Bucket names are GLOBALLY unique across all of AWS, so we suffix with the account ID.
 
 resource "aws_s3_bucket" "recordings" {
-  bucket = "${var.project}-recordings-${data.aws_caller_identity.current.account_id}"
+  # Region-suffixed so a region migration never collides with the just-deleted same-name bucket
+  # (S3 names are global; recreating a freshly-deleted name fails with a conflicting-operation error).
+  bucket = "${var.project}-recordings-${data.aws_caller_identity.current.account_id}-${var.aws_region}"
   tags   = { Name = "${var.project}-recordings" }
 }
 
