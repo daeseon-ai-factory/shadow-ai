@@ -111,9 +111,11 @@ export function InterviewDrill({
       graded.current.add(item.key);
       if (ok) setGot((g) => g + 1);
     }
-    // "Again" re-shows the card ~2 cards later (Anki-style short interval), NOT at the very end,
-    // so a missed card actually comes back within the session instead of feeling skipped.
-    if (!ok) setQueue((q) => { const n = [...q]; n.splice(pos + 3, 0, item); return n; });
+    // "Again" repeats THIS card immediately — do NOT advance. Drill the missed one until "Got it".
+    if (!ok) {
+      setRevealed(mode === 'shadow');
+      return;
+    }
     setPos((p) => p + 1);
     setRevealed(mode === 'shadow');
   };
