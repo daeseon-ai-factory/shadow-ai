@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tubeshadow.analysis.infrastructure.AiAnalysisClient;
 import com.tubeshadow.common.exception.BusinessException;
 import com.tubeshadow.practice.api.dto.ComposeFeedback;
+import com.tubeshadow.practice.api.dto.InterviewCheckResponse;
 import com.tubeshadow.practice.prompt.ComposePrompt;
+import com.tubeshadow.practice.prompt.InterviewPrompt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
