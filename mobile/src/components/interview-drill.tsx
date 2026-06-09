@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { localToday, practiceApi } from '@shadow-ai/core';
@@ -19,7 +19,8 @@ export interface IvItem {
   answer: string; // English model to produce
   meaningKo?: string; // natural Korean meaning (shown in shadow mode; falls back to promptKo)
   code?: string; // a code snippet to explain (shown as a monospace block instead of a text prompt)
-  note?: string; // gloss under the answer
+  note?: string; // gloss under the answer (e.g. Korean translation of the model sentence)
+  detail?: string; // friendly Korean explanation: nuance, when it's said, pitfalls — shown on reveal
 }
 
 /**
@@ -147,7 +148,7 @@ export function InterviewDrill({
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex}>
         {header}
-        <View style={styles.body}>
+        <ScrollView style={styles.flex} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
           {item.tag ? (
             <ThemedText type="small" style={styles.tag}>
               {item.tag}
@@ -166,6 +167,11 @@ export function InterviewDrill({
                 ) : null}
               </View>
               <ThemedText style={styles.meaning}>{item.meaningKo ?? item.promptKo}</ThemedText>
+              {item.detail ? (
+                <View style={styles.detailBox}>
+                  <ThemedText type="small" style={styles.detailText}>{item.detail}</ThemedText>
+                </View>
+              ) : null}
               <ThemedText type="small" style={styles.hint}>{t('iv.sayAloud')}</ThemedText>
               <View style={styles.row}>
                 <Pressable style={[styles.gradeBtn, styles.again]} onPress={() => advance(false)}>
@@ -207,6 +213,11 @@ export function InterviewDrill({
                       </ThemedText>
                     ) : null}
                   </View>
+                  {item.detail ? (
+                    <View style={styles.detailBox}>
+                      <ThemedText type="small" style={styles.detailText}>{item.detail}</ThemedText>
+                    </View>
+                  ) : null}
                   <View style={styles.row}>
                     <Pressable style={[styles.gradeBtn, styles.again]} onPress={() => advance(false)}>
                       <ThemedText style={styles.againText}>{t('drill.again')}</ThemedText>
@@ -219,7 +230,7 @@ export function InterviewDrill({
               )}
             </>
           )}
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -240,7 +251,7 @@ const styles = StyleSheet.create({
   timer: { color: '#208AEF', fontWeight: '700' },
   timerHot: { color: '#dc2626', fontWeight: '700' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: 24 },
-  body: { flex: 1, padding: 24, gap: 16 },
+  body: { padding: 24, gap: 16, paddingBottom: 40 },
   gap: { gap: 12 },
   row: { flexDirection: 'row', gap: 12, marginTop: 4 },
   tag: { textTransform: 'uppercase', letterSpacing: 1, opacity: 0.6 },
@@ -267,6 +278,14 @@ const styles = StyleSheet.create({
   },
   model: { fontSize: 18, fontFamily: 'Menlo', textAlign: 'center', lineHeight: 26 },
   gloss: { textAlign: 'center', color: '#6b7280' },
+  detailBox: {
+    borderRadius: 10,
+    backgroundColor: '#f3f4f680',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af55',
+    padding: 12,
+  },
+  detailText: { lineHeight: 20, color: '#4b5563' },
   meaning: { fontSize: 16, textAlign: 'center', color: '#6b7280' },
   hint: { textAlign: 'center', opacity: 0.7 },
   primaryBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 14, alignItems: 'center', marginTop: 8 },

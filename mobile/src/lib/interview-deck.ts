@@ -51,14 +51,32 @@ export function cardIv(c: InterviewCard): IvItem {
 // reps ("다양한 상황서 같은 표현"). The card identity (key) is stable, so SRS tracking is unaffected.
 export function phraseIv(c: PhraseCard): IvItem {
   const sit = c.situations[Math.floor(Math.random() * c.situations.length)] ?? c.ko;
-  return { key: c.key, tag: c.en, promptKo: sit, promptEn: c.en, answer: c.example, meaningKo: c.ko, note: c.ko };
+  return {
+    key: c.key,
+    tag: c.en,
+    promptKo: sit,
+    promptEn: c.en,
+    answer: c.example,
+    meaningKo: c.ko,
+    note: c.exampleKo || c.ko,
+    detail: c.detail || undefined,
+  };
 }
 
 // Backend vocab is sentence-level, so the cue is a situation (not the phrase, which would give away
 // the answer) and the model is the full English sentence.
 export function backendIv(c: PhraseCard): IvItem {
   const sit = c.situations[Math.floor(Math.random() * c.situations.length)] ?? c.ko;
-  return { key: c.key, tag: 'Backend', promptKo: sit, promptEn: 'Backend', answer: c.en, meaningKo: c.ko };
+  return {
+    key: c.key,
+    tag: 'Backend',
+    promptKo: sit,
+    promptEn: 'Backend',
+    answer: c.en,
+    meaningKo: c.ko,
+    note: c.exampleKo || c.ko,
+    detail: c.detail || undefined,
+  };
 }
 
 // Chaining drill: the connector is BLANKED OUT of its 2-sentence example — speak the full chain
@@ -74,6 +92,8 @@ export function chainIv(c: Connector): IvItem {
     promptEn: cloze,
     answer: c.example,
     meaningKo: c.ko,
+    note: c.exampleKo || undefined,
+    detail: c.detail || undefined,
   };
 }
 
@@ -85,7 +105,16 @@ export function weakItems(states: SrsCard[]): IvItem[] {
 
 // A connector → chaining drill: link two short sentences with the right discourse marker.
 export function connectorIv(c: Connector): IvItem {
-  return { key: c.key, tag: c.fn, promptKo: `${c.ko} — 짧은 두 문장을 '${c.en}'(으)로 잇기`, promptEn: c.en, answer: c.example, meaningKo: c.ko };
+  return {
+    key: c.key,
+    tag: c.fn,
+    promptKo: `${c.ko} — 짧은 두 문장을 '${c.en}'(으)로 잇기`,
+    promptEn: c.en,
+    answer: c.example,
+    meaningKo: c.ko,
+    note: c.exampleKo || undefined,
+    detail: c.detail || undefined,
+  };
 }
 
 export type ScopeKind =
