@@ -10,6 +10,7 @@ import {
   PHRASAL_CARDS,
   EXPR_CARDS,
   CODE_NARRATION_CARDS,
+  UI_CARDS,
   CONNECTORS,
   type ReflexCard,
   type InterviewCard,
@@ -63,6 +64,7 @@ export type ScopeKind =
   | 'phrasal'
   | 'expr'
   | 'codenarr'
+  | 'ui'
   | 'connector';
 
 export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
@@ -76,6 +78,7 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
         ...PHRASAL_CARDS.map(phraseIv),
         ...EXPR_CARDS.map(phraseIv),
         ...CODE_NARRATION_CARDS.map(phraseIv),
+        ...UI_CARDS.map(phraseIv),
         ...CONNECTORS.map(connectorIv),
       ];
     case 'core':
@@ -96,6 +99,8 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       return EXPR_CARDS.map(phraseIv);
     case 'codenarr':
       return CODE_NARRATION_CARDS.map(phraseIv);
+    case 'ui':
+      return UI_CARDS.map(phraseIv);
     case 'connector':
       return CONNECTORS.map(connectorIv);
   }

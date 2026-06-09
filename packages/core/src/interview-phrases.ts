@@ -1,5 +1,5 @@
 // AUTO-GENERATED interview phrase banks (short-form dev English for hardcore drilling).
-// Source: interview-english-content workflow (authored + adversarially verified, 2026-06-09).
+// Source: interview-english-content + ui-interaction-bank workflows (authored + adversarially verified).
 
 export interface PhraseCard { key: string; en: string; ko: string; example: string; situations: string[]; }
 export interface Connector { key: string; en: string; ko: string; fn: string; example: string; }
@@ -126,6 +126,41 @@ export const CODE_NARRATION_CARDS: PhraseCard[] = [
   { key: 'cn:it-flushes-the-buffer', en: 'it flushes the buffer', ko: '버퍼를 비워 내보낸다', example: 'It flushes the buffer when it gets full.', situations: ['버퍼링 후 일괄 출력을 설명할 때', 'I/O 플러시 타이밍을 짚을 때', '배치 쓰기 동작을 말할 때'] },
 ];
 
+export const UI_CARDS: PhraseCard[] = [
+  { key: 'ui:multi-select', en: 'multi-select', ko: '다중 선택', example: 'We need multi-select with checkboxes here.', situations: ['여러 개를 한꺼번에 고르는 기능 요청', '테이블에 체크박스 다중 선택 추가할 때', '벌크 액션을 위한 선택 UI 논의'] },
+  { key: 'ui:shift-click', en: 'shift-click', ko: '시프트 클릭 (범위 선택)', example: 'Shift-click to grab everything in between.', situations: ['범위 선택을 위한 모디파이어 클릭', '연속된 항목을 한 번에 고를 때', 'shift 누른 채 클릭하는 동작 설명'] },
+  { key: 'ui:cmd-ctrl-click', en: 'cmd/ctrl-click', ko: '커맨드/컨트롤 클릭 (개별 추가 선택)', example: 'Cmd-click to add it to the selection.', situations: ['개별 항목을 따로 추가 선택할 때', '연속되지 않은 여러 개 고르기', '맥/윈도우 모디파이어 클릭 구분'] },
+  { key: 'ui:clear-selection', en: 'clear selection', ko: '선택 초기화', example: 'Click empty space to clear selection.', situations: ['선택을 한 번에 모두 푸는 동작', '빈 곳 클릭 시 선택 해제', 'Esc 키로 선택 초기화할 때'] },
+  { key: 'ui:drag', en: 'drag', ko: '드래그하다', example: 'You can drag the card to another column.', situations: ['항목을 끌어 옮기는 동작', '칸반 카드 이동 설명', '드래그 시작 핸들링 논의'] },
+  { key: 'ui:drag-and-drop', en: 'drag-and-drop', ko: '드래그 앤 드롭', example: 'We added drag-and-drop to reorder the list.', situations: ['전체 끌어 놓기 기능 설명', '라이브러리로 DnD 구현 논의', '목록 순서 변경 기능 요청'] },
+  { key: 'ui:reorder', en: 'reorder', ko: '순서 변경하다', example: 'Drag the rows to reorder them.', situations: ['항목 순서를 바꾸는 동작', '드래그로 리스트 재정렬', '순서 변경 후 서버 저장 논의'] },
+  { key: 'ui:drag-handle', en: 'drag handle', ko: '드래그 핸들', example: 'Only the drag handle starts the drag.', situations: ['드래그를 시작하는 손잡이 영역', '행 왼쪽의 점 여섯 개 아이콘', '핸들로만 드래그 가능하게 제한할 때'] },
+  { key: 'ui:snap-into-place', en: 'snap into place', ko: '제자리에 딱 들어가다', example: 'On drop it snaps into place.', situations: ['드롭하면 칸에 정렬되는 동작', '그리드에 맞춰 자동 정렬', '놓을 때 가까운 위치로 붙는 효과'] },
+  { key: 'ui:hover-state', en: 'hover state', ko: '호버 상태', example: 'The hover state changes the background.', situations: ['마우스 올렸을 때의 스타일', '버튼 hover 색상 정의', '호버 시 툴팁 노출 논의'] },
+  { key: 'ui:focus-state', en: 'focus state', ko: '포커스 상태', example: 'The focus state needs a visible ring.', situations: ['키보드 포커스 시 테두리 표시', '접근성 위한 focus ring 논의', '탭 이동 시 현재 요소 강조'] },
+  { key: 'ui:disabled-state', en: 'disabled state', ko: '비활성 상태', example: 'Keep the button disabled until it\'s valid.', situations: ['조건 미충족 시 버튼 비활성', '회색 처리하고 클릭 막을 때', '폼 검증 전 제출 막기'] },
+  { key: 'ui:loading-state', en: 'loading state', ko: '로딩 상태', example: 'Show a spinner in the loading state.', situations: ['데이터 불러오는 동안 표시', '버튼 로딩 스피너 논의', '스켈레톤 UI 처리할 때'] },
+  { key: 'ui:empty-state', en: 'empty state', ko: '빈 상태', example: 'The empty state needs a friendly message.', situations: ['데이터 없을 때 보여줄 화면', '빈 리스트 안내 문구', '결과 없음 일러스트 논의'] },
+  { key: 'ui:toggle', en: 'toggle', ko: '토글하다', example: 'This switch toggles dark mode.', situations: ['켜고 끄는 스위치 동작', '불리언 상태 전환', '설정 on/off 처리'] },
+  { key: 'ui:expand-collapse', en: 'expand/collapse', ko: '펼치기/접기', example: 'Click the header to expand or collapse.', situations: ['아코디언 펼치고 접을 때', '트리 노드 확장 동작', '상세 영역 토글 논의'] },
+  { key: 'ui:scroll-into-view', en: 'scroll into view', ko: '보이게 스크롤하다', example: 'Scroll the selected item into view.', situations: ['선택 항목을 화면에 보이게 할 때', '에러 필드로 자동 스크롤', '앵커로 점프하는 동작'] },
+  { key: 'ui:sticky', en: 'sticky', ko: '고정된 (스크롤해도 붙는)', example: 'Make the header sticky on scroll.', situations: ['스크롤해도 상단 고정되는 헤더', '사이드바 고정 논의', '테이블 헤더 sticky 처리'] },
+  { key: 'ui:pin', en: 'pin', ko: '고정하다', example: 'You can pin a column to the left.', situations: ['특정 열/항목을 고정할 때', '즐겨찾기 상단 고정', '채팅 메시지 핀 기능'] },
+  { key: 'ui:dismiss', en: 'dismiss', ko: '닫다, 해제하다', example: 'Tap outside to dismiss the modal.', situations: ['모달이나 토스트를 닫을 때', '알림 배너 닫기', '오버레이 바깥 클릭으로 닫기'] },
+  { key: 'ui:debounce', en: 'debounce', ko: '디바운스 (마지막 입력만)', example: 'Debounce the search input by 300ms.', situations: ['입력 멈춘 뒤 한 번만 호출', '검색창 API 호출 줄일 때', '연속 이벤트 마지막만 처리'] },
+  { key: 'ui:throttle', en: 'throttle', ko: '스로틀 (주기적 제한)', example: 'Throttle the scroll handler so it fires less.', situations: ['스크롤/리사이즈 핸들러 빈도 제한', '일정 간격으로만 실행할 때', '성능 위해 이벤트 빈도 낮추기'] },
+  { key: 'ui:re-render', en: 're-render', ko: '리렌더링되다', example: 'That state change re-renders the whole list.', situations: ['상태 변경으로 컴포넌트 다시 그릴 때', '불필요한 리렌더 줄이는 논의', 'memo로 리렌더 막을 때'] },
+  { key: 'ui:mount-unmount', en: 'mount/unmount', ko: '마운트/언마운트', example: 'Fetch the data when the component mounts.', situations: ['컴포넌트 생성/제거 시점', 'useEffect 정리 함수 논의', '언마운트 시 구독 해제'] },
+  { key: 'ui:event-bubbles-up', en: 'event bubbles up', ko: '이벤트가 버블링되다', example: 'The click bubbles up to the parent.', situations: ['자식 클릭이 부모로 전파될 때', '이벤트 전파 동작 설명', '위임으로 상위에서 처리할 때'] },
+  { key: 'ui:stop-propagation', en: 'stop propagation', ko: '전파 중단', example: 'Stop propagation so the row ignores it.', situations: ['부모로 이벤트 안 가게 막을 때', '버튼 클릭이 행 선택 안 되게', '중첩 핸들러 충돌 방지'] },
+  { key: 'ui:prevent-default', en: 'prevent default', ko: '기본 동작 막기', example: 'Prevent default to stop the form submit.', situations: ['폼 기본 제출 막을 때', '링크 기본 이동 막기', '드롭 기본 동작 방지'] },
+  { key: 'ui:controlled-input', en: 'controlled input', ko: '제어 컴포넌트 입력', example: 'Make it a controlled input tied to state.', situations: ['value를 상태로 관리하는 입력', 'onChange로 상태 동기화할 때', 'controlled vs uncontrolled 논의'] },
+  { key: 'ui:hit-area', en: 'hit area', ko: '클릭/탭 영역', example: 'The hit area is too small to tap.', situations: ['탭 가능한 영역이 좁을 때', '모바일 터치 영역 넓히기', '아이콘 버튼 패딩 논의'] },
+  { key: 'ui:keyboard-navigation', en: 'keyboard navigation', ko: '키보드 탐색', example: 'Arrow keys should move the selection.', situations: ['방향키로 항목 이동', '탭/엔터로 조작할 때', '접근성 키보드 지원 논의'] },
+  { key: 'ui:optimistic-update', en: 'optimistic update', ko: '낙관적 업데이트', example: 'Do an optimistic update before the response.', situations: ['응답 전에 UI 먼저 반영', '좋아요 즉시 반영 후 롤백', '빠른 피드백 위한 처리'] },
+  { key: 'ui:scroll-lock', en: 'scroll lock', ko: '스크롤 잠금', example: 'Lock body scroll while the modal is open.', situations: ['모달 열릴 때 배경 스크롤 막기', '오버레이 뒤 스크롤 방지', '바텀시트 열릴 때 처리'] },
+];
+
 export const CONNECTORS: Connector[] = [
   { key: 'co:first', en: 'first', ko: '먼저, 우선', fn: 'sequence', example: 'First, I\'d parse the input. Then I\'d validate it.' },
   { key: 'co:then', en: 'then', ko: '그다음', fn: 'sequence', example: 'I check the cache. Then I hit the DB if it misses.' },
@@ -166,4 +201,4 @@ export const CONNECTORS: Connector[] = [
   { key: 'co:so-my-answer-is', en: 'so my answer is', ko: '그래서 제 답은', fn: 'conclude', example: 'So my answer is, I\'d go with the hash map.' },
 ];
 
-export const PHRASE_DECK_COUNTS = { phrasal: 44, expr: 32, code: 37, connectors: 37 };
+export const PHRASE_DECK_COUNTS = { phrasal: 44, expr: 32, code: 37, ui: 32, connectors: 37 };

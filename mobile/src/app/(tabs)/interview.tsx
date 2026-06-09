@@ -120,6 +120,10 @@ export default function InterviewScreen() {
               <ThemedText type="smallBold">{t('iv.codenarr')}</ThemedText>
               <ThemedText type="small">{PHRASE_DECK_COUNTS.code}</ThemedText>
             </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('ui')}>
+              <ThemedText type="smallBold">{t('iv.ui')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.ui}</ThemedText>
+            </Pressable>
             <Pressable style={styles.tile} onPress={() => startSpeak('connector')}>
               <ThemedText type="smallBold">{t('iv.connector')}</ThemedText>
               <ThemedText type="small">{PHRASE_DECK_COUNTS.connectors}</ThemedText>
