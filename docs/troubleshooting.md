@@ -837,3 +837,19 @@ Migrating the prod backend ap-northeast-2 (Seoul) → ca-central-1 (Toronto-area
 <!-- skipped: f722a1e docs: gate markers for 01771b2 + 585a20d [no-log] -->
 <!-- skipped: 95866bb feat(interview): hard-capped daily-30 loop — buildDailySession (reviews first, fill with new, cap 30/day); '오늘의 30개' entry [no-log] -->
 <!-- override-trigger: 856f3ea feat(interview): 3 interview-round banks — system design (36), pair-programming live narration (30), clarifying questions (24); scopes + menu tiles [no-log] — same content-bank pattern already fully logged at 8a44b07 (author → adversarial verify → python generator → AUTO-GENERATED core TS + deck/menu wiring) and its dated mdx. The 946 LOC is the generator REWRITING all of interview-phrases.ts (now 8 banks + code cards, pretty-printed JSON); genuinely new logic is ~25 lines of scope/menu wiring. A separate entry would duplicate the recorded pattern. -->
+<!-- skipped: a609006 docs: gate marker [no-log] -->
+
+---
+
+## Category drills silently hid most cards (SRS trickle), fixed alongside the mock-interview/training batch
+
+- **Symptom**: opening a category tile (e.g. 구동사 44) showed only a dozen-ish cards — user: *"왜 들어가면 카드 전체가 아니고 일부만 보이냐"*.
+- **Cause** (verified in code): every drill built its session with `buildSession()` (practice-srs.ts), which returns *due cards + at most `NEW_PER_DAY` (12) never-seen cards*. Correct pacing for the daily loop, but a category tile means "drill THIS bank" — on day one a 44-card bank surfaced ~12 cards with no indication more existed.
+- **Fix**: `interview-run.tsx` / `code-run.tsx` now show the WHOLE bank shuffled for category scopes; only the "오늘의 30개" scope keeps SRS pacing (`buildDailySession`, hard cap 30 — reviews first, fill with new; commit `95866bb`). Commit `f95f42f`.
+- **Also in this batch** (training modes the user picked, commits `f78bedc` + `f95f42f`):
+  - **AI mock interview** — new `POST /api/practice/interview/mock` (`MockInterviewPrompt` returns strict-JSON `{question}`; opener on empty history, else a follow-up digging into the candidate's last answer; `seed` varies openings). `mock-run.tsx` drives ask → mic answer → lenient `interview/check` grade → follow-up, 5/session; `SpokenCheck` gained an `onChecked` continuation hook. Endpoint added to the per-user AI rate-limit list.
+  - **Chaining drill** — `chainIv()` blanks the connector out of its 2-sentence example (cloze) → speak the full chain; reuses the connector's SRS key so mastery is shared.
+  - **Speed round** — `timerSec` on `InterviewDrill`: 8s countdown, auto-reveal at 0.
+  - **Weak-card repair** — `weakItems()`: cards with `lapseCount >= 2` across the whole speaking mix.
+  - **60s speech** — `speech-run.tsx`: 22 explain-topics, 60s countdown, transcript graded by the existing lenient check with a structure-focused question string (zero backend change).
+- **Pattern**: an SRS-paced session builder is the right default for a *daily loop* and the wrong default for a *browse-this-bank* drill — decide per entry point, not globally. And when a list is silently capped, users read it as "this is all there is": cap loudly or don't cap.
