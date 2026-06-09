@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { buildSession, localToday, practiceApi, type SrsCard } from '@shadow-ai/core';
+import { buildSession, buildDailySession, localToday, practiceApi, type SrsCard } from '@shadow-ai/core';
 
 import { ThemedView } from '@/components/themed-view';
 import { InterviewDrill, type IvMode } from '@/components/interview-drill';
@@ -24,10 +24,14 @@ export default function InterviewRunScreen() {
 
   const states = srs.data;
   // Build the session once per (scope, states) so re-renders don't reshuffle mid-drill.
-  const items = useMemo(
-    () => (states ? buildSession(scopeItems(scope ?? 'due', cluster), states as SrsCard[], localToday()) : []),
-    [scope, cluster, states],
-  );
+  const items = useMemo(() => {
+    if (!states) return [];
+    const kind = scope ?? 'due';
+    const all = scopeItems(kind, cluster);
+    const s = states as SrsCard[];
+    // The default "오늘의 30" loop is HARD-capped at 30/day; focused category drills are not.
+    return kind === 'due' ? buildDailySession(all, s, localToday(), 30) : buildSession(all, s, localToday());
+  }, [scope, cluster, states]);
 
   if (!token) return <Redirect href="/login" />;
   if (srs.isPending) {
