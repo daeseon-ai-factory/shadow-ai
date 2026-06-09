@@ -37,8 +37,11 @@ export default function InterviewScreen() {
   if (!token) return <Redirect href="/login" />;
 
   const startCode = (cat: string) => router.push({ pathname: '/code-run', params: { cat } });
-  const startSpeak = (scope: ScopeKind, cluster?: string) =>
-    router.push({ pathname: '/interview-run', params: cluster ? { mode, scope, cluster } : { mode, scope } });
+  const startSpeak = (scope: ScopeKind, cluster?: string, speed?: boolean) =>
+    router.push({
+      pathname: '/interview-run',
+      params: { mode, scope, ...(cluster ? { cluster } : {}), ...(speed ? { speed: '1' } : {}) },
+    });
 
   return (
     <ThemedView style={styles.flex}>
@@ -86,6 +89,19 @@ export default function InterviewScreen() {
             <ThemedText type="smallBold">{t('iv.modeDue')} →</ThemedText>
             <ThemedText type="small">{t('iv.modeDueSub')}</ThemedText>
           </Pressable>
+
+          {/* Training intensity: speed pressure, weak-card repair, sustained 60s speech. */}
+          <View style={styles.modeRow}>
+            <Pressable style={styles.trainBtn} onPress={() => startSpeak('due', undefined, true)}>
+              <ThemedText type="smallBold">⚡ {t('iv.speed')}</ThemedText>
+            </Pressable>
+            <Pressable style={styles.trainBtn} onPress={() => startSpeak('weak')}>
+              <ThemedText type="smallBold">🎯 {t('iv.weak')}</ThemedText>
+            </Pressable>
+            <Pressable style={styles.trainBtn} onPress={() => router.push('/speech-run')}>
+              <ThemedText type="smallBold">🗣 {t('iv.speech')}</ThemedText>
+            </Pressable>
+          </View>
 
           <Pressable style={styles.coreBtn} onPress={() => startSpeak('core')}>
             <ThemedText style={styles.coreText}>
@@ -146,6 +162,10 @@ export default function InterviewScreen() {
               <ThemedText type="smallBold">{t('iv.connector')}</ThemedText>
               <ThemedText type="small">{PHRASE_DECK_COUNTS.connectors}</ThemedText>
             </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('chain')}>
+              <ThemedText type="smallBold">🔗 {t('iv.chain')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.connectors}</ThemedText>
+            </Pressable>
           </View>
 
           <ThemedText type="smallBold" style={styles.section}>{t('iv.sectionReflex')}</ThemedText>
@@ -190,6 +210,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   coreBtn: { backgroundColor: '#208AEF', borderRadius: 12, paddingVertical: 16, alignItems: 'center' },
+  trainBtn: {
+    flex: 1,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#208AEF55',
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
   coreText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   tile: {

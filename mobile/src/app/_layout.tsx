@@ -60,6 +60,7 @@ export default function RootLayout() {
             {/* Drills run as full-screen pushes so iOS swipe-back works; their own header handles exit. */}
             <Stack.Screen name="interview-run" options={{ headerShown: false }} />
             <Stack.Screen name="code-run" options={{ headerShown: false }} />
+            <Stack.Screen name="speech-run" options={{ headerShown: false }} />
           </Stack>
         )}
       </ThemeProvider>

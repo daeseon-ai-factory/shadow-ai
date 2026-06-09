@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { buildSession, buildDailySession, localToday, practiceApi, type SrsCard } from '@shadow-ai/core';
+import { buildSession, buildDailySession, localToday, practiceApi, shuffle, type SrsCard } from '@shadow-ai/core';
 
 import { ThemedView } from '@/components/themed-view';
 import { InterviewDrill, type IvMode } from '@/components/interview-drill';
-import { scopeItems, type ScopeKind } from '@/lib/interview-deck';
+import { scopeItems, weakItems, type ScopeKind } from '@/lib/interview-deck';
 import { useAuthStore } from '@/lib/auth-store';
 
 /**
@@ -15,10 +15,11 @@ import { useAuthStore } from '@/lib/auth-store';
  */
 export default function InterviewRunScreen() {
   const token = useAuthStore((s) => s.token);
-  const { mode, scope, cluster } = useLocalSearchParams<{
+  const { mode, scope, cluster, speed } = useLocalSearchParams<{
     mode?: IvMode;
     scope?: ScopeKind;
     cluster?: string;
+    speed?: string;
   }>();
   const srs = useQuery({ queryKey: ['srs'], queryFn: () => practiceApi.srsStates(), enabled: !!token });
 
@@ -27,8 +28,10 @@ export default function InterviewRunScreen() {
   const items = useMemo(() => {
     if (!states) return [];
     const kind = scope ?? 'due';
-    const all = scopeItems(kind, cluster);
     const s = states as SrsCard[];
+    // Weak-card repair: only cards with 2+ lapses, regardless of due date.
+    if (kind === 'weak') return shuffle(weakItems(s)).slice(0, 30);
+    const all = scopeItems(kind, cluster);
     // The default "오늘의 30" loop is HARD-capped at 30/day; focused category drills are not.
     return kind === 'due' ? buildDailySession(all, s, localToday(), 30) : buildSession(all, s, localToday());
   }, [scope, cluster, states]);
@@ -42,5 +45,12 @@ export default function InterviewRunScreen() {
     );
   }
 
-  return <InterviewDrill items={items} mode={mode ?? 'produce'} onExit={() => router.back()} />;
+  return (
+    <InterviewDrill
+      items={items}
+      mode={mode ?? 'produce'}
+      timerSec={speed ? 8 : undefined}
+      onExit={() => router.back()}
+    />
+  );
 }

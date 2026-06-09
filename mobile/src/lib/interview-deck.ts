@@ -20,6 +20,7 @@ import {
   type InterviewCard,
   type PhraseCard,
   type Connector,
+  type SrsCard,
 } from '@shadow-ai/core';
 
 import { type IvItem } from '@/components/interview-drill';
@@ -60,6 +61,28 @@ export function backendIv(c: PhraseCard): IvItem {
   return { key: c.key, tag: 'Backend', promptKo: sit, promptEn: 'Backend', answer: c.en, meaningKo: c.ko };
 }
 
+// Chaining drill: the connector is BLANKED OUT of its 2-sentence example — speak the full chain
+// with the right connector. Trains connector selection + fluent linking, the core of the
+// "short sentences, logically connected" method. Reuses the connector's SRS key, so mastery is shared.
+export function chainIv(c: Connector): IvItem {
+  const re = new RegExp(c.en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+  const cloze = c.example.replace(re, '___');
+  return {
+    key: c.key,
+    tag: `chain · ${c.fn}`,
+    promptKo: `${cloze}\n(___ = ${c.ko})`,
+    promptEn: cloze,
+    answer: c.example,
+    meaningKo: c.ko,
+  };
+}
+
+// Cards the learner keeps missing (2+ lapses) across the whole speaking mix — for focused repair.
+export function weakItems(states: SrsCard[]): IvItem[] {
+  const weakKeys = new Set(states.filter((s) => s.lapseCount >= 2).map((s) => s.cardKey));
+  return scopeItems('due').filter((it) => weakKeys.has(it.key));
+}
+
 // A connector → chaining drill: link two short sentences with the right discourse marker.
 export function connectorIv(c: Connector): IvItem {
   return { key: c.key, tag: c.fn, promptKo: `${c.ko} — 짧은 두 문장을 '${c.en}'(으)로 잇기`, promptEn: c.en, answer: c.example, meaningKo: c.ko };
@@ -80,7 +103,9 @@ export type ScopeKind =
   | 'sd'
   | 'pair'
   | 'clarify'
-  | 'connector';
+  | 'connector'
+  | 'chain'
+  | 'weak';
 
 export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
   switch (kind) {
@@ -130,5 +155,9 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       return CLARIFY_CARDS.map(phraseIv);
     case 'connector':
       return CONNECTORS.map(connectorIv);
+    case 'chain':
+      return CONNECTORS.map(chainIv);
+    case 'weak':
+      return []; // needs SRS states — interview-run resolves this via weakItems()
   }
 }

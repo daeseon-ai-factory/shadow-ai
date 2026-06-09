@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -34,18 +34,36 @@ export function InterviewDrill({
   items,
   mode,
   onExit,
+  timerSec,
 }: {
   items: IvItem[];
   mode: IvMode;
   onExit: () => void;
+  timerSec?: number; // speed round: seconds to answer before the model auto-reveals
 }) {
   const [queue, setQueue] = useState<IvItem[]>(items);
   const [pos, setPos] = useState(0);
   const [revealed, setRevealed] = useState(mode === 'shadow');
   const [got, setGot] = useState(0);
   const [streak, setStreak] = useState<number | null>(null);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const graded = useRef<Set<string>>(new Set());
   const qc = useQueryClient();
+
+  // Speed round: count down while the prompt is unanswered; at 0 the model auto-reveals (too slow
+  // — see the answer, grade yourself honestly). Resets per card; off in shadow mode.
+  useEffect(() => {
+    if (!timerSec || mode === 'shadow' || revealed || pos >= queue.length) {
+      setTimeLeft(null);
+      return;
+    }
+    setTimeLeft(timerSec);
+    const id = setInterval(() => setTimeLeft((s) => (s === null || s <= 0 ? s : s - 1)), 1000);
+    return () => clearInterval(id);
+  }, [timerSec, mode, revealed, pos, queue.length]);
+  useEffect(() => {
+    if (timeLeft === 0) setRevealed(true);
+  }, [timeLeft]);
 
   const grade = useMutation({
     mutationFn: ({ key, ok }: { key: string; ok: boolean }) =>
@@ -62,6 +80,11 @@ export function InterviewDrill({
         <ThemedText style={styles.exit}>‹ {t('iv.exit')}</ThemedText>
       </Pressable>
       <ThemedText type="small">
+        {timeLeft !== null ? (
+          <ThemedText type="small" style={timeLeft <= 3 ? styles.timerHot : styles.timer}>
+            {`⏱ ${timeLeft}s   `}
+          </ThemedText>
+        ) : null}
         {Math.min(pos + 1, queue.length)} / {queue.length}
         {streak !== null ? `   🔥 ${streak}` : ''}
       </ThemedText>
@@ -214,6 +237,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#9ca3af55',
   },
   exit: { color: '#208AEF', fontWeight: '700', fontSize: 16 },
+  timer: { color: '#208AEF', fontWeight: '700' },
+  timerHot: { color: '#dc2626', fontWeight: '700' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: 24 },
   body: { flex: 1, padding: 24, gap: 16 },
   gap: { gap: 12 },
