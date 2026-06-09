@@ -12,6 +12,9 @@ import {
   CODE_NARRATION_CARDS,
   UI_CARDS,
   BACKEND_CARDS,
+  SD_CARDS,
+  PAIR_CARDS,
+  CLARIFY_CARDS,
   CONNECTORS,
   type ReflexCard,
   type InterviewCard,
@@ -74,6 +77,9 @@ export type ScopeKind =
   | 'codenarr'
   | 'ui'
   | 'backend'
+  | 'sd'
+  | 'pair'
+  | 'clarify'
   | 'connector';
 
 export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
@@ -89,6 +95,9 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
         ...CODE_NARRATION_CARDS.map(phraseIv),
         ...UI_CARDS.map(phraseIv),
         ...BACKEND_CARDS.map(backendIv),
+        ...SD_CARDS.map(phraseIv),
+        ...PAIR_CARDS.map(phraseIv),
+        ...CLARIFY_CARDS.map(phraseIv),
         ...CONNECTORS.map(connectorIv),
       ];
     case 'core':
@@ -113,6 +122,12 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       return UI_CARDS.map(phraseIv);
     case 'backend':
       return BACKEND_CARDS.map(backendIv);
+    case 'sd':
+      return SD_CARDS.map(phraseIv);
+    case 'pair':
+      return PAIR_CARDS.map(phraseIv);
+    case 'clarify':
+      return CLARIFY_CARDS.map(phraseIv);
     case 'connector':
       return CONNECTORS.map(connectorIv);
   }

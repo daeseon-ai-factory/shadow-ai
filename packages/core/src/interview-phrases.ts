@@ -1,5 +1,5 @@
 // AUTO-GENERATED interview phrase + backend-code banks (short-form dev English for hardcore drilling).
-// Source: interview-english-content + ui-interaction-bank + backend-content-banks workflows.
+// Source: content workflows + agents (authored + adversarially verified; real engineer usage, not textbook).
 
 import { type CodeCard } from './interview-drill';
 
@@ -1989,6 +1989,915 @@ export const BACKEND_CARDS: PhraseCard[] = [
   }
 ];
 
+export const SD_CARDS: PhraseCard[] = [
+  {
+    "key": "sd:let-s-start-with-the-requirements",
+    "en": "Let's start with the requirements",
+    "ko": "요구사항부터 짚고 넘어가자",
+    "example": "Let's start with the requirements before we draw anything.",
+    "situations": [
+      "면접 시작 직후 어디서 시작할지 정할 때",
+      "바로 다이어그램 그리려는 충동을 누를 때"
+    ]
+  },
+  {
+    "key": "sd:are-these-functional-or-non-functional",
+    "en": "Are these functional or non-functional?",
+    "ko": "이게 기능 요구사항이야 비기능 요구사항이야?",
+    "example": "Are these functional or non-functional requirements we're listing?",
+    "situations": [
+      "요구사항을 두 종류로 나눠 정리할 때",
+      "면접관이 요구사항을 던졌을 때 분류 확인할 때"
+    ]
+  },
+  {
+    "key": "sd:at-a-high-level",
+    "en": "At a high level",
+    "ko": "큰 그림으로 보면",
+    "example": "At a high level, it's just read-heavy with a cache.",
+    "situations": [
+      "세부 들어가기 전에 전체 흐름 먼저 설명할 때",
+      "면접관이 개요부터 보자고 할 때"
+    ]
+  },
+  {
+    "key": "sd:let-s-nail-down-the-scale-first",
+    "en": "Let's nail down the scale first",
+    "ko": "규모부터 확실히 정하자",
+    "example": "Let's nail down the scale first, then pick the storage.",
+    "situations": [
+      "설계 전에 트래픽/데이터 규모를 못 박을 때",
+      "스케일 가정 없이 컴포넌트 그리려 할 때"
+    ]
+  },
+  {
+    "key": "sd:let-me-lay-out-the-components",
+    "en": "Let me lay out the components",
+    "ko": "컴포넌트들을 한번 펼쳐볼게",
+    "example": "Let me lay out the components, then we connect them.",
+    "situations": [
+      "보드에 박스들을 하나씩 그리기 시작할 때",
+      "전체 아키텍처를 처음 스케치할 때"
+    ]
+  },
+  {
+    "key": "sd:let-me-scope-this-down",
+    "en": "Let me scope this down",
+    "ko": "범위를 좀 좁혀볼게",
+    "example": "Let me scope this down to the core feed flow.",
+    "situations": [
+      "문제가 너무 넓어서 핵심만 다룰 때",
+      "시간 안에 다룰 부분을 정할 때"
+    ]
+  },
+  {
+    "key": "sd:what-s-the-read-to-write-ratio",
+    "en": "What's the read-to-write ratio?",
+    "ko": "읽기 대 쓰기 비율이 어떻게 돼?",
+    "example": "What's the read-to-write ratio here, mostly reads?",
+    "situations": [
+      "캐시/리플리카 필요한지 판단하려 할 때",
+      "워크로드 성격을 면접관에게 물어볼 때"
+    ]
+  },
+  {
+    "key": "sd:roughly-a-thousand-requests-per-second",
+    "en": "Roughly a thousand requests per second",
+    "ko": "대충 초당 천 건 정도",
+    "example": "So roughly a thousand requests per second at peak.",
+    "situations": [
+      "QPS를 어림으로 잡아 말할 때",
+      "피크 트래픽을 추정할 때"
+    ]
+  },
+  {
+    "key": "sd:that-s-about-ten-gigs-a-day",
+    "en": "That's about ten gigs a day",
+    "ko": "하루에 한 10기가쯤 돼",
+    "example": "That's about ten gigs a day, so manageable.",
+    "situations": [
+      "하루 데이터 증가량을 추정할 때",
+      "스토리지 용량 감을 잡을 때"
+    ]
+  },
+  {
+    "key": "sd:let-s-ballpark-the-storage",
+    "en": "Let's ballpark the storage",
+    "ko": "스토리지를 대충 계산해보자",
+    "example": "Let's ballpark the storage for five years out.",
+    "situations": [
+      "저장 용량을 대략 추산할 때",
+      "장기 데이터 증가를 가늠할 때"
+    ]
+  },
+  {
+    "key": "sd:let-me-do-the-math",
+    "en": "Let me do the math",
+    "ko": "계산 한번 해볼게",
+    "example": "Let me do the math, a million users times ten KB.",
+    "situations": [
+      "용량/QPS 곱셈을 보드에서 풀 때",
+      "추정치를 숫자로 확인할 때"
+    ]
+  },
+  {
+    "key": "sd:give-or-take",
+    "en": "Give or take",
+    "ko": "대략, 오차는 좀 있고",
+    "example": "About two terabytes, give or take.",
+    "situations": [
+      "추정치에 여유를 둘 때",
+      "정확하지 않다는 걸 인정하며 숫자 말할 때"
+    ]
+  },
+  {
+    "key": "sd:let-s-round-up",
+    "en": "Let's round up",
+    "ko": "넉넉하게 올림하자",
+    "example": "Let's round up to a hundred for headroom.",
+    "situations": [
+      "여유분 두고 숫자 잡을 때",
+      "추정 단순화하려 올림할 때"
+    ]
+  },
+  {
+    "key": "sd:we-d-put-a-load-balancer-in-front",
+    "en": "We'd put a load balancer in front",
+    "ko": "앞단에 로드밸런서를 둘 거야",
+    "example": "We'd put a load balancer in front of these.",
+    "situations": [
+      "요청 분산 지점을 설명할 때",
+      "여러 서버 앞단 진입점을 그릴 때"
+    ]
+  },
+  {
+    "key": "sd:add-a-cache-layer-here",
+    "en": "Add a cache layer here",
+    "ko": "여기에 캐시 레이어 하나 추가하자",
+    "example": "Add a cache layer here to take read pressure off.",
+    "situations": [
+      "DB 읽기 부하를 줄이려 할 때",
+      "핫 데이터 빠르게 내보내려 할 때"
+    ]
+  },
+  {
+    "key": "sd:a-read-replica-for-the-read-path",
+    "en": "A read replica for the read path",
+    "ko": "읽기 경로용으로 리드 리플리카 하나",
+    "example": "A read replica for the read path, writes hit primary.",
+    "situations": [
+      "읽기 부하를 분산할 때",
+      "쓰기와 읽기를 다른 노드로 나눌 때"
+    ]
+  },
+  {
+    "key": "sd:throw-a-queue-in-between",
+    "en": "Throw a queue in between",
+    "ko": "중간에 큐 하나 끼워넣자",
+    "example": "Throw a queue in between to absorb the spikes.",
+    "situations": [
+      "트래픽 스파이크를 완충할 때",
+      "생산자와 소비자를 비동기로 떼어낼 때"
+    ]
+  },
+  {
+    "key": "sd:let-s-decouple-these-two",
+    "en": "Let's decouple these two",
+    "ko": "이 둘을 분리하자",
+    "example": "Let's decouple these two with an event.",
+    "situations": [
+      "서비스 간 의존을 끊을 때",
+      "비동기 처리로 묶음을 풀 때"
+    ]
+  },
+  {
+    "key": "sd:put-a-cdn-in-front-of-static-assets",
+    "en": "Put a CDN in front of static assets",
+    "ko": "정적 자원 앞에는 CDN을 둬",
+    "example": "Put a CDN in front of static assets, images mostly.",
+    "situations": [
+      "이미지/파일 전송 지연 줄일 때",
+      "엣지에서 정적 콘텐츠 서빙할 때"
+    ]
+  },
+  {
+    "key": "sd:we-d-shard-by-user-id",
+    "en": "We'd shard by user id",
+    "ko": "유저 아이디로 샤딩할 거야",
+    "example": "We'd shard by user id to spread the load.",
+    "situations": [
+      "DB를 수평 분할할 키를 정할 때",
+      "한 테이블이 너무 커질 때"
+    ]
+  },
+  {
+    "key": "sd:denormalize-for-read-speed",
+    "en": "Denormalize for read speed",
+    "ko": "읽기 속도 위해 비정규화하자",
+    "example": "Denormalize for read speed, we eat the dupes.",
+    "situations": [
+      "조인 비용을 없애려 할 때",
+      "읽기 최적화로 데이터 중복 감수할 때"
+    ]
+  },
+  {
+    "key": "sd:eventual-consistency-is-fine-here",
+    "en": "Eventual consistency is fine here",
+    "ko": "여긴 최종 일관성이면 충분해",
+    "example": "Eventual consistency is fine here, it's just a count.",
+    "situations": [
+      "강한 일관성이 필요 없는 부분 설명할 때",
+      "지연 반영을 허용할 때"
+    ]
+  },
+  {
+    "key": "sd:the-write-path-goes-through-here",
+    "en": "The write path goes through here",
+    "ko": "쓰기 경로는 여기로 흘러",
+    "example": "The write path goes through here, then to the queue.",
+    "situations": [
+      "데이터가 들어오는 흐름을 짚을 때",
+      "쓰기와 읽기 경로를 구분해 설명할 때"
+    ]
+  },
+  {
+    "key": "sd:we-index-on-that-column",
+    "en": "We index on that column",
+    "ko": "그 컬럼에 인덱스를 걸어",
+    "example": "We index on that column so lookups stay fast.",
+    "situations": [
+      "조회 성능 위해 인덱스 설계할 때",
+      "느린 쿼리를 빠르게 만들 때"
+    ]
+  },
+  {
+    "key": "sd:keep-the-hot-data-in-memory",
+    "en": "Keep the hot data in memory",
+    "ko": "자주 쓰는 데이터는 메모리에 둬",
+    "example": "Keep the hot data in memory, cold goes to disk.",
+    "situations": [
+      "접근 빈도로 데이터 계층 나눌 때",
+      "지연 줄이려 인메모리 쓸 때"
+    ]
+  },
+  {
+    "key": "sd:the-bottleneck-would-be-the-db",
+    "en": "The bottleneck would be the DB",
+    "ko": "병목은 DB가 될 거야",
+    "example": "The bottleneck would be the DB under write load.",
+    "situations": [
+      "성능 한계 지점을 지목할 때",
+      "부하가 어디서 터질지 설명할 때"
+    ]
+  },
+  {
+    "key": "sd:the-tradeoff-is-consistency-versus-avail",
+    "en": "The tradeoff is consistency versus availability",
+    "ko": "트레이드오프는 일관성 대 가용성이야",
+    "example": "The tradeoff is consistency versus availability here.",
+    "situations": [
+      "CAP 선택을 설명할 때",
+      "둘 중 뭘 포기할지 짚을 때"
+    ]
+  },
+  {
+    "key": "sd:that-doesn-t-scale-because",
+    "en": "That doesn't scale because",
+    "ko": "그건 확장이 안 돼, 왜냐면",
+    "example": "That doesn't scale because every read hits one node.",
+    "situations": [
+      "특정 설계의 한계를 지적할 때",
+      "단순한 안이 규모에서 깨지는 이유 댈 때"
+    ]
+  },
+  {
+    "key": "sd:this-is-the-single-point-of-failure",
+    "en": "This is the single point of failure",
+    "ko": "여기가 단일 장애점이야",
+    "example": "This is the single point of failure, we need a backup.",
+    "situations": [
+      "하나 죽으면 전체가 죽는 지점 짚을 때",
+      "이중화가 필요한 곳 지목할 때"
+    ]
+  },
+  {
+    "key": "sd:it-depends-on-the-access-pattern",
+    "en": "It depends on the access pattern",
+    "ko": "접근 패턴에 따라 달라",
+    "example": "It depends on the access pattern, reads or writes.",
+    "situations": [
+      "정답이 워크로드에 좌우될 때",
+      "선택 근거를 패턴으로 설명할 때"
+    ]
+  },
+  {
+    "key": "sd:we-scale-this-horizontally",
+    "en": "We scale this horizontally",
+    "ko": "이건 수평으로 확장해",
+    "example": "We scale this horizontally, just add more nodes.",
+    "situations": [
+      "서버를 늘려 처리량 키울 때",
+      "수직 확장과 대비해 설명할 때"
+    ]
+  },
+  {
+    "key": "sd:fan-out-the-writes",
+    "en": "Fan out the writes",
+    "ko": "쓰기를 팬아웃으로 뿌려",
+    "example": "Fan out the writes to each follower's feed.",
+    "situations": [
+      "쓰기 시점에 여러 곳으로 복제할 때",
+      "피드 분산 전략 설명할 때"
+    ]
+  },
+  {
+    "key": "sd:we-can-cache-aggressively-here",
+    "en": "We can cache aggressively here",
+    "ko": "여긴 공격적으로 캐싱해도 돼",
+    "example": "We can cache aggressively here, it rarely changes.",
+    "situations": [
+      "변경 드문 데이터를 길게 캐싱할 때",
+      "읽기 부하를 캐시로 거의 다 막을 때"
+    ]
+  },
+  {
+    "key": "sd:push-the-work-to-a-background-job",
+    "en": "Push the work to a background job",
+    "ko": "그 작업은 백그라운드 잡으로 넘겨",
+    "example": "Push the work to a background job, don't block.",
+    "situations": [
+      "무거운 처리를 비동기로 뺄 때",
+      "응답 지연 줄이려 후처리로 미룰 때"
+    ]
+  },
+  {
+    "key": "sd:rate-limit-at-the-edge",
+    "en": "Rate limit at the edge",
+    "ko": "엣지에서 레이트 리밋을 걸어",
+    "example": "Rate limit at the edge before it hits the backend.",
+    "situations": [
+      "남용/스파이크를 입구에서 막을 때",
+      "백엔드 보호 장치 설명할 때"
+    ]
+  },
+  {
+    "key": "sd:let-s-add-monitoring-around-this",
+    "en": "Let's add monitoring around this",
+    "ko": "여기 주변에 모니터링을 붙이자",
+    "example": "Let's add monitoring around this so we catch lag.",
+    "situations": [
+      "장애를 빨리 감지하려 할 때",
+      "운영 관점 마무리로 관측성 언급할 때"
+    ]
+  }
+];
+
+export const PAIR_CARDS: PhraseCard[] = [
+  {
+    "key": "pp:let-me-stub-this-out-first",
+    "en": "Let me stub this out first",
+    "ko": "일단 뼈대(빈 함수)부터 잡을게요",
+    "example": "Let me stub this out first, then fill in the logic.",
+    "situations": [
+      "함수 시그니처만 먼저 작성할 때",
+      "구현 전 구조부터 잡을 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-just-get-it-working-then-refactor",
+    "en": "Let me just get it working, then refactor",
+    "ko": "일단 동작부터 시키고 나중에 정리할게요",
+    "example": "Let me just get it working, then refactor it later.",
+    "situations": [
+      "완벽함보다 동작을 우선할 때",
+      "리팩터링을 뒤로 미룰 때"
+    ]
+  },
+  {
+    "key": "pp:i-ll-start-with-the-brute-force",
+    "en": "I'll start with the brute force",
+    "ko": "우선 브루트포스로 풀고 시작할게요",
+    "example": "I'll start with the brute force, then optimize.",
+    "situations": [
+      "가장 단순한 해법부터 짤 때",
+      "최적화 전 기준점을 만들 때"
+    ]
+  },
+  {
+    "key": "pp:i-ll-come-back-to-error-handling",
+    "en": "I'll come back to error handling",
+    "ko": "에러 처리는 이따 다시 볼게요",
+    "example": "I'll come back to error handling once the happy path works.",
+    "situations": [
+      "정상 흐름부터 먼저 짤 때",
+      "예외 처리를 잠시 미룰 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-leave-a-todo-here",
+    "en": "Let me leave a TODO here",
+    "ko": "여기 TODO 하나 남겨둘게요",
+    "example": "Let me leave a TODO here so I don't forget.",
+    "situations": [
+      "나중에 할 일을 표시할 때",
+      "미완성 부분을 메모할 때"
+    ]
+  },
+  {
+    "key": "pp:i-ll-handle-edge-cases-after",
+    "en": "I'll handle edge cases after",
+    "ko": "엣지 케이스는 나중에 처리할게요",
+    "example": "I'll handle edge cases after the core logic is done.",
+    "situations": [
+      "핵심 로직부터 끝낼 때",
+      "특수 케이스를 뒤로 미룰 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-run-through-an-example",
+    "en": "Let me run through an example",
+    "ko": "예시 하나로 돌려볼게요",
+    "example": "Let me run through an example to check the logic.",
+    "situations": [
+      "구체적 입력으로 검증할 때",
+      "로직을 예시로 확인할 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-trace-this-with-a-sample-input",
+    "en": "Let me trace this with a sample input",
+    "ko": "샘플 입력으로 흐름을 따라가 볼게요",
+    "example": "Let me trace this with a sample input like [1, 2, 3].",
+    "situations": [
+      "코드 실행 흐름을 짚을 때",
+      "값이 어떻게 변하는지 볼 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-sanity-check-this",
+    "en": "Let me sanity-check this",
+    "ko": "이게 말이 되나 한번 확인해 볼게요",
+    "example": "Let me sanity-check this before moving on.",
+    "situations": [
+      "다음으로 넘어가기 전 점검할 때",
+      "빠르게 맞는지 확인할 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-dry-run-it",
+    "en": "Let me dry-run it",
+    "ko": "머릿속으로 한번 돌려볼게요",
+    "example": "Let me dry-run it on paper real quick.",
+    "situations": [
+      "실행 없이 로직만 따라갈 때",
+      "코드를 종이로 검증할 때"
+    ]
+  },
+  {
+    "key": "pp:i-m-iterating-over-the-list-here",
+    "en": "I'm iterating over the list here",
+    "ko": "여기서 리스트를 순회하고 있어요",
+    "example": "I'm iterating over the list here to find the max.",
+    "situations": [
+      "반복문을 설명할 때",
+      "리스트를 도는 부분을 짚을 때"
+    ]
+  },
+  {
+    "key": "pp:i-ll-extract-this-into-a-helper",
+    "en": "I'll extract this into a helper",
+    "ko": "이 부분은 헬퍼 함수로 빼낼게요",
+    "example": "I'll extract this into a helper to keep it clean.",
+    "situations": [
+      "중복 로직을 함수로 분리할 때",
+      "가독성을 위해 쪼갤 때"
+    ]
+  },
+  {
+    "key": "pp:i-m-storing-it-in-a-map-for-o-of-one-loo",
+    "en": "I'm storing it in a map for O-of-one lookup",
+    "ko": "O(1) 조회를 위해 맵에 저장하고 있어요",
+    "example": "I'm storing it in a map for O-of-one lookup later.",
+    "situations": [
+      "해시맵으로 조회 최적화할 때",
+      "자료구조 선택 이유를 말할 때"
+    ]
+  },
+  {
+    "key": "pp:wait-that-s-not-right",
+    "en": "Wait, that's not right",
+    "ko": "잠깐, 이거 틀렸네요",
+    "example": "Wait, that's not right, the index is off.",
+    "situations": [
+      "실수를 바로 알아챘을 때",
+      "코드 오류를 발견했을 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-back-up",
+    "en": "Let me back up",
+    "ko": "잠깐 앞으로 돌아가 볼게요",
+    "example": "Let me back up and re-read the requirements.",
+    "situations": [
+      "이전 단계로 되돌아갈 때",
+      "방향을 다시 잡을 때"
+    ]
+  },
+  {
+    "key": "pp:actually-let-me-rethink-this",
+    "en": "Actually, let me rethink this",
+    "ko": "사실, 이거 다시 생각해 볼게요",
+    "example": "Actually, let me rethink this approach.",
+    "situations": [
+      "접근 방식을 바꿀 때",
+      "더 나은 방법을 고민할 때"
+    ]
+  },
+  {
+    "key": "pp:scratch-that",
+    "en": "Scratch that",
+    "ko": "방금 거 취소요 (없던 걸로)",
+    "example": "Scratch that, the previous way was better.",
+    "situations": [
+      "방금 말/코드를 무를 때",
+      "잘못된 방향을 철회할 때"
+    ]
+  },
+  {
+    "key": "pp:does-that-make-sense",
+    "en": "Does that make sense?",
+    "ko": "이해되시나요? / 말 되나요?",
+    "example": "I'll use a stack here, does that make sense?",
+    "situations": [
+      "면접관 동의를 구할 때",
+      "설명이 전달됐는지 확인할 때"
+    ]
+  },
+  {
+    "key": "pp:feel-free-to-stop-me",
+    "en": "Feel free to stop me",
+    "ko": "언제든 끊으셔도 돼요",
+    "example": "Feel free to stop me if I'm going the wrong way.",
+    "situations": [
+      "면접관 피드백을 열어둘 때",
+      "중간 개입을 환영할 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-know-if-you-d-do-this-differently",
+    "en": "Let me know if you'd do this differently",
+    "ko": "다르게 하실 것 같으면 말씀해 주세요",
+    "example": "Let me know if you'd do this differently.",
+    "situations": [
+      "대안 의견을 물을 때",
+      "접근 방식 합의를 구할 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-think-out-loud-for-a-sec",
+    "en": "Let me think out loud for a sec",
+    "ko": "잠깐 생각을 소리 내서 정리해 볼게요",
+    "example": "Let me think out loud for a sec here.",
+    "situations": [
+      "사고 과정을 공유할 때",
+      "침묵 대신 생각을 말할 때"
+    ]
+  },
+  {
+    "key": "pp:i-ll-hardcode-this-for-now",
+    "en": "I'll hardcode this for now",
+    "ko": "일단 이건 하드코딩해 둘게요",
+    "example": "I'll hardcode this for now and clean it up later.",
+    "situations": [
+      "임시 값으로 진행할 때",
+      "나중에 고칠 자리표시일 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-name-this-better",
+    "en": "Let me name this better",
+    "ko": "이 변수명 좀 더 낫게 바꿀게요",
+    "example": "Let me name this better, 'x' is confusing.",
+    "situations": [
+      "변수명을 다듬을 때",
+      "가독성을 높일 때"
+    ]
+  },
+  {
+    "key": "pp:i-think-there-s-an-off-by-one-here",
+    "en": "I think there's an off-by-one here",
+    "ko": "여기 인덱스가 하나 어긋난 것 같아요",
+    "example": "I think there's an off-by-one here in the loop.",
+    "situations": [
+      "경계 인덱스 버그를 의심할 때",
+      "루프 범위를 점검할 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-walk-you-through-my-approach",
+    "en": "Let me walk you through my approach",
+    "ko": "제 접근 방식을 설명드릴게요",
+    "example": "Before coding, let me walk you through my approach.",
+    "situations": [
+      "코딩 전 계획을 공유할 때",
+      "전체 흐름을 먼저 설명할 때"
+    ]
+  },
+  {
+    "key": "pp:bear-with-me-for-a-second",
+    "en": "Bear with me for a second",
+    "ko": "잠시만 기다려 주세요",
+    "example": "Bear with me for a second while I look this up.",
+    "situations": [
+      "잠깐 멈춰 확인할 때",
+      "생각 정리할 시간이 필요할 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-clean-this-up-real-quick",
+    "en": "Let me clean this up real quick",
+    "ko": "이거 잠깐 빠르게 정리할게요",
+    "example": "Let me clean this up real quick before moving on.",
+    "situations": [
+      "넘어가기 전 코드를 다듬을 때",
+      "지저분한 부분을 정돈할 때"
+    ]
+  },
+  {
+    "key": "pp:off-the-top-of-my-head-i-d-use-a-heap",
+    "en": "Off the top of my head, I'd use a heap",
+    "ko": "딱 떠오르는 건, 힙을 쓰는 거예요",
+    "example": "Off the top of my head, I'd use a heap here.",
+    "situations": [
+      "즉흥적으로 아이디어를 낼 때",
+      "초기 직관을 말할 때"
+    ]
+  },
+  {
+    "key": "pp:that-should-cover-it",
+    "en": "That should cover it",
+    "ko": "이거면 다 된 것 같아요",
+    "example": "I added the null check, that should cover it.",
+    "situations": [
+      "케이스를 다 처리했다고 볼 때",
+      "마무리됐다고 판단할 때"
+    ]
+  },
+  {
+    "key": "pp:let-me-double-check-the-edge-cases",
+    "en": "Let me double-check the edge cases",
+    "ko": "엣지 케이스를 한 번 더 확인할게요",
+    "example": "Let me double-check the edge cases, like an empty list.",
+    "situations": [
+      "빈 입력/경계값을 점검할 때",
+      "마지막 검증을 할 때"
+    ]
+  }
+];
+
+export const CLARIFY_CARDS: PhraseCard[] = [
+  {
+    "key": "cq:before-i-jump-in-can-i-clarify-the-requi",
+    "en": "Before I jump in, can I clarify the requirements?",
+    "ko": "시작하기 전에 요구사항을 확인해도 될까요?",
+    "example": "Before I jump in, can I clarify the requirements?",
+    "situations": [
+      "문제 받자마자 바로 코딩하기 전",
+      "요구사항이 모호하게 느껴질 때"
+    ]
+  },
+  {
+    "key": "cq:what-kind-of-scale-are-we-talking-about",
+    "en": "What kind of scale are we talking about?",
+    "ko": "규모가 어느 정도인가요?",
+    "example": "What kind of scale are we talking about here?",
+    "situations": [
+      "시스템 디자인 시작할 때",
+      "입력 크기로 자료구조를 정해야 할 때"
+    ]
+  },
+  {
+    "key": "cq:roughly-how-many-requests-per-second",
+    "en": "Roughly how many requests per second?",
+    "ko": "대략 초당 요청이 얼마나 되나요?",
+    "example": "Roughly how many requests per second should I plan for?",
+    "situations": [
+      "시스템 용량 산정 전",
+      "스케일 가정을 구체화할 때"
+    ]
+  },
+  {
+    "key": "cq:can-i-assume-the-input-is-already-sorted",
+    "en": "Can I assume the input is already sorted?",
+    "ko": "입력이 이미 정렬돼 있다고 가정해도 될까요?",
+    "example": "Can I assume the input array is already sorted?",
+    "situations": [
+      "이분 탐색을 쓸지 정할 때",
+      "배열 문제 초반 가정 정리"
+    ]
+  },
+  {
+    "key": "cq:should-i-handle-the-empty-case",
+    "en": "Should I handle the empty case?",
+    "ko": "빈 입력도 처리해야 하나요?",
+    "example": "Should I handle the empty input case too?",
+    "situations": [
+      "엣지 케이스 범위 확인할 때",
+      "코드 작성 전 경계 조건 정리"
+    ]
+  },
+  {
+    "key": "cq:are-duplicates-allowed-in-the-input",
+    "en": "Are duplicates allowed in the input?",
+    "ko": "입력에 중복 값이 있을 수 있나요?",
+    "example": "Are duplicates allowed in the input?",
+    "situations": [
+      "Set을 쓸지 정할 때",
+      "중복 처리 로직이 필요한지 확인할 때"
+    ]
+  },
+  {
+    "key": "cq:can-the-values-be-negative",
+    "en": "Can the values be negative?",
+    "ko": "값이 음수일 수도 있나요?",
+    "example": "Can the values be negative, or all positive?",
+    "situations": [
+      "합/슬라이딩 윈도우 문제 초반",
+      "입력 범위를 명확히 할 때"
+    ]
+  },
+  {
+    "key": "cq:what-should-i-return-if-there-s-no-valid",
+    "en": "What should I return if there's no valid answer?",
+    "ko": "유효한 답이 없을 땐 뭘 반환해야 하나요?",
+    "example": "What should I return when there's no valid answer?",
+    "situations": [
+      "답이 없는 케이스 처리 정할 때",
+      "반환 규약 합의할 때"
+    ]
+  },
+  {
+    "key": "cq:just-to-confirm-we-want-the-longest-one-",
+    "en": "Just to confirm, we want the longest one, right?",
+    "ko": "확인차, 가장 긴 걸 원하시는 거죠?",
+    "example": "Just to confirm, we want the longest substring, right?",
+    "situations": [
+      "문제 핵심 목표를 재확인할 때",
+      "코딩 들어가기 직전 합의"
+    ]
+  },
+  {
+    "key": "cq:so-the-goal-is-the-shortest-path-correct",
+    "en": "So the goal is the shortest path, correct?",
+    "ko": "그러니까 목표는 최단 경로 맞죠?",
+    "example": "So the goal is the shortest path, correct?",
+    "situations": [
+      "문제를 내 말로 다시 정리할 때",
+      "그래프 문제 방향 확정"
+    ]
+  },
+  {
+    "key": "cq:let-me-make-sure-i-understand-the-proble",
+    "en": "Let me make sure I understand the problem",
+    "ko": "문제를 제대로 이해했는지 확인할게요",
+    "example": "Let me make sure I understand the problem first.",
+    "situations": [
+      "설명 듣고 바로 정리하고 싶을 때",
+      "오해 없이 출발하고 싶을 때"
+    ]
+  },
+  {
+    "key": "cq:let-me-restate-the-problem-in-my-own-wor",
+    "en": "Let me restate the problem in my own words",
+    "ko": "문제를 제 말로 다시 정리해볼게요",
+    "example": "Let me restate the problem in my own words.",
+    "situations": [
+      "이해도를 보여주고 싶을 때",
+      "면접관과 인식을 맞출 때"
+    ]
+  },
+  {
+    "key": "cq:let-me-walk-through-an-example-to-make-s",
+    "en": "Let me walk through an example to make sure",
+    "ko": "확실히 하려고 예시 하나 짚어볼게요",
+    "example": "Let me walk through a quick example to confirm.",
+    "situations": [
+      "입출력 이해를 점검할 때",
+      "로직 시작 전 감 잡을 때"
+    ]
+  },
+  {
+    "key": "cq:would-you-like-me-to-optimize-for-time-o",
+    "en": "Would you like me to optimize for time or space?",
+    "ko": "시간과 공간 중 뭘 우선 최적화할까요?",
+    "example": "Should I optimize for time or for space here?",
+    "situations": [
+      "트레이드오프가 갈릴 때",
+      "최적화 방향을 물을 때"
+    ]
+  },
+  {
+    "key": "cq:do-you-want-a-working-solution-first-the",
+    "en": "Do you want a working solution first, then optimize?",
+    "ko": "일단 동작하는 풀이 먼저 짜고 최적화할까요?",
+    "example": "Want me to get it working first, then optimize?",
+    "situations": [
+      "브루트포스부터 갈지 정할 때",
+      "시간 배분 전략을 합의할 때"
+    ]
+  },
+  {
+    "key": "cq:should-i-code-it-up-or-just-talk-through",
+    "en": "Should I code it up or just talk through it?",
+    "ko": "코드로 작성할까요, 말로 설명할까요?",
+    "example": "Should I code this up or just talk through it?",
+    "situations": [
+      "시간이 빠듯할 때",
+      "구현 vs 설계 토론 갈림길"
+    ]
+  },
+  {
+    "key": "cq:do-you-want-me-to-handle-concurrency-her",
+    "en": "Do you want me to handle concurrency here?",
+    "ko": "여기서 동시성까지 고려해야 하나요?",
+    "example": "Do you want me to handle concurrency in this?",
+    "situations": [
+      "멀티스레드 환경이 애매할 때",
+      "락/원자성 범위를 정할 때"
+    ]
+  },
+  {
+    "key": "cq:should-i-worry-about-thread-safety-for-t",
+    "en": "Should I worry about thread safety for this?",
+    "ko": "이건 스레드 안전성까지 신경 써야 하나요?",
+    "example": "Should I worry about thread safety for this part?",
+    "situations": [
+      "공유 자원 접근이 있을 때",
+      "동시 접근 가정 확인"
+    ]
+  },
+  {
+    "key": "cq:let-me-think-about-this-for-a-second",
+    "en": "Let me think about this for a second",
+    "ko": "잠깐만 생각 좀 해볼게요",
+    "example": "Let me think about this for a second.",
+    "situations": [
+      "바로 답이 안 떠오를 때",
+      "접근법을 고를 시간이 필요할 때"
+    ]
+  },
+  {
+    "key": "cq:give-me-a-moment-to-plan-my-approach",
+    "en": "Give me a moment to plan my approach",
+    "ko": "접근 방식을 정리할 시간을 잠깐 주세요",
+    "example": "Give me a moment to plan my approach.",
+    "situations": [
+      "코딩 전 설계를 정리할 때",
+      "성급하게 시작하지 않으려 할 때"
+    ]
+  },
+  {
+    "key": "cq:to-summarize-my-approach",
+    "en": "To summarize my approach",
+    "ko": "제 접근 방식을 정리하자면",
+    "example": "To summarize my approach, I use a hash map.",
+    "situations": [
+      "풀이를 마무리 정리할 때",
+      "구현 직전 계획을 요약할 때"
+    ]
+  },
+  {
+    "key": "cq:if-i-had-more-time-i-d-add-tests-for-the",
+    "en": "If I had more time, I'd add tests for the edge cases",
+    "ko": "시간이 더 있었다면 엣지 케이스 테스트를 추가했을 거예요",
+    "example": "If I had more time, I'd add more edge-case tests.",
+    "situations": [
+      "시간이 부족하게 끝났을 때",
+      "마무리 멘트로 성숙함을 보일 때"
+    ]
+  },
+  {
+    "key": "cq:the-time-complexity-is-o-n-and-space-is-",
+    "en": "The time complexity is O(n), and space is O(1)",
+    "ko": "시간 복잡도는 O(n), 공간은 O(1)입니다",
+    "example": "The time complexity is O(n), space is O(1).",
+    "situations": [
+      "풀이를 끝내고 복잡도를 밝힐 때",
+      "면접관이 복잡도를 물을 때"
+    ]
+  },
+  {
+    "key": "cq:one-trade-off-here-is-we-use-extra-memor",
+    "en": "One trade-off here is we use extra memory for speed",
+    "ko": "트레이드오프는 속도를 위해 메모리를 더 쓴다는 점이에요",
+    "example": "One trade-off: we trade memory for speed here.",
+    "situations": [
+      "설계 선택을 변호할 때",
+      "최적화 결정을 정당화할 때"
+    ]
+  }
+];
+
 export const CONNECTORS: Connector[] = [
   {
     "key": "co:first",
@@ -2530,4 +3439,4 @@ export const BACKEND_CODE_CARDS: CodeCard[] = [
   }
 ];
 
-export const PHRASE_DECK_COUNTS = { phrasal: 44, expr: 32, code: 37, ui: 32, backend: 37, connectors: 37, backendCode: 23 };
+export const PHRASE_DECK_COUNTS = { phrasal: 44, expr: 32, code: 37, ui: 32, backend: 37, sd: 36, pair: 30, clarify: 24, connectors: 37, backendCode: 23 };

@@ -130,6 +130,18 @@ export default function InterviewScreen() {
               <ThemedText type="smallBold">{t('iv.backend')}</ThemedText>
               <ThemedText type="small">{PHRASE_DECK_COUNTS.backend}</ThemedText>
             </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('sd')}>
+              <ThemedText type="smallBold">{t('iv.sysdesign')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.sd}</ThemedText>
+            </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('pair')}>
+              <ThemedText type="smallBold">{t('iv.pairTalk')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.pair}</ThemedText>
+            </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('clarify')}>
+              <ThemedText type="smallBold">{t('iv.clarify')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.clarify}</ThemedText>
+            </Pressable>
             <Pressable style={styles.tile} onPress={() => startSpeak('connector')}>
               <ThemedText type="smallBold">{t('iv.connector')}</ThemedText>
               <ThemedText type="small">{PHRASE_DECK_COUNTS.connectors}</ThemedText>
