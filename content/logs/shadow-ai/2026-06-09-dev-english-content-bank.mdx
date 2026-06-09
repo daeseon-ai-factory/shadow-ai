@@ -1,0 +1,30 @@
+---
+title: "Authoring a 150-item dev-English drill bank with a verify-after-author workflow"
+date: "2026-06-09"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The interview-prep app needed a big bank of real spoken dev English — phrasal verbs, expressions, code-narration, connectors. A workflow authored 4 banks in parallel and a second adversarial agent cut 205 drafts down to 150, enforcing 'what an engineer actually says, not textbook'."
+tags: ["content-generation", "workflow", "language-learning", "interview-prep"]
+---
+
+The methodology the user is drilling with is deliberate: **don't memorize long sentences — learn many short, clear atomic sentences by heavy repetition, then chain them logically.** That reframes the content problem. You don't need eloquent monologues; you need a big bank of short, high-frequency units plus the connective tissue to string them together.
+
+So four banks:
+- **Phrasal verbs** — the single biggest tell of an ESL engineer. "spin up", "roll back", "fall through", "walk through", "break down", "wire up", "tear down", "cut over". Natives reach for these constantly; textbooks never teach them.
+- **Interview/standup expressions** — "the gotcha here is", "this boils down to", "off the top of my head", "the tradeoff is", "at a high level".
+- **Code-narration** — verbalizing behavior out loud: "it short-circuits", "we early-return", "it falls through to the default", "we guard against null".
+- **Connectors** — the glue for chaining short sentences: sequence (first / then / once that's done), cause (so / because / which means), contrast (but / that said), conclude (so basically / the bottom line is).
+
+## Author, then adversarially verify
+
+The generation ran as a workflow: four agents authored their banks in parallel, then a **second agent verified each one** — explicitly told to be ruthless and DROP anything textbook, dated, longer than ~12 words, or that a real senior engineer wouldn't say out loud. The cut was meaningful: **205 authored → 150 kept** (44 / 32 / 37 / 37). That second pass is where quality actually happens. A single author agent, left alone, pads toward textbook English and over-long examples; the adversarial verifier is what enforces "real spoken usage."
+
+A small python generator turned the verified JSON into `packages/core/src/interview-phrases.ts` (slugged keys `ph:` / `ex:` / `cn:` / `co:`), and the mobile deck mapped each item onto the existing drill engine with a new "실무 영어" menu section.
+
+## Variety without new cards
+
+Each item carries 2–3 Korean situation prompts. When the deck is built, the mapper picks a **random** situation as the cue — so the same target expression gets practiced from different angles over reps ("다양한 상황서 같은 표현"), while the SRS card key stays stable so progress tracking is untouched. Variety is a presentation choice, not a multiplication of cards.
+
+One architecture note that surprised the user mid-build: the drill **content** (these 150 items, the 107 reflex cards, the code cards) is not in a database at all — it's `// AUTO-GENERATED` TypeScript bundled into the app. Only **progress** (the SRS box/due-date/streak per card) lives in Postgres. So adding content is a code change + rebuild, not a DB write.

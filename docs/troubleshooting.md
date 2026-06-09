@@ -814,3 +814,16 @@ Migrating the prod backend ap-northeast-2 (Seoul) → ca-central-1 (Toronto-area
 - **Patterns:** (1) NEVER `SIGKILL` terraform mid-apply — it truncates local state; use TaskStop/SIGINT and recover via `import`, not delete. (2) `count = length(<resource>)` makes the whole config un-`import`able — count off a static var/local. (3) S3 + Secrets Manager hold a deleted NAME for a while; a region migration must use region/random-suffixed names. (4) zsh quirks bite: `$ECR:latest`→`${ECR:l}atest`, and unquoted `$VAR` doesn't word-split — run multi-arg-var AWS scripts under `bash`.
 
 <!-- migration logged: cdba49f + content/logs/shadow-ai/2026-06-08-region-migration-state-recovery.mdx -->
+<!-- skipped: dabeb21 docs(log): ca-central-1 cutover incident + state-recovery write-up (cdba49f) [no-log] -->
+<!-- skipped: d7019b0 fix(interview): guard Whisper silence-hallucination ('Thank you for watching') + reject <0.9s clips; 'Again' re-shows card ~2 cards later (Anki-style) not at queue end [no-log] -->
+<!-- skipped: 9525a5a feat(interview): switch STT from Groq Whisper to OpenAI gpt-4o-transcribe (low hallucination, dev-jargon accurate); generic OpenAI-compatible TranscriptionClient (base-url/path/model/key swappable) [no-log] -->
+<!-- skipped: 6f0d616 fix(interview): 'Again' now repeats the SAME card immediately (no advance) instead of re-queuing — drill the missed card until 'Got it' [no-log] -->
+
+---
+
+## Bulk content bank (150 short dev-English items): workflow author → adversarial verify → generator → core
+
+- **Context**: the user wanted to drill REAL spoken dev English in many short reps — SHORT atomic sentences chained with connectors, NOT long-sentence memorization, "다양한 상황서 같은 표현."
+- **Approach (reusable)**: a Workflow authored 4 banks in PARALLEL (phrasal verbs / interview expressions / code-narration / connectors), then **adversarially VERIFIED** each — a second agent told to ruthlessly DROP textbook/long(>~12 words)/unnatural/dated items. Result **205 authored → 150 kept** (phrasal 44, expr 32, code 37, conn 37). A python generator turned the verified JSON into `packages/core/src/interview-phrases.ts` (slug keys `ph:`/`ex:`/`cn:`/`co:`); `mobile/src/lib/interview-deck.ts` maps each to the existing `IvItem`; the menu got a "실무 영어" section. Commit `8a44b07`.
+- **Variety trick**: `phraseIv()` picks a RANDOM `situation` from the card each time the deck is built → same expression cued from different angles over reps, while the SRS `key` stays stable so progress tracking is unaffected. Variety ≠ new cards.
+- **Pattern**: for bulk high-quality content, SEPARATE author from verify — one agent generates broad, a second adversarially cuts to a quality bar (the 205→150 cut is where "real engineer usage, not textbook" gets enforced; a single author agent drifts toward textbook padding). And keep generated drill *content* in an `// AUTO-GENERATED` core TS file (ships in the app bundle), NOT the DB — only *progress* (SRS) lives in Postgres.
