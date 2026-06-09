@@ -90,6 +90,12 @@ export default function InterviewScreen() {
             <ThemedText type="small">{t('iv.modeDueSub')}</ThemedText>
           </Pressable>
 
+          {/* The live-assembly bridge: AI interviewer asks, you answer by voice, it digs in. */}
+          <Pressable style={styles.mockBtn} onPress={() => router.push('/mock-run')}>
+            <ThemedText style={styles.coreText}>🎙 {t('mock.title')} →</ThemedText>
+            <ThemedText type="small" style={styles.mockSub}>{t('mock.sub')}</ThemedText>
+          </Pressable>
+
           {/* Training intensity: speed pressure, weak-card repair, sustained 60s speech. */}
           <View style={styles.modeRow}>
             <Pressable style={styles.trainBtn} onPress={() => startSpeak('due', undefined, true)}>
@@ -210,6 +216,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   coreBtn: { backgroundColor: '#208AEF', borderRadius: 12, paddingVertical: 16, alignItems: 'center' },
+  mockBtn: {
+    backgroundColor: '#16a34a',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    gap: 2,
+  },
+  mockSub: { color: '#ffffffcc' },
   trainBtn: {
     flex: 1,
     borderRadius: 12,

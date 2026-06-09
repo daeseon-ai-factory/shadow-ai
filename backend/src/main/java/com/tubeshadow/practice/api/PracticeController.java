@@ -9,6 +9,8 @@ import com.tubeshadow.practice.api.dto.GradeRequest;
 import com.tubeshadow.practice.api.dto.GradeResponse;
 import com.tubeshadow.practice.api.dto.InterviewCheckRequest;
 import com.tubeshadow.practice.api.dto.InterviewCheckResponse;
+import com.tubeshadow.practice.api.dto.MockNextRequest;
+import com.tubeshadow.practice.api.dto.MockNextResponse;
 import com.tubeshadow.practice.api.dto.PracticeCardResponse;
 import com.tubeshadow.practice.api.dto.PracticeProgressResponse;
 import com.tubeshadow.practice.api.dto.PracticeRepRequest;
@@ -20,6 +22,7 @@ import com.tubeshadow.practice.api.dto.TransformGenerateRequest;
 import com.tubeshadow.practice.api.dto.TranscribeResponse;
 import com.tubeshadow.practice.application.CompositionService;
 import com.tubeshadow.practice.infrastructure.TranscriptionClient;
+import com.tubeshadow.practice.prompt.MockInterviewPrompt;
 import com.tubeshadow.practice.application.PracticeProgressService;
 import com.tubeshadow.practice.application.PracticeSrsService;
 import com.tubeshadow.practice.application.SeedService;
@@ -112,6 +115,19 @@ public class PracticeController {
                                                       @RequestParam("file") MultipartFile file) throws IOException {
         return ApiResponse.ok(new TranscribeResponse(
                 transcriptionClient.transcribe(file.getBytes(), file.getOriginalFilename())));
+    }
+
+    @PostMapping("/interview/mock")
+    @Operation(summary = "AI 모의면접 — 빈 history면 오프닝, 아니면 마지막 답변에 대한 follow-up 질문")
+    public ApiResponse<MockNextResponse> mockNext(@CurrentUser AuthenticatedUser user,
+                                                  @Valid @RequestBody MockNextRequest request) {
+        List<MockInterviewPrompt.Turn> turns = request.history() == null
+                ? List.of()
+                : request.history().stream()
+                    .map(h -> new MockInterviewPrompt.Turn(h.role(), h.text()))
+                    .toList();
+        long seed = request.seed() != null ? request.seed() : System.nanoTime();
+        return ApiResponse.ok(compositionService.mockNext(turns, seed));
     }
 
     @PostMapping("/interview/check")

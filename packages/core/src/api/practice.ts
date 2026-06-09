@@ -45,6 +45,15 @@ export interface TranscribeResult {
   text: string;
 }
 
+// One turn of the AI mock interview; empty history asks for the opening question.
+export interface MockTurn {
+  role: "interviewer" | "candidate";
+  text: string;
+}
+export interface MockNext {
+  question: string;
+}
+
 export const practiceApi = {
   progress: (localDate: string) =>
     apiClient.get<PracticeProgress>("/api/practice/progress", { query: { localDate } }),
@@ -56,6 +65,9 @@ export const practiceApi = {
   // Lenient grade of a spoken explanation — `question` is the code/topic, `answer` is what the learner said.
   interviewCheck: (question: string, answer: string) =>
     apiClient.post<InterviewFeedback>("/api/practice/interview/check", { question, answer }),
+  // Next interviewer question in the AI mock interview (opener on empty history, else a follow-up).
+  mockNext: (history: MockTurn[], seed?: number) =>
+    apiClient.post<MockNext>("/api/practice/interview/mock", { history, seed }),
   // Upload an audio clip → Whisper transcript. `file` is a React Native file descriptor.
   transcribe: (file: { uri: string; name: string; type: string }) => {
     const form = new FormData();

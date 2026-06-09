@@ -12,7 +12,13 @@ import { t } from '@/lib/i18n';
  * `question` is what the answer is graded against (the code, or the model English). Shared by the
  * code-explain drill and the speaking drills so every interview section is mic-first, not typing.
  */
-export function SpokenCheck({ question }: { question: string }) {
+export function SpokenCheck({
+  question,
+  onChecked,
+}: {
+  question: string;
+  onChecked?: (answer: string) => void; // mock interview: continue to the follow-up after grading
+}) {
   const [text, setText] = useState('');
   const check = useMutation({ mutationFn: () => practiceApi.interviewCheck(question, text.trim()) });
   const fb = check.data;
@@ -51,6 +57,11 @@ export function SpokenCheck({ question }: { question: string }) {
           <ThemedText style={styles.btnText}>{t('code.aiCheck')}</ThemedText>
         )}
       </Pressable>
+      {fb && onChecked ? (
+        <Pressable style={styles.nextBtn} onPress={() => onChecked(text.trim())}>
+          <ThemedText style={styles.nextText}>{t('mock.next')} →</ThemedText>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -81,5 +92,7 @@ const styles = StyleSheet.create({
     borderColor: '#208AEF',
   },
   btnText: { color: '#208AEF', fontWeight: '700' },
+  nextBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
+  nextText: { color: '#fff', fontWeight: '700' },
   disabled: { opacity: 0.5 },
 });

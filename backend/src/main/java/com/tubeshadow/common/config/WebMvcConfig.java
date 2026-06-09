@@ -48,6 +48,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     "/api/practice/compose/transforms",
                     "/api/practice/compose/transform-check",
                     "/api/practice/interview/check",
+                    "/api/practice/interview/mock",
                     "/api/practice/transcribe");
         }
     }

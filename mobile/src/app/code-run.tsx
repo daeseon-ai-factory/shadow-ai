@@ -5,11 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import {
   INTERVIEW_CODE_CARDS,
   BACKEND_CODE_CARDS,
-  buildSession,
-  localToday,
+  shuffle,
   practiceApi,
   type CodeCard,
-  type SrsCard,
 } from '@shadow-ai/core';
 
 import { ThemedView } from '@/components/themed-view';
@@ -26,8 +24,9 @@ export default function CodeRunScreen() {
     const all = [...INTERVIEW_CODE_CARDS, ...BACKEND_CODE_CARDS];
     return cat && cat !== 'all' ? all.filter((c) => c.category === cat) : all;
   }, [cat]);
+  // A category tile means "drill THIS bank" — show the whole pool shuffled, not the SRS trickle.
   const items = useMemo(
-    () => (srs.data ? buildSession(pool, srs.data as SrsCard[], localToday()) : []),
+    () => (srs.data ? shuffle(pool) : []),
     [pool, srs.data],
   );
 

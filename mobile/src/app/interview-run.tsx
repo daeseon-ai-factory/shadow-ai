@@ -32,8 +32,9 @@ export default function InterviewRunScreen() {
     // Weak-card repair: only cards with 2+ lapses, regardless of due date.
     if (kind === 'weak') return shuffle(weakItems(s)).slice(0, 30);
     const all = scopeItems(kind, cluster);
-    // The default "오늘의 30" loop is HARD-capped at 30/day; focused category drills are not.
-    return kind === 'due' ? buildDailySession(all, s, localToday(), 30) : buildSession(all, s, localToday());
+    // "오늘의 30" is the SRS-paced loop (due first, hard-capped). A category tile means "drill THIS
+    // bank" — show the WHOLE bank shuffled, not the due/new trickle (which hid most cards).
+    return kind === 'due' ? buildDailySession(all, s, localToday(), 30) : shuffle(all);
   }, [scope, cluster, states]);
 
   if (!token) return <Redirect href="/login" />;
