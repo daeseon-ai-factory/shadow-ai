@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
-import { REFLEX_CLUSTERS, INTERVIEW_DECK_COUNTS, INTERVIEW_CODE_CARDS, PHRASE_DECK_COUNTS } from '@shadow-ai/core';
+import { REFLEX_CLUSTERS, INTERVIEW_DECK_COUNTS, INTERVIEW_CODE_CARDS, BACKEND_CODE_CARDS, PHRASE_DECK_COUNTS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -24,9 +24,11 @@ const CODE_CATS: { cat: string; label: string }[] = [
   { cat: 'pattern', label: 'iv.pattern' },
   { cat: 'method', label: 'iv.method' },
   { cat: 'design', label: 'iv.design' },
+  { cat: 'backend', label: 'iv.codeBackend' },
 ];
+const ALL_CODE_CARDS = [...INTERVIEW_CODE_CARDS, ...BACKEND_CODE_CARDS];
 const codeCount = (cat: string) =>
-  cat === 'all' ? INTERVIEW_CODE_CARDS.length : INTERVIEW_CODE_CARDS.filter((c) => c.category === cat).length;
+  cat === 'all' ? ALL_CODE_CARDS.length : ALL_CODE_CARDS.filter((c) => c.category === cat).length;
 
 export default function InterviewScreen() {
   const token = useAuthStore((s) => s.token);
@@ -123,6 +125,10 @@ export default function InterviewScreen() {
             <Pressable style={styles.tile} onPress={() => startSpeak('ui')}>
               <ThemedText type="smallBold">{t('iv.ui')}</ThemedText>
               <ThemedText type="small">{PHRASE_DECK_COUNTS.ui}</ThemedText>
+            </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('backend')}>
+              <ThemedText type="smallBold">{t('iv.backend')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.backend}</ThemedText>
             </Pressable>
             <Pressable style={styles.tile} onPress={() => startSpeak('connector')}>
               <ThemedText type="smallBold">{t('iv.connector')}</ThemedText>

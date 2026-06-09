@@ -11,6 +11,7 @@ import {
   EXPR_CARDS,
   CODE_NARRATION_CARDS,
   UI_CARDS,
+  BACKEND_CARDS,
   CONNECTORS,
   type ReflexCard,
   type InterviewCard,
@@ -49,6 +50,13 @@ export function phraseIv(c: PhraseCard): IvItem {
   return { key: c.key, tag: c.en, promptKo: sit, promptEn: c.en, answer: c.example, meaningKo: c.ko, note: c.ko };
 }
 
+// Backend vocab is sentence-level, so the cue is a situation (not the phrase, which would give away
+// the answer) and the model is the full English sentence.
+export function backendIv(c: PhraseCard): IvItem {
+  const sit = c.situations[Math.floor(Math.random() * c.situations.length)] ?? c.ko;
+  return { key: c.key, tag: 'Backend', promptKo: sit, promptEn: 'Backend', answer: c.en, meaningKo: c.ko };
+}
+
 // A connector → chaining drill: link two short sentences with the right discourse marker.
 export function connectorIv(c: Connector): IvItem {
   return { key: c.key, tag: c.fn, promptKo: `${c.ko} — 짧은 두 문장을 '${c.en}'(으)로 잇기`, promptEn: c.en, answer: c.example, meaningKo: c.ko };
@@ -65,6 +73,7 @@ export type ScopeKind =
   | 'expr'
   | 'codenarr'
   | 'ui'
+  | 'backend'
   | 'connector';
 
 export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
@@ -79,6 +88,7 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
         ...EXPR_CARDS.map(phraseIv),
         ...CODE_NARRATION_CARDS.map(phraseIv),
         ...UI_CARDS.map(phraseIv),
+        ...BACKEND_CARDS.map(backendIv),
         ...CONNECTORS.map(connectorIv),
       ];
     case 'core':
@@ -101,6 +111,8 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       return CODE_NARRATION_CARDS.map(phraseIv);
     case 'ui':
       return UI_CARDS.map(phraseIv);
+    case 'backend':
+      return BACKEND_CARDS.map(backendIv);
     case 'connector':
       return CONNECTORS.map(connectorIv);
   }

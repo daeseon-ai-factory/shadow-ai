@@ -4,6 +4,7 @@ import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import {
   INTERVIEW_CODE_CARDS,
+  BACKEND_CODE_CARDS,
   buildSession,
   localToday,
   practiceApi,
@@ -21,10 +22,10 @@ export default function CodeRunScreen() {
   const { cat } = useLocalSearchParams<{ cat?: string }>();
   const srs = useQuery({ queryKey: ['srs'], queryFn: () => practiceApi.srsStates(), enabled: !!token });
 
-  const pool = useMemo<CodeCard[]>(
-    () => (cat && cat !== 'all' ? INTERVIEW_CODE_CARDS.filter((c) => c.category === cat) : INTERVIEW_CODE_CARDS),
-    [cat],
-  );
+  const pool = useMemo<CodeCard[]>(() => {
+    const all = [...INTERVIEW_CODE_CARDS, ...BACKEND_CODE_CARDS];
+    return cat && cat !== 'all' ? all.filter((c) => c.category === cat) : all;
+  }, [cat]);
   const items = useMemo(
     () => (srs.data ? buildSession(pool, srs.data as SrsCard[], localToday()) : []),
     [pool, srs.data],

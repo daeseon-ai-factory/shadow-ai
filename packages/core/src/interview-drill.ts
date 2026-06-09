@@ -319,7 +319,7 @@ export const INTERVIEW_CARDS: InterviewCard[] = [
 ];
 
 // ── The code-explain deck: look at REAL Java → say the CORE in English → short model answer ──
-export type CodeCategory = "ds" | "algo" | "pattern" | "method" | "design";
+export type CodeCategory = "ds" | "algo" | "pattern" | "method" | "design" | "backend";
 
 export interface CodeCard {
   key: string; // SRS card key, e.g. "iv:cd:ds:hashmap-lookup-by-key"
