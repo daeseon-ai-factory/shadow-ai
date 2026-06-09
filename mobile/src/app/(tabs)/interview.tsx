@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
-import { REFLEX_CLUSTERS, INTERVIEW_DECK_COUNTS, INTERVIEW_CODE_CARDS } from '@shadow-ai/core';
+import { REFLEX_CLUSTERS, INTERVIEW_DECK_COUNTS, INTERVIEW_CODE_CARDS, PHRASE_DECK_COUNTS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -103,6 +103,26 @@ export default function InterviewScreen() {
             <Pressable style={styles.tile} onPress={() => startSpeak('frame')}>
               <ThemedText type="smallBold">{t('iv.frames')}</ThemedText>
               <ThemedText type="small">{INTERVIEW_DECK_COUNTS.frame}</ThemedText>
+            </Pressable>
+          </View>
+
+          <ThemedText type="smallBold" style={styles.section}>{t('iv.practicalSection')}</ThemedText>
+          <View style={styles.grid}>
+            <Pressable style={styles.tile} onPress={() => startSpeak('phrasal')}>
+              <ThemedText type="smallBold">{t('iv.phrasal')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.phrasal}</ThemedText>
+            </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('expr')}>
+              <ThemedText type="smallBold">{t('iv.expr')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.expr}</ThemedText>
+            </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('codenarr')}>
+              <ThemedText type="smallBold">{t('iv.codenarr')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.code}</ThemedText>
+            </Pressable>
+            <Pressable style={styles.tile} onPress={() => startSpeak('connector')}>
+              <ThemedText type="smallBold">{t('iv.connector')}</ThemedText>
+              <ThemedText type="small">{PHRASE_DECK_COUNTS.connectors}</ThemedText>
             </Pressable>
           </View>
 

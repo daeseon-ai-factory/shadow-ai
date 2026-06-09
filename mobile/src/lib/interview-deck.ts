@@ -7,8 +7,14 @@ import {
   INTERVIEW_CONCEPTS,
   INTERVIEW_FRAMES,
   INTERVIEW_SCENARIOS,
+  PHRASAL_CARDS,
+  EXPR_CARDS,
+  CODE_NARRATION_CARDS,
+  CONNECTORS,
   type ReflexCard,
   type InterviewCard,
+  type PhraseCard,
+  type Connector,
 } from '@shadow-ai/core';
 
 import { type IvItem } from '@/components/interview-drill';
@@ -34,7 +40,30 @@ export function cardIv(c: InterviewCard): IvItem {
   return { key: c.key, tag, promptKo: c.cue, promptEn: c.title, answer: c.model, note: c.note };
 }
 
-export type ScopeKind = 'due' | 'core' | 'cluster' | 'concept' | 'scenario' | 'frame';
+// A phrasal verb / expression / code-narration phrase → produce drill. A RANDOM situation is the
+// cue each time the deck is built, so the same target phrase is practiced from many angles over
+// reps ("다양한 상황서 같은 표현"). The card identity (key) is stable, so SRS tracking is unaffected.
+export function phraseIv(c: PhraseCard): IvItem {
+  const sit = c.situations[Math.floor(Math.random() * c.situations.length)] ?? c.ko;
+  return { key: c.key, tag: c.en, promptKo: sit, promptEn: c.en, answer: c.example, meaningKo: c.ko, note: c.ko };
+}
+
+// A connector → chaining drill: link two short sentences with the right discourse marker.
+export function connectorIv(c: Connector): IvItem {
+  return { key: c.key, tag: c.fn, promptKo: `${c.ko} — 짧은 두 문장을 '${c.en}'(으)로 잇기`, promptEn: c.en, answer: c.example, meaningKo: c.ko };
+}
+
+export type ScopeKind =
+  | 'due'
+  | 'core'
+  | 'cluster'
+  | 'concept'
+  | 'scenario'
+  | 'frame'
+  | 'phrasal'
+  | 'expr'
+  | 'codenarr'
+  | 'connector';
 
 export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
   switch (kind) {
@@ -44,6 +73,10 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
         ...INTERVIEW_CONCEPTS.map(cardIv),
         ...INTERVIEW_FRAMES.map(cardIv),
         ...INTERVIEW_SCENARIOS.map(cardIv),
+        ...PHRASAL_CARDS.map(phraseIv),
+        ...EXPR_CARDS.map(phraseIv),
+        ...CODE_NARRATION_CARDS.map(phraseIv),
+        ...CONNECTORS.map(connectorIv),
       ];
     case 'core':
       return CORE_REFLEX.map(reflexIv);
@@ -57,5 +90,13 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       return INTERVIEW_SCENARIOS.map(cardIv);
     case 'frame':
       return INTERVIEW_FRAMES.map(cardIv);
+    case 'phrasal':
+      return PHRASAL_CARDS.map(phraseIv);
+    case 'expr':
+      return EXPR_CARDS.map(phraseIv);
+    case 'codenarr':
+      return CODE_NARRATION_CARDS.map(phraseIv);
+    case 'connector':
+      return CONNECTORS.map(connectorIv);
   }
 }

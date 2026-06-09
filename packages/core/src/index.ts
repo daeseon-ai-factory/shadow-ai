@@ -9,6 +9,7 @@ export * from "./practice-srs";
 export * from "./practice-cards";
 export * from "./interview-drill";
 export * from "./interview-terms";
+export * from "./interview-phrases";
 
 // Typed API layer (client is platform-agnostic: inject the token via setTokenProvider)
 export * from "./api/client";
