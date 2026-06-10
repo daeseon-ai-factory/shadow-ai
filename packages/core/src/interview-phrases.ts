@@ -6574,3 +6574,961 @@ export const COLLOCATION_CARDS: PhraseCard[] = [
   }
 ];
 export const WORKSHOP_COUNTS = { particles: 58, particleGroups: 11, collocations: 72 };
+export const PREP_GROUPS: ParticleGroup[] = [
+  {
+    "particle": "under",
+    "coreKo": "under는 무언가가 위에서 누르고 있는 그림이에요. 시스템이 부하·압박·경합 같은 무게 '아래에' 깔려 있는 상태죠. 그래서 under 뒤에는 거의 항상 시스템이나 사람을 짓누르는 조건(load, pressure, contention)이나 덮고 있는 표면·상태(the hood, maintenance, review)가 와요.",
+    "items": [
+      {
+        "key": "pr:under-load",
+        "en": "under load",
+        "ko": "부하가 걸린 상태에서",
+        "example": "The latency looks fine until the service is under load.",
+        "situations": [
+          "성능 테스트 결과를 설명할 때",
+          "장애 원인을 부하로 지목할 때",
+          "스케일링 필요성을 주장할 때"
+        ],
+        "detail": "부하라는 무게가 시스템을 위에서 누르는 그림 그대로예요. 평소엔 멀쩡한데 트래픽이 몰리면 깨지는 동작을 설명할 때 거의 자동으로 나오는 표현이죠. 'under heavy load', 'under peak load'처럼 수식어를 붙인 형태도 그대로 많이 써요.",
+        "exampleKo": "지연 시간은 괜찮아 보이는데, 서비스에 부하가 걸리면 얘기가 달라져요.",
+        "questionEn": "Your service passes all tests but fails in production at busy hours. How would you describe that?",
+        "termsKo": "load: 시스템이 처리 중인 요청량/작업량. 부하 테스트(load test)로 한계를 측정."
+      },
+      {
+        "key": "pr:under-the-hood",
+        "en": "under the hood",
+        "ko": "내부적으로는, 속을 들여다보면",
+        "example": "Under the hood, it's just a wrapper around Postgres.",
+        "situations": [
+          "추상화 뒤의 실제 구현을 설명할 때",
+          "라이브러리 동작 원리를 풀어줄 때"
+        ],
+        "detail": "자동차 보닛(hood) 아래에 엔진이 있다는 그림이에요. 겉으로 보이는 API 뒤에서 실제로 뭐가 도는지 설명할 때 쓰는 단골 표현이죠. 면접관이 'how does X work under the hood?'라고 물으면 내부 구현을 설명하라는 신호예요.",
+        "exampleKo": "내부적으로 보면 그냥 Postgres 위에 래퍼 하나 씌운 거예요.",
+        "questionEn": "Everyone uses this ORM, but what's actually happening inside when you call save()?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:under-pressure",
+        "en": "under pressure",
+        "ko": "압박을 받는 상황에서",
+        "example": "We shipped that fix under pressure, so it's not pretty.",
+        "situations": [
+          "급하게 내린 기술 결정을 변호할 때",
+          "행동 면접에서 마감 압박 경험을 얘기할 때"
+        ],
+        "detail": "시간·경영진·장애 상황이 위에서 짓누르는 그림이에요. 행동 면접 단골 질문 'tell me about a time you worked under pressure'에 그대로 등장하죠. under load가 시스템 얘기라면 under pressure는 사람 얘기라는 게 차이예요.",
+        "exampleKo": "그 픽스는 압박 속에서 급하게 내보낸 거라 코드가 깔끔하진 않아요.",
+        "questionEn": "Tell me about a time you had to make a call with the deadline breathing down your neck.",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:under-contention",
+        "en": "under contention",
+        "ko": "(자원) 경합이 걸린 상태에서",
+        "example": "That row is constantly under contention, so updates keep timing out.",
+        "situations": [
+          "락 경합으로 인한 성능 문제를 설명할 때",
+          "핫 로우/핫 파티션 문제를 진단할 때"
+        ],
+        "detail": "여러 스레드나 트랜잭션이 같은 자원을 두고 다투는 무게가 그 자원 위에 얹혀 있는 그림이에요. DB 락, 뮤텍스, 핫 파티션 얘기할 때 나오죠. 'lock contention'이라는 명사형으로도 정말 많이 쓰니 같이 외워두세요.",
+        "exampleKo": "그 로우는 항상 경합이 걸려 있어서 업데이트가 계속 타임아웃 나요.",
+        "questionEn": "Many transactions keep fighting over the same database row. How would you describe that row's state?",
+        "termsKo": "contention: 여러 실행 주체가 같은 락/자원을 동시에 요구해 서로 대기하게 되는 상태."
+      },
+      {
+        "key": "pr:under-maintenance",
+        "en": "under maintenance",
+        "ko": "점검 중인",
+        "example": "The payment service is under maintenance until two, so use the sandbox.",
+        "situations": [
+          "점검 공지를 전달할 때",
+          "특정 환경을 지금 못 쓰는 이유를 말할 때"
+        ],
+        "detail": "시스템이 '점검'이라는 상태 아래 들어가 있는 그림이에요. 상태 페이지나 슬랙 공지에서 그대로 보는 표현이고, 'down for maintenance'와 거의 같은 뜻으로 입에서 나오죠. under construction(공사 중)도 같은 패턴이에요.",
+        "exampleKo": "결제 서비스가 2시까지 점검 중이라 샌드박스를 쓰세요.",
+        "questionEn": "The staging environment is intentionally offline for a scheduled upgrade. How do you announce that to the team?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:under-review",
+        "en": "under review",
+        "ko": "검토/리뷰 중인",
+        "example": "That PR has been under review for three days now.",
+        "situations": [
+          "PR 진행 상황을 공유할 때",
+          "디자인 문서가 승인 대기 중일 때"
+        ],
+        "detail": "작업물이 '검토'라는 과정 아래에 놓여 있는 그림이에요. PR, 디자인 문서, 보안 심사 등 승인 대기 상태 전반에 써요. in review라고도 하는데 둘 다 자연스러워요.",
+        "exampleKo": "그 PR 벌써 3일째 리뷰 중이에요.",
+        "questionEn": "Your pull request is waiting on approvals and nothing is moving. How do you describe its status in standup?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "at",
+    "coreKo": "at은 지도 위에 점을 콕 찍는 그림이에요. 규모 축의 한 지점(at scale, at peak), 시간 축의 한 지점(at runtime), 추상화 스택의 한 층(at the API level)을 정확히 찍어서 말하죠. '어느 지점에서 그런가'를 짚을 때 at이 깔려요.",
+    "items": [
+      {
+        "key": "pr:at-scale",
+        "en": "at scale",
+        "ko": "대규모 환경에서",
+        "example": "That design works fine until you run it at scale.",
+        "situations": [
+          "소규모에선 통하던 설계의 한계를 짚을 때",
+          "시스템 디자인 면접에서 규모를 전제로 말할 때"
+        ],
+        "detail": "규모 축에서 '큰 규모'라는 지점을 콕 찍는 표현이에요. 시스템 디자인 면접 최빈출 — 'does this work at scale?'은 사용자 수백만 명 기준에서도 되냐는 뜻이죠. 'at this scale', 'at our scale'처럼 수식해서 특정 규모를 가리키기도 해요.",
+        "exampleKo": "그 설계는 대규모로 돌리기 전까진 잘 동작해요.",
+        "questionEn": "This approach is fine for a thousand users, but what about a hundred million?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:at-rest",
+        "en": "at rest",
+        "ko": "저장된 상태의 (정지 상태의)",
+        "example": "All customer data is encrypted at rest and in transit.",
+        "situations": [
+          "보안/암호화 정책을 설명할 때",
+          "컴플라이언스 요건을 말할 때"
+        ],
+        "detail": "데이터가 디스크에 '가만히 멈춰 있는' 지점을 찍는 그림이에요. 거의 항상 in transit(전송 중)과 짝으로 나와요 — 저장 암호화 vs 전송 암호화. 보안 질문에서 'encrypted at rest'를 한 덩어리로 말하면 자연스러워요.",
+        "exampleKo": "고객 데이터는 저장 시와 전송 시 모두 암호화돼요.",
+        "questionEn": "How do you protect sensitive data sitting in the database, not just while it travels?",
+        "termsKo": "encryption at rest: 디스크/스토리지에 저장된 데이터의 암호화. in transit은 네트워크 전송 구간 암호화(TLS)."
+      },
+      {
+        "key": "pr:at-peak",
+        "en": "at peak",
+        "ko": "피크 시간대에, 최대치일 때",
+        "example": "We handle about fifty thousand requests per second at peak.",
+        "situations": [
+          "트래픽 규모를 숫자로 말할 때",
+          "용량 산정 근거를 설명할 때"
+        ],
+        "detail": "트래픽 그래프의 최고점 지점을 찍는 표현이에요. 용량 얘기는 평균보다 피크가 중요하니까, 면접에서 숫자를 말할 때 'at peak'를 붙이면 정확해지죠. 'at peak hours', 'at peak traffic'처럼 풀어 쓰기도 해요.",
+        "exampleKo": "피크 때는 초당 5만 건 정도 처리해요.",
+        "questionEn": "What request volume does your system see at its absolute busiest moment?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:at-runtime",
+        "en": "at runtime",
+        "ko": "실행 시점에",
+        "example": "We resolve the config at runtime, not at build time.",
+        "situations": [
+          "빌드 타임 vs 런타임 결정을 구분할 때",
+          "동적 설정/주입을 설명할 때"
+        ],
+        "detail": "프로그램 생애주기 축에서 '실행 중'이라는 시점을 찍는 그림이에요. at compile time, at build time, at deploy time과 대조 짝으로 늘 나오죠. '그 값이 언제 결정되냐'는 질문에 이 시리즈로 답하면 깔끔해요.",
+        "exampleKo": "그 설정은 빌드 타임이 아니라 런타임에 결정돼요.",
+        "questionEn": "Is that value baked in when you compile, or decided while the program is running?",
+        "termsKo": "runtime: 프로그램이 실제로 실행되는 시점/환경. 컴파일·빌드 시점과 구분."
+      },
+      {
+        "key": "pr:at-the-api-level",
+        "en": "at the API level",
+        "ko": "API 계층에서",
+        "example": "We enforce rate limiting at the API level, not in each service.",
+        "situations": [
+          "어느 계층에서 처리할지 설명할 때",
+          "검증/인증 책임의 위치를 논할 때"
+        ],
+        "detail": "추상화 스택에서 특정 층을 콕 찍는 표현이에요. at the database level, at the network level, at the application level 전부 같은 패턴이고, 아키텍처 토론에서 '어디서 처리할 거냐'를 다툴 때 끝없이 나와요.",
+        "exampleKo": "레이트 리미팅은 각 서비스가 아니라 API 레벨에서 강제해요.",
+        "questionEn": "Where in the stack do you handle validation — every service, or one shared layer?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:at-a-glance",
+        "en": "at a glance",
+        "ko": "한눈에",
+        "example": "The dashboard shows service health at a glance.",
+        "situations": [
+          "대시보드/모니터링 도구의 장점을 말할 때",
+          "가독성 좋은 코드나 문서를 칭찬할 때"
+        ],
+        "detail": "시선이 한 번 닿는 '한 점'의 그림이에요. 대시보드, README, 코드 가독성 얘기할 때 'you can see X at a glance'로 자주 나와요. 옵저버빌리티 설명에 끼워 넣으면 말이 살아나죠.",
+        "exampleKo": "그 대시보드는 서비스 상태를 한눈에 보여줘요.",
+        "questionEn": "What makes a good on-call dashboard different from a wall of raw metrics?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:at-the-end-of-the-day",
+        "en": "at the end of the day",
+        "ko": "결국, 따지고 보면",
+        "example": "At the end of the day, it's a trade-off between cost and latency.",
+        "situations": [
+          "트레이드오프 논의를 결론으로 정리할 때",
+          "기술 논쟁을 한 문장으로 매듭지을 때"
+        ],
+        "detail": "하루의 끝, 즉 모든 논의가 끝난 지점을 찍는 그림이에요. 면접에서 트레이드오프를 쭉 펼친 뒤 결론을 던질 때 쓰는 시그널 표현이죠. 너무 자주 쓰면 입버릇처럼 들리니 답변당 한 번이면 충분해요.",
+        "exampleKo": "결국엔 비용과 지연 시간 사이의 트레이드오프예요.",
+        "questionEn": "You've listed pros and cons of both databases. So which one wins, and why?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "in",
+    "coreKo": "in은 경계가 있는 공간 '안'의 그림이에요. 메모리 안, 운영 환경 안, 병렬이라는 시간 구간 안, 동기화라는 상태 안 — 무언가가 어떤 컨테이너나 상태 속에 들어가 있다는 거죠. 데이터나 코드가 '어디에/어떤 상태에 있나'를 말할 때 in이 깔려요.",
+    "items": [
+      {
+        "key": "pr:in-memory",
+        "en": "in memory",
+        "ko": "메모리상에(서)",
+        "example": "We keep the session data in memory for fast lookups.",
+        "situations": [
+          "캐싱 전략을 설명할 때",
+          "재시작 시 데이터 유실 리스크를 짚을 때"
+        ],
+        "detail": "데이터가 RAM이라는 공간 '안에' 들어 있는 그림이에요. on disk와 짝을 이루는 대조가 핵심 — 메모리는 빠르지만 휘발성, 디스크는 느리지만 영속이죠. 'in-memory cache'처럼 하이픈 붙은 형용사형도 입에 붙여두세요.",
+        "exampleKo": "빠른 조회를 위해 세션 데이터는 메모리에 들고 있어요.",
+        "questionEn": "Why is Redis so much faster than hitting the database every time?",
+        "termsKo": "in-memory store: RAM에 데이터를 두는 저장소(Redis 등). 빠르지만 프로세스가 죽으면 날아감."
+      },
+      {
+        "key": "pr:in-flight",
+        "en": "in flight",
+        "ko": "처리 중인, 전송 중인",
+        "example": "We drain in-flight requests before shutting the pod down.",
+        "situations": [
+          "그레이스풀 셧다운을 설명할 때",
+          "배포 중 요청 유실 방지책을 말할 때"
+        ],
+        "detail": "요청이 비행기처럼 '공중에 떠 있는' 그림 — 출발은 했는데 아직 착륙(완료)을 못 한 상태예요. 그레이스풀 셧다운, 재시도, 중복 처리 얘기의 핵심 단어죠. at rest(저장됨)와 대비되고, 데이터 쪽에선 in transit과 거의 같은 뜻이에요.",
+        "exampleKo": "파드를 내리기 전에 처리 중인 요청을 먼저 비워요.",
+        "questionEn": "During a rolling deploy, what happens to requests that already started but haven't finished?",
+        "termsKo": "graceful shutdown: 새 요청은 막고 진행 중인 요청은 끝까지 처리한 뒤 종료하는 방식."
+      },
+      {
+        "key": "pr:in-prod",
+        "en": "in prod",
+        "ko": "운영 환경에서",
+        "example": "It works locally but breaks in prod, classic.",
+        "situations": [
+          "환경별 차이로 인한 버그를 말할 때",
+          "운영 반영 여부를 확인할 때"
+        ],
+        "detail": "코드가 '운영'이라는 환경 공간 안에 있는 그림이에요. production을 줄여 prod라고 하는 게 구어 표준이고, in staging, in dev도 같은 패턴이죠. 'test in prod'는 농담 반 진담 반 밈으로도 쓰여요.",
+        "exampleKo": "로컬에선 되는데 운영에선 깨져요, 아주 클래식하죠.",
+        "questionEn": "The bug never shows up on your laptop, only on the live servers. How do you say that?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:in-parallel",
+        "en": "in parallel",
+        "ko": "병렬로, 동시에",
+        "example": "We fan out and call the three services in parallel.",
+        "situations": [
+          "지연 시간 최적화를 설명할 때",
+          "두 작업을 동시에 진행하자고 제안할 때"
+        ],
+        "detail": "여러 작업이 같은 시간 구간 '안에서' 나란히 도는 그림이에요. sequentially(순차로)와 대비해서 지연 시간을 줄이는 설계를 설명할 때 필수죠. 사람 일에도 그대로 써요 — 'let's work on those in parallel'.",
+        "exampleKo": "세 서비스를 팬아웃해서 병렬로 호출해요.",
+        "questionEn": "Calling those three APIs one after another takes 900ms total. How do you cut that down?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:in-place",
+        "en": "in place",
+        "ko": "제자리에서 (복사 없이); 갖춰져 있는",
+        "example": "We update the array in place to avoid extra allocations.",
+        "situations": [
+          "코딩 면접에서 공간 복잡도를 말할 때",
+          "안전장치가 마련되어 있다고 말할 때"
+        ],
+        "detail": "데이터가 원래 있던 자리 '안에서' 바뀌는 그림이에요. 코딩 면접에서 'can you do it in place?'는 O(1) 추가 공간으로 풀라는 뜻이죠. 전혀 다른 결로 'we have monitoring in place'처럼 '갖춰져 있다'는 뜻도 진짜 많이 쓰니 둘 다 알아두세요.",
+        "exampleKo": "추가 할당을 피하려고 배열을 제자리에서 수정해요.",
+        "questionEn": "Can you sort this array without allocating a second one?",
+        "termsKo": "in-place algorithm: 입력이 담긴 메모리 안에서 직접 변형해 O(1) 보조 공간만 쓰는 알고리즘."
+      },
+      {
+        "key": "pr:in-sync",
+        "en": "in sync",
+        "ko": "동기화된 상태인",
+        "example": "The replica stays in sync with the primary within a second.",
+        "situations": [
+          "복제/캐시 일관성을 설명할 때",
+          "두 팀이나 문서의 정보가 맞는지 확인할 때"
+        ],
+        "detail": "두 시스템이 '동기화'라는 상태 안에 같이 들어가 있는 그림이에요. 복제, 캐시 무효화, 설정 드리프트 얘기에 다 나오고 반대는 out of sync죠. 사람한테도 써요 — 'let's sync up'은 정보를 맞추자는 뜻이에요.",
+        "exampleKo": "레플리카는 프라이머리와 1초 이내로 동기화를 유지해요.",
+        "questionEn": "How do you make sure the cache and the database always show the same data?",
+        "termsKo": "replication lag: 프라이머리의 변경이 레플리카에 반영되기까지의 지연."
+      },
+      {
+        "key": "pr:in-the-hot-path",
+        "en": "in the hot path",
+        "ko": "핫 패스(빈번 실행 경로)에 있는",
+        "example": "Don't put a network call in the hot path.",
+        "situations": [
+          "성능 최적화 우선순위를 정할 때",
+          "요청 경로상의 비용을 따질 때"
+        ],
+        "detail": "요청마다 매번 밟는 '뜨거운 길' 안에 코드가 놓여 있는 그림이에요. 거기 들어간 코드는 전체 호출량을 그대로 맞기 때문에 1ms도 무겁죠. 최적화 논의에서 'is this in the hot path?'가 우선순위를 가르는 질문이에요.",
+        "exampleKo": "핫 패스에 네트워크 호출 넣지 마세요.",
+        "questionEn": "This function runs on every single request. How careful should we be about its cost?",
+        "termsKo": "hot path: 가장 자주 실행되는 코드 경로. 여기의 최적화가 체감 성능을 좌우."
+      },
+      {
+        "key": "pr:in-practice",
+        "en": "in practice",
+        "ko": "실제로는, 실무에서는",
+        "example": "In theory it's eventually consistent; in practice it converges in milliseconds.",
+        "situations": [
+          "이론과 실제의 간극을 짚을 때",
+          "교과서 답변에 현실 경험을 얹을 때"
+        ],
+        "detail": "'실무'라는 현실 공간 안에서 본 모습이라는 그림이에요. in theory와 짝으로 쓰면 면접 답변의 격이 올라가요 — 이론을 말하고 in practice로 경험을 얹는 구조죠. 시니어다움을 보여주는 한 방이에요.",
+        "exampleKo": "이론상은 최종 일관성이지만 실제로는 밀리초 안에 수렴해요.",
+        "questionEn": "The textbook says this is O(n log n). Does that ever matter for your real workloads?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "on",
+    "coreKo": "on은 표면에 닿아 얹혀 있는 그림이에요. 데이터가 디스크 표면에(on disk), 바이트가 회선 위에(on the wire), 시스템이 다른 시스템 위에(on top of) 얹히죠. 진행 중인 모드(on call, on demand)도 어떤 상태 '위에 올라타 있다'는 감각이에요.",
+    "items": [
+      {
+        "key": "pr:on-disk",
+        "en": "on disk",
+        "ko": "디스크에 (저장된)",
+        "example": "The queue persists every message on disk before acking.",
+        "situations": [
+          "영속성 보장을 설명할 때",
+          "메모리 vs 디스크 트레이드오프를 말할 때"
+        ],
+        "detail": "데이터가 디스크라는 표면 위에 얹혀 있는 그림이에요. in memory와 한 쌍의 대조 — 메모리는 빠르고 휘발, 디스크는 느리고 영속이죠. 'persist to disk', 'flush to disk'처럼 동사와 묶인 변형도 같이 입에 붙여두면 좋아요.",
+        "exampleKo": "그 큐는 ack 하기 전에 모든 메시지를 디스크에 저장해요.",
+        "questionEn": "If the process crashes, which data survives the restart and why?",
+        "termsKo": "durability: 장애 후에도 데이터가 남는 성질. 보통 디스크 기록(fsync)으로 보장."
+      },
+      {
+        "key": "pr:on-the-fly",
+        "en": "on the fly",
+        "ko": "즉석에서, 실시간으로",
+        "example": "We generate the thumbnails on the fly instead of precomputing them.",
+        "situations": [
+          "사전 계산 vs 실시간 생성 트레이드오프를 말할 때",
+          "동적 변환/리사이징을 설명할 때"
+        ],
+        "detail": "날아가는(fly) 도중에 처리한다는 그림 — 멈추지 않고 진행 중에 만들어낸다는 거죠. precompute(미리 계산)와 대조해서 쓰는 게 정석이에요. on demand와 비슷하지만 on the fly는 '즉석 가공'의 뉘앙스가 더 강해요.",
+        "exampleKo": "썸네일은 미리 만들지 않고 요청 시 즉석에서 생성해요.",
+        "questionEn": "Do you precompute all the image sizes, or create them when someone asks?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:on-demand",
+        "en": "on demand",
+        "ko": "요청이 있을 때, 주문형으로",
+        "example": "We spin up workers on demand instead of keeping them idle.",
+        "situations": [
+          "오토스케일링/서버리스를 설명할 때",
+          "지연 로딩 전략을 말할 때"
+        ],
+        "detail": "'수요'가 생기는 순간에 맞춰 움직인다는 그림이에요. 서버리스, 오토스케일링, lazy loading 설명의 단골이고 비용 절감 논리와 늘 같이 나오죠. on the fly가 '만드는 방식'이라면 on demand는 '트리거가 수요'라는 데 방점이 있어요.",
+        "exampleKo": "워커를 놀려두지 않고 필요할 때마다 띄워요.",
+        "questionEn": "Why pay for idle servers all night when traffic only comes during the day?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:on-call",
+        "en": "on call",
+        "ko": "온콜(장애 대응 당번) 중인",
+        "example": "I was on call last week, and it was a rough one.",
+        "situations": [
+          "운영 경험을 어필할 때",
+          "장애 대응 프로세스를 설명할 때"
+        ],
+        "detail": "'호출 가능' 상태 위에 올라타 있는 그림 — 알림이 오면 바로 받아야 하는 당번이죠. 시니어 면접에서 운영 성숙도를 보여주는 단어라 'on-call rotation', 'I got paged'와 세트로 쓰면 좋아요.",
+        "exampleKo": "지난주에 온콜이었는데 좀 험난했어요.",
+        "questionEn": "Who fixes it when the system breaks at 3 a.m., and have you done that?",
+        "termsKo": "on-call rotation: 팀원들이 돌아가며 장애 알림을 1차 대응하는 당번 체계."
+      },
+      {
+        "key": "pr:on-the-wire",
+        "en": "on the wire",
+        "ko": "회선상에서, 전송되는 그대로",
+        "example": "The payload is compressed on the wire, so bandwidth isn't the issue.",
+        "situations": [
+          "직렬화 포맷/전송 크기를 논할 때",
+          "패킷 레벨 디버깅을 말할 때"
+        ],
+        "detail": "바이트가 물리 회선 '위에' 실려 있는 그림이에요. 직렬화 포맷, 압축, TLS처럼 '실제 전송되는 바이트' 관점에서 말할 때 나와요. 'what does it look like on the wire?'는 와이어샤크로 까보면 어떤 모양이냐는 뜻이죠.",
+        "exampleKo": "페이로드는 전송 구간에서 압축되니까 대역폭이 문제는 아니에요.",
+        "questionEn": "Protobuf versus JSON — what's the actual difference in the bytes being sent?",
+        "termsKo": "wire format: 네트워크로 전송될 때의 실제 바이트 표현. 직렬화 포맷이 결정."
+      },
+      {
+        "key": "pr:on-top-of",
+        "en": "on top of",
+        "ko": "~ 위에 얹어서; ~을 놓치지 않고 챙기는",
+        "example": "We built a thin caching layer on top of S3.",
+        "situations": [
+          "기존 시스템 위에 쌓은 구조를 설명할 때",
+          "이슈를 잘 추적하고 있다고 말할 때"
+        ],
+        "detail": "레이어가 레이어 위에 물리적으로 얹히는 그림 그대로예요. 아키텍처 설명에서 'built on top of X'는 X를 기반으로 했다는 뜻이죠. 'stay on top of things'(상황을 놓치지 않고 챙기다)라는 전혀 다른 관용 뜻도 회화 최빈출이니 같이 외워두세요.",
+        "exampleKo": "S3 위에 얇은 캐싱 레이어를 하나 얹었어요.",
+        "questionEn": "Did you write your own storage engine, or build on something that already existed?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:on-my-end",
+        "en": "on my end",
+        "ko": "제 쪽에서는",
+        "example": "Everything looks good on my end — can you check yours?",
+        "situations": [
+          "원격 디버깅에서 책임 구간을 나눌 때",
+          "화상회의 문제를 확인할 때"
+        ],
+        "detail": "통신 선의 양 끝(end) 중 내 쪽 끝 위에서 보는 그림이에요. 원격 협업·페어 디버깅에서 '내 환경에서는'을 말하는 표준 표현이죠. on your end, on their end로 바꿔가며 책임 구간을 깔끔하게 나눌 수 있어요.",
+        "exampleKo": "제 쪽에선 다 정상이에요 — 그쪽에서 한번 확인해 주실래요?",
+        "questionEn": "The API works when you test it, but your teammate says it's failing. What do you say?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "per",
+    "coreKo": "per는 '하나당'으로 잘게 쪼개는 그림이에요. 전체 수치를 요청 하나, 유저 하나, 노드 하나 단위로 나눠서 말하죠. 비율·한도·격리 단위를 말할 때 per가 깔려요 — requests per second부터 per-user limit까지 전부요.",
+    "items": [
+      {
+        "key": "pr:per-request",
+        "en": "per request",
+        "ko": "요청당, 요청 하나마다",
+        "example": "We open a new connection per request, which is killing us.",
+        "situations": [
+          "요청 단위 비용/오버헤드를 짚을 때",
+          "커넥션 풀링 필요성을 설명할 때"
+        ],
+        "detail": "전체 비용을 요청 하나 단위로 쪼개 보는 그림이에요. 'per-request overhead', 'cost per request'처럼 성능·비용 분석의 기본 단위죠. requests per second(RPS)처럼 거꾸로 '초당 요청'으로도 쓰여요.",
+        "exampleKo": "요청마다 커넥션을 새로 여는데, 그게 우릴 죽이고 있어요.",
+        "questionEn": "Opening a fresh database connection every single time a call comes in — what's wrong there?",
+        "termsKo": "connection pooling: 커넥션을 미리 만들어 재사용해 요청당 연결 비용을 없애는 기법."
+      },
+      {
+        "key": "pr:per-user",
+        "en": "per user",
+        "ko": "유저당, 사용자별로",
+        "example": "Rate limits are enforced per user, not per IP.",
+        "situations": [
+          "레이트 리밋 기준을 설명할 때",
+          "과금/쿼터 단위를 정할 때"
+        ],
+        "detail": "한도나 수치를 사용자 한 명 단위로 쪼개는 그림이에요. 레이트 리밋, 쿼터, 과금(price per user/seat) 설계에서 '무슨 단위로 끊을 거냐'를 말할 때 핵심이죠. per IP, per tenant, per API key와 나란히 비교하며 쓰면 좋아요.",
+        "exampleKo": "레이트 리밋은 IP가 아니라 유저 단위로 걸어요.",
+        "questionEn": "If one customer hammers the API, how do you stop them without blocking everyone else?",
+        "termsKo": "rate limiting: 단위 시간당 허용 요청 수 제한. 키(유저/IP/토큰) 선택이 설계 포인트."
+      },
+      {
+        "key": "pr:per-node",
+        "en": "per node",
+        "ko": "노드당",
+        "example": "We store about two terabytes per node.",
+        "situations": [
+          "클러스터 용량 산정을 설명할 때",
+          "리소스 한계를 노드 단위로 말할 때"
+        ],
+        "detail": "클러스터 전체 용량을 노드 하나 기준으로 쪼개는 그림이에요. 시스템 디자인 면접의 백오브엔벨롭 계산에서 'X per node, so we need N nodes' 패턴이 단골이죠. per instance, per pod도 같은 식이에요.",
+        "exampleKo": "노드 하나가 2테라바이트 정도 감당해요.",
+        "questionEn": "You need to store 100 terabytes and one machine holds two. Walk me through the math.",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:per-deploy",
+        "en": "per deploy",
+        "ko": "배포당, 배포 한 번마다",
+        "example": "We run the full e2e suite per deploy, so releases take twenty minutes.",
+        "situations": [
+          "배포 파이프라인 비용을 말할 때",
+          "릴리스 빈도와 오버헤드를 논할 때"
+        ],
+        "detail": "반복되는 작업을 배포 한 번 단위로 묶어 세는 그림이에요. CI/CD 파이프라인 비용이나 마이그레이션 정책(one migration per deploy) 얘기에서 나오죠. per release, per merge도 같은 패턴이에요.",
+        "exampleKo": "배포마다 전체 e2e를 돌려서 릴리스에 20분 걸려요.",
+        "questionEn": "How long does each release take, and what eats most of that time?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "behind",
+    "coreKo": "behind는 무언가의 '뒤에 가려져 있는' 그림이에요. 클라이언트 눈에는 앞단(로드밸런서, 프록시, 플래그)만 보이고 진짜 서버는 그 뒤에 숨어 있죠. 앞단이 방패나 관문 역할을 한다는 뉘앙스가 모든 구에 깔려 있고, behind schedule만 '기준선 뒤에 처짐'의 그림이에요.",
+    "items": [
+      {
+        "key": "pr:behind-a-load-balancer",
+        "en": "behind a load balancer",
+        "ko": "로드밸런서 뒤에 (둔)",
+        "example": "The API servers sit behind a load balancer, so we scale horizontally.",
+        "situations": [
+          "수평 확장 구조를 설명할 때",
+          "단일 장애점 제거를 말할 때"
+        ],
+        "detail": "클라이언트는 LB만 보고, 실제 서버들은 그 뒤에 가려져 있는 그림이에요. 시스템 디자인 면접에서 'put the servers behind a load balancer'는 거의 의무 문장 수준이죠. 'sit behind'라는 동사 조합이 특히 입말스러워요.",
+        "exampleKo": "API 서버들은 로드밸런서 뒤에 있어서 수평 확장이 돼요.",
+        "questionEn": "How do clients reach your service when there are twenty identical servers running?",
+        "termsKo": "load balancer: 요청을 여러 서버로 분산하는 앞단 장비/서비스. 서버 증설을 클라이언트에게 숨김."
+      },
+      {
+        "key": "pr:behind-a-feature-flag",
+        "en": "behind a feature flag",
+        "ko": "피처 플래그 뒤에 (숨긴)",
+        "example": "We shipped the new checkout behind a feature flag.",
+        "situations": [
+          "점진적 롤아웃 전략을 설명할 때",
+          "미완성 기능을 머지하는 이유를 말할 때"
+        ],
+        "detail": "코드는 운영에 나가 있지만 플래그라는 가림막 뒤에 있어 유저에겐 안 보이는 그림이에요. trunk-based 개발, 점진 롤아웃, 킬 스위치 얘기의 핵심 표현이죠. 'flip the flag'(플래그 켜기)와 세트로 쓰면 자연스러워요.",
+        "exampleKo": "새 결제 플로우는 피처 플래그 뒤에 숨겨서 배포했어요.",
+        "questionEn": "How do you merge unfinished work to main without users ever seeing it?",
+        "termsKo": "feature flag: 코드 배포와 기능 공개를 분리하는 런타임 스위치. 일부 유저에게만 켤 수 있음."
+      },
+      {
+        "key": "pr:behind-a-proxy",
+        "en": "behind a proxy",
+        "ko": "프록시 뒤에 (있는)",
+        "example": "The service sits behind a proxy, so client IPs come from X-Forwarded-For.",
+        "situations": [
+          "실제 클라이언트 IP가 안 보이는 문제를 설명할 때",
+          "TLS 종료 지점을 말할 때"
+        ],
+        "detail": "프록시가 앞을 막아서고 서버는 뒤에 숨은 그림이에요. 그래서 서버가 보는 source IP는 프록시 것이고 진짜 IP는 헤더로 받는 부작용이 단골 화제죠. behind nginx, behind Cloudflare처럼 구체적인 이름으로도 그대로 써요.",
+        "exampleKo": "서비스가 프록시 뒤에 있어서 클라이언트 IP는 X-Forwarded-For로 받아요.",
+        "questionEn": "Your access logs show the same internal IP for every request. What's probably going on?",
+        "termsKo": "reverse proxy: 서버 앞에서 요청을 받아 전달하는 중계 계층(nginx 등). TLS 종료·캐싱 담당."
+      },
+      {
+        "key": "pr:behind-the-scenes",
+        "en": "behind the scenes",
+        "ko": "보이지 않는 곳에서, 뒤에서",
+        "example": "Behind the scenes, the ORM batches those into one query.",
+        "situations": [
+          "프레임워크가 몰래 해주는 일을 설명할 때",
+          "비동기 백그라운드 작업을 말할 때"
+        ],
+        "detail": "무대 뒤(공연 용어)에서 벌어지는 일이라는 그림이에요. under the hood와 거의 동의어인데, behind the scenes는 '진행되는 과정·활동'에, under the hood는 '내부 구조·구현'에 살짝 더 기울죠. 둘 다 내부 동작 설명할 때 쓰면 좋아요.",
+        "exampleKo": "보이지 않는 데서 ORM이 그걸 쿼리 하나로 묶어줘요.",
+        "questionEn": "When a user clicks upload and instantly sees success, what work is still happening invisibly?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:behind-schedule",
+        "en": "behind schedule",
+        "ko": "일정보다 늦은",
+        "example": "We're two weeks behind schedule because of the migration.",
+        "situations": [
+          "프로젝트 지연을 보고할 때",
+          "일정 조정을 요청할 때"
+        ],
+        "detail": "일정이라는 기준선 뒤에 처져 있는 그림이에요. 지연 보고의 표준 표현이고, ahead of schedule(일정보다 빠른), on schedule(일정대로)과 세트죠. 행동 면접에서 지연 경험을 얘기할 때 그대로 써먹어요.",
+        "exampleKo": "마이그레이션 때문에 일정이 2주 밀렸어요.",
+        "questionEn": "The launch was planned for last Friday and it's still not done. How do you report that?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "across",
+    "coreKo": "across는 여러 개를 가로질러 넓게 펼치는 그림이에요. 리전들을, 서비스들을, 재시작들을 '죽 가로지르며' 걸쳐 있다는 거죠. 분산·일관성·전파를 말할 때 across가 나오면 '하나가 아니라 여러 개에 걸쳐서'라는 신호예요.",
+    "items": [
+      {
+        "key": "pr:across-regions",
+        "en": "across regions",
+        "ko": "여러 리전에 걸쳐",
+        "example": "We replicate the data across regions for disaster recovery.",
+        "situations": [
+          "멀티 리전 아키텍처를 설명할 때",
+          "DR/가용성 전략을 말할 때"
+        ],
+        "detail": "데이터가 지리적으로 떨어진 리전들을 가로질러 펼쳐져 있는 그림이에요. 멀티 리전 복제, 페일오버, 지연 시간 얘기의 기본 표현이죠. across AZs(가용 영역), across data centers도 같은 패턴이에요.",
+        "exampleKo": "재해 복구를 위해 데이터를 여러 리전에 복제해요.",
+        "questionEn": "What happens to your users if the entire us-east-1 data center goes down?",
+        "termsKo": "multi-region replication: 데이터를 지리적으로 분산 복제해 리전 장애에도 서비스를 유지하는 전략."
+      },
+      {
+        "key": "pr:across-services",
+        "en": "across services",
+        "ko": "여러 서비스에 걸쳐",
+        "example": "Tracing a single request across services used to be a nightmare.",
+        "situations": [
+          "분산 트레이싱 필요성을 설명할 때",
+          "마이크로서비스 간 일관성 문제를 말할 때"
+        ],
+        "detail": "하나의 요청·트랜잭션·관심사가 서비스 경계를 줄줄이 가로지르는 그림이에요. 분산 트레이싱, 사가 패턴, 공통 라이브러리 표준화처럼 '서비스 하나로 안 끝나는' 문제 전반에 나와요.",
+        "exampleKo": "예전엔 요청 하나를 여러 서비스에 걸쳐 추적하는 게 악몽이었어요.",
+        "questionEn": "A request touches five microservices and one is slow. How do you find out which one?",
+        "termsKo": "distributed tracing: 요청에 trace ID를 붙여 여러 서비스 구간별 소요 시간을 추적하는 기법."
+      },
+      {
+        "key": "pr:across-the-board",
+        "en": "across the board",
+        "ko": "전반적으로, 예외 없이 전부",
+        "example": "After the index change, latency dropped across the board.",
+        "situations": [
+          "개선 효과가 전체에 미쳤다고 말할 때",
+          "전사적 정책 적용을 말할 때"
+        ],
+        "detail": "전광판(board)의 전 항목을 가로지른다는 경마 용어에서 온 표현으로, '예외 없이 전부'라는 그림이에요. 성능 개선이나 정책 적용이 특정 엔드포인트가 아니라 전체에 먹혔다고 말할 때 딱이죠.",
+        "exampleKo": "인덱스 바꾸고 나서 지연 시간이 전반적으로 다 떨어졌어요.",
+        "questionEn": "Did that optimization help just one endpoint, or every single one?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:across-restarts",
+        "en": "across restarts",
+        "ko": "재시작을 거쳐도 (유지되는)",
+        "example": "The cache doesn't survive across restarts, so cold starts hurt.",
+        "situations": [
+          "영속성 요구사항을 설명할 때",
+          "상태 유지 vs 무상태 설계를 논할 때"
+        ],
+        "detail": "데이터가 재시작이라는 사건들을 가로질러 살아남는 그림이에요. 'persist/survive across restarts' 조합으로 거의 굳어져 있고, 영속성과 상태 관리 논의의 핵심 표현이죠. across deploys, across sessions도 같은 패턴이에요.",
+        "exampleKo": "캐시가 재시작하면 날아가서 콜드 스타트가 아파요.",
+        "questionEn": "If you bounce the process, which state comes back and which is gone?",
+        "termsKo": "cold start: 캐시·커넥션이 빈 상태로 시작해 초기 성능이 떨어지는 구간."
+      }
+    ]
+  },
+  {
+    "particle": "between",
+    "coreKo": "between은 두 지점 사이의 공간을 보는 그림이에요. 서비스와 서비스 사이, 재시도와 재시도 사이, 캐시와 DB 사이 — 그 '사이 구간'에서 일어나는 일(지연, 불일치, 대기)을 말할 때 between이 깔려요.",
+    "items": [
+      {
+        "key": "pr:between-services",
+        "en": "between services",
+        "ko": "서비스 사이에(서)",
+        "example": "All traffic between services goes through mTLS.",
+        "situations": [
+          "서비스 간 통신 방식을 설명할 때",
+          "내부 네트워크 보안을 말할 때"
+        ],
+        "detail": "두 서비스 사이의 통신 구간을 보는 그림이에요. 서비스 메시, 내부 인증, 네트워크 정책처럼 '사이 구간'에서 벌어지는 일을 말할 때 기본이죠. across services가 '여러 개에 걸쳐 펼쳐짐'이라면 between은 '둘 사이 구간'에 초점이 있어요.",
+        "exampleKo": "서비스 간 트래픽은 전부 mTLS를 거쳐요.",
+        "questionEn": "How do your internal microservices authenticate each other's calls?",
+        "termsKo": "mTLS: 클라이언트와 서버가 서로 인증서를 검증하는 양방향 TLS. 서비스 메시에서 표준."
+      },
+      {
+        "key": "pr:between-retries",
+        "en": "between retries",
+        "ko": "재시도 사이에",
+        "example": "We back off exponentially between retries to avoid hammering the API.",
+        "situations": [
+          "재시도 정책을 설명할 때",
+          "백오프 전략을 정당화할 때"
+        ],
+        "detail": "재시도와 재시도 사이의 '대기 구간'을 보는 그림이에요. exponential backoff 설명에서 'wait between retries'가 핵심 문장이고, 지터(jitter)를 더하는 얘기까지 이어지죠. 재시도 정책은 면접 단골이라 이 표현은 꼭 입에 붙여두세요.",
+        "exampleKo": "API를 두들기지 않으려고 재시도 사이 간격을 지수적으로 늘려요.",
+        "questionEn": "The downstream API is failing. Why not just try again immediately in a tight loop?",
+        "termsKo": "exponential backoff: 재시도 간격을 1s→2s→4s처럼 늘려 장애 중인 서버의 부하를 줄이는 전략."
+      },
+      {
+        "key": "pr:between-the-cache-and-the-db",
+        "en": "between the cache and the DB",
+        "ko": "캐시와 DB 사이에(서)",
+        "example": "We got a mismatch between the cache and the DB after that write.",
+        "situations": [
+          "캐시 일관성 버그를 설명할 때",
+          "쓰기 경로 설계를 논할 때"
+        ],
+        "detail": "캐시와 DB라는 두 저장소 사이의 간극을 보는 그림이에요. 불일치(mismatch/inconsistency), 동기화, 쓰기 순서 문제가 전부 이 '사이'에서 터지죠. 캐시 무효화 면접 질문에서 이 표현으로 문제를 정의하면 깔끔해요.",
+        "exampleKo": "그 쓰기 이후에 캐시와 DB 사이에 불일치가 생겼어요.",
+        "questionEn": "A user updates their profile but still sees the old name. Where do you look first?",
+        "termsKo": "cache invalidation: 원본 변경 시 캐시를 갱신/삭제해 불일치를 막는 작업. 유명한 난제."
+      }
+    ]
+  },
+  {
+    "particle": "within",
+    "coreKo": "within은 경계선 안쪽에 머무는 그림이에요. in이 단순히 '안'이라면 within은 '한계선을 넘지 않는다'는 뉘앙스가 강하죠. 트랜잭션 경계 안에서, SLA 한도 안에서, 예산 안에서 — 정해진 울타리를 지킨다는 감각이 모든 구에 깔려요.",
+    "items": [
+      {
+        "key": "pr:within-the-transaction",
+        "en": "within the transaction",
+        "ko": "트랜잭션 (경계) 안에서",
+        "example": "Both writes happen within the transaction, so they commit or roll back together.",
+        "situations": [
+          "원자성 보장을 설명할 때",
+          "트랜잭션 경계 설계를 논할 때"
+        ],
+        "detail": "트랜잭션이라는 울타리 안에 연산들이 들어가 있는 그림이에요. 경계 안 = 원자성 보장, 경계 밖 = 보장 없음이라는 대비가 핵심이죠. 'outside the transaction'과 짝지어 외부 API 호출을 트랜잭션에 넣지 말라는 얘기로 자주 이어져요.",
+        "exampleKo": "두 쓰기 모두 트랜잭션 안에서 일어나서 같이 커밋되거나 같이 롤백돼요.",
+        "questionEn": "Money leaves one account but never lands in the other. What guarantee was missing?",
+        "termsKo": "atomicity: 트랜잭션 내 연산이 전부 성공하거나 전부 취소되는 성질(ACID의 A)."
+      },
+      {
+        "key": "pr:within-the-sla",
+        "en": "within the SLA",
+        "ko": "SLA 기준 안에서",
+        "example": "Even at peak, p99 stays within the SLA.",
+        "situations": [
+          "성능 목표 달성을 보고할 때",
+          "장애 대응 시간 기준을 말할 때"
+        ],
+        "detail": "응답 시간이나 가용성이 SLA라는 한계선 안쪽에 머무는 그림이에요. 'within the SLA / out of SLA' 대비로 쓰고, p99 같은 퍼센타일 수치와 묶이면 시니어 티가 나죠. SLO와의 차이를 묻는 면접관도 있으니 개념도 챙기세요.",
+        "exampleKo": "피크 때도 p99가 SLA 기준 안에 들어와요.",
+        "questionEn": "How do you prove to a customer that your latency promises are actually being met?",
+        "termsKo": "SLA: 고객과 계약으로 약속한 서비스 수준(가용성·지연 등). SLO는 내부 목표."
+      },
+      {
+        "key": "pr:within-budget",
+        "en": "within budget",
+        "ko": "예산 안에서",
+        "example": "We kept the whole migration within budget, barely.",
+        "situations": [
+          "프로젝트 비용 관리 경험을 말할 때",
+          "클라우드 비용 한도를 논할 때"
+        ],
+        "detail": "지출이 예산이라는 울타리 안에 머무는 그림이에요. 돈 얘기뿐 아니라 'error budget'(허용 장애 예산), 'latency budget'(지연 예산)처럼 엔지니어링 개념으로 확장돼 SRE 면접에 자주 나와요. within scope, within limits도 같은 패턴이죠.",
+        "exampleKo": "마이그레이션 전체를 간신히 예산 안에서 끝냈어요.",
+        "questionEn": "Cloud costs were exploding mid-project. How did you finish the project without overspending?",
+        "termsKo": "error budget: SLO가 허용하는 장애 한도. 남은 예산만큼 위험한 변경을 감행할 수 있다는 SRE 개념."
+      }
+    ]
+  },
+  {
+    "particle": "by",
+    "coreKo": "by는 '~을 수단이나 기준으로 해서'의 그림이에요. 설계라는 의도에 의해(by design), 기본값이라는 규칙에 의해(by default), 손이라는 수단으로(by hand) 그렇게 된다는 거죠. off by one은 '~만큼의 차이'라는 by의 또 다른 얼굴이고, side by side의 by는 'by the river'처럼 '바로 옆에'를 뜻하는 위치의 by예요.",
+    "items": [
+      {
+        "key": "pr:by-design",
+        "en": "by design",
+        "ko": "의도된 것인, 설계상 일부러",
+        "example": "The API is rate-limited aggressively — that's by design.",
+        "situations": [
+          "버그가 아니라 의도임을 설명할 때",
+          "설계 철학을 변호할 때"
+        ],
+        "detail": "그 동작이 '설계'라는 의도에 의해 나온 결과라는 그림이에요. 'is this a bug?'에 'no, that's by design'으로 받아치는 게 전형적인 용법이죠. secure by design처럼 설계 철학 표현으로도 확장돼요.",
+        "exampleKo": "API 레이트 리밋이 빡센 건 의도된 거예요.",
+        "questionEn": "Users complain they can only upload ten files at once. Is that a bug?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:by-default",
+        "en": "by default",
+        "ko": "기본값으로, 따로 안 건드리면",
+        "example": "Connections are encrypted by default; you'd have to opt out.",
+        "situations": [
+          "기본 설정 동작을 설명할 때",
+          "안전한 기본값 설계를 주장할 때"
+        ],
+        "detail": "아무것도 안 했을 때 '기본 규칙에 의해' 정해지는 동작이라는 그림이에요. 설정·보안 논의의 최빈출 표현이고 'secure by default', 'opt in/opt out'과 세트로 다니죠. 라이브러리 동작을 설명할 때 입에서 바로 나와야 해요.",
+        "exampleKo": "연결은 기본으로 암호화돼요. 끄려면 일부러 꺼야 하죠.",
+        "questionEn": "If a developer installs your library and changes nothing, what behavior do they get?",
+        "termsKo": "secure by default: 기본 설정이 가장 안전한 쪽이 되도록 하는 설계 원칙."
+      },
+      {
+        "key": "pr:by-hand",
+        "en": "by hand",
+        "ko": "수동으로, 손으로 직접",
+        "example": "We were applying those migrations by hand, which obviously didn't scale.",
+        "situations": [
+          "자동화 이전의 고통을 묘사할 때",
+          "자동화 도입을 정당화할 때"
+        ],
+        "detail": "'손'이라는 수단으로 한다는 그림 그대로예요. manually와 같은 뜻인데 by hand가 더 입말스럽고, 자동화 도입 스토리에서 before 상태를 묘사할 때 딱이죠. 'error-prone'(실수하기 쉬운)과 거의 세트로 나와요.",
+        "exampleKo": "그 마이그레이션을 손으로 직접 돌리고 있었는데, 당연히 한계가 왔죠.",
+        "questionEn": "Before you built the deploy pipeline, how did releases actually happen?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:off-by-one",
+        "en": "off by one",
+        "ko": "1 차이로 어긋난 (오프바이원)",
+        "example": "The pagination was off by one, so the last item never showed.",
+        "situations": [
+          "경계 조건 버그를 설명할 때",
+          "코드 리뷰에서 인덱스 실수를 짚을 때"
+        ],
+        "detail": "정답에서 '1만큼(by one) 벗어나(off)' 있는 그림이에요. <= vs <, 0-기반 vs 1-기반 인덱스에서 나오는 그 유명한 버그 부류죠. 'off-by-one error'는 거의 고유명사라 경계 조건 얘기할 때 이 단어를 쓰면 바로 통해요.",
+        "exampleKo": "페이지네이션이 1 어긋나서 마지막 항목이 안 보였어요.",
+        "questionEn": "Your loop processes nine items when there are ten. What kind of bug is that?",
+        "termsKo": "off-by-one error: 경계 인덱스를 1 잘못 잡는 버그. 루프 조건과 배열 끝 처리에서 빈발."
+      },
+      {
+        "key": "pr:side-by-side",
+        "en": "side by side",
+        "ko": "나란히, 병행으로",
+        "example": "We ran the old and new versions side by side for a week.",
+        "situations": [
+          "마이그레이션 병행 운영을 설명할 때",
+          "두 결과물을 비교 검증할 때"
+        ],
+        "detail": "두 개가 옆구리(side)를 맞대고 나란히 있는 그림이에요. 마이그레이션에서 신구 시스템을 같이 돌리며 결과를 비교하는 전략을 설명할 때 딱이죠. diff를 나란히 보는 'side-by-side comparison'으로도 자주 써요.",
+        "exampleKo": "구버전과 신버전을 일주일간 나란히 돌렸어요.",
+        "questionEn": "How do you gain confidence the rewritten service behaves exactly like the old one?",
+        "termsKo": "parallel run: 신구 시스템을 동시에 돌려 출력을 비교하는 마이그레이션 검증 기법."
+      }
+    ]
+  },
+  {
+    "particle": "out of",
+    "coreKo": "out of는 경계 밖으로 빠져나간 그림이에요. 메모리라는 잔고에서(out of memory), 동기화 상태에서(out of sync), 범위라는 울타리에서(out of scope) 벗어났다는 거죠. '있어야 할 안쪽에서 이탈했다'는 감각이 공통이고, out of the box만 '상자에서 막 꺼낸'이라는 별도 그림이에요.",
+    "items": [
+      {
+        "key": "pr:out-of-memory",
+        "en": "out of memory",
+        "ko": "메모리 부족 (OOM)",
+        "example": "The pod got killed because it ran out of memory.",
+        "situations": [
+          "OOM 장애를 설명할 때",
+          "메모리 릭 원인 분석을 말할 때"
+        ],
+        "detail": "메모리라는 잔고가 바닥나 한도 밖으로 나간 그림이에요. 'run out of memory'(동사구)와 'OOM killed'(쿠버네티스 용어) 두 형태로 입에 붙여두세요. 메모리 릭 → OOM → 파드 재시작 루프는 장애 썰의 단골 전개죠.",
+        "exampleKo": "그 파드는 메모리가 바닥나서 죽었어요.",
+        "questionEn": "Kubernetes keeps restarting your pod every few hours with exit code 137. Why?",
+        "termsKo": "OOM killer: 메모리가 한계에 닿으면 커널/k8s가 프로세스를 강제 종료하는 메커니즘. exit 137이 그 신호."
+      },
+      {
+        "key": "pr:out-of-sync",
+        "en": "out of sync",
+        "ko": "동기화가 깨진, 어긋난",
+        "example": "The replica fell behind and got out of sync with the primary.",
+        "situations": [
+          "복제 지연/데이터 불일치를 설명할 때",
+          "두 환경의 설정이 어긋났을 때"
+        ],
+        "detail": "in sync라는 상태 안에서 밖으로 이탈한 그림이에요. 복제 지연, 캐시 불일치, 환경 간 설정 드리프트까지 '맞아야 할 두 개가 어긋났다'면 다 쓸 수 있죠. 'get/fall/drift out of sync' 같은 동사 조합으로 외워두면 좋아요.",
+        "exampleKo": "레플리카가 뒤처지면서 프라이머리와 동기화가 깨졌어요.",
+        "questionEn": "Two copies of the same data are showing different values. How do you describe that?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:out-of-scope",
+        "en": "out of scope",
+        "ko": "범위 밖인",
+        "example": "Mobile support is out of scope for this quarter.",
+        "situations": [
+          "면접에서 설계 범위를 잘라낼 때",
+          "스코프 크립을 막을 때"
+        ],
+        "detail": "scope라는 울타리 밖에 있다는 그림이에요. 시스템 디자인 면접에서 'let's call that out of scope'로 범위를 명시적으로 잘라내는 건 고급 스킬로 쳐주죠. 프로젝트 관리에선 scope creep을 막는 방패 문장이고, 반대는 in scope예요.",
+        "exampleKo": "모바일 지원은 이번 분기 범위 밖이에요.",
+        "questionEn": "The interviewer keeps adding requirements and time is running out. How do you push back politely?",
+        "termsKo": "scope creep: 합의된 범위 밖의 요구가 슬금슬금 늘어나는 현상."
+      },
+      {
+        "key": "pr:out-of-the-box",
+        "en": "out of the box",
+        "ko": "설치 직후 그대로, 별도 설정 없이",
+        "example": "Spring Boot gives you health checks out of the box.",
+        "situations": [
+          "프레임워크 기본 제공 기능을 설명할 때",
+          "도구 선택 이유를 말할 때"
+        ],
+        "detail": "상자에서 막 꺼낸 그대로 동작한다는 그림 — 이탈이 아니라 '개봉 즉시'의 out이에요. 프레임워크나 라이브러리가 추가 설정 없이 주는 기능을 말할 때 최빈출이죠. 'works out of the box'가 통째로 한 덩어리고, think outside the box(발상 전환)와 헷갈리면 안 돼요.",
+        "exampleKo": "Spring Boot는 헬스 체크를 기본 제공해요.",
+        "questionEn": "Why pick Spring Boot over wiring all those libraries together yourself?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:out-of-band",
+        "en": "out of band",
+        "ko": "별도 채널로, 본 흐름 밖에서",
+        "example": "We send alerts out of band, separate from the main pipeline.",
+        "situations": [
+          "주 처리 경로와 분리된 통신을 설명할 때",
+          "장애 시 우회 채널을 말할 때"
+        ],
+        "detail": "주파수 대역(band) 밖의 별도 채널이라는 통신 용어에서 온 그림이에요. 요청 경로 밖에서 따로 처리되는 일 — 비동기 알림, 별도 관리 채널 — 을 말할 때 써요. 살짝 전문 용어 느낌이라 시니어 어휘로 좋아요.",
+        "exampleKo": "알림은 본 파이프라인과 분리해서 별도 채널로 보내요.",
+        "questionEn": "If the main pipeline itself is down, how does the alert about it still reach you?",
+        "termsKo": "out-of-band: 주 데이터 경로와 분리된 별도 채널. 관리 트래픽이나 알림에 흔히 적용."
+      },
+      {
+        "key": "pr:out-of-the-loop",
+        "en": "out of the loop",
+        "ko": "정보 공유에서 빠진",
+        "example": "I was out of the loop on that schema change.",
+        "situations": [
+          "공유 누락으로 생긴 문제를 말할 때",
+          "커뮤니케이션 프로세스 개선을 제안할 때"
+        ],
+        "detail": "정보가 도는 루프(고리) 밖에 있었다는 그림이에요. 협업 사고담의 단골 — 공유 누락으로 장애가 났다는 이야기에 꼭 나오죠. 반대로 'keep me in the loop'(계속 공유해줘)는 회의 마무리 멘트로 최빈출이에요.",
+        "exampleKo": "그 스키마 변경은 저한테 공유가 안 됐었어요.",
+        "questionEn": "A teammate changed the database schema and nobody told you. How do you describe that?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "over/against",
+    "coreKo": "over는 무언가의 '위를 타고 넘어가는' 그림이에요 — 데이터가 회선 위로, HTTP라는 프로토콜 위로 실려 가죠. against는 무언가에 '맞대고 부딪히는' 그림이고요 — 쿼리를 DB에 들이대고, 스크립트를 운영 환경에 맞대고, 시간과 맞붙어요.",
+    "items": [
+      {
+        "key": "pr:over-the-wire",
+        "en": "over the wire",
+        "ko": "네트워크를 타고 (전송되는)",
+        "example": "We send the deltas over the wire instead of the full payload.",
+        "situations": [
+          "전송 데이터 크기 최적화를 말할 때",
+          "네트워크 직렬화를 설명할 때"
+        ],
+        "detail": "데이터가 회선 위를 타고 건너가는 그림이에요. on the wire가 '회선 위에 있는 상태·모양'이라면 over the wire는 '회선을 타고 이동'에 초점이 있죠. 'send/go over the wire' 동사 조합으로 외우면 입에서 잘 나와요.",
+        "exampleKo": "전체 페이로드 대신 변경분만 네트워크로 보내요.",
+        "questionEn": "The payload is huge but only a few fields change each time. How do you cut traffic?",
+        "termsKo": ""
+      },
+      {
+        "key": "pr:over-http",
+        "en": "over HTTP",
+        "ko": "HTTP(프로토콜)로",
+        "example": "The services talk over HTTP for now; we might move to gRPC.",
+        "situations": [
+          "서비스 간 통신 프로토콜을 설명할 때",
+          "프로토콜 선택 트레이드오프를 말할 때"
+        ],
+        "detail": "HTTP라는 프로토콜 위에 데이터를 실어 나르는 그림이에요. over gRPC, over WebSocket, over TLS 전부 같은 패턴 — '무슨 프로토콜을 타고 가냐'는 over로 말하죠. 'talk over HTTP'처럼 talk와 묶이면 특히 구어체다워요.",
+        "exampleKo": "서비스들은 일단 HTTP로 통신하고, gRPC로 갈 수도 있어요.",
+        "questionEn": "When service A needs data from service B, how do they actually communicate?",
+        "termsKo": "gRPC: HTTP/2 기반 바이너리 RPC 프레임워크. JSON/HTTP 대비 빠르고 스키마가 강제됨."
+      },
+      {
+        "key": "pr:against-the-database",
+        "en": "against the database",
+        "ko": "DB를 상대로, DB에 대고",
+        "example": "That report runs heavy queries against the database every hour.",
+        "situations": [
+          "DB 부하 원인을 짚을 때",
+          "쿼리 실행 대상을 명시할 때"
+        ],
+        "detail": "쿼리를 DB에 '들이대는' 그림이에요. run/execute a query against X가 굳은 조합이고, 분석 쿼리는 운영 DB 말고 레플리카에 대고 돌리라는 얘기로 자주 이어지죠. validate against a schema처럼 '기준에 맞대 검증'하는 용법도 같은 against예요.",
+        "exampleKo": "그 리포트가 매시간 DB에 무거운 쿼리를 날려요.",
+        "questionEn": "Where do those expensive analytics queries actually run — and is that a problem?",
+        "termsKo": "read replica: 읽기 전용 복제본. 무거운 조회를 분리해 운영 DB를 보호."
+      },
+      {
+        "key": "pr:against-prod",
+        "en": "against prod",
+        "ko": "운영 환경을 상대로",
+        "example": "Never run that script against prod without a dry run first.",
+        "situations": [
+          "운영 환경 작업의 위험을 경고할 때",
+          "테스트 대상 환경을 명시할 때"
+        ],
+        "detail": "스크립트나 테스트를 운영 환경에 '맞대는' 그림이에요. test against staging, run against prod처럼 '어느 환경을 상대로 실행하냐'를 말하는 표준형이죠. 운영을 상대로 한 작업의 위험성 경고와 거의 세트로 나와요.",
+        "exampleKo": "드라이런 없이 그 스크립트를 운영에 대고 돌리지 마세요.",
+        "questionEn": "A teammate wants to test their cleanup script directly on the live environment. What do you say?",
+        "termsKo": "dry run: 실제 변경 없이 무엇이 바뀔지만 출력해 보는 예행 실행."
+      },
+      {
+        "key": "pr:race-against",
+        "en": "race against",
+        "ko": "~와 경쟁하다, 시간과 싸우다",
+        "example": "Two writers race against each other, and the last one wins.",
+        "situations": [
+          "레이스 컨디션을 설명할 때",
+          "마감과의 싸움을 묘사할 때"
+        ],
+        "detail": "둘이 맞붙어 달리기 시합을 하는 그림이에요. race condition(경쟁 조건)의 그 race고, 'race against each other'와 'race against the clock(시간과의 싸움)' 두 용법 다 흔하죠. 동시성 버그 설명할 때 'they race'라고 동사로만 던져도 통해요.",
+        "exampleKo": "쓰기 두 개가 서로 경쟁해서 마지막 놈이 이겨요.",
+        "questionEn": "Two requests update the same record at the same moment. What's the danger called?",
+        "termsKo": "race condition: 실행 순서/타이밍에 따라 결과가 달라지는 동시성 버그."
+      }
+    ]
+  }
+];
+export const PREP_COUNTS = { groups: 12, phrases: 63 };

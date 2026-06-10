@@ -17,6 +17,7 @@ import {
   CLARIFY_CARDS,
   CONNECTORS,
   PARTICLE_GROUPS,
+  PREP_GROUPS,
   COLLOCATION_CARDS,
   type ReflexCard,
   type InterviewCard,
@@ -153,6 +154,7 @@ export type ScopeKind =
   | 'connector'
   | 'chain'
   | 'particle'
+  | 'prep'
   | 'collocation'
   | 'weak';
 
@@ -161,6 +163,10 @@ export type ScopeKind =
 export function scopeBanner(kind: ScopeKind, clusterId?: string): string | undefined {
   if (kind === 'particle' && clusterId) {
     const g = PARTICLE_GROUPS.find((x) => x.particle === clusterId);
+    if (g) return `🧲 '${g.particle}' 그림 — ${g.coreKo}`;
+  }
+  if (kind === 'prep' && clusterId) {
+    const g = PREP_GROUPS.find((x) => x.particle === clusterId);
     if (g) return `🧲 '${g.particle}' 그림 — ${g.coreKo}`;
   }
   return undefined;
@@ -185,6 +191,7 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
         ...CONNECTORS.map(connectorIv),
         ...COLLOCATION_CARDS.map(phraseIv),
         ...PARTICLE_GROUPS.flatMap((g) => g.items.map((it) => particleIv(it, g))),
+        ...PREP_GROUPS.flatMap((g) => g.items.map((it) => particleIv(it, g))),
       ];
     case 'core':
       return CORE_REFLEX.map(reflexIv);
@@ -225,6 +232,10 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       if (!g) return [];
       const olds = PHRASAL_CARDS.filter((c) => c.en.split(' ').includes(g.particle));
       return [...g.items, ...olds].map((it) => particleIv(it, g));
+    }
+    case 'prep': {
+      const g = PREP_GROUPS.find((x) => x.particle === clusterId);
+      return g ? g.items.map((it) => particleIv(it, g)) : [];
     }
     case 'weak':
       return []; // needs SRS states — interview-run resolves this via weakItems()

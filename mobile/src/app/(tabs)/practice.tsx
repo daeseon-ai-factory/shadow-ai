@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router, type Href } from 'expo-router';
-import { PATTERNS, COLLOCATIONS, PARTICLE_GROUPS, WORKSHOP_COUNTS } from '@shadow-ai/core';
+import { PATTERNS, COLLOCATIONS, PARTICLE_GROUPS, PREP_GROUPS, WORKSHOP_COUNTS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -57,6 +57,20 @@ export default function PracticeMenuScreen() {
             </View>
             <ThemedText style={styles.chev}>›</ThemedText>
           </Pressable>
+          <ThemedText type="small" style={styles.sub}>{t('practice.prepHint')}</ThemedText>
+          <View style={styles.chips}>
+            {PREP_GROUPS.map((g) => (
+              <Pressable
+                key={`pr-${g.particle}`}
+                style={[styles.chip, styles.prepChip]}
+                onPress={() =>
+                  router.push({ pathname: '/interview-run', params: { mode: 'produce', scope: 'prep', cluster: g.particle } })
+                }
+              >
+                <ThemedText type="small">{g.particle} · {g.items.length}</ThemedText>
+              </Pressable>
+            ))}
+          </View>
           <ThemedText type="small" style={styles.sub}>{t('practice.particleHint')}</ThemedText>
           <View style={styles.chips}>
             {PARTICLE_GROUPS.map((g) => (
@@ -103,4 +117,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
+  prepChip: { borderColor: '#16a34a88' },
 });
