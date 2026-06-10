@@ -1,0 +1,28 @@
+---
+title: "Every Korean string needs a declared role: rebuilding 502 cues in English word order"
+date: "2026-06-10"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The drill app's production cues had drifted into natural Korean word order — the exact thing the method forbids. A dedicated cue field in English word order (직독직해) was generated and order-verified for all 502 items, and an argumentation-moves layer (67 moves in 8 functions) was added for actually defending one's thinking."
+tags: ["language-learning", "interview-prep", "content-generation", "methodology"]
+---
+
+The founding rule of this app's drill method is that a Korean→English production cue must be **직독직해** — Korean words arranged in *English* word order, chunked: `"나는 · 백엔드 엔지니어야 · 약 6년 경력의"`. Reading the chunks left to right maps 1:1 onto the English sentence, which is the whole point: the learner's head is being retrained to assemble thoughts in English order.
+
+The original reflex cards followed the rule. Then, over a week of adding banks (phrasal verbs, collocations, particles, prepositions…), the cue quietly became `exampleKo` — a **natural** Korean translation — because that field happened to exist. Natural translation is exactly right for the *reveal* (where you check understanding) and exactly wrong for the *cue* (where you produce). The user caught it immediately: *"한글들이 전부 한국어 어순이야."*
+
+## The fix: a field per role
+
+The lesson generalizes: in a language-learning pipeline, every Korean string has a ROLE, and roles have opposite requirements —
+
+- **cue** → English word order, chunked (`"만약 캐시가 미스나면 · 우리는 · 폴백한다 · DB로"`)
+- **translation** → natural Korean (reveal)
+- **explanation** → natural, rich Korean (nuance, pitfalls)
+
+Reusing one field for another role silently breaks the method. So `cueKo` became its own field: a workflow generated it for all 502 production items across 12 banks, with a per-bank verification pass whose single rule was order fidelity — if the chunks read like natural Korean (verb at the end when the English verb isn't), the item fails and gets rewritten. 502 of 502 merged with zero mismatches.
+
+## The argumentation layer
+
+The same session closed the gap the user had named bluntly: vocabulary banks don't help you *argue*. A new bank of 67 **argumentation moves** in 8 functions — claim, support, concede-and-counter ("That's true to a point, but…"), hedging ("I'd lean toward…"), conditionals ("Suppose traffic doubles…"), tradeoff judgment ("X buys us Y at the cost of Z"), polite disagreement ("I'm not sold on…"), and prioritizing/concluding ("Net-net…") — wired into the workshop as its own chip row and merged into the daily-30 loop. With the connector bank as glue and these moves as joints, the "short sentences, logically chained" method now covers reasoning, not just naming.
