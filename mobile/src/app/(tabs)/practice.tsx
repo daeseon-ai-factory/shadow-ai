@@ -1,79 +1,66 @@
-import { useMemo } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
-import { Redirect, router } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
-import {
-  PATTERNS,
-  patternKey,
-  buildSession,
-  localToday,
-  practiceApi,
-  type SrsCard,
-} from '@shadow-ai/core';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Redirect, router, type Href } from 'expo-router';
+import { PATTERNS, COLLOCATIONS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { DrillRunner, type DrillItem } from '@/components/drill-runner';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
-// Flatten the bundled patterns into keyed drill items (same key format the web app + SRS use).
-function allItems(): DrillItem[] {
-  const out: DrillItem[] = [];
-  for (const p of PATTERNS) {
-    p.items.forEach((it, i) =>
-      out.push({
-        key: patternKey(p.id, i),
-        title: p.frame,
-        subtitle: p.category,
-        cue: it.cue,
-        model: it.model,
-        note: p.gloss,
-      }),
-    );
-  }
-  return out;
-}
+const patternCount = PATTERNS.reduce((n, p) => n + p.items.length, 0);
 
-export default function PatternDrillScreen() {
+/**
+ * Practice tab = the menu of ALL practice tools (it used to render only the pattern drill, hiding
+ * the rest behind home cards — "6개 섹션 다 보이게"). Each tool is a pushed route.
+ */
+export default function PracticeMenuScreen() {
   const token = useAuthStore((s) => s.token);
-  const srs = useQuery({
-    queryKey: ['srs'],
-    queryFn: () => practiceApi.srsStates(),
-    enabled: !!token,
-  });
-
-  const items = useMemo(() => allItems(), []);
-  const session = useMemo<DrillItem[]>(() => {
-    if (!srs.data) return [];
-    return buildSession(items, srs.data as SrsCard[], localToday());
-  }, [items, srs.data]);
-
   if (!token) return <Redirect href="/login" />;
-  if (srs.isPending) {
-    return (
-      <ThemedView style={styles.center}>
-        <ActivityIndicator />
-      </ThemedView>
-    );
-  }
-  if (srs.isError) {
-    return (
-      <ThemedView style={styles.center}>
-        <ThemedText style={styles.error}>{(srs.error as Error).message}</ThemedText>
-        <Pressable style={styles.linkBtn} onPress={() => router.back()}>
-          <ThemedText style={styles.linkText}>{t('practice.back')}</ThemedText>
-        </Pressable>
-      </ThemedView>
-    );
-  }
 
-  return <DrillRunner key={session.map((e) => e.key).join(',')} items={session} />;
+  const tools: { href: Href; title: string; sub: string; icon: string }[] = [
+    { href: '/pattern-run', title: t('home.patternDrill'), sub: t('home.patternDrillSub', { n: patternCount }), icon: '🧱' },
+    { href: '/collocations', title: t('home.collocations'), sub: t('home.collocationsSub', { n: COLLOCATIONS.length }), icon: '🔗' },
+    { href: '/compose', title: t('home.composeCheck'), sub: t('home.composeCheckSub'), icon: '✍️' },
+    { href: '/weak', title: t('home.weakSpots'), sub: t('home.weakSpotsSub'), icon: '🎯' },
+    { href: '/prepositions', title: t('home.prepositions'), sub: t('home.prepositionsSub'), icon: '🧭' },
+    { href: '/gym', title: t('home.gym'), sub: t('home.gymSub'), icon: '🏋️' },
+  ];
+
+  return (
+    <ThemedView style={styles.flex}>
+      <SafeAreaView style={styles.flex} edges={['bottom']}>
+        <ScrollView contentContainerStyle={styles.container}>
+          {tools.map((tool) => (
+            <Pressable key={tool.title} style={styles.card} onPress={() => router.push(tool.href)}>
+              <ThemedText style={styles.icon}>{tool.icon}</ThemedText>
+              <View style={styles.cardBody}>
+                <ThemedText type="smallBold">{tool.title}</ThemedText>
+                <ThemedText type="small" style={styles.sub}>{tool.sub}</ThemedText>
+              </View>
+              <ThemedText style={styles.chev}>›</ThemedText>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </ThemedView>
+  );
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, padding: 24 },
-  error: { color: '#dc2626' },
-  linkBtn: { paddingVertical: 10 },
-  linkText: { color: '#208AEF', fontWeight: '600' },
+  flex: { flex: 1 },
+  container: { padding: 16, gap: 10, paddingBottom: 32 },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af77',
+    padding: 14,
+  },
+  icon: { fontSize: 22 },
+  cardBody: { flex: 1, gap: 2 },
+  sub: { color: '#6b7280' },
+  chev: { color: '#9ca3af', fontSize: 22 },
 });

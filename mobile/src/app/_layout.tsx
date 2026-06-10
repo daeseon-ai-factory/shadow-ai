@@ -62,6 +62,7 @@ export default function RootLayout() {
             <Stack.Screen name="code-run" options={{ headerShown: false }} />
             <Stack.Screen name="speech-run" options={{ headerShown: false }} />
             <Stack.Screen name="mock-run" options={{ headerShown: false }} />
+            <Stack.Screen name="pattern-run" options={{ headerShown: true, title: t('nav.practice') }} />
           </Stack>
         )}
       </ThemeProvider>
