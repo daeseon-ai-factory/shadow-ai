@@ -38,12 +38,14 @@ export function InterviewDrill({
   onExit,
   timerSec,
   enOnly,
+  banner,
 }: {
   items: IvItem[];
   mode: IvMode;
   onExit: () => void;
   timerSec?: number; // speed round: seconds to answer before the model auto-reveals
   enOnly?: boolean; // EN immersion: hide Korean gloss/translation; detail collapses behind a tap
+  banner?: string; // always-visible context above the cards (e.g. the particle's core image)
 }) {
   const [queue, setQueue] = useState<IvItem[]>(items);
   const [pos, setPos] = useState(0);
@@ -180,6 +182,11 @@ export function InterviewDrill({
       <SafeAreaView style={styles.flex}>
         {header}
         <ScrollView style={styles.flex} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+          {banner ? (
+            <View style={styles.banner}>
+              <ThemedText type="small" style={styles.bannerText}>{banner}</ThemedText>
+            </View>
+          ) : null}
           {item.tag ? (
             <ThemedText type="small" style={styles.tag}>
               {item.tag}
@@ -300,6 +307,14 @@ const styles = StyleSheet.create({
   gap: { gap: 12 },
   row: { flexDirection: 'row', gap: 12, marginTop: 4 },
   tag: { textTransform: 'uppercase', letterSpacing: 1, opacity: 0.6 },
+  banner: {
+    borderRadius: 10,
+    backgroundColor: '#1d4ed811',
+    borderWidth: 1,
+    borderColor: '#1d4ed833',
+    padding: 12,
+  },
+  bannerText: { lineHeight: 20, color: '#1d4ed8' },
   promptBox: {
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,

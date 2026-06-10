@@ -6,7 +6,7 @@ import { buildSession, buildDailySession, localToday, practiceApi, shuffle, type
 
 import { ThemedView } from '@/components/themed-view';
 import { InterviewDrill, type IvMode } from '@/components/interview-drill';
-import { scopeItems, weakItems, type ScopeKind } from '@/lib/interview-deck';
+import { scopeItems, scopeBanner, weakItems, type ScopeKind } from '@/lib/interview-deck';
 import { useAuthStore } from '@/lib/auth-store';
 import { useIvSettings } from '@/lib/iv-settings';
 
@@ -54,6 +54,7 @@ export default function InterviewRunScreen() {
       mode={mode ?? 'produce'}
       timerSec={speed ? 8 : undefined}
       enOnly={enOnly}
+      banner={scopeBanner(scope ?? 'due', cluster)}
       onExit={() => router.back()}
     />
   );

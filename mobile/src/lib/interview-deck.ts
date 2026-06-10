@@ -54,10 +54,12 @@ export function cardIv(c: InterviewCard): IvItem {
 // reps ("다양한 상황서 같은 표현"). The card identity (key) is stable, so SRS tracking is unaffected.
 export function phraseIv(c: PhraseCard): IvItem {
   const sit = c.situations[Math.floor(Math.random() * c.situations.length)] ?? c.ko;
+  // The cue is the situation PLUS what to say (in Korean) — "팀과 정렬할 때" alone doesn't tell
+  // you the task; the Korean of the target sentence does. Produce = say THAT in English.
   return {
     key: c.key,
     tag: c.en,
-    promptKo: sit,
+    promptKo: `${sit}\n\n→ “${c.exampleKo || c.ko}”`,
     promptEn: c.questionEn || c.en,
     answer: c.example,
     meaningKo: c.ko,
@@ -74,7 +76,7 @@ export function backendIv(c: PhraseCard): IvItem {
   return {
     key: c.key,
     tag: 'Backend',
-    promptKo: sit,
+    promptKo: `${sit}\n\n→ “${c.exampleKo || c.ko}”`,
     promptEn: c.questionEn || 'Backend',
     answer: c.en,
     meaningKo: c.ko,
@@ -153,6 +155,16 @@ export type ScopeKind =
   | 'particle'
   | 'collocation'
   | 'weak';
+
+// Always-visible drill banner — the particle's core image belongs at the TOP of the drill,
+// not buried behind each card's reveal.
+export function scopeBanner(kind: ScopeKind, clusterId?: string): string | undefined {
+  if (kind === 'particle' && clusterId) {
+    const g = PARTICLE_GROUPS.find((x) => x.particle === clusterId);
+    if (g) return `🧲 '${g.particle}' 그림 — ${g.coreKo}`;
+  }
+  return undefined;
+}
 
 export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
   switch (kind) {
