@@ -9093,4 +9093,815 @@ export const ARGUMENT_GROUPS: ArgumentGroup[] = [
     ]
   }
 ];
-export const REASONING_PREP_GROUPS: ParticleGroup[] = [];
+export const REASONING_PREP_GROUPS: ParticleGroup[] = [
+  {
+    "particle": "from/to",
+    "coreKo": "from은 출발점, to는 도착점을 찍는 그림이다. 어떤 작업이나 변화가 '어디서 시작해 어디까지 가는가'의 범위를 한 줄로 그어준다. 논증에서는 작업의 출발 상태(맨바닥, 토대, 첫날)와 끝 지점(전 구간)을 명확히 못 박을 때 이 그림이 깔린다.",
+    "items": [
+      {
+        "key": "p2:from-scratch",
+        "en": "from scratch",
+        "ko": "맨바닥부터, 기존 것 없이 처음부터",
+        "example": "We'd have to build the auth service from scratch, and that's two months minimum.",
+        "situations": [
+          "기존 라이브러리 안 쓰고 직접 구현하는 비용을 따질 때",
+          "레거시 버리고 재작성하자는 논의가 나올 때"
+        ],
+        "detail": "from의 출발점 그림이 '아무것도 없는 지점(0)'에 찍힌 거야. 기존 코드나 라이브러리 재사용 없이 처음부터 만든다는 비용 강조에 거의 항상 붙고, build/rewrite/start랑 세트로 움직여. build-vs-buy 논쟁에서 '직접 만들 가치가 있냐'를 따지는 핵심 카드.",
+        "exampleKo": "인증 서비스를 맨바닥부터 만들어야 할 텐데, 그건 최소 두 달이에요.",
+        "questionEn": "Why not just write our own auth service and skip the vendor contract?",
+        "termsKo": "auth service: 로그인/토큰 발급을 담당하는 인증 서비스. 직접 구현 시 보안 부담이 커서 build-vs-buy 단골 주제.",
+        "cueKo": "우리는 · 해야 할 거다 · 만드는 걸 · 그 인증 서비스를 · 맨바닥부터 · 그리고 그건 · 두 달이다 · 최소"
+      },
+      {
+        "key": "p2:from-the-ground-up",
+        "en": "from the ground up",
+        "ko": "기반부터 새로, 토대부터",
+        "example": "The pipeline was designed from the ground up for streaming, not batch.",
+        "situations": [
+          "아키텍처가 처음부터 특정 목적으로 설계됐음을 강조할 때",
+          "땜질 대신 토대부터 재설계하자고 할 때"
+        ],
+        "detail": "from scratch랑 비슷한데 그림이 달라 — ground(지반)에서 위로 쌓아 올리는 건축 이미지야. '땜질이 아니라 토대부터 그 목적으로 설계됐다'는 설계 일관성 강조에 써. from scratch는 '0에서 시작하는 비용' 뉘앙스, from the ground up은 '설계 철학' 뉘앙스로 갈라져.",
+        "exampleKo": "그 파이프라인은 배치가 아니라 스트리밍용으로 기반부터 설계됐어요.",
+        "questionEn": "Was streaming support bolted onto this pipeline later, or was it always the core design?",
+        "termsKo": "streaming vs batch: 실시간으로 흘려 처리 vs 모아서 한 번에 처리. 설계 전제가 달라 나중에 바꾸기 어렵다.",
+        "cueKo": "그 파이프라인은 · 설계됐다 · 지반에서부터 위로 · 스트리밍을 위해 · 배치가 아니라"
+      },
+      {
+        "key": "p2:end-to-end",
+        "en": "end to end",
+        "ko": "처음부터 끝까지 전 구간",
+        "example": "Let's trace one request end to end before we blame the database.",
+        "situations": [
+          "전 구간 테스트나 추적을 제안할 때",
+          "부분 최적화 말고 전체 흐름을 보자고 할 때"
+        ],
+        "detail": "한쪽 끝(end)에서 반대쪽 끝(end)까지 선을 긋는 그림. 요청이 들어와서 응답이 나가는 전 구간을 빠짐없이 본다는 뜻이고, 테스트·추적·암호화(end-to-end encryption)에 붙어. 논쟁에선 '부분만 보고 결론 내지 말자'는 견제구로 좋아.",
+        "exampleKo": "데이터베이스 탓하기 전에 요청 하나를 전 구간 추적해 봅시다.",
+        "questionEn": "Everyone says the DB is slow. How would you confirm where the latency actually lives?",
+        "termsKo": "E2E tracing: 진입점부터 응답까지 전 구간 추적. Jaeger 같은 distributed tracing 도구가 이걸 해준다.",
+        "cueKo": "하자 · 추적을 · 한 요청을 · 끝에서 끝까지 · 우리가 탓하기 전에 · 그 데이터베이스를"
+      },
+      {
+        "key": "p2:back-to-back",
+        "en": "back to back",
+        "ko": "연달아, 쉴 틈 없이 연속으로",
+        "example": "We shipped two hotfixes back to back, so let's freeze deploys today.",
+        "situations": [
+          "연속 장애나 연속 배포를 보고할 때",
+          "미팅이 연달아 있어 시간이 없다고 할 때"
+        ],
+        "detail": "등(back)과 등이 맞닿을 만큼 사이에 틈이 없다는 그림. 배포, 장애, 미팅 같은 이벤트가 간격 없이 연달아 일어났을 때 써. 논증에선 '연속으로 터졌으니 잠깐 멈추자' 같은 페이스 조절 근거로 자주 등장해.",
+        "exampleKo": "핫픽스를 두 번 연달아 냈으니 오늘은 배포를 동결합시다.",
+        "questionEn": "We've had several incidents this week already. Should we slow down the release train?",
+        "termsKo": "deploy freeze: 위험 시기에 배포를 일시 중단하는 관행. 연속 장애 후 안정화 목적으로 선언한다.",
+        "cueKo": "우리는 · 내보냈다 · 두 개의 핫픽스를 · 등 맞대고 연달아 · 그러니 · 동결하자 · 배포를 · 오늘은"
+      },
+      {
+        "key": "p2:from-day-one",
+        "en": "from day one",
+        "ko": "첫날부터, 시작 시점부터",
+        "example": "Audit logging wasn't planned from day one, so retrofitting it touches every service.",
+        "situations": [
+          "처음부터 있던(혹은 없던) 요구사항을 짚을 때",
+          "초기 결정의 영향이 지금까지 온다고 설명할 때"
+        ],
+        "detail": "출발점을 '프로젝트 첫날'에 찍는 from 그림. 어떤 제약이나 결정이 시작부터 깔려 있었는지를 강조해서, '지금 와서 바꾸기 어렵다' 혹은 '처음부터 고려했어야 했다'는 논거로 써. since the beginning보다 훨씬 입에 붙는 표현이야.",
+        "exampleKo": "감사 로깅은 첫날부터 계획에 없었어서, 지금 끼워 넣으려면 모든 서비스를 건드려야 해요.",
+        "questionEn": "Adding audit trails looks simple on paper. Why do you estimate it as a quarter-long project?",
+        "termsKo": "retrofit: 이미 굴러가는 시스템에 기능을 사후 장착하는 것. 로깅·보안 같은 횡단 관심사일수록 비용이 폭증한다.",
+        "cueKo": "감사 로깅은 · 계획되지 않았다 · 첫날부터 · 그래서 · 그걸 나중에 끼워 넣는 건 · 건드린다 · 모든 서비스를"
+      }
+    ]
+  },
+  {
+    "particle": "with/without",
+    "coreKo": "with는 '함께 지님', without은 '그것 없이'의 그림이다. 어떤 동작에 무엇이 딸려 있는지, 빠져 있는지를 조건처럼 옆에 붙인다. 트레이드오프 논쟁에서는 '이 조건을 달고/빼고도 가능한가'를 따지는 핵심 도구가 된다.",
+    "items": [
+      {
+        "key": "p2:with-retries",
+        "en": "with retries",
+        "ko": "재시도를 붙여서",
+        "example": "The call is safe with retries because the endpoint is idempotent.",
+        "situations": [
+          "네트워크 호출 안정화 방안을 설명할 때",
+          "재시도 전략의 전제 조건을 따질 때"
+        ],
+        "detail": "동작에 retry라는 안전장치를 '딸려 보내는' with 그림. 외부 호출 신뢰성 얘기할 때 with retries, with exponential backoff처럼 조건을 명사로 압축해 붙여. 단, 멱등하지 않은 연산에 재시도를 붙이면 중복 처리되니까 그 전제를 같이 말하는 게 시니어의 화법이야.",
+        "exampleKo": "그 엔드포인트는 멱등하니까 재시도를 붙이면 그 호출은 안전해요.",
+        "questionEn": "Payment requests sometimes time out. How do we make that call reliable?",
+        "termsKo": "idempotent(멱등): 같은 요청을 여러 번 보내도 결과가 한 번과 동일. 재시도 안전성의 전제 조건.",
+        "cueKo": "그 호출은 · 안전하다 · 재시도와 함께면 · 왜냐하면 · 그 엔드포인트가 · 멱등하니까"
+      },
+      {
+        "key": "p2:without-downtime",
+        "en": "without downtime",
+        "ko": "다운타임 없이, 무중단으로",
+        "example": "We can run this migration without downtime if we add the column as nullable first.",
+        "situations": [
+          "무중단 배포·마이그레이션 계획을 설명할 때",
+          "중단 허용 여부로 방식을 고를 때"
+        ],
+        "detail": "without이 '서비스 중단'이라는 짐을 빼고 간다는 그림. 마이그레이션·배포·업그레이드 얘기에선 '중단 없이 가능하냐'가 항상 첫 질문이라 이 표현이 결론 문장에 박혀. zero-downtime이라는 형용사 버전도 같이 알아두면 좋아.",
+        "exampleKo": "컬럼을 먼저 nullable로 추가하면 이 마이그레이션은 무중단으로 돌릴 수 있어요.",
+        "questionEn": "This schema change scares the ops team. Can we do it while the service stays up?",
+        "termsKo": "expand-contract migration: 새 스키마를 먼저 추가(expand)하고 코드 전환 후 옛것을 제거(contract)하는 무중단 패턴.",
+        "cueKo": "우리는 · 돌릴 수 있다 · 이 마이그레이션을 · 다운타임 없이 · 만약 우리가 · 추가하면 · 그 컬럼을 · nullable로 · 먼저"
+      },
+      {
+        "key": "p2:with-a-grain-of-salt",
+        "en": "with a grain of salt",
+        "ko": "걸러서, 곧이곧대로 믿지 말고",
+        "example": "Take the vendor's benchmark with a grain of salt; it's their best-case setup.",
+        "situations": [
+          "벤치마크나 추정치의 신뢰도를 깎을 때",
+          "남의 주장을 인용하면서 유보를 달 때"
+        ],
+        "detail": "소금 한 톨을 곁들여(with) 삼킨다는 관용구 — 정보를 그대로 삼키지 말고 의심을 깔고 받아들이라는 뜻이야. 벤치마크, 견적, 블로그 글을 인용할 때 신뢰도 유보를 거는 표준 표현. 동사 take와 거의 세트로 움직여.",
+        "exampleKo": "벤더 벤치마크는 걸러서 들으세요. 자기들한테 제일 유리한 세팅이에요.",
+        "questionEn": "The vendor claims ten times our current throughput. How much weight should we give that number?",
+        "termsKo": "vendor benchmark: 공급사가 공개하는 성능 수치. 자사에 유리한 조건으로 측정되는 경우가 많아 자체 PoC로 검증한다.",
+        "cueKo": "받아들여라 · 그 벤더의 벤치마크를 · 소금 한 톨과 함께 · 그건 · 그들의 최상 케이스 세팅이다"
+      },
+      {
+        "key": "p2:with-that-in-mind",
+        "en": "with that in mind",
+        "ko": "그 점을 염두에 두고 (앞 내용을 전제로)",
+        "example": "We only have two engineers; with that in mind, I'd buy, not build.",
+        "situations": [
+          "전제를 깔고 결론으로 넘어갈 때",
+          "제약을 언급한 뒤 권고안을 낼 때"
+        ],
+        "detail": "방금 말한 사실을 머릿속에 지닌(with ... in mind) 채로 다음 결론을 내리는 연결 그림. 논증에서 전제→결론 전환 신호로 최고급 표현이야. given that보다 부드럽고, 발표나 인터뷰에서 결론 직전에 한 박자 끊어주는 효과가 있어.",
+        "exampleKo": "엔지니어가 둘뿐이잖아요. 그걸 염두에 두면 저는 만들지 말고 사겠어요.",
+        "questionEn": "Our team is tiny but the roadmap is huge. Build the feature ourselves or pay for a service?",
+        "termsKo": "build vs buy: 직접 개발과 솔루션 구매 사이의 의사결정. 팀 규모와 핵심역량 여부가 판단 기준.",
+        "cueKo": "우리는 · 가지고 있다 · 단 두 명의 엔지니어를 · 그것을 · 마음에 둔 채로 · 나라면 · 사겠다 · 만들지 않고"
+      },
+      {
+        "key": "p2:with-the-caveat-that",
+        "en": "with the caveat that",
+        "ko": "~라는 단서를 달고",
+        "example": "I'd approve this with the caveat that we monitor error rates for a week.",
+        "situations": [
+          "코드 리뷰에서 조건부 승인할 때",
+          "동의하되 리스크 관리 조건을 붙일 때"
+        ],
+        "detail": "승인이나 동의에 caveat(단서)를 딸려 보내는 with 그림. '찬성하는데 조건 하나 붙일게'를 한 방에 처리해서, 코드 리뷰 승인이나 설계 합의에서 정말 자주 나와. 무조건 반대 대신 조건부 동의로 논의를 앞으로 굴리는 시니어 화법이야.",
+        "exampleKo": "일주일간 에러율을 모니터링한다는 단서를 달고 이걸 승인할게요.",
+        "questionEn": "Are you comfortable merging this risky change right before the long weekend?",
+        "termsKo": "caveat: 경고성 단서. 코드 리뷰에서 'LGTM with caveats' 식의 조건부 승인에 쓰인다.",
+        "cueKo": "나는 · 승인하겠다 · 이것을 · 단서와 함께 · ~라는 · 우리가 · 모니터링한다 · 에러율을 · 일주일 동안"
+      }
+    ]
+  },
+  {
+    "particle": "for",
+    "coreKo": "for는 '~를 향해, ~의 몫으로'의 그림 — 대상·기간·목적에 표를 달아준다. for now와 for good은 결정의 유효 기간을, for free는 대가를, for the record는 발언의 용도를 표시한다. 논쟁에서 결정의 '적용 범위와 비용'을 명시하는 데 깔린다.",
+    "items": [
+      {
+        "key": "p2:for-now",
+        "en": "for now",
+        "ko": "일단 지금은, 당분간",
+        "example": "Let's hardcode the limit for now and make it configurable next sprint.",
+        "situations": [
+          "임시 결정임을 명시할 때",
+          "완벽한 해법을 미루고 일단 출시할 때"
+        ],
+        "detail": "이 결정의 유효기간을 '지금'까지로 한정하는 for 그림. 임시 해법을 깔면서 '영구 아님'을 명시하는 안전핀이라, 기술부채 논쟁에서 합의를 끌어내는 마법의 단어야. 단, for now라고 해놓고 영원히 가는 게 현실의 함정이라는 자조도 같이 통해.",
+        "exampleKo": "일단 지금은 리밋을 하드코딩하고 다음 스프린트에 설정값으로 빼죠.",
+        "questionEn": "We need this rate limit shipped today, but the config system isn't ready. What's your call?",
+        "termsKo": "configurable: 코드 수정 없이 설정으로 바꿀 수 있게 하는 것. 하드코딩의 반대 개념.",
+        "cueKo": "하자 · 하드코딩 · 그 리밋을 · 일단 지금은 · 그리고 · 만들자 · 그걸 · 설정 가능하게 · 다음 스프린트에"
+      },
+      {
+        "key": "p2:for-good",
+        "en": "for good",
+        "ko": "영구적으로, 아예 (되돌리지 않고)",
+        "example": "Once we drop that table, the data is gone for good.",
+        "situations": [
+          "비가역적 결정을 경고할 때",
+          "레거시를 완전히 제거한다고 선언할 때"
+        ],
+        "detail": "for now의 반대편 — 유효기간이 '영원'으로 박히는 그림이야. 삭제·폐기·이관처럼 되돌릴 수 없는 작업의 경고에 자주 쓰고, '이번엔 진짜 끝낸다'는 선언에도 써. permanently보다 구어적인데 무게는 동일해.",
+        "exampleKo": "그 테이블을 드랍하면 데이터는 영영 사라져요.",
+        "questionEn": "The cleanup script says it will remove the old tables. Anything we should double-check first?",
+        "termsKo": "irreversible operation: DROP TABLE처럼 롤백 불가한 작업. 백업이나 소프트 딜리트로 안전망을 먼저 깐다.",
+        "cueKo": "일단 · 우리가 드랍하면 · 그 테이블을 · 그 데이터는 · 사라진다 · 영영"
+      },
+      {
+        "key": "p2:for-free",
+        "en": "for free",
+        "ko": "공짜로, 추가 노력 없이 덤으로",
+        "example": "If we move to Postgres, we get full-text search for free.",
+        "situations": [
+          "선택지의 부수 이득을 셀링할 때",
+          "추가 작업 없이 따라오는 기능을 설명할 때"
+        ],
+        "detail": "대가 칸에 0이 찍히는 for 그림. 엔지니어 어법에선 '돈이 무료'보다 '추가 구현 노력 없이 딸려 온다'는 뜻으로 더 많이 써 — 기술을 갈아타면 기능이 덤으로 온다는 식. 트레이드오프 셀링에서 강력한 한 방인데, 진짜 공짜인지(운영 비용은?) 따져 묻는 반격도 같이 알아둬.",
+        "exampleKo": "Postgres로 옮기면 풀텍스트 검색이 공짜로 따라와요.",
+        "questionEn": "Migrating databases sounds painful. What would we actually gain beyond fixing the current bug?",
+        "termsKo": "full-text search: 문서 내용 전체에서 키워드를 찾는 검색. Postgres는 tsvector로 내장 지원한다.",
+        "cueKo": "만약 우리가 · 옮기면 · Postgres로 · 우리는 · 얻는다 · 풀텍스트 검색을 · 공짜로"
+      },
+      {
+        "key": "p2:for-the-record",
+        "en": "for the record",
+        "ko": "공식적으로 남겨두자면, 기록상 분명히 하면",
+        "example": "For the record, I flagged this scaling risk back in March.",
+        "situations": [
+          "반대 의견을 공식적으로 남길 때",
+          "나중을 위해 책임 소재를 분명히 할 때"
+        ],
+        "detail": "발언을 '기록(record)'에 올린다는 그림 — 회의록에 박아달라는 뉘앙스야. 결정엔 따르지만 내 우려는 남기겠다는 disagree-and-commit 상황의 표준 멘트. 톤 조심: 잘못 쓰면 '내가 말했지?' 하는 생색으로 들릴 수 있어.",
+        "exampleKo": "기록상 분명히 해두자면, 저는 이 스케일링 리스크를 3월에 이미 제기했어요.",
+        "questionEn": "The outage post-mortem is starting. You warned about this months ago — how do you bring that up?",
+        "termsKo": "disagree and commit: 반대 의견을 내되 결정되면 따르는 문화. 단, 우려는 문서로 남긴다.",
+        "cueKo": "기록을 위해 말하자면 · 나는 · 표시했다 · 이 스케일링 리스크를 · 거슬러 · 3월에"
+      },
+      {
+        "key": "p2:for-what-it-s-worth",
+        "en": "for what it's worth",
+        "ko": "참고가 될지 모르겠지만 (조심스러운 의견)",
+        "example": "For what it's worth, we tried Kafka for this and rolled it back.",
+        "situations": [
+          "남의 결정에 조심스럽게 경험을 공유할 때",
+          "내 의견의 무게를 낮춰서 던질 때"
+        ],
+        "detail": "내 말의 가치(worth)가 얼마일지 모르겠다며 스스로 무게를 낮추는 그림. 결정권이 남에게 있을 때 경험담을 강요 없이 얹는 완충재야. 줄여서 FWIW로 슬랙이나 PR 코멘트에 정말 많이 써. 너무 자주 쓰면 자신감 없어 보이니 적당히.",
+        "exampleKo": "참고가 될지 모르겠는데, 우리도 이 용도로 Kafka 써봤다가 롤백했어요.",
+        "questionEn": "Another team is about to adopt the same message broker you abandoned last year. Do you say anything?",
+        "termsKo": "FWIW: for what it's worth의 약어. 슬랙·코드리뷰에서 조심스러운 의견 앞에 붙인다.",
+        "cueKo": "그게 얼마의 가치든 간에 · 우리는 · 시도했다 · Kafka를 · 이것을 위해 · 그리고 · 롤백했다 · 그것을"
+      }
+    ]
+  },
+  {
+    "particle": "as",
+    "coreKo": "as는 '~의 자격, ~의 상태 그대로'의 그림 — 두 가지를 같은 자리에 포개 놓는다. as-is(있는 그대로), as a fallback(대비책 자격으로)처럼 역할·상태를 지정하고, as long as처럼 조건의 범위를 맞춰준다. 논증에서 '어떤 자격과 조건으로 말하는지'를 명확히 해준다.",
+    "items": [
+      {
+        "key": "p2:as-expected",
+        "en": "as expected",
+        "ko": "예상대로",
+        "example": "Latency dropped as expected once we added the cache layer.",
+        "situations": [
+          "실험·배포 결과가 가설과 일치할 때",
+          "부하 테스트 결과를 보고할 때"
+        ],
+        "detail": "결과를 '예상'이라는 틀에 그대로 포개는 as 그림. 가설→검증 보고의 표준 문구라 실험 결과, 부하 테스트, 배포 후 메트릭 얘기에 박혀 나와. 반대 상황엔 unexpectedly나 contrary to what we expected로 받아쳐.",
+        "exampleKo": "캐시 레이어를 넣자 예상대로 레이턴시가 떨어졌어요.",
+        "questionEn": "You shipped the caching change yesterday. Did the metrics move the way your hypothesis said?",
+        "termsKo": "cache layer: 원본 저장소 앞에 두는 임시 저장 계층. 읽기 레이턴시를 줄이는 대표 수단.",
+        "cueKo": "레이턴시가 · 떨어졌다 · 예상대로 · 일단 · 우리가 추가하자 · 그 캐시 레이어를"
+      },
+      {
+        "key": "p2:as-is",
+        "en": "as-is",
+        "ko": "있는 그대로, 손대지 않은 상태로",
+        "example": "Let's ship the legacy module as-is and quarantine it behind an interface.",
+        "situations": [
+          "리팩터링 없이 그대로 쓰자고 할 때",
+          "현재 상태 기준으로 인수인계할 때"
+        ],
+        "detail": "물건을 '지금 있는 상태(is)' 그대로 둔다는 그림. 레거시를 고치지 않고 그대로 두는 결정이나 '현재 상태 기준'이라는 면책 조건에 써. as-is/to-be로 현재 아키텍처와 목표 아키텍처를 대비시키는 컨설팅 어법도 흔해.",
+        "exampleKo": "레거시 모듈은 그대로 두고 인터페이스 뒤로 격리합시다.",
+        "questionEn": "This old module is ugly but works. Refactor it now or leave it alone for the release?",
+        "termsKo": "strangler pattern: 레거시를 그대로 두고 인터페이스로 감싼 뒤 점진 교체하는 전략.",
+        "cueKo": "하자 · 출시를 · 그 레거시 모듈을 · 있는 그대로 · 그리고 · 격리하자 · 그것을 · 인터페이스 뒤에"
+      },
+      {
+        "key": "p2:as-a-fallback",
+        "en": "as a fallback",
+        "ko": "대비책으로, 차선책 자격으로",
+        "example": "Keep the old endpoint alive as a fallback until the new one proves stable.",
+        "situations": [
+          "주 방안 실패 시의 대안을 설계할 때",
+          "롤백 경로를 설명할 때"
+        ],
+        "detail": "어떤 것에 fallback(쓰러질 때 받쳐줄 것)이라는 역할 딱지를 붙이는 as 그림. 주 경로가 죽었을 때 자동으로 넘어갈 차선을 설계에 명시할 때 써. plan B보다 기술적인 뉘앙스고, graceful degradation 논의랑 세트로 자주 나와.",
+        "exampleKo": "새 엔드포인트가 안정성을 증명할 때까지 옛 엔드포인트를 대비책으로 살려둡시다.",
+        "questionEn": "We're cutting over to the new API next week. What happens if it breaks under real traffic?",
+        "termsKo": "fallback: 주 시스템 장애 시 전환되는 보조 경로. 서킷브레이커와 함께 가용성 설계의 핵심.",
+        "cueKo": "유지해라 · 그 옛 엔드포인트를 · 살아있게 · 대비책 자격으로 · 새것이 · 증명할 때까지 · 안정성을"
+      },
+      {
+        "key": "p2:as-far-as-i-know",
+        "en": "as far as I know",
+        "ko": "내가 아는 한",
+        "example": "As far as I know, nobody owns that cron job anymore.",
+        "situations": [
+          "불완전한 정보에 단서를 달고 답할 때",
+          "확신 없는 사실을 공유할 때"
+        ],
+        "detail": "내 지식이 닿는 범위(as far as)까지만 보증한다는 그림. 단정 대신 지식의 경계를 명시해서, 틀려도 거짓말이 안 되게 하는 책임 한정 장치야. 인터뷰에서 모르는 부분을 인정할 때도 품위 있게 쓰여. 줄임말 AFAIK도 채팅에선 표준.",
+        "exampleKo": "제가 아는 한 그 크론 잡은 이제 담당자가 없어요.",
+        "questionEn": "Who maintains that nightly job that just failed? Can you say for certain?",
+        "termsKo": "ownership: 코드/서비스의 담당 주체. 담당자 없는(orphaned) 잡은 장애 대응의 사각지대.",
+        "cueKo": "내가 아는 한 · 아무도 · 소유하지 않는다 · 그 크론 잡을 · 더 이상"
+      },
+      {
+        "key": "p2:as-long-as",
+        "en": "as long as",
+        "ko": "~하는 한, ~이기만 하면",
+        "example": "I'm fine with the monolith as long as we keep module boundaries clean.",
+        "situations": [
+          "조건부로 동의할 때",
+          "허용 조건의 범위를 정할 때"
+        ],
+        "detail": "조건이 유지되는 길이(long)만큼만 동의가 유효하다는 그림. if보다 '지속 조건' 뉘앙스가 강해서, '이 선만 지키면 OK'라는 조건부 합의에 딱이야. 아키텍처 논쟁에서 강경 반대 대신 가드레일을 거는 화법으로 정말 많이 써.",
+        "exampleKo": "모듈 경계만 깨끗하게 유지하면 모놀리스라도 저는 괜찮아요.",
+        "questionEn": "Half the team wants microservices now. Is staying on one codebase acceptable to you?",
+        "termsKo": "modular monolith: 한 배포 단위 안에서 모듈 경계를 강제하는 구조. MSA 전 단계로 흔히 권장된다.",
+        "cueKo": "나는 · 괜찮다 · 그 모놀리스에 · ~하는 한 · 우리가 · 유지한다 · 모듈 경계를 · 깨끗하게"
+      }
+    ]
+  },
+  {
+    "particle": "instead of / as opposed to",
+    "coreKo": "한 자리를 두고 A를 빼고 B를 앉히는 '교체와 대비'의 그림이다. instead of는 대체를, as opposed to는 구분을, in favor of와 over는 선택의 방향을 찍는다. 트레이드오프 논쟁의 뼈대 — '무엇 대신 무엇을, 왜'를 말할 때 항상 이 중 하나가 깔린다.",
+    "items": [
+      {
+        "key": "p2:instead-of-polling",
+        "en": "instead of polling",
+        "ko": "폴링하는 대신에",
+        "example": "We push updates over a websocket instead of polling every five seconds.",
+        "situations": [
+          "폴링에서 푸시로의 전환을 제안할 때",
+          "리소스 낭비를 줄이는 설계를 설명할 때"
+        ],
+        "detail": "polling이 앉아 있던 자리에 다른 방식을 앉히는 교체 그림. instead of + 동명사로 '기존 방식 대신'을 한 덩어리로 처리하는 게 핵심 패턴이야. 폴링 vs 푸시는 인터뷰 단골 트레이드오프라 이 구가 통째로 무기가 돼.",
+        "exampleKo": "5초마다 폴링하는 대신 웹소켓으로 업데이트를 푸시해요.",
+        "questionEn": "Clients hammer our status endpoint every few seconds. How would you redesign that?",
+        "termsKo": "polling vs push: 클라이언트가 주기적으로 묻기 vs 서버가 변경 시 알려주기. 푸시는 웹소켓·SSE·웹훅으로 구현.",
+        "cueKo": "우리는 · 푸시한다 · 업데이트를 · 웹소켓 너머로 · 폴링하는 것 대신에 · 5초마다"
+      },
+      {
+        "key": "p2:as-opposed-to",
+        "en": "as opposed to",
+        "ko": "~와는 대조적으로, ~가 아니라",
+        "example": "This is a read-heavy workload, as opposed to the write-heavy ingest service.",
+        "situations": [
+          "두 케이스의 성격 차이를 분명히 할 때",
+          "잘못된 비교로 흐르는 논의를 바로잡을 때"
+        ],
+        "detail": "두 대상을 마주 세워(opposed) 차이를 또렷하게 만드는 그림. instead of가 '교체'라면 as opposed to는 '구분'이야 — 뭘 바꾸자는 게 아니라 '그거랑 이건 다른 종류다'를 박는 용도. 오해 위에서 진행되는 논의를 바로잡을 때 시니어들이 즐겨 써.",
+        "exampleKo": "이건 읽기 위주 워크로드예요. 쓰기 위주인 인제스트 서비스와는 다르죠.",
+        "questionEn": "Why can't we just reuse the ingest service's database tuning for the dashboard?",
+        "termsKo": "read-heavy vs write-heavy: 읽기/쓰기 비율에 따라 인덱싱·캐싱·복제 전략이 완전히 달라진다.",
+        "cueKo": "이것은 · 읽기 위주 워크로드다 · 대조되게 · 그 쓰기 위주 · 인제스트 서비스와는"
+      },
+      {
+        "key": "p2:in-favor-of",
+        "en": "in favor of",
+        "ko": "~쪽을 택해서 (기존 것을 버리고)",
+        "example": "We dropped the ORM in favor of raw SQL for the hot paths.",
+        "situations": [
+          "기존 기술을 버리고 갈아탄 결정을 설명할 때",
+          "deprecation을 공지할 때"
+        ],
+        "detail": "버린 것 다음에 '선택받은 쪽'을 가리키는 방향 그림. drop/abandon/deprecate X in favor of Y가 굳은 패턴이라, 마이그레이션 히스토리를 한 줄로 끝낼 수 있어. 수동태(was deprecated in favor of)로 릴리즈 노트에도 단골이야.",
+        "exampleKo": "핫패스에서는 ORM을 버리고 생 SQL을 택했어요.",
+        "questionEn": "Your queries bypass the ORM in some modules. What's the story behind that?",
+        "termsKo": "hot path: 가장 자주 타는 성능 민감 코드 경로. 여기서만 추상화를 깨는 타협이 흔하다.",
+        "cueKo": "우리는 · 버렸다 · 그 ORM을 · ~을 택하고 · 생 SQL을 · 핫패스용으로는"
+      },
+      {
+        "key": "p2:rather-than",
+        "en": "rather than",
+        "ko": "~하기보다는",
+        "example": "I'd cache at the edge rather than scale the origin servers.",
+        "situations": [
+          "두 방안 중 선호를 밝힐 때",
+          "권고안의 방향을 제시할 때"
+        ],
+        "detail": "저울에 두 방안을 올리고 한쪽으로 기우는 그림 — instead of보다 '선호와 판단' 뉘앙스가 강해. I'd X rather than Y 꼴로 권고를 낼 때 가장 자연스러워. would rather와 헷갈리지 말 것: rather than은 비교 연결어, would rather는 선호 동사구야.",
+        "exampleKo": "원본 서버를 늘리기보다는 엣지에서 캐싱하겠어요.",
+        "questionEn": "Traffic doubled and origin CPU is maxed out. What's the first lever you'd pull?",
+        "termsKo": "edge caching: CDN 등 사용자 가까운 곳에서 응답을 캐싱해 원본 부하를 줄이는 기법.",
+        "cueKo": "나라면 · 캐싱하겠다 · 엣지에서 · ~하기보다는 · 스케일하기 · 그 원본 서버들을"
+      },
+      {
+        "key": "p2:over-x-over-y",
+        "en": "over (X over Y)",
+        "ko": "~보다, ~을 제치고 (택했다)",
+        "example": "We picked gRPC over REST mainly for the streaming support.",
+        "situations": [
+          "기술 선정 이유를 답할 때",
+          "두 후보의 비교 결과를 말할 때"
+        ],
+        "detail": "두 후보 중 하나가 다른 것 위(over)에 올라서는 그림. choose/pick/prefer X over Y가 기술 선정 답변의 표준 골격이라, 인터뷰의 'why did you choose...' 질문에 이 한 형태로 대답이 끝나. instead of보다 짧고 단단해서 시니어 말맛이 나.",
+        "exampleKo": "주로 스트리밍 지원 때문에 REST 말고 gRPC를 택했어요.",
+        "questionEn": "Two API styles were on the table for service-to-service calls. How did you decide?",
+        "termsKo": "gRPC vs REST: gRPC는 HTTP/2 기반 바이너리 프로토콜로 양방향 스트리밍 지원. 내부 서비스 간 통신에 유리.",
+        "cueKo": "우리는 · 골랐다 · gRPC를 · REST 위로 · 주로 · 그 스트리밍 지원 때문에"
+      }
+    ]
+  },
+  {
+    "particle": "due to / because of",
+    "coreKo": "결과 뒤에 원인을 매다는 그림 — 화살표가 결과에서 원인으로 향한다. due to와 because of는 중립~부정 원인, thanks to는 긍정 원인, comes down to는 '결국 원인은 이것 하나'로 좁히기다. 장애 분석과 설계 정당화에서 인과를 명시하는 핵심 도구.",
+    "items": [
+      {
+        "key": "p2:due-to-replication-lag",
+        "en": "due to replication lag",
+        "ko": "복제 지연 때문에",
+        "example": "Reads on the replica were stale due to replication lag.",
+        "situations": [
+          "읽기 불일치 장애의 원인을 설명할 때",
+          "복제 구조의 한계를 짚을 때"
+        ],
+        "detail": "결과(낡은 읽기) 뒤에 원인(복제 지연)을 due to로 매단 전형적 인과 문장. due to는 because of보다 약간 격식 있어서 포스트모템이나 인시던트 리포트 문체에 잘 붙어. 복제 지연은 read-after-write 불일치의 단골 원인이라 이 구가 통째로 자주 나와.",
+        "exampleKo": "복제 지연 때문에 레플리카에서 읽은 값이 낡아 있었어요.",
+        "questionEn": "Users save a profile change and the page still shows old data. What's going on?",
+        "termsKo": "replication lag: 프라이머리의 쓰기가 레플리카에 반영되기까지의 지연. read-after-write 불일치의 주범.",
+        "cueKo": "읽기들이 · 그 레플리카에서의 · 낡아 있었다 · 복제 지연 때문에"
+      },
+      {
+        "key": "p2:because-of-the-lock",
+        "en": "because of the lock",
+        "ko": "그 락 때문에",
+        "example": "Requests piled up because of the lock on the orders table.",
+        "situations": [
+          "DB 락으로 인한 지연·타임아웃을 설명할 때",
+          "동시성 병목의 원인을 짚을 때"
+        ],
+        "detail": "because of는 due to보다 입말이라 회의나 슬랙에서 원인 짚을 때 제일 먼저 나오는 형태야. 뒤에 명사가 와야 하니 because of the lock, because of contention처럼 원인을 명사로 압축하는 연습이 포인트. 절이 오면 because the table was locked로 풀어 써.",
+        "exampleKo": "orders 테이블에 걸린 락 때문에 요청이 쌓였어요.",
+        "questionEn": "Checkout requests started timing out during the batch update. What was blocking them?",
+        "termsKo": "lock contention: 여러 트랜잭션이 같은 락을 기다리며 경합하는 상태. 긴 트랜잭션과 핫 로우가 원인.",
+        "cueKo": "요청들이 · 쌓였다 · 그 락 때문에 · orders 테이블 위의"
+      },
+      {
+        "key": "p2:thanks-to-caching",
+        "en": "thanks to caching",
+        "ko": "캐싱 덕분에",
+        "example": "P99 stayed flat during the spike, thanks to caching at the gateway.",
+        "situations": [
+          "긍정적 결과의 공을 돌릴 때",
+          "방어가 먹힌 이유를 설명할 때"
+        ],
+        "detail": "due to의 긍정 버전 — 좋은 결과의 공(thanks)을 원인에 돌리는 그림. 장애를 막아준 장치, 성능을 지켜준 설계를 칭찬조로 짚을 때 써. 비꼬는 용법(thanks to the missing index...)도 있으니 톤 주의.",
+        "exampleKo": "게이트웨이 캐싱 덕분에 트래픽 스파이크에도 P99가 안 흔들렸어요.",
+        "questionEn": "Traffic tripled during the campaign but latency never moved. What saved us?",
+        "termsKo": "P99: 요청의 99%가 이 시간 안에 처리된다는 지연 지표. 꼬리 지연(tail latency) 관리의 기준.",
+        "cueKo": "P99는 · 유지됐다 · 평평하게 · 그 스파이크 동안 · 캐싱 덕분에 · 게이트웨이에서의"
+      },
+      {
+        "key": "p2:it-comes-down-to",
+        "en": "it comes down to",
+        "ko": "결국 ~의 문제다, 핵심은 ~로 좁혀진다",
+        "example": "It comes down to whether we can tolerate a minute of stale data.",
+        "situations": [
+          "복잡한 논쟁을 핵심 한 가지로 좁힐 때",
+          "결정 기준을 정리할 때"
+        ],
+        "detail": "여러 갈래의 논점이 아래(down)의 한 지점으로 수렴하는 그림. 트레이드오프 논쟁이 길어질 때 '결국 판단 기준은 이거 하나'로 정리하는 시니어의 마무리 멘트야. boils down to도 같은 뜻으로 호환돼.",
+        "exampleKo": "결국 1분 정도 낡은 데이터를 감수할 수 있느냐의 문제예요.",
+        "questionEn": "We've debated cache invalidation strategies for an hour. Can you frame the real decision for us?",
+        "termsKo": "staleness tolerance: 캐시나 복제본의 낡은 데이터를 어느 정도까지 허용할지. TTL과 무효화 전략을 결정한다.",
+        "cueKo": "그것은 · 내려와 닿는다 · ~로 · ~인지 아닌지 · 우리가 · 감수할 수 있는지 · 1분의 · 낡은 데이터를"
+      },
+      {
+        "key": "p2:caused-by",
+        "en": "caused by",
+        "ko": "~가 일으킨, ~로 인해 발생한",
+        "example": "The outage was caused by a config push, not the code deploy.",
+        "situations": [
+          "포스트모템에서 근본 원인을 지목할 때",
+          "오해된 원인을 바로잡을 때"
+        ],
+        "detail": "결과를 주어로 놓고 원인을 by 뒤에 박는 수동 인과 그림. 포스트모템의 root cause 문장이 거의 이 꼴이고, 'A가 아니라 B가 원인'으로 바로잡을 때 not과 세트로 강력해. 사람이 아니라 사건을 주어로 두는 blameless 화법과도 잘 맞아.",
+        "exampleKo": "그 장애는 코드 배포가 아니라 설정 푸시 때문에 발생했어요.",
+        "questionEn": "Everyone assumed yesterday's rollout broke production. What did the timeline actually show?",
+        "termsKo": "root cause: 장애의 근본 원인. blameless post-mortem에서는 사람이 아닌 시스템 요인으로 서술한다.",
+        "cueKo": "그 장애는 · 일으켜졌다 · 설정 푸시에 의해 · 아니라 · 그 코드 배포가"
+      }
+    ]
+  },
+  {
+    "particle": "given / depending on",
+    "coreKo": "판단의 입력값을 명시하는 그림이다. given은 '이 전제를 깔고', depending on은 '이 변수에 따라 결론이 달라짐', based on과 according to는 '이 근거·출처에서 나온 판단'. 시니어의 논증은 결론 자체보다 이 입력값 선언에서 신뢰를 얻는다.",
+    "items": [
+      {
+        "key": "p2:given-the-constraints",
+        "en": "given the constraints",
+        "ko": "이 제약들을 전제하면",
+        "example": "Given the constraints, a managed service is the only realistic option.",
+        "situations": [
+          "제약 조건을 깔고 결론을 낼 때",
+          "이상론 대신 현실적 선택을 정당화할 때"
+        ],
+        "detail": "주어진(given) 조건을 테이블에 먼저 올려놓고 그 위에서 결론을 내는 그림. '제약이 없다면 다르게 하겠지만 현실은 이러니까'라는 방어막을 결론에 미리 깔아줘. 시스템 디자인 인터뷰에서 요구사항 확인 후 결론 낼 때 문장 첫머리에 박으면 점수가 올라.",
+        "exampleKo": "이 제약들을 감안하면 매니지드 서비스가 유일하게 현실적인 선택이에요.",
+        "questionEn": "With two engineers and a three-month deadline, would you still self-host the database?",
+        "termsKo": "managed service: 클라우드가 운영을 대신하는 서비스(RDS 등). 운영 인력이 부족할 때의 표준 답안.",
+        "cueKo": "주어진 채로 · 그 제약들이 · 매니지드 서비스가 · 그 유일한 · 현실적 옵션이다"
+      },
+      {
+        "key": "p2:depending-on-the-load",
+        "en": "depending on the load",
+        "ko": "부하에 따라 (달라짐)",
+        "example": "We scale between three and ten pods, depending on the load.",
+        "situations": [
+          "오토스케일 같은 조건부 동작을 설명할 때",
+          "'상황에 따라 다르다'를 구체화할 때"
+        ],
+        "detail": "결론이 load라는 변수에 매달려(depend) 있어서, 변수가 움직이면 결론도 움직이는 그림. 'it depends'로 끝내면 회피지만 depending on + 구체 변수를 붙이면 분석이 돼. 오토스케일링, 캐시 TTL, 타임아웃처럼 동적 정책 설명에 필수야.",
+        "exampleKo": "부하에 따라 파드를 3개에서 10개 사이로 스케일해요.",
+        "questionEn": "How many instances does your service actually run in production?",
+        "termsKo": "HPA(Horizontal Pod Autoscaler): CPU 등 메트릭 기준으로 파드 수를 자동 조절하는 쿠버네티스 기능.",
+        "cueKo": "우리는 · 스케일한다 · 3개와 10개 파드 사이에서 · 달려서 · 그 부하에"
+      },
+      {
+        "key": "p2:based-on-the-metrics",
+        "en": "based on the metrics",
+        "ko": "메트릭에 근거해서",
+        "example": "Based on the metrics, the bottleneck is the database, not the app tier.",
+        "situations": [
+          "데이터를 근거로 주장을 펼 때",
+          "감 대신 측정으로 결론을 정당화할 때"
+        ],
+        "detail": "주장이 metrics라는 토대(base) 위에 서 있다는 그림. '내 감'이 아니라 측정값에서 나온 결론임을 선언해서 반박 비용을 높이는 화법이야. based on 뒤의 근거를 갈아 끼우면(profiling, the load test) 어디서든 재활용돼.",
+        "exampleKo": "메트릭을 보면 병목은 앱 계층이 아니라 데이터베이스예요.",
+        "questionEn": "You claim the app servers are fine. What makes you so sure?",
+        "termsKo": "bottleneck: 전체 처리량을 제한하는 가장 느린 구간. 메트릭과 프로파일링으로 특정한다.",
+        "cueKo": "근거해서 · 그 메트릭에 · 그 병목은 · 그 데이터베이스다 · 아니라 · 그 앱 계층이"
+      },
+      {
+        "key": "p2:according-to-the-logs",
+        "en": "according to the logs",
+        "ko": "로그상으로는, 로그가 말하기로는",
+        "example": "According to the logs, the retries started a full minute before the alert fired.",
+        "situations": [
+          "장애 타임라인을 재구성할 때",
+          "기억이나 추측 대신 기록을 인용할 때"
+        ],
+        "detail": "정보의 출처를 logs로 지목하는 그림 — '내 말이 아니라 로그가 그렇게 말한다'는 인용 화법이야. 포스트모템에서 타임라인 깔 때 문장마다 출처를 달아주는 용도로 최적. based on이 '근거한 판단'이라면 according to는 '출처의 전달'에 가까워.",
+        "exampleKo": "로그상으로는 알림이 울리기 1분 전부터 이미 재시도가 시작됐어요.",
+        "questionEn": "When exactly did the failure actually begin? The pager only went off at 3 a.m.",
+        "termsKo": "alert lag: 장애 시작과 알림 발화 사이의 간극. 임계치와 평가 주기 설정이 원인인 경우가 많다.",
+        "cueKo": "따르면 · 그 로그에 · 그 재시도들이 · 시작됐다 · 꼬박 1분 · 그 알림이 울리기 전에"
+      },
+      {
+        "key": "p2:considering-the-timeline",
+        "en": "considering the timeline",
+        "ko": "일정을 감안하면",
+        "example": "Considering the timeline, I'd cut the migration scope in half.",
+        "situations": [
+          "일정 압박 속에서 범위 조정을 제안할 때",
+          "현실적 타협을 정당화할 때"
+        ],
+        "detail": "timeline이라는 변수를 저울에 올려놓고(consider) 판단했다는 그림. given보다 '고민의 흔적'이 묻어나서, 범위 축소나 타협안을 낼 때 덜 공격적으로 들려. considering 뒤에 the team size, the risk 등을 갈아 끼우며 쓰는 만능 프레임이야.",
+        "exampleKo": "일정을 감안하면 마이그레이션 범위를 절반으로 줄이겠어요.",
+        "questionEn": "The full migration plan needs six weeks but launch is in three. What would you change?",
+        "termsKo": "scope cut: 일정 내 출시를 위해 기능 범위를 줄이는 것. 품질을 깎기보다 범위를 줄이는 게 정석.",
+        "cueKo": "감안하면 · 그 일정을 · 나라면 · 자르겠다 · 그 마이그레이션 범위를 · 절반으로"
+      }
+    ]
+  },
+  {
+    "particle": "regardless of / aside from",
+    "coreKo": "논의에서 변수 하나를 옆으로 치우는 그림이다. regardless of는 '그 변수와 무관하게 결론 동일', aside from/apart from/except for는 '그것만 빼고 보면'. 반례를 미리 차단하거나 예외를 깔끔하게 분리해서 본론을 지킬 때 깔린다.",
+    "items": [
+      {
+        "key": "p2:regardless-of-input-size",
+        "en": "regardless of input size",
+        "ko": "입력 크기와 무관하게",
+        "example": "The lookup stays O(1) regardless of input size, so scale isn't a concern.",
+        "situations": [
+          "알고리즘 복잡도 보장을 설명할 때",
+          "어떤 조건에서도 성립하는 성질을 강조할 때"
+        ],
+        "detail": "input size라는 변수를 쳐다보지 않고(regard 없이) 결론이 그대로라는 그림. 복잡도, SLA, 동작 보장처럼 '어떤 조건에서도 성립'을 주장할 때 써. '데이터 커지면요?' 같은 반례 질문을 선제 차단하는 용도라 인터뷰에서 가치가 커.",
+        "exampleKo": "조회는 입력 크기와 무관하게 O(1)이라 스케일은 걱정거리가 아니에요.",
+        "questionEn": "What happens to your lookup performance when the dataset grows a hundredfold?",
+        "termsKo": "O(1): 입력 크기와 무관한 상수 시간 연산. 해시 테이블 조회가 대표 예.",
+        "cueKo": "그 조회는 · 유지된다 · O(1)로 · 무관하게 · 입력 크기와 · 그러니 · 스케일은 · 걱정이 아니다"
+      },
+      {
+        "key": "p2:aside-from-that",
+        "en": "aside from that",
+        "ko": "그것만 빼면, 그 점 외에는",
+        "example": "There's one flaky test; aside from that, the branch is ready to merge.",
+        "situations": [
+          "리뷰에서 사소한 예외를 분리할 때",
+          "전반적 긍정에 예외 하나를 언급할 때"
+        ],
+        "detail": "예외 하나를 옆(aside)으로 빼놓고 나머지 전체를 평가하는 그림. 코드 리뷰에서 '이거 하나 빼곤 좋다'는 균형 잡힌 피드백의 표준 구조야. 예외를 먼저 말하고 긍정으로 마무리해서, 예외가 본론을 가리지 않게 해주는 효과가 있어.",
+        "exampleKo": "플레이키 테스트 하나 있는데, 그것만 빼면 그 브랜치는 머지 준비 끝났어요.",
+        "questionEn": "Is this branch good to go, or are there blockers left?",
+        "termsKo": "flaky test: 코드 변경 없이도 가끔 실패하는 불안정한 테스트. CI 신뢰도를 갉아먹는 주범.",
+        "cueKo": "있다 · 하나의 플레이키 테스트가 · 그걸 옆으로 빼면 · 그 브랜치는 · 준비됐다 · 머지할"
+      },
+      {
+        "key": "p2:apart-from",
+        "en": "apart from",
+        "ko": "~을 제외하면, ~말고는",
+        "example": "Apart from the cold-start issue, Lambda has worked fine for us.",
+        "situations": [
+          "기술 평가에서 단점 하나를 분리할 때",
+          "도입 후기를 말할 때"
+        ],
+        "detail": "aside from과 거의 호환 — 한 요소를 본체에서 떼어(apart) 놓고 나머지를 말하는 그림이야. 기술 회고나 도입 후기에서 '이 단점 하나 빼곤 만족' 구조로 자주 써. 영국식에서 좀 더 흔하지만 미국에서도 다 통해.",
+        "exampleKo": "콜드 스타트 문제만 빼면 Lambda는 잘 써왔어요.",
+        "questionEn": "You've run serverless in production for a year now. Honest verdict?",
+        "termsKo": "cold start: 유휴 상태의 서버리스 함수가 첫 호출 시 초기화 때문에 느려지는 현상.",
+        "cueKo": "떼어놓으면 · 그 콜드 스타트 이슈를 · Lambda는 · 작동해 왔다 · 잘 · 우리에게"
+      },
+      {
+        "key": "p2:except-for",
+        "en": "except for",
+        "ko": "~만 빼고",
+        "example": "All endpoints are migrated except for the legacy billing webhook.",
+        "situations": [
+          "완료 보고에서 남은 예외를 명시할 때",
+          "전수 적용의 예외 항목을 짚을 때"
+        ],
+        "detail": "전체 집합에서 항목 하나를 콕 집어 빼는(except) 그림. aside from이 '평가의 예외'라면 except for는 '집합의 예외'에 가까워 — 마이그레이션 현황이나 적용 범위 보고에 딱이야. 100%라고 말했다가 반례 잡히는 것보다 예외를 먼저 명시하는 게 신뢰를 지켜.",
+        "exampleKo": "레거시 빌링 웹훅 하나만 빼고 모든 엔드포인트가 이전 완료됐어요.",
+        "questionEn": "Is the API migration fully done, or is anything still on the old stack?",
+        "termsKo": "webhook: 이벤트 발생 시 외부 시스템이 우리를 호출하는 방식. 호출 주체가 외부라 이전이 까다롭다.",
+        "cueKo": "모든 엔드포인트가 · 이전됐다 · 빼고 · 그 레거시 빌링 웹훅만"
+      },
+      {
+        "key": "p2:either-way",
+        "en": "either way",
+        "ko": "어느 쪽이든 (결론은 같다)",
+        "example": "Either way, we still need the composite index, so let's add it first.",
+        "situations": [
+          "두 갈래 논쟁에서 공통 결론을 뽑을 때",
+          "분기와 무관한 다음 행동을 정할 때"
+        ],
+        "detail": "갈림길의 두 방향(either way) 어느 쪽으로 가도 같은 지점에 도착한다는 그림. A안 B안 논쟁이 안 끝날 때 '어느 쪽이든 이건 해야 한다'로 공통분모부터 실행시키는 정리 멘트야. regardless 한 단어로도 같은 역할을 해.",
+        "exampleKo": "어느 쪽이든 복합 인덱스는 필요하니까 그것부터 추가합시다.",
+        "questionEn": "The team is split between two query designs. How do we make progress today?",
+        "termsKo": "composite index: 여러 컬럼을 묶은 인덱스. 컬럼 순서가 쿼리 패턴과 맞아야 효과가 있다.",
+        "cueKo": "어느 길이든 · 우리는 · 여전히 필요하다 · 그 복합 인덱스가 · 그러니 · 추가하자 · 그것을 · 먼저"
+      }
+    ]
+  },
+  {
+    "particle": "in terms of",
+    "coreKo": "비교의 '축'을 선언하는 그림 — 무엇으로 잴지 측정 단위를 먼저 박는다. in terms of latency라고 하면 이후 논의가 레이턴시 축 위에서만 진행된다. 트레이드오프는 결국 축 싸움이라, 이 표현이 논쟁의 프레임을 잡는다.",
+    "items": [
+      {
+        "key": "p2:in-terms-of-latency",
+        "en": "in terms of latency",
+        "ko": "레이턴시 측면에서",
+        "example": "In terms of latency, the two designs are basically a wash.",
+        "situations": [
+          "비교 축을 레이턴시로 고정할 때",
+          "다차원 트레이드오프를 축별로 쪼갤 때"
+        ],
+        "detail": "비교를 latency라는 축 하나로 한정하는 그림. 트레이드오프 답변의 정석은 축별로 쪼개 말하기야 — in terms of latency... in terms of cost... 식으로 축을 바꿔가며 평가하면 구조가 잡혀. a wash(피장파장) 같은 평가어와 묶으면 더 시니어스러워.",
+        "exampleKo": "레이턴시 측면에서는 두 설계가 사실상 차이가 없어요.",
+        "questionEn": "Between the two proposed designs, does response time tip the scales either direction?",
+        "termsKo": "a wash: 장단점이 상쇄돼 차이가 없다는 구어 표현. 비교 평가에서 자주 쓴다.",
+        "cueKo": "측면에서 · 레이턴시의 · 그 두 설계는 · 기본적으로 · 피장파장이다"
+      },
+      {
+        "key": "p2:in-terms-of-cost",
+        "en": "in terms of cost",
+        "ko": "비용 측면에서",
+        "example": "In terms of cost, self-hosting wins until you factor in the on-call burden.",
+        "situations": [
+          "비용 축으로 비교 평가할 때",
+          "숨은 비용을 짚을 때"
+        ],
+        "detail": "축을 cost로 박는 동일 패턴인데, 비용 축은 항상 '보이는 비용 vs 숨은 비용' 논쟁으로 이어져. until you factor in처럼 숨은 항목을 끌어들이는 후속타와 세트로 쓰면 분석 깊이가 보여. TCO(총소유비용) 개념과 같이 묶어 두자.",
+        "exampleKo": "비용 측면에선 자체 호스팅이 이기는데, 온콜 부담까지 계산에 넣으면 얘기가 달라져요.",
+        "questionEn": "The managed option's invoice looks steep. Is running it ourselves actually cheaper?",
+        "termsKo": "TCO(총소유비용): 라이선스뿐 아니라 운영·인력·장애 비용까지 합친 총비용. build-vs-buy의 판단 기준.",
+        "cueKo": "측면에서 · 비용의 · 자체 호스팅이 · 이긴다 · 당신이 계산에 넣기 전까진 · 그 온콜 부담을"
+      },
+      {
+        "key": "p2:latency-wise",
+        "en": "latency-wise",
+        "ko": "레이턴시로 보면 (구어 접미)",
+        "example": "Latency-wise we're fine; the real pain is the storage bill.",
+        "situations": [
+          "캐주얼하게 비교 축을 선언할 때",
+          "스탠드업에서 여러 축을 빠르게 훑을 때"
+        ],
+        "detail": "in terms of latency를 한 단어로 압축한 -wise 접미 그림 — 단어 뒤에 '-측면에서는'을 붙이는 거야. 스탠드업이나 슬랙처럼 빠른 구어에서 축을 휙휙 바꿀 때 최적. 격식 문서에는 in terms of를 쓰고 -wise는 입말 전용으로 구분해.",
+        "exampleKo": "레이턴시는 괜찮아요. 진짜 골치는 스토리지 비용이에요.",
+        "questionEn": "Quick status check on the new pipeline — where does it hurt right now?",
+        "termsKo": "-wise 접미: 명사 뒤에 붙여 '~측면에서'를 만드는 구어 장치. performance-wise, security-wise처럼 생산적이다.",
+        "cueKo": "레이턴시-측면으론 · 우리는 · 괜찮다 · 그 진짜 고통은 · 그 스토리지 청구서다"
+      },
+      {
+        "key": "p2:performance-wise",
+        "en": "performance-wise",
+        "ko": "성능으로 보면",
+        "example": "Performance-wise the rewrite paid off; cold starts dropped by half.",
+        "situations": [
+          "성능 축 평가를 짧게 던질 때",
+          "회고에서 결과를 요약할 때"
+        ],
+        "detail": "-wise 패턴의 대표 주자. 문장 맨 앞에 던져서 '지금부터 성능 축 얘기'라고 프레임을 잡고 들어가는 용법이 제일 흔해. 뒤에 구체 수치(dropped by half)를 붙여야 말에 무게가 실려 — 축 선언만 하고 수치가 없으면 공허해.",
+        "exampleKo": "성능으로 보면 재작성은 본전을 뽑았어요. 콜드 스타트가 절반으로 줄었거든요.",
+        "questionEn": "Was the Rust rewrite worth three months of engineering time?",
+        "termsKo": "pay off: 투자한 노력이 성과로 돌아오다. 기술 투자 회고의 단골 동사.",
+        "cueKo": "성능-측면으론 · 그 재작성이 · 본전을 뽑았다 · 콜드 스타트가 · 떨어졌다 · 절반만큼"
+      },
+      {
+        "key": "p2:from-a-security-standpoint",
+        "en": "from a security standpoint",
+        "ko": "보안 관점에서 보면",
+        "example": "From a security standpoint, sharing that token across services is a non-starter.",
+        "situations": [
+          "특정 직군·관심사의 관점을 대변할 때",
+          "거부 사유의 축을 명시할 때"
+        ],
+        "detail": "관점(standpoint)이라는 '서 있는 자리'에서(from) 바라본다는 그림 — in terms of보다 '누구의 시선인가'가 강조돼. 보안·운영·비용 등 이해관계자별 관점을 갈아 끼우며 쓰는 프레임이야. non-starter(시작도 못 할 안)랑 묶이면 거부가 정중하면서도 단호해져.",
+        "exampleKo": "보안 관점에서 보면 그 토큰을 서비스 간에 공유하는 건 말이 안 돼요.",
+        "questionEn": "Reusing one credential everywhere would simplify deployment a lot. Any objections?",
+        "termsKo": "non-starter: 검토할 가치도 없이 탈락인 안. 강한 거부를 정중하게 표현하는 단어.",
+        "cueKo": "한 보안 관점으로부터 보면 · 공유하는 것은 · 그 토큰을 · 서비스들 가로질러 · 시작 불가 안이다"
+      }
+    ]
+  },
+  {
+    "particle": "via / through",
+    "coreKo": "경로의 그림 — 무언가가 어떤 통로를 '거쳐서' 이동한다. via는 경유지를 콕 찍고, through는 통로를 관통하는 움직임을 그린다. 시스템 설계 설명은 결국 데이터와 요청의 경로 설명이라, 이 둘이 아키텍처 토크의 뼈대 전치사다.",
+    "items": [
+      {
+        "key": "p2:via-the-api",
+        "en": "via the API",
+        "ko": "API를 거쳐서, API를 통해서만",
+        "example": "Partners pull inventory data via the API, never from the database directly.",
+        "situations": [
+          "외부 접근 경로를 명시할 때",
+          "직접 접근 금지 원칙을 설명할 때"
+        ],
+        "detail": "데이터가 API라는 경유지를 찍고 이동한다는 그림. '직접 말고 이 경로로만'이라는 접근 통제 설명에 via가 딱이야 — never directly와 대비 구조로 쓰면 원칙이 선명해져. via는 한 단어라 다이어그램 설명할 때 입에 제일 잘 붙어.",
+        "exampleKo": "파트너사는 API를 통해서만 재고 데이터를 가져가요. DB 직접 접근은 절대 없어요.",
+        "questionEn": "How do external partners get our inventory numbers without touching internal systems?",
+        "termsKo": "API contract: 외부 접근을 API로만 강제하면 내부 스키마 변경의 자유를 지킬 수 있다.",
+        "cueKo": "파트너들은 · 끌어간다 · 재고 데이터를 · 그 API를 경유해 · 절대 아니라 · 그 데이터베이스로부터 · 직접"
+      },
+      {
+        "key": "p2:through-the-gateway",
+        "en": "through the gateway",
+        "ko": "게이트웨이를 통과해서",
+        "example": "Every external request goes through the gateway, where we handle auth and rate limiting.",
+        "situations": [
+          "트래픽 경로를 설명할 때",
+          "횡단 관심사를 한 곳에 모은 이유를 설명할 때"
+        ],
+        "detail": "요청이 gateway라는 관문을 뚫고 지나가는 through 그림 — via보다 통과의 움직임이 생생해. 모든 요청이 한 지점을 지나니 인증·레이트리밋 같은 횡단 관심사를 거기 모은다는 논리가 자연스럽게 따라와. 아키텍처 인터뷰에서 단일 진입점 설명의 핵심 문장.",
+        "exampleKo": "모든 외부 요청은 게이트웨이를 거치고, 거기서 인증과 레이트 리밋을 처리해요.",
+        "questionEn": "Where do you enforce authentication so individual services don't each reimplement it?",
+        "termsKo": "API gateway: 단일 진입점에서 인증·라우팅·레이트리밋을 처리하는 컴포넌트. 횡단 관심사의 집결지.",
+        "cueKo": "모든 외부 요청은 · 간다 · 그 게이트웨이를 통과해 · 거기서 · 우리는 처리한다 · 인증과 레이트 리밋을"
+      },
+      {
+        "key": "p2:via-a-feature-flag",
+        "en": "via a feature flag",
+        "ko": "피처 플래그를 통해서",
+        "example": "We rolled it out via a feature flag, starting at five percent of traffic.",
+        "situations": [
+          "점진 배포 방식을 설명할 때",
+          "배포와 기능 노출의 분리를 설명할 때"
+        ],
+        "detail": "기능 공개가 feature flag라는 스위치 경로를 거친다는 그림. '코드는 이미 배포돼 있고 노출만 플래그로 조절한다'는 deploy/release 분리 사상을 한 구로 전달해. 점진 롤아웃, 킬 스위치, A/B 테스트 얘기에 전부 이 경로 표현이 깔려.",
+        "exampleKo": "피처 플래그로 트래픽 5%부터 점진적으로 풀었어요.",
+        "questionEn": "How did you ship that risky change without betting the whole user base on it?",
+        "termsKo": "feature flag: 배포와 기능 노출을 분리하는 토글. 점진 롤아웃과 즉시 킬 스위치를 가능케 한다.",
+        "cueKo": "우리는 · 굴려 내보냈다 · 그것을 · 피처 플래그를 경유해 · 시작하면서 · 5퍼센트에서 · 트래픽의"
+      },
+      {
+        "key": "p2:through-a-queue",
+        "en": "through a queue",
+        "ko": "큐를 거쳐서",
+        "example": "Order events flow through a queue, so a slow consumer can't block checkout.",
+        "situations": [
+          "비동기 처리 구조를 설명할 때",
+          "결합도를 낮춘 이유를 설명할 때"
+        ],
+        "detail": "이벤트가 queue라는 완충 통로를 관통해 흐르는 그림. 직접 호출 대신 큐를 거치게 하면 생산자와 소비자의 속도가 분리된다는 비동기 설계의 핵심 논리가 이 한 문장에 담겨. flow/go through가 데이터 흐름 설명의 표준 동사 조합이야.",
+        "exampleKo": "주문 이벤트는 큐를 거쳐 흐르니까 느린 소비자가 결제를 막을 수 없어요.",
+        "questionEn": "What stops a struggling downstream service from taking the checkout flow down with it?",
+        "termsKo": "message queue: 생산자-소비자 사이의 완충 버퍼. 백프레셔 흡수와 장애 격리가 핵심 효용.",
+        "cueKo": "주문 이벤트들은 · 흐른다 · 큐를 통과해 · 그래서 · 느린 소비자가 · 막을 수 없다 · 결제를"
+      },
+      {
+        "key": "p2:go-through-review",
+        "en": "go through review",
+        "ko": "리뷰를 거치다, 검토 관문을 통과하다",
+        "example": "Even hotfixes have to go through review before they hit production.",
+        "situations": [
+          "프로세스에 예외가 없다는 원칙을 말할 때",
+          "절차상 관문을 설명할 때"
+        ],
+        "detail": "go through는 물리 통로뿐 아니라 '절차라는 관문'을 통과하는 데도 똑같이 써. 리뷰, 승인, CI 파이프라인 — 거쳐야 할 관문 앞에 전부 붙어. 또 다른 용법으로 go through the logs(로그를 처음부터 끝까지 훑다)도 있으니 문맥으로 구분해.",
+        "exampleKo": "핫픽스라도 프로덕션에 나가기 전엔 리뷰를 거쳐야 해요.",
+        "questionEn": "It's 2 a.m. and production is down. Can the on-call just push a fix directly?",
+        "termsKo": "review gate: 머지 전 필수 코드 리뷰. 긴급 시에도 우회 금지 또는 사후 리뷰로 운영하는 곳이 많다.",
+        "cueKo": "심지어 핫픽스도 · 해야 한다 · 통과를 · 리뷰를 · 그것들이 닿기 전에 · 프로덕션에"
+      }
+    ]
+  }
+];
