@@ -16,10 +16,13 @@ import {
   PAIR_CARDS,
   CLARIFY_CARDS,
   CONNECTORS,
+  PARTICLE_GROUPS,
+  COLLOCATION_CARDS,
   type ReflexCard,
   type InterviewCard,
   type PhraseCard,
   type Connector,
+  type ParticleGroup,
   type SrsCard,
 } from '@shadow-ai/core';
 
@@ -81,6 +84,15 @@ export function backendIv(c: PhraseCard): IvItem {
   };
 }
 
+// Particle workshop: every card in a particle group carries the particle's core image (coreKo) in
+// the 📚 terms slot, so each rep reinforces the particle SYSTEM (off = 떨어져 나가며 발동...) and
+// new phrasal verbs become guessable.
+export function particleIv(c: PhraseCard, g: ParticleGroup): IvItem {
+  const base = phraseIv(c);
+  const core = `'${g.particle}' 그림: ${g.coreKo}`;
+  return { ...base, tag: `${g.particle} · ${c.en}`, terms: c.termsKo ? `${core}\n${c.termsKo}` : core };
+}
+
 // Chaining drill: the connector is BLANKED OUT of its 2-sentence example — speak the full chain
 // with the right connector. Trains connector selection + fluent linking, the core of the
 // "short sentences, logically connected" method. Reuses the connector's SRS key, so mastery is shared.
@@ -138,6 +150,8 @@ export type ScopeKind =
   | 'clarify'
   | 'connector'
   | 'chain'
+  | 'particle'
+  | 'collocation'
   | 'weak';
 
 export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
@@ -157,6 +171,8 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
         ...PAIR_CARDS.map(phraseIv),
         ...CLARIFY_CARDS.map(phraseIv),
         ...CONNECTORS.map(connectorIv),
+        ...COLLOCATION_CARDS.map(phraseIv),
+        ...PARTICLE_GROUPS.flatMap((g) => g.items.map((it) => particleIv(it, g))),
       ];
     case 'core':
       return CORE_REFLEX.map(reflexIv);
@@ -190,6 +206,14 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       return CONNECTORS.map(connectorIv);
     case 'chain':
       return CONNECTORS.map(chainIv);
+    case 'collocation':
+      return COLLOCATION_CARDS.map(phraseIv);
+    case 'particle': {
+      const g = PARTICLE_GROUPS.find((x) => x.particle === clusterId);
+      if (!g) return [];
+      const olds = PHRASAL_CARDS.filter((c) => c.en.split(' ').includes(g.particle));
+      return [...g.items, ...olds].map((it) => particleIv(it, g));
+    }
     case 'weak':
       return []; // needs SRS states — interview-run resolves this via weakItems()
   }

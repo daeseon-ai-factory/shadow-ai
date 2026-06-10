@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router, type Href } from 'expo-router';
-import { PATTERNS, COLLOCATIONS } from '@shadow-ai/core';
+import { PATTERNS, COLLOCATIONS, PARTICLE_GROUPS, WORKSHOP_COUNTS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -41,6 +41,36 @@ export default function PracticeMenuScreen() {
               <ThemedText style={styles.chev}>›</ThemedText>
             </Pressable>
           ))}
+
+          {/* 💼 실무 연습장: dev collocations + the particle SYSTEM (per-particle phrasal collections). */}
+          <ThemedText type="smallBold" style={styles.section}>{t('practice.workshop')}</ThemedText>
+          <Pressable
+            style={[styles.card, styles.featured]}
+            onPress={() => router.push({ pathname: '/interview-run', params: { mode: 'produce', scope: 'collocation' } })}
+          >
+            <ThemedText style={styles.icon}>💼</ThemedText>
+            <View style={styles.cardBody}>
+              <ThemedText type="smallBold">{t('practice.devColloc')}</ThemedText>
+              <ThemedText type="small" style={styles.sub}>
+                {t('practice.devCollocSub', { n: WORKSHOP_COUNTS.collocations })}
+              </ThemedText>
+            </View>
+            <ThemedText style={styles.chev}>›</ThemedText>
+          </Pressable>
+          <ThemedText type="small" style={styles.sub}>{t('practice.particleHint')}</ThemedText>
+          <View style={styles.chips}>
+            {PARTICLE_GROUPS.map((g) => (
+              <Pressable
+                key={g.particle}
+                style={styles.chip}
+                onPress={() =>
+                  router.push({ pathname: '/interview-run', params: { mode: 'produce', scope: 'particle', cluster: g.particle } })
+                }
+              >
+                <ThemedText type="small">{g.particle} · {g.items.length}+</ThemedText>
+              </Pressable>
+            ))}
+          </View>
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -63,4 +93,14 @@ const styles = StyleSheet.create({
   cardBody: { flex: 1, gap: 2 },
   sub: { color: '#6b7280' },
   chev: { color: '#9ca3af', fontSize: 22 },
+  section: { marginTop: 14, textTransform: 'uppercase', letterSpacing: 1, opacity: 0.7 },
+  featured: { borderColor: '#208AEF', backgroundColor: '#208AEF11' },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#208AEF55',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
 });

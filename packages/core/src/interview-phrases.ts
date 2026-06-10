@@ -4677,3 +4677,1900 @@ export const BACKEND_CODE_CARDS: CodeCard[] = [
 ];
 
 export const PHRASE_DECK_COUNTS = { phrasal: 44, expr: 32, code: 37, ui: 32, backend: 37, sd: 36, pair: 30, clarify: 24, connectors: 37, backendCode: 23 };
+
+export interface ParticleGroup { particle: string; coreKo: string; items: PhraseCard[]; }
+
+export const PARTICLE_GROUPS: ParticleGroup[] = [
+  {
+    "particle": "up",
+    "coreKo": "up은 아래에 있던 것이 위로 올라오거나, 0에서 완성·가동 상태로 차오르는 그림. scale up(키워 올림), stand up(세워서 가동), free up(묶인 자원을 풀어 올림), queue up(줄 세워 준비)이 모두 '증가·준비·가동' 방향이다. 이 그림을 잡으면 처음 보는 up 구동사도 '뭔가 켜지거나 늘어나는 쪽'으로 추측할 수 있다.",
+    "items": [
+      {
+        "key": "pv:scale-up",
+        "en": "scale up",
+        "ko": "(서버 사양을) 키우다, 수직 확장하다",
+        "example": "We can scale up the instance before the traffic spike.",
+        "situations": [
+          "트래픽 급증 대비 회의",
+          "인프라 비용/성능 트레이드오프 논의",
+          "성능 테스트 결과 공유"
+        ],
+        "detail": "직역하면 '규모를 위로 올리다'. 서버 한 대의 CPU나 메모리를 키우는 수직 확장 얘기할 때 바로 나오는 말이야. scale out(대수를 늘리는 수평 확장)이랑 짝으로 묶어 쓰면 시스템 설계 인터뷰에서 깔끔하게 들려.",
+        "exampleKo": "트래픽 몰리기 전에 인스턴스를 키워둘 수 있어요.",
+        "questionEn": "Traffic doubles next week and one server is struggling. What's your plan?",
+        "termsKo": "수직 확장(scale up): 서버 한 대의 사양을 올리는 것. 수평 확장(scale out): 서버 대수를 늘리는 것."
+      },
+      {
+        "key": "pv:back-up",
+        "en": "back up",
+        "ko": "백업하다, 안전하게 복사해 두다",
+        "example": "Make sure we back up the database before the migration.",
+        "situations": [
+          "DB 마이그레이션 직전 체크리스트",
+          "장애 복구 계획 논의"
+        ],
+        "detail": "뒤(back)에 예비본을 만들어 올려둔다(up)는 그림. 위험한 작업 전에 '일단 백업부터'라고 말할 때 동사로 그대로 써. 명사 backup은 한 단어, 동사는 back up처럼 띄어 쓰는 것만 주의.",
+        "exampleKo": "마이그레이션 전에 DB 백업부터 꼭 해두자.",
+        "questionEn": "We're about to run a risky schema change on production. What should we do first?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:free-up",
+        "en": "free up",
+        "ko": "(자원·시간을) 확보하다, 풀어주다",
+        "example": "Killing that old job will free up a lot of memory.",
+        "situations": [
+          "메모리/디스크 부족 대응",
+          "일정 조정으로 리소스 확보 논의"
+        ],
+        "detail": "묶여 있던 자원을 풀어서(free) 쓸 수 있는 상태로 끌어올린다(up)는 그림. 메모리·디스크·사람 시간까지 전부 목적어로 와. 'free up some time'처럼 일정 얘기에도 매일 쓰여서 활용도가 아주 높아.",
+        "exampleKo": "그 오래된 잡 죽이면 메모리가 꽤 확보될 거예요.",
+        "questionEn": "The server is almost out of memory. How can we get some breathing room?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:queue-up",
+        "en": "queue up",
+        "ko": "대기열에 쌓이다/쌓아 두다",
+        "example": "Requests just queue up until a worker picks them up.",
+        "situations": [
+          "비동기 처리 구조 설명",
+          "배포 파이프라인 대기 상황 설명"
+        ],
+        "detail": "줄(queue)을 세워서 순서대로 준비시킨다는 그림. 비동기 시스템 설명할 때 '요청이 큐에 쌓인다'를 한 단어로 처리해 줘. 사람이 주어면 '줄 서서 기다리다'라는 뜻으로도 쓰여.",
+        "exampleKo": "요청은 워커가 가져갈 때까지 큐에 쌓여요.",
+        "questionEn": "What happens to incoming requests when all the workers are busy?",
+        "termsKo": "큐(queue): 먼저 들어온 작업을 먼저 처리하는 대기열. 메시지 큐는 생산자와 소비자를 분리해 부하를 흡수한다."
+      },
+      {
+        "key": "pv:stand-up",
+        "en": "stand up",
+        "ko": "(서비스·환경을) 새로 구축해 띄우다",
+        "example": "It took a day to stand up the staging environment.",
+        "situations": [
+          "새 환경 구축 일정 공유",
+          "PoC 환경 준비 논의"
+        ],
+        "detail": "누워 있던 걸 일으켜 세워 돌아가게 만든다는 그림. spin up이 인스턴스 하나 띄우는 가벼운 느낌이라면, stand up은 환경·서비스·프로세스를 처음부터 구축해 가동시키는 더 큰 단위에 써. 데일리 스탠드업 미팅과는 다른 용법이니 맥락으로 구분해.",
+        "exampleKo": "스테이징 환경 띄우는 데 하루 걸렸어요.",
+        "questionEn": "How long would it take to get a brand-new test environment running from scratch?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:level-up",
+        "en": "level up",
+        "ko": "(실력·수준을) 한 단계 끌어올리다",
+        "example": "Pairing with seniors really helped me level up my design skills.",
+        "situations": [
+          "성장 경험 인터뷰 답변",
+          "팀 역량 강화 논의"
+        ],
+        "detail": "게임에서 레벨 오르는 그 그림 그대로, 실력이나 수준을 한 단계 끌어올린다는 뜻. 성장 스토리 말할 때 improve보다 캐주얼하고 생기 있게 들려. 'level up the team'처럼 팀을 목적어로도 써.",
+        "exampleKo": "시니어랑 페어 하면서 설계 실력이 확 늘었어요.",
+        "questionEn": "What helped you grow the most as an engineer in the last year?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "down",
+    "coreKo": "down은 아래로 내려가거나, 줄이고 잘게 쪼개서 바닥(핵심)까지 내려가는 그림. drill down(파고 내려감), dial down(다이얼을 돌려 줄임), boil down(졸여서 핵심만 남김), shut down(내려서 끔)이 다 여기서 나온다. '줄이기·끄기·핵심으로 내려가기' 세 갈래만 잡으면 처음 보는 down 구동사도 대부분 추측된다.",
+    "items": [
+      {
+        "key": "pv:drill-down",
+        "en": "drill down",
+        "ko": "(데이터·문제를) 세부까지 파고들다",
+        "example": "Let's drill down into the latency numbers by endpoint.",
+        "situations": [
+          "대시보드 보며 원인 분석",
+          "메트릭 리뷰 회의"
+        ],
+        "detail": "드릴로 한 층씩 뚫고 내려가는 그림. 집계된 숫자에서 출발해 더 세부 단위(엔드포인트별, 유저별)로 파고들 때 쓰는 대시보드·메트릭 회의의 단골 표현이야. dig into가 대상 자체를 조사하는 거라면, drill down은 '위에서 아래로 단계별로' 내려가는 방향성이 강해.",
+        "exampleKo": "엔드포인트별로 레이턴시 수치를 더 파고들어 봅시다.",
+        "questionEn": "The average latency looks fine, but something feels wrong. How would you investigate deeper?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:shut-down",
+        "en": "shut down",
+        "ko": "(서비스·서버를) 내리다, 종료하다",
+        "example": "We shut down the legacy service last quarter.",
+        "situations": [
+          "레거시 정리 경험 설명",
+          "장애 시 긴급 차단 결정"
+        ],
+        "detail": "돌아가던 걸 내려서(down) 닫는다(shut)는 그림. 서비스 폐기, 서버 종료, 긴급 차단까지 폭넓게 쓰는 기본 동사야. 명사형 shutdown(graceful shutdown 같은)도 세트로 알아두면 좋아.",
+        "exampleKo": "레거시 서비스는 지난 분기에 내렸어요.",
+        "questionEn": "What happened to the old legacy system after the migration finished?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:dial-down",
+        "en": "dial down",
+        "ko": "(강도·수치를) 한 단계 낮추다",
+        "example": "Can we dial down the log verbosity in production?",
+        "situations": [
+          "로그 비용 절감 논의",
+          "알림 피로 줄이기 논의"
+        ],
+        "detail": "볼륨 다이얼을 왼쪽으로 돌려 줄이는 그림. 로그 출력량, 알림 빈도, 공격적인 톤처럼 '강도'를 한 단계 낮추자고 할 때 부드럽게 들려. reduce보다 '조절 가능한 걸 살짝 낮춘다'는 뉘앙스야.",
+        "exampleKo": "프로덕션에서 로그 양 좀 줄일 수 있을까요?",
+        "questionEn": "Our production logs are way too noisy and expensive. Any suggestions?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:boil-down-to",
+        "en": "boil down to",
+        "ko": "결국 ~로 요약되다, 귀결되다",
+        "example": "The whole outage boils down to one missing null check.",
+        "situations": [
+          "포스트모템 결론 정리",
+          "복잡한 논쟁 한 줄 요약"
+        ],
+        "detail": "국물을 끓여 졸이면(boil down) 진액만 남듯, 복잡한 얘기가 결국 핵심 하나로 요약된다는 그림. 포스트모템이나 긴 논쟁 마무리에 'It boils down to X'라고 하면 정리 잘하는 사람처럼 들려. 주어는 보통 문제·논의이고, to 뒤에 핵심이 와.",
+        "exampleKo": "이번 장애는 결국 널 체크 하나 빠진 거로 귀결돼요.",
+        "questionEn": "After all that investigation, what was the root cause in one sentence?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:pare-down",
+        "en": "pare down",
+        "ko": "(군더더기를) 쳐내서 줄이다",
+        "example": "We pared down the API surface to just five endpoints.",
+        "situations": [
+          "스코프 축소 논의",
+          "API 설계 단순화 설명"
+        ],
+        "detail": "과도로 껍질 깎아내듯(pare) 군더더기를 쳐내 줄인다는 그림. 스코프, API 표면적, 기능 목록을 의도적으로 슬림하게 만들 때 써. reduce보다 '불필요한 걸 골라 깎아냈다'는 적극적인 뉘앙스가 있어.",
+        "exampleKo": "API를 엔드포인트 다섯 개로 확 줄였어요.",
+        "questionEn": "The original design had twenty endpoints. How did you simplify it?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "out",
+    "coreKo": "out은 안에 있던 것이 밖으로 나가거나, 끝까지 소진되어 바닥나는 그림. comment out(코드를 실행 흐름 밖으로 빼냄), time out(시간이 다 빠져나가 끝남), max out(한도까지 차서 소진), fan out(부채처럼 바깥으로 퍼짐). '밖으로·소진·완료' 세 그림만 잡으면 out 구동사 대부분이 풀린다.",
+    "items": [
+      {
+        "key": "pv:comment-out",
+        "en": "comment out",
+        "ko": "주석 처리해서 비활성화하다",
+        "example": "Just comment out that line and see if the test passes.",
+        "situations": [
+          "디버깅 중 원인 격리",
+          "임시로 기능 끄기"
+        ],
+        "detail": "코드를 주석 기호로 감싸서 실행 대상 '밖으로' 빼버리는 그림. 디버깅하다가 범인 후보 줄을 잠깐 꺼볼 때 매일 쓰는 말이야. 지운 게 아니라 잠깐 꺼둔 거라는 뉘앙스까지 포함돼 있어서 delete와 구분돼.",
+        "exampleKo": "그 줄 주석 처리하고 테스트 통과하는지 봐봐.",
+        "questionEn": "You suspect one line is breaking the build. What's the quickest way to check?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:stub-out",
+        "en": "stub out",
+        "ko": "임시 구현(스텁)으로 막아두다",
+        "example": "I stubbed out the payment API so the tests run offline.",
+        "situations": [
+          "외부 의존성 있는 테스트 설계",
+          "미구현 기능 자리 임시 처리"
+        ],
+        "detail": "본 구현 대신 빈 껍데기(stub)로 막아서 일단 바깥쪽 흐름이 돌게 만든다는 그림. 외부 API에 의존하는 테스트나 아직 안 만든 함수 자리를 채울 때 써. mock out도 거의 같은 뜻인데, stub은 고정 응답만 주고 mock은 호출 검증까지 한다는 미묘한 차이가 있어.",
+        "exampleKo": "테스트가 오프라인에서도 돌게 결제 API는 스텁으로 막아놨어요.",
+        "questionEn": "How do you test code that depends on a third-party service you can't call in CI?",
+        "termsKo": "스텁(stub): 진짜 구현 대신 정해진 값만 돌려주는 가짜 객체. 외부 의존성을 끊고 테스트할 때 쓴다."
+      },
+      {
+        "key": "pv:time-out",
+        "en": "time out",
+        "ko": "시간 초과로 실패하다",
+        "example": "The request times out after thirty seconds and retries.",
+        "situations": [
+          "외부 API 연동 장애 설명",
+          "타임아웃/재시도 정책 설계"
+        ],
+        "detail": "주어진 시간이 다 빠져나가서(out) 끝나버린다는 그림. 장애 설명할 때 'requests were timing out'은 거의 매일 나오는 문장이야. 명사·형용사형 timeout(타임아웃 값)과 동사형을 자유롭게 오가면 자연스러워.",
+        "exampleKo": "요청이 30초 지나면 타임아웃 나고 재시도해요.",
+        "questionEn": "What happens if the downstream service never responds to our request?",
+        "termsKo": "타임아웃: 응답을 무한정 기다리지 않도록 제한 시간을 두는 것. 재시도·서킷브레이커와 묶여 다니는 개념."
+      },
+      {
+        "key": "pv:error-out",
+        "en": "error out",
+        "ko": "에러를 내며 죽다, 실패로 끝나다",
+        "example": "The batch job errored out halfway through the night.",
+        "situations": [
+          "배치 실패 보고",
+          "CI 실패 공유"
+        ],
+        "detail": "에러를 뱉으면서 프로세스가 끝까지 못 가고 밖으로 튕겨 나간다는 그림. fail과 비슷하지만 '에러 내고 죽었다'는 구체적 그림이 있어서 배치·스크립트·CI 얘기에 잘 어울려. 비격식 구어라 문서보단 대화·슬랙에서 쓰는 말이야.",
+        "exampleKo": "배치 잡이 밤사이에 중간에 에러 나고 죽었어요.",
+        "questionEn": "Why is this morning's data missing from the report?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:max-out",
+        "en": "max out",
+        "ko": "한도까지 꽉 차다, 소진하다",
+        "example": "We maxed out the connection pool during the sale.",
+        "situations": [
+          "부하 장애 회고",
+          "리소스 한도 논의"
+        ],
+        "detail": "한도(max)까지 꽉 채워 소진했다는 그림. 커넥션 풀, 디스크, CPU, API 쿼터까지 '한계에 부딪힌' 상황을 한 단어로 전달해. 'maxed out at 100 connections'처럼 at으로 한도 수치를 붙이면 깔끔해.",
+        "exampleKo": "세일 때 커넥션 풀이 한도까지 꽉 찼었어요.",
+        "questionEn": "Describe a time your system hit a hard resource limit under load.",
+        "termsKo": "커넥션 풀: DB 연결을 미리 만들어 재사용하는 풀. 한도가 차면 새 요청이 대기하거나 실패한다."
+      },
+      {
+        "key": "pv:fan-out",
+        "en": "fan out",
+        "ko": "(하나가 여러 갈래로) 퍼져 나가다",
+        "example": "One write fans out to thousands of follower feeds.",
+        "situations": [
+          "피드 시스템 설계 인터뷰",
+          "메시지 브로드캐스트 구조 설명"
+        ],
+        "detail": "부채(fan)가 펴지듯 하나가 여러 갈래로 퍼지는 그림. 시스템 설계 인터뷰에서 피드 전파, 메시지 브로드캐스트, 병렬 호출을 설명할 때 핵심 용어야. 반대 방향으로 여러 개를 하나로 모으는 건 fan in이라고 해.",
+        "exampleKo": "쓰기 한 번이 수천 명 팔로워 피드로 퍼져 나가요.",
+        "questionEn": "In a social feed design, what happens when a celebrity posts something?",
+        "termsKo": "팬아웃(fan-out): 요청·메시지 하나가 여러 대상으로 퍼지는 패턴. 트위터식 피드 설계의 단골 주제."
+      }
+    ]
+  },
+  {
+    "particle": "off",
+    "coreKo": "off는 붙어있던 것이 떨어져 나가며 발동되거나 차단되는 그림. branch off(본체에서 갈라져 나감), cut off(잘려 떨어져 차단), hand off(내 손에서 떼어 넘김), kill off(완전히 떼어내 없앰)가 모두 그 그림이다. '분리'가 핵심이고 분리의 결과가 시작(발동)일 수도, 끝(차단)일 수도 있다는 것만 알면 처음 보는 off 구동사도 추측 가능하다.",
+    "items": [
+      {
+        "key": "pv:branch-off",
+        "en": "branch off",
+        "ko": "(본 줄기에서) 갈라져 나오다, 브랜치를 따다",
+        "example": "I branched off main to try the new caching idea.",
+        "situations": [
+          "git 작업 방식 설명",
+          "실험적 작업 시작 공유"
+        ],
+        "detail": "나무 본 줄기에서 가지(branch)가 갈라져 나오는 그림 그대로야. git에서 브랜치 딸 때 'branch off main'처럼 기준 브랜치를 뒤에 붙여 말해. 큰 프로젝트에서 하위 작업이 갈라져 나올 때도 쓸 수 있어.",
+        "exampleKo": "새 캐싱 아이디어 시험해 보려고 main에서 브랜치 땄어요.",
+        "questionEn": "You want to experiment without touching the shared codebase. What do you do?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:kill-off",
+        "en": "kill off",
+        "ko": "완전히 없애다, 영구 폐기하다",
+        "example": "We finally killed off the old PHP admin tool.",
+        "situations": [
+          "레거시 제거 성과 공유",
+          "기능 폐기 결정"
+        ],
+        "detail": "그냥 kill이 프로세스 하나 죽이는 거라면, off가 붙으면 '완전히 떼어내서 다시는 안 살아나게 없앤다'는 완결의 뉘앙스가 더해져. 레거시 시스템·기능을 영구 폐기했다고 말할 때 딱이야. deprecate(단계적 폐기 예고)보다 한참 뒤의 최종 단계.",
+        "exampleKo": "드디어 옛날 PHP 어드민 툴을 완전히 없앴어요.",
+        "questionEn": "That ancient internal tool nobody maintains anymore — what should we do with it?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:hand-off",
+        "en": "hand off",
+        "ko": "(작업·당번을) 넘기다, 인계하다",
+        "example": "I'll hand off the on-call rotation to Sarah next week.",
+        "situations": [
+          "온콜 교대",
+          "업무 인계 계획 공유"
+        ],
+        "detail": "릴레이에서 바통을 손에서 떼어 넘기는 그림. 온콜 교대, 작업 인계, 디자인에서 개발로의 전달처럼 '내 차례 끝, 네 차례 시작'을 말할 때 써. 명사 handoff(인수인계)로도 매일 나와.",
+        "exampleKo": "다음 주에 온콜 당번을 사라한테 넘길 거예요.",
+        "questionEn": "You're going on vacation during your on-call week. What do you do?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:cut-off",
+        "en": "cut off",
+        "ko": "차단하다, 끊다",
+        "example": "The load balancer cuts off unhealthy instances automatically.",
+        "situations": [
+          "헬스체크 동작 설명",
+          "악성 트래픽 차단 논의",
+          "회의에서 정중하게 끼어들 때"
+        ],
+        "detail": "가위로 잘라서 떨어뜨려 차단하는 그림. 로드밸런서가 죽은 인스턴스를 제외하거나 악성 트래픽을 끊는 것부터, 말 중간에 끼어드는 것까지 다 같은 그림이야. 회의에서 'Sorry to cut you off'는 정중하게 끼어들 때의 단골 멘트니 같이 외워둬.",
+        "exampleKo": "로드밸런서가 비정상 인스턴스를 자동으로 차단해요.",
+        "questionEn": "How does traffic stop reaching a server that just crashed?",
+        "termsKo": "헬스체크: 로드밸런서가 주기적으로 인스턴스 상태를 확인해, 실패하면 트래픽 대상에서 제외하는 메커니즘."
+      },
+      {
+        "key": "pv:back-off",
+        "en": "back off",
+        "ko": "물러나다; (재시도 간격을) 점점 늘리다",
+        "example": "The client backs off exponentially after each failed retry.",
+        "situations": [
+          "재시도 전략 설계 인터뷰",
+          "장애 시 요청 폭주 방지 설명"
+        ],
+        "detail": "뒤로 물러나며 떨어지는 그림. 일상에선 '한발 물러서다'지만, 엔지니어링에선 재시도 간격을 점점 늘리는 백오프 전략으로 매일 등장해. exponential backoff는 시스템 설계 인터뷰 필수 어휘니까 동사형과 명사형 둘 다 입에 붙여둬.",
+        "exampleKo": "클라이언트가 재시도 실패할 때마다 간격을 지수적으로 늘려요.",
+        "questionEn": "If every client retries a failing server at once, things get worse. What's the standard fix?",
+        "termsKo": "지수 백오프(exponential backoff): 재시도 간격을 1초, 2초, 4초처럼 배로 늘려 서버 과부하를 막는 전략."
+      }
+    ]
+  },
+  {
+    "particle": "back",
+    "coreKo": "back은 갔던 방향을 되돌려 원점이나 상대에게 돌아오는 그림. push back(밀어 되돌림 = 반대 의견), report back(돌아와서 보고), write back(나중에 원본에 되돌려 씀), get back to(나중에 돌아가 답함). 무언가가 '되돌아오는' 방향성 하나만 잡으면 back 구동사는 거의 다 풀린다.",
+    "items": [
+      {
+        "key": "pv:push-back-on",
+        "en": "push back on",
+        "ko": "(제안·요구에) 반대 의견을 내다",
+        "example": "I pushed back on the deadline because the scope doubled.",
+        "situations": [
+          "무리한 일정 협상",
+          "기술 부채 늘리는 요구 거절",
+          "의견 충돌 behavioral 답변"
+        ],
+        "detail": "밀려오는 걸 되민다는 그림. 무리한 일정이나 스코프 요구에 정중하지만 단호하게 반대 의견을 내는 거야. behavioral 인터뷰의 '의견 충돌 경험' 질문에 이 단어를 쓰면 미국 직장 어휘를 아는 사람처럼 들려. 명사로도 'There was some pushback'처럼 자주 써.",
+        "exampleKo": "스코프가 두 배가 돼서 일정에 이의를 제기했어요.",
+        "questionEn": "Tell me about a time you disagreed with a decision from your manager.",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:scale-back",
+        "en": "scale back",
+        "ko": "(계획·규모를) 축소하다",
+        "example": "We scaled back the launch to just two regions.",
+        "situations": [
+          "일정 압박으로 범위 조정",
+          "비용 절감 논의"
+        ],
+        "detail": "키웠던 규모를 원래 방향으로 되돌려 줄인다는 그림. 일정 압박이나 비용 문제로 출시 범위·기능을 축소할 때 쓰는 말이야. scale down이 인프라 사양 얘기에 가깝다면, scale back은 계획·야망을 줄이는 쪽에 더 잘 붙어.",
+        "exampleKo": "출시 범위를 두 개 리전으로 축소했어요.",
+        "questionEn": "The original plan was too ambitious for the timeline. What did you do?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:get-back-to",
+        "en": "get back to",
+        "ko": "(사람에게) 나중에 답을 주다",
+        "example": "Let me check the logs and get back to you.",
+        "situations": [
+          "회의 중 모르는 질문 받았을 때",
+          "슬랙으로 확인 요청 받았을 때"
+        ],
+        "detail": "지금은 답을 못 주지만 나중에 너에게 돌아오겠다는 그림. 모르는 질문을 받았을 때 'Let me get back to you'는 가장 프로페셔널한 대응이야. 추측으로 대답하는 것보다 백배 나으니 인터뷰에서도 회의에서도 입에 붙여둬.",
+        "exampleKo": "로그 확인해 보고 다시 말씀드릴게요.",
+        "questionEn": "A teammate asks a question you can't answer right now. What do you say?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:report-back",
+        "en": "report back",
+        "ko": "확인 후 돌아와 결과를 공유하다",
+        "example": "I'll test the fix on staging and report back tomorrow.",
+        "situations": [
+          "조사 작업 마무리 멘트",
+          "스탠드업에서 후속 조치 약속"
+        ],
+        "detail": "나가서 확인하고 돌아와 보고한다는 그림. 회의 끝낼 때 'I'll report back by Friday'처럼 기한을 붙이면 신뢰가 쌓여. get back to가 '답변 주기'라면 report back은 '조사 결과 공유'라는 약간 더 공식적인 느낌이야.",
+        "exampleKo": "스테이징에서 픽스 테스트해 보고 내일 결과 공유할게요.",
+        "questionEn": "You're leaving the meeting to investigate an issue. How do you close the conversation?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:write-back",
+        "en": "write back",
+        "ko": "(캐시가) 나중에 원본 저장소에 다시 쓰다",
+        "example": "The cache writes back to the database asynchronously.",
+        "situations": [
+          "캐시 전략 설계 인터뷰",
+          "데이터 정합성/유실 리스크 논의"
+        ],
+        "detail": "캐시에 먼저 쓰고 나중에 원본 저장소로 '되돌려 쓴다'는 그림. 캐시 전략 설명에서 write-through(즉시 동기 반영)와 대비시키는 용어라 시스템 설계 인터뷰에 직결돼. 일상 영어에선 '답장하다'라는 뜻도 있으니 맥락으로 구분해.",
+        "exampleKo": "캐시가 DB에는 비동기로 나중에 써요.",
+        "questionEn": "Compare caching strategies where the database is updated immediately versus later.",
+        "termsKo": "write-back 캐시: 일단 캐시에만 쓰고 원본 저장소엔 나중에 반영하는 방식. 빠르지만 장애 시 유실 위험이 있어 write-through와 대비된다."
+      }
+    ]
+  },
+  {
+    "particle": "in",
+    "coreKo": "in은 바깥에 있던 것이 경계 안으로 들어와 자리잡는 그림. plug in(꽂아 넣음), opt in(스스로 안으로 들어감), bake in(구워 넣어 분리 불가), pass in(함수 안으로 건네 넣음)이 모두 '안으로 들여 포함시키는' 방향이다. 이 그림 하나로 처음 보는 in 구동사도 '뭔가를 안에 넣거나 합류시키는 뜻'으로 추측할 수 있다.",
+    "items": [
+      {
+        "key": "pv:opt-in",
+        "en": "opt in",
+        "ko": "(스스로 선택해서) 참여하다, 켜다",
+        "example": "Users have to opt in before we collect any analytics.",
+        "situations": [
+          "개인정보/동의 정책 설명",
+          "베타 기능 참여 방식 설명"
+        ],
+        "detail": "선택지(option) 안으로 스스로 걸어 들어간다는 그림. 기본은 꺼져 있고 사용자가 명시적으로 동의해야 켜지는 방식을 말해. 프라이버시 규제나 베타 프로그램 설명에서 필수 어휘고, 반대는 opt out.",
+        "exampleKo": "분석 데이터 수집 전에 사용자가 직접 동의해야 해요.",
+        "questionEn": "How do users start receiving the new beta features — automatically or by choice?",
+        "termsKo": "옵트인/옵트아웃: 기본 꺼짐 상태에서 사용자가 켜는 게 옵트인, 기본 켜짐에서 사용자가 끄는 게 옵트아웃."
+      },
+      {
+        "key": "pv:check-in",
+        "en": "check in",
+        "ko": "(코드를) 저장소에 넣다; 근황을 공유하다",
+        "example": "Don't check in secrets — use environment variables instead.",
+        "situations": [
+          "코드 리뷰/보안 지적",
+          "스탠드업·1:1 근황 공유"
+        ],
+        "detail": "맡겨 넣는다는 그림이 둘로 갈라져. 코드 맥락에선 저장소에 커밋해 넣는 것, 사람 맥락에선 '잠깐 상황 공유하자(quick check-in)'는 뜻이야. 둘 다 미국 팀 일상 어휘라 맥락으로 구분해서 들으면 돼.",
+        "exampleKo": "시크릿은 커밋하지 말고 환경변수 쓰세요.",
+        "questionEn": "What's the rule about putting API keys into the repository?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:plug-in",
+        "en": "plug in",
+        "ko": "꽂아서 연결하다, 갈아 끼우다",
+        "example": "You can plug in any storage backend that implements this interface.",
+        "situations": [
+          "플러그인 구조 설명",
+          "교체 가능한 설계 강조"
+        ],
+        "detail": "콘센트에 플러그 꽂듯 끼워서 바로 연결한다는 그림. 인터페이스만 맞으면 구현체를 갈아 끼울 수 있다는 설계 자랑할 때 딱이야. pluggable(끼울 수 있는), plugin(플러그인) 같은 파생어도 전부 같은 그림이야.",
+        "exampleKo": "이 인터페이스만 구현하면 어떤 스토리지 백엔드든 꽂아 쓸 수 있어요.",
+        "questionEn": "How easy is it to replace the storage layer in your design?",
+        "termsKo": "플러그인 아키텍처: 핵심은 고정하고 기능을 모듈로 꽂았다 뺐다 할 수 있게 만든 설계."
+      },
+      {
+        "key": "pv:drop-in",
+        "en": "drop in",
+        "ko": "수정 없이 그대로 끼워 넣다",
+        "example": "The new library is a drop-in replacement for the old one.",
+        "situations": [
+          "라이브러리 마이그레이션 논의",
+          "의존성 교체 제안"
+        ],
+        "detail": "툭 떨어뜨려 넣으면 그대로 작동한다는 그림. 'drop-in replacement'는 코드 수정 없이 갈아 끼울 수 있는 호환 대체재를 뜻하는 굳어진 표현이야. 마이그레이션 논의에서 이 말이 나오면 '작업량 거의 없음'이라는 신호.",
+        "exampleKo": "새 라이브러리는 기존 거랑 코드 수정 없이 바로 교체 가능해요.",
+        "questionEn": "Will switching to the new library require changing our existing code?",
+        "termsKo": "drop-in replacement: API가 호환돼서 코드 수정 없이 갈아 끼울 수 있는 대체재."
+      },
+      {
+        "key": "pv:pass-in",
+        "en": "pass in",
+        "ko": "(인자로) 넘겨주다",
+        "example": "Just pass in the config object instead of a global.",
+        "situations": [
+          "코드 리뷰 피드백",
+          "의존성 주입 설명"
+        ],
+        "detail": "함수 경계 안으로 값을 건네 넣는다는 그림. 코드 리뷰에서 '전역 말고 인자로 받아라'고 할 때의 표준 표현이야. 의존성 주입 설명할 때도 'dependencies are passed in'처럼 자연스럽게 쓰여.",
+        "exampleKo": "전역 변수 말고 설정 객체를 인자로 넘기세요.",
+        "questionEn": "How should this function get its configuration — global state or something else?",
+        "termsKo": "의존성 주입(DI): 객체가 필요한 것을 직접 만들지 않고 외부에서 받게 하는 패턴. 테스트가 쉬워진다."
+      },
+      {
+        "key": "pv:bake-in",
+        "en": "bake in",
+        "ko": "처음부터 설계에 녹여 넣다, 내장시키다",
+        "example": "Security needs to be baked in, not bolted on later.",
+        "situations": [
+          "설계 원칙 논의",
+          "보안/관측성 설계 인터뷰"
+        ],
+        "detail": "빵 반죽에 재료를 넣고 구우면 못 빼내듯, 처음부터 설계에 녹여 넣어 분리 불가능하게 만든다는 그림. 보안·관측성·테스트 가능성은 나중에 못 붙인다고 주장할 때 쓰는 말이야. 반대말은 bolt on(나사로 대충 덧붙임)이고, 이 대조쌍으로 기억하면 좋아.",
+        "exampleKo": "보안은 나중에 덧붙이는 게 아니라 처음부터 설계에 넣어야 해요.",
+        "questionEn": "When is the right time to start thinking about security in a project?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "into",
+    "coreKo": "into는 밖에서 안으로 '뚫고 들어가는' 운동의 그림. in이 정적인 포함이라면 into는 들어가는 동작 자체다. look into(들여다보러 들어감), hook into(갈고리 걸고 파고듦), feed into(흘려 넣음)처럼 조사·연결·투입의 뉘앙스가 핵심이고, 이 그림을 알면 처음 보는 into 구동사도 방향이 보인다.",
+    "items": [
+      {
+        "key": "pv:look-into",
+        "en": "look into",
+        "ko": "조사해 보다, 알아보다",
+        "example": "I'll look into why the deploy failed this morning.",
+        "situations": [
+          "이슈 할당 받았을 때",
+          "스탠드업에서 조사 계획 공유"
+        ],
+        "detail": "안을 들여다보러 들어간다는 그림. 이슈를 할당받거나 원인 모를 문제를 떠안을 때 'I'll look into it'은 만능 답변이야. investigate보다 캐주얼하고, dig into보다 가볍게 '일단 알아보겠다' 단계의 말이야.",
+        "exampleKo": "오늘 아침 배포가 왜 실패했는지 알아볼게요.",
+        "questionEn": "The deployment failed an hour ago and nobody knows why. What's your next step?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:hook-into",
+        "en": "hook into",
+        "ko": "(시스템 내부에) 걸어 연결하다, 끼어들다",
+        "example": "The profiler hooks into the JVM to sample stack traces.",
+        "situations": [
+          "모니터링 도구 동작 원리 설명",
+          "라이프사이클 훅 설명"
+        ],
+        "detail": "갈고리(hook)를 걸어 시스템 내부 흐름에 끼어든다는 그림. 프로파일러나 APM 에이전트가 런타임에 붙는 방식, 라이프사이클의 특정 시점에 코드 끼우는 것 모두 이 말로 설명돼. hook 자체가 명사로도 매일 쓰이는 핵심 용어야.",
+        "exampleKo": "프로파일러가 JVM에 붙어서 스택 트레이스를 샘플링해요.",
+        "questionEn": "How does the monitoring agent get data out of a running application?",
+        "termsKo": "훅(hook): 시스템의 특정 시점에 내 코드를 끼워 넣을 수 있게 열어둔 지점. git hook, React hook 등."
+      },
+      {
+        "key": "pv:tap-into",
+        "en": "tap into",
+        "ko": "(기존 자원을) 끌어다 쓰다",
+        "example": "We can tap into the existing event stream for analytics.",
+        "situations": [
+          "기존 인프라 재활용 제안",
+          "데이터 소스 결정 논의"
+        ],
+        "detail": "수도관에 꼭지(tap)를 꽂아 흐르는 걸 빼 쓰는 그림. 이미 존재하는 데이터 스트림·인프라·팀의 전문성을 새로 만들지 않고 끌어다 쓸 때 써. '바닥부터 새로 안 만들어도 된다'는 절약의 뉘앙스가 핵심이야.",
+        "exampleKo": "분석용으로는 기존 이벤트 스트림을 끌어다 쓰면 돼요.",
+        "questionEn": "Do we need new infrastructure for analytics, or is there something we already have?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:feed-into",
+        "en": "feed into",
+        "ko": "~로 흘러 들어가다, 입력이 되다",
+        "example": "The click logs feed into the recommendation model nightly.",
+        "situations": [
+          "데이터 파이프라인 설명",
+          "지표가 의사결정에 반영되는 흐름 설명"
+        ],
+        "detail": "먹이를 흘려 넣듯 한 시스템의 출력이 다른 시스템의 입력으로 들어간다는 그림. 데이터 파이프라인 설명의 기본 동사야. '이 지표가 의사결정에 반영된다(feeds into the decision)'처럼 추상적인 흐름에도 똑같이 써.",
+        "exampleKo": "클릭 로그가 매일 밤 추천 모델로 흘러 들어가요.",
+        "questionEn": "Where does the training data for the recommendation system come from?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:fold-into",
+        "en": "fold into",
+        "ko": "(별도였던 것을) 합쳐 흡수시키다",
+        "example": "We folded the auth service into the main API.",
+        "situations": [
+          "서비스 통합 결정 설명",
+          "팀/프로젝트 합병 공유"
+        ],
+        "detail": "요리에서 반죽에 재료를 접어 넣어 섞듯, 별도로 존재하던 것을 더 큰 것에 흡수시킨다는 그림. 마이크로서비스를 모놀리스로 합치거나 팀·프로젝트가 통합될 때 쓰는 말이야. merge보다 '흡수돼서 별도 정체성이 사라진다'는 뉘앙스가 강해.",
+        "exampleKo": "인증 서비스를 메인 API에 합쳐 넣었어요.",
+        "questionEn": "What happened to the separate authentication service after the re-architecture?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "through",
+    "coreKo": "through는 입구로 들어가 끝까지 통과해 나오는 그림. read through(처음부터 끝까지 읽음), fall through(아무 데도 안 걸리고 빠져나감), pass through(가공 없이 통과), follow through(끝까지 해냄). '끝까지·관통'이 핵심이라, through가 붙으면 '대충'의 반대라고 보면 된다.",
+    "items": [
+      {
+        "key": "pv:fall-through",
+        "en": "fall through",
+        "ko": "(계획이) 무산되다; (조건에 안 걸리고) 다음으로 떨어지다",
+        "example": "The vendor deal fell through, so we're building it in-house.",
+        "situations": [
+          "계획 변경 사유 설명",
+          "switch문 fall-through 코드 리뷰"
+        ],
+        "detail": "그물코 사이로 빠져 떨어지는 그림. 계획·계약이 성사 직전에 무산될 때 쓰는 게 일상 뜻이고, 코드에선 switch 문에서 break 없이 다음 case로 떨어지는 동작도 같은 단어야. '아무 데도 안 걸리고 빠져나갔다'는 그림 하나로 둘 다 커버돼.",
+        "exampleKo": "벤더 계약이 무산돼서 자체 개발하기로 했어요.",
+        "questionEn": "Why are you building the payment system internally instead of buying the vendor solution?",
+        "termsKo": "switch fall-through: case에 break를 안 쓰면 다음 case까지 이어서 실행되는 동작. 의도적일 수도, 버그일 수도 있다."
+      },
+      {
+        "key": "pv:pass-through",
+        "en": "pass through",
+        "ko": "가공 없이 그대로 통과시키다",
+        "example": "The gateway just passes the auth header through to the backend services.",
+        "situations": [
+          "API 게이트웨이 설계 설명",
+          "프록시 동작 설명"
+        ],
+        "detail": "중간을 가공 없이 그대로 통과한다는 그림. 게이트웨이·프록시가 헤더나 페이로드를 손대지 않고 넘길 때 쓰는 표준 표현이야. 명사 pass-through도 설계 문서에 자주 등장해.",
+        "exampleKo": "게이트웨이는 인증 헤더를 그대로 서비스로 통과시켜요.",
+        "questionEn": "Does the gateway modify request headers, or do they reach the services unchanged?",
+        "termsKo": "패스스루(pass-through): 중간 계층이 데이터를 가공하지 않고 그대로 전달하는 방식."
+      },
+      {
+        "key": "pv:think-through",
+        "en": "think through",
+        "ko": "끝까지 빠짐없이 따져 생각하다",
+        "example": "Let's think through the failure modes before we ship this.",
+        "situations": [
+          "설계 리뷰에서 신중론 제기",
+          "엣지 케이스 점검 제안"
+        ],
+        "detail": "생각을 입구부터 출구까지 끝까지 관통시킨다는 그림. think about이 '생각해 본다' 정도라면, think through는 엣지 케이스·실패 모드까지 빠짐없이 따진다는 철저함이 핵심이야. 'Have we thought this through?'는 설계 리뷰에서 신중론을 꺼내는 정중한 방법.",
+        "exampleKo": "출시 전에 실패 시나리오를 끝까지 따져 봅시다.",
+        "questionEn": "The design looks good on paper, but are we ready to ship it today?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:read-through",
+        "en": "read through",
+        "ko": "처음부터 끝까지 다 읽다",
+        "example": "I read through the RFC and left a few comments.",
+        "situations": [
+          "설계 문서 리뷰 후 공유",
+          "코드베이스 파악 과정 설명"
+        ],
+        "detail": "문서를 처음부터 끝까지 관통해서 읽는다는 그림. skim(대충 훑기)과 달리 빠짐없이 다 읽었다는 뉘앙스야. 'I read through the RFC'라고 하면 제대로 검토했다는 신호가 돼.",
+        "exampleKo": "RFC 끝까지 읽고 코멘트 몇 개 남겼어요.",
+        "questionEn": "Did you get a chance to review the design document I sent yesterday?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:follow-through",
+        "en": "follow through",
+        "ko": "(약속·계획을) 끝까지 실행하다",
+        "example": "We agreed on the fix, but nobody followed through.",
+        "situations": [
+          "포스트모템 액션아이템 점검",
+          "실행력 관련 behavioral 답변"
+        ],
+        "detail": "골프 스윙처럼 동작을 끝까지 이어간다는 그림. 합의·약속·액션아이템을 말로만 끝내지 않고 실제 실행까지 완수하는 거야. 포스트모템에서 '액션아이템 팔로스루가 안 됐다'는 식으로 실행력 얘기할 때의 핵심 어휘.",
+        "exampleKo": "수정하기로 합의는 했는데 아무도 끝까지 실행 안 했어요.",
+        "questionEn": "The retro produced ten action items last month. What actually happened to them?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "over",
+    "coreKo": "over는 위를 넘어 반대편으로 옮겨가거나, 위에서 전체를 덮어 훑는 그림. fail over(장애 시 옆으로 넘어감), hand over(통째로 건네 넘김), carry over(다음 칸으로 들고 넘어감), look over(위에서 훑어봄), start over(출발점으로 되넘어감). '넘김·전환·훑기' 세 갈래로 거의 다 풀린다.",
+    "items": [
+      {
+        "key": "pv:fail-over",
+        "en": "fail over",
+        "ko": "(장애 시) 예비 시스템으로 자동 전환되다",
+        "example": "If the primary dies, traffic fails over to the replica.",
+        "situations": [
+          "고가용성 설계 인터뷰",
+          "DR(재해복구) 훈련 설명"
+        ],
+        "detail": "주 시스템이 쓰러지면(fail) 역할이 예비 쪽으로 넘어간다(over)는 그림. 고가용성 설계 인터뷰의 필수 동사이고 명사 failover로도 매일 쓰여. 계획된 수동 전환은 switchover, 장애로 인한 자동 전환이 failover라는 구분까지 알면 플러스야.",
+        "exampleKo": "프라이머리가 죽으면 트래픽이 레플리카로 자동 전환돼요.",
+        "questionEn": "What happens to user traffic when the primary database suddenly crashes?",
+        "termsKo": "페일오버: 주 시스템 장애 시 예비 시스템이 자동으로 역할을 이어받는 것. 고가용성(HA)의 핵심 메커니즘."
+      },
+      {
+        "key": "pv:hand-over",
+        "en": "hand over",
+        "ko": "(소유권·책임을) 통째로 인계하다",
+        "example": "I handed over the service with full runbooks before leaving.",
+        "situations": [
+          "이직/팀 이동 시 인수인계",
+          "프로젝트 오너십 이전"
+        ],
+        "detail": "손에 든 걸 통째로 상대에게 건네 넘기는 그림. hand off가 릴레이 바통 터치처럼 가볍고 일상적이라면, hand over는 소유권과 책임 전체를 공식적으로 인계하는 무게감이 있어. 이직·팀 이동 때 handover document를 만드는 게 표준 관행이야.",
+        "exampleKo": "떠나기 전에 런북까지 다 갖춰서 서비스를 인계했어요.",
+        "questionEn": "How did you make sure your team was okay after you switched roles?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:carry-over",
+        "en": "carry over",
+        "ko": "(다음 기간·버전으로) 이월되다, 넘어가다",
+        "example": "Two unfinished tickets carry over to the next sprint.",
+        "situations": [
+          "스프린트 회고/플래닝",
+          "설정이 새 버전에 유지되는지 설명"
+        ],
+        "detail": "이번 칸에서 못 끝낸 걸 들고 다음 칸으로 넘어가는 그림. 스프린트에서 못 끝낸 티켓, 이전 버전에서 유지되는 설정, 회계의 이월까지 전부 이 단어야. 회고에서 'carryover가 많다'는 건 플래닝이 안 맞는다는 신호로 통해.",
+        "exampleKo": "못 끝낸 티켓 두 개는 다음 스프린트로 이월돼요.",
+        "questionEn": "What happens to the stories we didn't finish this sprint?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:look-over",
+        "en": "look over",
+        "ko": "가볍게 훑어보며 검토하다",
+        "example": "Could you look over my PR before the standup?",
+        "situations": [
+          "가벼운 리뷰 요청",
+          "문서 검토 부탁"
+        ],
+        "detail": "위에서 전체를 한번 훑어본다는 그림. 정식 리뷰보다 가볍게 '한번 봐줄래?'라고 부탁할 때 딱이야. review가 공식 절차라면, look over는 동료에게 청하는 캐주얼한 2차 확인이라는 온도 차이가 있어.",
+        "exampleKo": "스탠드업 전에 제 PR 한번 봐주실 수 있어요?",
+        "questionEn": "Your pull request is ready but needs a second pair of eyes. What do you ask?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:start-over",
+        "en": "start over",
+        "ko": "처음부터 다시 하다",
+        "example": "The prototype taught us enough that starting over was faster.",
+        "situations": [
+          "재작성 결정 설명",
+          "실패한 접근 회고"
+        ],
+        "detail": "지금 있는 자리를 버리고 출발점으로 되넘어가 다시 시작한다는 그림. 리팩터링으로는 답이 없어 처음부터 다시 짜기로 한 결정을 말할 때 써. rewrite가 행위 자체라면, start over는 '엎고 다시 간다'는 결단의 뉘앙스야.",
+        "exampleKo": "프로토타입에서 배운 게 많아서 처음부터 다시 짜는 게 더 빨랐어요.",
+        "questionEn": "The first implementation was a mess. Did you refactor it or do something else?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "on",
+    "coreKo": "on은 표면 위에 붙어서 떨어지지 않고 계속되는 그림. take on(어깨에 짊어짐), build on(토대 위에 쌓음), tack on(핀으로 덧붙임), hinge on(경첩에 매달려 좌우됨), drag on(붙은 채 질질 계속됨). '접촉 + 지속'이라는 두 축만 잡으면 on 구동사의 뜻이 보인다.",
+    "items": [
+      {
+        "key": "pv:take-on",
+        "en": "take on",
+        "ko": "(일·책임을) 맡다, 떠안다",
+        "example": "I took on the migration project no one wanted.",
+        "situations": [
+          "주도성 어필 behavioral 답변",
+          "업무 분담 논의"
+        ],
+        "detail": "짐을 어깨 위에(on) 받아 짊어진다는 그림. 아무도 안 하려는 일이나 도전적인 책임을 자발적으로 맡았다고 말할 때 쓰는, behavioral 인터뷰 최고 빈출 동사 중 하나야. accept보다 능동적이고 주도적인 느낌이 강해.",
+        "exampleKo": "아무도 안 맡으려던 마이그레이션 프로젝트를 제가 맡았어요.",
+        "questionEn": "Tell me about a challenging responsibility you volunteered for.",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:build-on",
+        "en": "build on",
+        "ko": "~을 기반으로 쌓아 올리다; (의견에) 덧붙이다",
+        "example": "The new pipeline builds on the existing event infrastructure.",
+        "situations": [
+          "기존 인프라 재사용 설명",
+          "회의에서 남의 의견에 덧붙이기"
+        ],
+        "detail": "기존 토대 위에(on) 쌓아 올린다는 그림. 바닥부터 새로 안 만들고 기존 인프라를 재활용했다고 강조할 때 쓰고, 회의에선 'To build on what she said...'처럼 남의 의견에 덧붙일 때도 매일 쓰여. 두 용법 다 입에 붙여둘 가치가 있어.",
+        "exampleKo": "새 파이프라인은 기존 이벤트 인프라를 기반으로 만들었어요.",
+        "questionEn": "Was the new pipeline created from scratch, or did it reuse existing pieces?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:tack-on",
+        "en": "tack on",
+        "ko": "(설계에 안 녹은 채) 대충 덧붙이다",
+        "example": "Caching feels tacked on — it should be part of the design.",
+        "situations": [
+          "설계 리뷰 비판",
+          "막판 스코프 추가 요구 경계"
+        ],
+        "detail": "압정(tack)으로 슥 꽂아 붙인 그림이라 '급하게, 설계에 안 녹은 채 덧붙임'이라는 부정적 뉘앙스가 기본이야. 설계 리뷰에서 'feels tacked on'은 꽤 강한 비판. bake in(처음부터 녹여 넣음)의 정반대 표현으로 기억해.",
+        "exampleKo": "캐싱이 대충 덧붙인 느낌이에요 — 설계에 녹아 있어야죠.",
+        "questionEn": "What's your honest opinion of how the caching layer was added?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:hinge-on",
+        "en": "hinge on",
+        "ko": "~ 하나에 전적으로 달려 있다",
+        "example": "The whole design hinges on the queue never losing messages.",
+        "situations": [
+          "설계 리스크 지적",
+          "핵심 전제 조건 명시"
+        ],
+        "detail": "문이 경첩(hinge)에 매달려 그것 하나로 움직이듯, 전체가 한 가지 전제에 좌우된다는 그림. 설계의 핵심 가정이나 리스크를 짚을 때 'The design hinges on X'라고 하면 임팩트 있게 들려. depend on보다 '그거 하나 무너지면 전부 무너진다'는 절박함이 있어.",
+        "exampleKo": "이 설계 전체가 큐가 메시지를 안 잃는다는 전제에 달려 있어요.",
+        "questionEn": "What's the single biggest assumption behind your design?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:drag-on",
+        "en": "drag on",
+        "ko": "(회의·작업이) 질질 늘어지다",
+        "example": "The migration dragged on for three months longer than planned.",
+        "situations": [
+          "지연된 프로젝트 회고",
+          "길어지는 회의 문화 지적"
+        ],
+        "detail": "끌리는(drag) 상태가 계속(on)된다는 그림. 회의·프로젝트·마이그레이션이 예정보다 질질 늘어질 때 쓰는 말이야. 부정적 뉘앙스가 기본이라, 본인 프로젝트 회고에서 쓰면 솔직함을 보여주는 효과가 있어.",
+        "exampleKo": "마이그레이션이 계획보다 석 달이나 더 질질 끌렸어요.",
+        "questionEn": "How did the timeline of that migration project actually go?",
+        "termsKo": ""
+      }
+    ]
+  },
+  {
+    "particle": "around",
+    "coreKo": "around는 가운데 장애물이나 중심을 빙 둘러 도는 그림. work around(막힌 곳을 돌아서 우회), poke around(이리저리 쑤시고 다니며 탐색), kick around(공 돌리듯 아이디어를 굴림), get around to(빙 돌다 마침내 도달). '우회·탐색·빙 돌기'를 잡으면 around 구동사는 거의 다 추측된다.",
+    "items": [
+      {
+        "key": "pv:work-around",
+        "en": "work around",
+        "ko": "우회해서 해결하다",
+        "example": "We can't fix the driver bug, but we can work around it.",
+        "situations": [
+          "서드파티 버그 대응",
+          "임시 해결책 공유"
+        ],
+        "detail": "막힌 길을 정면 돌파하지 않고 빙 돌아간다는 그림. 서드파티 버그처럼 근본 원인을 못 고칠 때 증상을 피해 가는 임시 대응을 말해. 명사 workaround는 이슈 트래커와 슬랙에서 매일 보는 단어야.",
+        "exampleKo": "드라이버 버그를 고칠 순 없지만 우회는 가능해요.",
+        "questionEn": "The bug is in a library we don't control. What are our options?",
+        "termsKo": "워크어라운드(workaround): 근본 원인을 못 고칠 때 증상을 피해 가는 임시 우회책. 명사로도 매일 쓰인다."
+      },
+      {
+        "key": "pv:wrap-around",
+        "en": "wrap around",
+        "ko": "끝에 닿으면 처음으로 되감기다",
+        "example": "The counter wraps around to zero after the max value.",
+        "situations": [
+          "정수 오버플로 버그 설명",
+          "원형 버퍼 설명"
+        ],
+        "detail": "끝에 닿으면 종이가 감기듯 처음으로 되돌아간다는 그림. 정수 오버플로, 원형 버퍼, 시계 산술이 다 이 단어로 설명돼. 'the counter wraps around'는 오버플로 버그를 설명하는 표준 문장이야.",
+        "exampleKo": "카운터가 최댓값 넘으면 0으로 되돌아가요.",
+        "questionEn": "What happens to a 32-bit counter when it exceeds its maximum value?",
+        "termsKo": "정수 오버플로/원형 버퍼: 값이 표현 한계를 넘으면 처음으로 되감기는 동작. 의도하면 ring buffer, 의도 안 하면 버그."
+      },
+      {
+        "key": "pv:poke-around",
+        "en": "poke around",
+        "ko": "이리저리 둘러보다, 뒤져 보다",
+        "example": "I poked around the codebase to see how auth works.",
+        "situations": [
+          "온보딩 첫 주 활동 설명",
+          "디버깅 초기 탐색"
+        ],
+        "detail": "막대기로 여기저기 쿡쿡 찔러보며 돌아다니는 그림. 목적지를 정하지 않고 코드베이스·시스템을 가볍게 탐색하는 행동이야. 온보딩이나 디버깅 초기에 'I poked around a bit'이라고 하면 아주 자연스러운 구어가 돼.",
+        "exampleKo": "인증이 어떻게 도는지 코드베이스를 좀 뒤져 봤어요.",
+        "questionEn": "You just joined the team. How do you start learning the codebase?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:kick-around",
+        "en": "kick around",
+        "ko": "(아이디어를) 이리저리 굴려 보다",
+        "example": "We kicked around a few ideas for the caching layer.",
+        "situations": [
+          "브레인스토밍 회고",
+          "설계 초기 논의 설명"
+        ],
+        "detail": "공을 발로 이리저리 돌려 차듯 아이디어를 가볍게 굴려본다는 그림. 결론을 내려는 게 아니라 브레인스토밍 단계라는 신호야. 'We kicked around a few ideas'는 설계 초기 논의를 설명하는 가장 자연스러운 표현 중 하나.",
+        "exampleKo": "캐싱 레이어 관련해서 아이디어 몇 개 굴려 봤어요.",
+        "questionEn": "How did the team explore options before settling on the final design?",
+        "termsKo": ""
+      },
+      {
+        "key": "pv:get-around-to",
+        "en": "get around to",
+        "ko": "(미루다가) 마침내 ~할 짬을 내다",
+        "example": "I never got around to writing tests for that module.",
+        "situations": [
+          "기술 부채 솔직 고백",
+          "미뤄둔 작업 언급"
+        ],
+        "detail": "다른 일들을 빙 돌아 마침내 그 일에 도달한다는 그림. 미뤄뒀던 일을 '결국 했다' 또는 '끝내 못 했다'고 말할 때 써. 'never got around to it'은 기술 부채를 솔직하게 고백하는 가장 자연스러운 문장이야.",
+        "exampleKo": "그 모듈 테스트는 결국 짬을 못 내서 못 썼어요.",
+        "questionEn": "Why does that module still have zero test coverage?",
+        "termsKo": ""
+      }
+    ]
+  }
+];
+export const COLLOCATION_CARDS: PhraseCard[] = [
+  {
+    "key": "cl:merge-a-branch",
+    "en": "merge a branch",
+    "ko": "브랜치를 머지하다(본류에 병합하다)",
+    "example": "Once CI passes, I'll merge the branch into main.",
+    "situations": [
+      "PR 승인 후 다음 단계를 말할 때",
+      "릴리즈 전에 작업을 main에 합칠 때"
+    ],
+    "detail": "갈라져 나온 작업 줄기를 본류에 합친다는 그림이야. PR이 승인되고 CI가 초록불이면 '이제 합친다'고 매일같이 말하는 표현. 방향은 merge into main처럼 into로 붙이는 게 자연스럽고, 히스토리를 새로 쓰는 rebase와 달리 합치는 기록이 남는다.",
+    "exampleKo": "CI 통과하면 그 브랜치 main에 머지할게.",
+    "questionEn": "The review is approved and all checks are green. What do you do next with that work?",
+    "termsKo": "브랜치: 메인 코드에서 갈라져 나온 독립적인 작업 줄기."
+  },
+  {
+    "key": "cl:rebase-a-branch",
+    "en": "rebase a branch",
+    "ko": "브랜치를 리베이스하다(최신 main 위로 다시 올리다)",
+    "example": "Can you rebase your branch on main before we merge?",
+    "situations": [
+      "브랜치가 main보다 뒤처졌을 때",
+      "머지 전에 히스토리 정리를 요청할 때"
+    ],
+    "detail": "내 커밋들을 떼어다가 최신 main 꼭대기 위에 다시 쌓는 그림. 브랜치가 오래돼서 main과 벌어졌을 때 '리베이스부터 하고 머지하자'고 말한다. merge와 달리 히스토리가 일직선이 되는 대신, 공유 브랜치에서 하면 동료들 히스토리가 깨지니 조심.",
+    "exampleKo": "머지하기 전에 네 브랜치 main 위로 리베이스해 줄래?",
+    "questionEn": "A teammate's work has fallen behind the trunk and history looks tangled. What do you ask them to do first?",
+    "termsKo": "rebase: 커밋들을 다른 기준점 위로 옮겨 다시 적용하는 git 명령. 히스토리가 직선이 됨."
+  },
+  {
+    "key": "cl:squash-commits",
+    "en": "squash commits",
+    "ko": "여러 커밋을 하나로 합치다(스쿼시)",
+    "example": "I'll squash the commits before merging to keep history clean.",
+    "situations": [
+      "자잘한 WIP 커밋이 많은 PR을 정리할 때",
+      "머지 전략을 논의할 때"
+    ],
+    "detail": "squash는 짓눌러 납작하게 만든다는 뜻이라, 자잘한 커밋 여러 개를 한 덩어리로 눌러 합치는 그림이야. 'fix typo' 같은 커밋이 열 개씩 쌓인 PR을 머지하기 전에 거의 반사적으로 나오는 말. GitHub의 squash and merge 버튼 덕분에 동사로 완전히 굳었다.",
+    "exampleKo": "히스토리 깔끔하게 하려고 머지 전에 커밋들 스쿼시할게.",
+    "questionEn": "Your PR has fifteen tiny work-in-progress entries in its history. How do you clean that up before it goes in?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:cherry-pick-a-commit",
+    "en": "cherry-pick a commit",
+    "ko": "특정 커밋만 골라서 다른 브랜치에 적용하다",
+    "example": "Just cherry-pick that fix onto the release branch.",
+    "situations": [
+      "릴리즈 브랜치에 핫픽스 하나만 옮길 때",
+      "전체 머지 없이 특정 변경만 가져올 때"
+    ],
+    "detail": "체리만 쏙 골라 따듯이, 브랜치 전체가 아니라 커밋 하나만 집어서 가져오는 그림. main에 들어간 버그 수정을 릴리즈 브랜치에도 넣어야 할 때 단골로 나온다. 같은 변경이 두 개의 커밋으로 존재하게 되니 나중에 충돌의 씨앗이 될 수 있다는 점은 알아두기.",
+    "exampleKo": "그 수정 커밋만 릴리즈 브랜치에 체리픽해.",
+    "questionEn": "One bug fix already landed on main, and the release line needs only that change. How do you bring it over?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:resolve-a-conflict",
+    "en": "resolve a conflict",
+    "ko": "(머지) 충돌을 해결하다",
+    "example": "I'm still resolving a conflict in the config file.",
+    "situations": [
+      "머지나 리베이스가 충돌로 멈췄을 때",
+      "PR이 머지 불가 상태일 때"
+    ],
+    "detail": "두 브랜치가 같은 줄을 다르게 고쳐서 git이 손을 든 상태를 사람이 풀어주는 것. 'PR에 conflict 떴어'라는 말 다음에 거의 자동으로 따라오는 동사가 resolve다. fix a conflict라고 해도 통하지만 resolve가 훨씬 표준적인 짝꿍.",
+    "exampleKo": "아직 config 파일 충돌 해결하는 중이야.",
+    "questionEn": "Git stopped your merge because two people changed the same lines. What do you have to do before continuing?",
+    "termsKo": "merge conflict: 두 브랜치가 같은 코드 부분을 다르게 수정해 git이 자동 병합을 못 하는 상태."
+  },
+  {
+    "key": "cl:revert-a-commit",
+    "en": "revert a commit",
+    "ko": "커밋을 되돌리다(반대 커밋으로 취소)",
+    "example": "Let's revert that commit first and investigate later.",
+    "situations": [
+      "배포 후 특정 변경이 장애를 일으켰을 때",
+      "문제 커밋을 빠르게 무효화할 때"
+    ],
+    "detail": "문제가 된 커밋의 정반대 변경을 새 커밋으로 쌓아서 효과를 취소하는 것. 장애 상황에서 '원인 분석은 나중에, 일단 되돌리자'고 할 때 첫 번째로 나오는 말이야. 히스토리를 지우는 reset과 달리 기록이 남아서 공유 브랜치에서도 안전하다.",
+    "exampleKo": "일단 그 커밋 리버트하고 조사는 나중에 하자.",
+    "questionEn": "A change that went in this morning is breaking production. What is the fastest safe way to undo it?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:cut-a-release",
+    "en": "cut a release",
+    "ko": "릴리즈를 따다(릴리즈 버전을 확정해 만들다)",
+    "example": "We're cutting a release this Friday, so freeze your changes.",
+    "situations": [
+      "릴리즈 일정 공지할 때",
+      "코드 프리즈 직전 상황"
+    ],
+    "detail": "흘러가는 main에서 한 시점을 싹둑 잘라내 릴리즈로 만든다는 그림. make나 create보다 cut이 압도적으로 많이 쓰이는, 진짜 현장 냄새 나는 콜로케이션이다. 이 말이 나오면 보통 그 뒤에 code freeze가 따라온다.",
+    "exampleKo": "금요일에 릴리즈 딸 거니까 변경사항 얼려놔.",
+    "questionEn": "The sprint ends Friday and you need a fixed version of the code to ship. What happens that day?",
+    "termsKo": "code freeze: 릴리즈 직전에 새 변경 반입을 멈추는 기간."
+  },
+  {
+    "key": "cl:tag-a-release",
+    "en": "tag a release",
+    "ko": "릴리즈에 버전 태그를 붙이다",
+    "example": "Don't forget to tag the release before you deploy.",
+    "situations": [
+      "배포 직전 체크리스트 확인할 때",
+      "버전 이력 추적 이야기할 때"
+    ],
+    "detail": "특정 커밋에 v2.3.0 같은 이름표를 박아서 '이게 그 버전이다'라고 못 박는 것. 배포 전 체크리스트에서 빠지면 나중에 어떤 코드가 나갔는지 추적이 안 되니까 꼭 나오는 말이야. cut a release가 만드는 행위라면 tag는 이름표 붙이는 행위.",
+    "exampleKo": "배포 전에 릴리즈 태그 다는 거 잊지 마.",
+    "questionEn": "Six months from now you must know exactly which commit shipped as version 2.3. What do you do at ship time?",
+    "termsKo": "git tag: 특정 커밋에 영구적인 이름(보통 버전 번호)을 붙이는 기능."
+  },
+  {
+    "key": "cl:stash-my-changes",
+    "en": "stash my changes",
+    "ko": "작업 중인 변경사항을 임시 보관하다",
+    "example": "Let me stash my changes and check out your branch.",
+    "situations": [
+      "작업 도중 급한 다른 브랜치로 전환할 때",
+      "더러운 워킹트리 때문에 명령이 막혔을 때"
+    ],
+    "detail": "stash는 비상금 숨겨두는 곳이란 뜻이라, 커밋하긴 애매한 작업물을 서랍에 잠깐 넣어두는 그림이야. 작업하다가 급하게 다른 브랜치 봐줘야 할 때 거의 반사적으로 나온다. 나중에 꺼낼 때는 pop the stash라고 한다.",
+    "exampleKo": "내 변경사항 잠깐 스태시하고 네 브랜치 체크아웃할게.",
+    "questionEn": "You are mid-task with uncommitted work, and a teammate needs you to look at their code right now. What do you do?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:force-push-the-branch",
+    "en": "force-push the branch",
+    "ko": "브랜치를 강제 푸시하다(원격 히스토리 덮어쓰기)",
+    "example": "I rebased, so I had to force-push the branch.",
+    "situations": [
+      "리베이스 후 원격에 다시 올릴 때",
+      "원격 히스토리를 덮어쓴 사실을 알릴 때"
+    ],
+    "detail": "원격에 있는 히스토리를 내 것으로 강제로 덮어쓰는 푸시. 리베이스나 스쿼시 후엔 일반 푸시가 거부되니까 거의 세트로 따라온다. 공유 브랜치에 하면 동료 작업이 날아갈 수 있어서 'force-push했어'라고 미리 알려주는 게 매너.",
+    "exampleKo": "리베이스해서 브랜치 강제 푸시해야 했어.",
+    "questionEn": "You rewrote your branch history, and now the remote rejects your normal update. What do you do?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:open-a-pr",
+    "en": "open a PR",
+    "ko": "풀 리퀘스트를 올리다",
+    "example": "I'll open a PR once the tests pass.",
+    "situations": [
+      "작업 완료를 알리고 리뷰를 요청할 때",
+      "진행 상황을 공유할 때"
+    ],
+    "detail": "내 브랜치를 합쳐달라고 공식적으로 요청서를 여는 것. 'create'보다 open이, 영국계 회사에선 raise a PR도 흔하다. 데일리 스탠드업에서 'PR 올릴게요'라고 할 때 그대로 쓰는 표현.",
+    "exampleKo": "테스트 통과하면 PR 올릴게.",
+    "questionEn": "Your feature is done locally and you want teammates to review it. What is your next move?",
+    "termsKo": "PR(pull request): 내 브랜치를 본류에 합쳐달라는 리뷰 요청 단위."
+  },
+  {
+    "key": "cl:approve-a-pr",
+    "en": "approve a PR",
+    "ko": "PR을 승인하다",
+    "example": "Looks good, I'll approve the PR now.",
+    "situations": [
+      "리뷰를 끝내고 통과시킬 때",
+      "머지가 왜 안 되는지 물을 때"
+    ],
+    "detail": "리뷰어가 '이대로 머지해도 좋다'고 도장을 찍는 행위. LGTM이라는 코멘트와 거의 세트로 다닌다. 반대 행동은 request changes고, 승인 없이는 머지 버튼이 안 열리는 팀이 대부분이라 'approve 좀 해줘'라는 부탁도 흔하다.",
+    "exampleKo": "좋아 보이네, 지금 PR 승인할게.",
+    "questionEn": "You finished reviewing a teammate's code and everything looks fine. What do you do so they can merge?",
+    "termsKo": "LGTM: looks good to me의 약자. 리뷰 통과 코멘트 관용구."
+  },
+  {
+    "key": "cl:request-changes",
+    "en": "request changes",
+    "ko": "(PR에) 수정을 요청하다",
+    "example": "I requested changes on your PR — mostly naming stuff.",
+    "situations": [
+      "리뷰에서 고칠 부분을 지적할 때",
+      "승인을 보류하는 이유를 설명할 때"
+    ],
+    "detail": "approve의 반대편 버튼으로, '이거 고치기 전엔 머지 못 한다'는 공식 표시야. GitHub UI 용어가 그대로 회화에 굳은 케이스. 코멘트만 남기는 것보다 강한 신호라서, 사소한 지적이면 그냥 comment로 남기고 이건 아껴 쓰는 게 보통이다.",
+    "exampleKo": "네 PR에 수정 요청 남겼어. 대부분 네이밍 관련이야.",
+    "questionEn": "A teammate's PR has problems that must be fixed before it can go in. How do you signal that formally?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:address-the-comments",
+    "en": "address the comments",
+    "ko": "리뷰 코멘트를 반영하다",
+    "example": "I addressed all the comments, can you take another look?",
+    "situations": [
+      "리뷰 지적사항을 고친 뒤 재리뷰를 요청할 때",
+      "PR 진행 상황을 보고할 때"
+    ],
+    "detail": "address는 문제를 정면으로 다뤄서 처리한다는 뜻이라, 코멘트 하나하나에 대응했다는 그림이야. 고치거나, 왜 안 고치는지 답글을 달거나 둘 다 포함한다. fix the comments라고 하면 어색하고 address가 정확한 짝꿍.",
+    "exampleKo": "코멘트 다 반영했어. 다시 한번 봐줄래?",
+    "questionEn": "Your reviewer left ten notes on your PR and you handled every one. What do you tell them?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:land-a-change",
+    "en": "land a change",
+    "ko": "변경사항을 본류에 안착시키다(머지 완료)",
+    "example": "The fix should land in main by tomorrow.",
+    "situations": [
+      "변경이 언제 main에 들어가는지 말할 때",
+      "머지 완료 사실을 알릴 때"
+    ],
+    "detail": "비행기가 착륙하듯 변경이 본류에 무사히 내려앉는 그림. merge가 행위라면 land는 결과에 초점이 있어서 'when does it land?'처럼 일정 얘기에 잘 어울린다. 구글이나 메타 출신들이 특히 많이 쓰고, 자동사로 the change landed처럼도 쓴다.",
+    "exampleKo": "그 수정은 내일까지 main에 들어갈 거야.",
+    "questionEn": "Your manager asks when the fix will actually be in the main codebase. How do you phrase the answer?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:break-the-build",
+    "en": "break the build",
+    "ko": "빌드를 깨뜨리다",
+    "example": "Who broke the build? CI's been red for an hour.",
+    "situations": [
+      "CI가 빨간불일 때 원인을 찾을 때",
+      "머지 전 주의를 줄 때"
+    ],
+    "detail": "내 커밋 때문에 CI 빌드가 실패 상태가 됐다는 뜻. 'CI가 빨갛다(red)'와 세트로 다니고, 빌드를 깬 사람이 고칠 책임을 진다는 팀 문화 표현이기도 하다. 반대로 고치는 건 fix the build, 정상 상태는 the build is green.",
+    "exampleKo": "누가 빌드 깼어? CI 한 시간째 빨간불이야.",
+    "questionEn": "CI has been failing for everyone since this morning's commits. What happened, in one phrase?",
+    "termsKo": "CI: 커밋마다 자동으로 빌드와 테스트를 돌리는 시스템. 실패하면 red, 성공이면 green."
+  },
+  {
+    "key": "cl:trigger-a-pipeline",
+    "en": "trigger a pipeline",
+    "ko": "(CI/CD) 파이프라인을 돌리다",
+    "example": "Pushing the tag will trigger the deploy pipeline.",
+    "situations": [
+      "어떤 조건에서 CI/CD가 도는지 설명할 때",
+      "수동으로 빌드를 다시 돌릴 때"
+    ],
+    "detail": "방아쇠를 당기듯 자동화 파이프라인을 출발시키는 것. 'merge하면 파이프라인이 트리거된다'처럼 조건-결과를 설명할 때 표준 동사야. 수동으로 돌릴 땐 kick off a build라고도 하고, 둘 다 입에 붙여두면 좋다.",
+    "exampleKo": "태그 푸시하면 배포 파이프라인이 돌아.",
+    "questionEn": "Explain what automatically starts the build-and-deploy process when someone pushes a tag.",
+    "termsKo": "pipeline: 빌드-테스트-배포가 순서대로 이어지는 자동화 단계 묶음."
+  },
+  {
+    "key": "cl:push-to-prod",
+    "en": "push to prod",
+    "ko": "프로덕션에 배포하다",
+    "example": "We're pushing to prod after the standup.",
+    "situations": [
+      "배포 시점을 공유할 때",
+      "금요일 배포를 말릴 때"
+    ],
+    "detail": "코드를 실서비스 환경으로 내보낸다는 말로, deploy to production의 구어체 축약이야. prod라고 줄여 말하는 것 자체가 현장 말투의 핵심. 'don't push to prod on Friday'는 업계 전체의 밈 수준 관용구다.",
+    "exampleKo": "스탠드업 끝나고 프로덕션에 배포할 거야.",
+    "questionEn": "The release is approved. When are you sending it to the live environment, and how do you say that casually?",
+    "termsKo": "prod(production): 실제 사용자가 쓰는 운영 환경. staging/dev와 대비."
+  },
+  {
+    "key": "cl:roll-back-a-deploy",
+    "en": "roll back a deploy",
+    "ko": "배포를 이전 버전으로 되돌리다",
+    "example": "Error rates spiked, so we rolled back the deploy.",
+    "situations": [
+      "배포 직후 장애가 났을 때",
+      "롤백 기준을 논의할 때"
+    ],
+    "detail": "방금 나간 배포를 통째로 이전 버전으로 되감는 것. 커밋 하나를 취소하는 revert와 달리 배포 단위로 되돌린다는 차이가 있어. 장애 대응의 첫 번째 카드라서 'roll back first, debug later'라는 말이 입에 붙어 있으면 좋다.",
+    "exampleKo": "에러율이 튀어서 배포 롤백했어.",
+    "questionEn": "Five minutes after shipping, errors spike across the service. What is your immediate move?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:ship-a-feature",
+    "en": "ship a feature",
+    "ko": "기능을 출시하다(사용자에게 내보내다)",
+    "example": "We shipped the search feature last week.",
+    "situations": [
+      "출시 소식을 공유할 때",
+      "일정 압박 속 우선순위를 말할 때"
+    ],
+    "detail": "배로 화물을 실어 보내듯 기능을 사용자 손에 보내는 그림. release보다 캐주얼하고 자부심이 묻어나는 동사라 'we shipped it'은 그 자체로 축하 멘트야. 'ship it!'은 그만 다듬고 내보내자는 관용구로도 쓰인다.",
+    "exampleKo": "지난주에 검색 기능 출시했어.",
+    "questionEn": "Your team got the new search capability into users' hands last week. How do you announce that?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:gate-a-feature",
+    "en": "gate a feature",
+    "ko": "기능을 플래그 뒤에 숨기다(게이팅)",
+    "example": "The new editor is gated behind a feature flag.",
+    "situations": [
+      "미완성 기능을 prod에 머지할 때",
+      "점진적 출시 전략을 설명할 때"
+    ],
+    "detail": "기능 앞에 문(gate)을 세워서 허락된 사용자만 보게 만드는 그림. 코드를 prod에 머지는 하되 일반 사용자에겐 안 보이게 할 때 쓰는 표준 표현이야. gated behind a flag라는 수동태 형태로 제일 많이 나온다.",
+    "exampleKo": "새 에디터는 피처 플래그 뒤에 숨겨놨어.",
+    "questionEn": "The code is merged to prod but only internal users should see it for now. How is that controlled?",
+    "termsKo": "feature flag: 코드 배포와 기능 공개를 분리하는 on/off 스위치 설정."
+  },
+  {
+    "key": "cl:flip-a-flag",
+    "en": "flip a flag",
+    "ko": "플래그를 켜다/끄다(스위치 전환)",
+    "example": "We can flip the flag and roll it out to everyone.",
+    "situations": [
+      "게이팅된 기능을 공개할 때",
+      "장애 시 기능을 끌 때"
+    ],
+    "detail": "벽 스위치를 탁 젖히듯 피처 플래그 상태를 바꾸는 것. 배포 없이 기능을 켜고 끌 수 있다는 게 포인트라 'no deploy needed, just flip the flag'처럼 말한다. 장애 때 기능을 끄는 비상 스위치 얘기에도 똑같이 쓴다.",
+    "exampleKo": "플래그만 켜면 전체 공개할 수 있어.",
+    "questionEn": "The hidden feature is ready for all users, and no redeploy is needed. What single action turns it on?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:throw-an-exception",
+    "en": "throw an exception",
+    "ko": "예외를 던지다",
+    "example": "That method throws an exception when the input is null.",
+    "situations": [
+      "코드 동작을 설명할 때",
+      "에러 처리 설계를 논의할 때"
+    ],
+    "detail": "에러를 공처럼 위로 던져 올리는 그림으로, 자바 키워드 throw가 그대로 회화에 박힌 표현이야. 코드 리뷰나 설계 논의에서 '여기서 던질까, 널 리턴할까' 같은 식으로 매일 나온다. 던진 걸 받는 쪽이 catch.",
+    "exampleKo": "그 메서드는 입력이 null이면 예외를 던져.",
+    "questionEn": "Describe what your method does when it receives invalid input, instead of returning a normal value.",
+    "termsKo": "exception: 정상 흐름을 끊고 호출 스택을 거슬러 올라가는 에러 신호 객체."
+  },
+  {
+    "key": "cl:catch-an-exception",
+    "en": "catch an exception",
+    "ko": "예외를 잡다(받아서 처리하다)",
+    "example": "We catch the exception and return a fallback value.",
+    "situations": [
+      "에러 처리 로직을 설명할 때",
+      "어디서 예외를 받을지 정할 때"
+    ],
+    "detail": "던져진 예외를 야구공 받듯이 잡아서 처리하는 것. try-catch 구문이 그대로 동사가 됐고, '어느 레이어에서 잡을 거냐'는 설계 논의의 단골 질문이야. 잡고 나서 아무것도 안 하면 그게 바로 swallow.",
+    "exampleKo": "예외를 잡아서 폴백 값을 리턴해.",
+    "questionEn": "An error gets thrown deep in the call stack. What does your handler layer do with it?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:swallow-an-exception",
+    "en": "swallow an exception",
+    "ko": "예외를 삼키다(잡고 아무것도 안 하기)",
+    "example": "Don't swallow the exception — at least log it.",
+    "situations": [
+      "빈 catch 블록을 리뷰에서 지적할 때",
+      "에러가 조용히 사라지는 버그를 추적할 때"
+    ],
+    "detail": "예외를 잡아놓고 꿀꺽 삼켜서 흔적도 없이 없애버리는 그림. 빈 catch 블록처럼 에러를 로그도 없이 묻어버리는 안티패턴을 지적할 때 쓰는, 약간 비난조가 섞인 표현이야. 에러가 조용히 사라지는 미스터리 버그의 단골 원인으로 거론된다.",
+    "exampleKo": "예외 삼키지 마. 최소한 로그는 남겨.",
+    "questionEn": "You find an empty catch block hiding errors with no log at all. What do you tell the author?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:acquire-a-lock",
+    "en": "acquire a lock",
+    "ko": "락을 획득하다",
+    "example": "The thread blocks until it acquires the lock.",
+    "situations": [
+      "동시성 코드 동작을 설명할 때",
+      "데드락 원인을 분석할 때"
+    ],
+    "detail": "공유 자원의 열쇠를 손에 넣는 그림으로, 동시성 얘기의 표준 동사야. get이나 take보다 acquire가 문서/회화 양쪽의 정식 짝꿍이고, 면접에서 락 얘기할 때도 이 동사를 써야 태가 난다. 획득 못 하면 block하거나 timeout된다.",
+    "exampleKo": "그 스레드는 락을 획득할 때까지 블록돼.",
+    "questionEn": "Two threads want the same shared resource. What must each one do before touching it?",
+    "termsKo": "lock: 공유 자원에 한 번에 하나만 접근하게 막는 동시성 장치."
+  },
+  {
+    "key": "cl:release-a-lock",
+    "en": "release a lock",
+    "ko": "락을 해제하다(반납하다)",
+    "example": "Make sure you release the lock in the finally block.",
+    "situations": [
+      "락 누수로 데드락이 의심될 때",
+      "finally 처리 리뷰할 때"
+    ],
+    "detail": "쥐고 있던 열쇠를 돌려놓는 것으로, acquire와 완벽한 한 쌍이야. '예외가 나도 반드시 release되게 해라'가 동시성 코드 리뷰의 단골 멘트. release를 빼먹으면 다른 스레드가 영원히 기다리는 데드락성 장애로 이어진다.",
+    "exampleKo": "finally 블록에서 락 해제하는 거 꼭 확인해.",
+    "questionEn": "A thread grabbed the mutex but an exception path skips the cleanup. What bug does that cause, and what was missed?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:spawn-a-thread",
+    "en": "spawn a thread",
+    "ko": "스레드를 생성하다(띄우다)",
+    "example": "We spawn a worker thread for each upload.",
+    "situations": [
+      "비동기 처리 구조를 설명할 때",
+      "스레드 폭증 문제를 논의할 때"
+    ],
+    "detail": "알에서 새끼가 깨어나듯 새 실행 흐름을 하나 까는 그림. create a thread보다 spawn이 훨씬 입말이고, 프로세스에도 spawn a process로 똑같이 쓴다. 요청마다 spawn하면 스레드가 폭증하니 풀을 쓰자, 같은 논의에서 단골로 나온다.",
+    "exampleKo": "업로드마다 워커 스레드를 하나씩 띄워.",
+    "questionEn": "Each upload needs its own parallel worker. What does your code do when a request arrives?",
+    "termsKo": "thread: 프로세스 안에서 동시에 도는 실행 단위."
+  },
+  {
+    "key": "cl:hit-an-endpoint",
+    "en": "hit an endpoint",
+    "ko": "엔드포인트를 호출하다(때리다)",
+    "example": "Just hit the health endpoint and see what it returns.",
+    "situations": [
+      "API 동작을 확인해보라고 할 때",
+      "디버깅 중 호출 흐름을 설명할 때"
+    ],
+    "detail": "API 주소를 한 대 때려본다는 감각으로, call보다 훨씬 구어적인 표현이야. curl로 찔러보거나 클라이언트가 서버를 호출하는 상황 모두에 쓴다. 'the client hits this endpoint twice'처럼 호출 흐름 설명에도 자연스럽다.",
+    "exampleKo": "헬스 엔드포인트 한번 때려보고 뭐 나오는지 봐.",
+    "questionEn": "You want to quickly check if the service is up using its health-check URL. What do you do?",
+    "termsKo": "endpoint: API에서 특정 기능을 담당하는 개별 URL 주소."
+  },
+  {
+    "key": "cl:expose-an-api",
+    "en": "expose an API",
+    "ko": "API를 외부에 열다(노출하다)",
+    "example": "The service exposes a REST API for the mobile app.",
+    "situations": [
+      "시스템 구조를 설명할 때",
+      "내부 기능을 외부에 열지 논의할 때"
+    ],
+    "detail": "안에 있던 기능을 바깥에서 쓸 수 있게 창구를 내준다는 그림. 아키텍처 설명에서 'this service exposes...'는 거의 문장 시작 공식이야. 보안 맥락에선 '불필요하게 노출됐다'는 부정적 뉘앙스로도 쓰이니 톤을 구분할 것.",
+    "exampleKo": "그 서비스는 모바일 앱용 REST API를 제공해.",
+    "questionEn": "Describe how external clients are able to use your service's functionality over HTTP.",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:deprecate-an-api",
+    "en": "deprecate an API",
+    "ko": "API를 폐기 예정으로 만들다",
+    "example": "We're deprecating the v1 API at the end of the quarter.",
+    "situations": [
+      "구버전 API 종료 계획을 공지할 때",
+      "마이그레이션을 독려할 때"
+    ],
+    "detail": "당장 없애진 않지만 '곧 사라지니 쓰지 마라'고 공식 선언하는 것. 삭제(remove)와 구분되는 중간 단계라는 게 핵심이야. deprecated라는 형용사형이 경고 로그와 문서에 박혀 있어서 동사형까지 입에 붙여두면 좋다.",
+    "exampleKo": "분기 말에 v1 API 폐기 예정 처리할 거야.",
+    "questionEn": "The old version of your interface will be removed next year, and users need warning now. What do you do to it?",
+    "termsKo": "deprecation: 기능을 즉시 삭제하지 않고 사용 중단을 예고하는 단계."
+  },
+  {
+    "key": "cl:consume-a-message",
+    "en": "consume a message",
+    "ko": "(큐에서) 메시지를 소비하다",
+    "example": "The worker consumes messages from the Kafka topic.",
+    "situations": [
+      "메시지 큐 구조를 설명할 때",
+      "컨슈머 랙 문제를 논의할 때"
+    ],
+    "detail": "큐에 쌓인 메시지를 받아서 먹어치우는 그림으로, producer가 만들고 consumer가 소비하는 짝 구조의 절반이야. Kafka, SQS 얘기만 나오면 자동으로 등장하는 동사. read a message보다 consume이 '처리까지 한다'는 뉘앙스를 담는다.",
+    "exampleKo": "워커가 카프카 토픽에서 메시지를 소비해.",
+    "questionEn": "Describe what the worker process does with the events piling up in the Kafka topic.",
+    "termsKo": "consumer: 메시지 큐에서 데이터를 받아 처리하는 쪽. 만들어 넣는 쪽은 producer."
+  },
+  {
+    "key": "cl:emit-an-event",
+    "en": "emit an event",
+    "ko": "이벤트를 발행하다(내보내다)",
+    "example": "The service emits an event whenever an order is placed.",
+    "situations": [
+      "이벤트 기반 아키텍처를 설명할 때",
+      "이벤트 누락을 디버깅할 때"
+    ],
+    "detail": "전구가 빛을 내뿜듯 시스템이 '이런 일이 있었다'는 신호를 바깥으로 쏘는 그림. 이벤트 드리븐 아키텍처 설명의 핵심 동사로, publish an event와 거의 호환돼. fire an event라고도 하는데 emit이 제일 중립적이고 범용적이다.",
+    "exampleKo": "주문이 들어올 때마다 서비스가 이벤트를 발행해.",
+    "questionEn": "When an order is placed, how do other services find out without being called directly?",
+    "termsKo": "event-driven: 서비스끼리 직접 호출 대신 이벤트 신호를 주고받아 연동하는 구조."
+  },
+  {
+    "key": "cl:drain-a-queue",
+    "en": "drain a queue",
+    "ko": "큐를 비우다(쌓인 것을 다 처리하다)",
+    "example": "It took two hours to drain the queue after the outage.",
+    "situations": [
+      "장애 후 밀린 메시지를 처리할 때",
+      "배포 전 큐를 비우는 절차를 말할 때"
+    ],
+    "detail": "욕조 물을 빼듯 큐에 쌓인 메시지를 바닥날 때까지 처리하는 그림. 장애로 백로그가 쌓였다가 복구하는 상황에서 '큐 다 빠지는 데 얼마나 걸려?'처럼 쓴다. 서버 종료 전 남은 요청을 마저 처리하는 graceful shutdown 맥락에서도 drain을 쓴다.",
+    "exampleKo": "장애 후에 큐 다 비우는 데 두 시간 걸렸어.",
+    "questionEn": "After the outage, two million messages were backed up. What did the workers spend two hours doing?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:throttle-requests",
+    "en": "throttle requests",
+    "ko": "요청을 조절하다(속도 제한)",
+    "example": "We throttle requests to fifty per second per client.",
+    "situations": [
+      "과부하 방어책을 설명할 때",
+      "외부 API 호출량을 조절할 때"
+    ],
+    "detail": "자동차 스로틀처럼 흐름의 양을 의도적으로 조여서 제한하는 것. 클라이언트가 너무 빨리 쏠 때 서버가 속도를 제한하는 상황의 표준 동사야. rate-limit과 거의 같은 뜻인데, throttle은 동사로 쓰기 더 자연스럽다.",
+    "exampleKo": "클라이언트당 초당 50개로 요청을 제한해.",
+    "questionEn": "One client is sending traffic way too fast and hurting the server. What does your gateway do about it?",
+    "termsKo": "rate limiting: 단위 시간당 허용 요청 수를 제한하는 과부하 방어 기법."
+  },
+  {
+    "key": "cl:hit-the-rate-limit",
+    "en": "hit the rate limit",
+    "ko": "요청 한도에 걸리다",
+    "example": "We hit the rate limit on the GitHub API again.",
+    "situations": [
+      "외부 API가 429를 줄 때",
+      "재시도 전략을 논의할 때"
+    ],
+    "detail": "허용량의 벽에 쾅 부딪히는 그림으로, 429 에러가 떴을 때 나오는 첫마디야. throttle이 제한을 거는 쪽이라면 이건 제한에 걸리는 쪽 표현. 이 말 다음엔 보통 back off and retry(물러났다 재시도) 얘기가 따라온다.",
+    "exampleKo": "또 GitHub API 한도에 걸렸어.",
+    "questionEn": "The external API suddenly starts returning 429 responses to your batch job. What happened?",
+    "termsKo": "429 Too Many Requests: 요청 한도를 초과했다는 HTTP 상태 코드."
+  },
+  {
+    "key": "cl:throw-500s",
+    "en": "throw 500s",
+    "ko": "(서버가) 500 에러를 뱉다",
+    "example": "The payment service is throwing 500s right now.",
+    "situations": [
+      "장애 상황을 처음 보고할 때",
+      "어느 서비스가 문제인지 좁힐 때"
+    ],
+    "detail": "서버가 500 에러를 토해내고 있다는 장애 보고의 1번 문장. 복수형 500s로 말하는 게 포인트인데, 에러가 한 발이 아니라 계속 나오고 있다는 뉘앙스야. throwing errors, throwing timeouts처럼 패턴을 바꿔 쓸 수도 있다.",
+    "exampleKo": "지금 결제 서비스가 500 에러를 뱉고 있어.",
+    "questionEn": "The payment service is returning internal server errors over and over. How do you report that in chat?",
+    "termsKo": "500 Internal Server Error: 서버 내부 오류를 뜻하는 HTTP 상태 코드."
+  },
+  {
+    "key": "cl:flush-the-cache",
+    "en": "flush the cache",
+    "ko": "캐시를 비우다",
+    "example": "Try flushing the cache and see if the stale data goes away.",
+    "situations": [
+      "오래된 데이터가 계속 보일 때",
+      "배포 후 데이터 불일치를 해결할 때"
+    ],
+    "detail": "변기 물 내리듯 캐시에 든 걸 한 번에 싹 비워버리는 그림. 오래된(stale) 데이터가 계속 보일 때 첫 번째로 시도하는 조치라 입에 자주 붙는다. 특정 키만 골라 지우는 invalidate와 달리 flush는 보통 통째로 비우는 뉘앙스.",
+    "exampleKo": "캐시 한번 비워보고 오래된 데이터 사라지는지 봐.",
+    "questionEn": "Users still see yesterday's prices even though the database is updated. What quick fix do you try first?",
+    "termsKo": "stale data: 원본은 바뀌었는데 캐시에 남아 있는 오래된 데이터."
+  },
+  {
+    "key": "cl:warm-the-cache",
+    "en": "warm the cache",
+    "ko": "캐시를 미리 데우다(예열)",
+    "example": "We warm the cache before traffic hits in the morning.",
+    "situations": [
+      "배포 직후 응답 지연을 막을 때",
+      "콜드 스타트 문제를 논의할 때"
+    ],
+    "detail": "차가운 엔진을 예열하듯, 요청이 오기 전에 캐시를 미리 채워두는 것. 캐시가 텅 빈 콜드 상태에서 첫 요청들이 느려지는 걸 막는 작업이야. flush의 반대 방향 작업이고, cache warming이라는 명사형도 흔하다.",
+    "exampleKo": "아침 트래픽 몰리기 전에 캐시를 미리 채워놔.",
+    "questionEn": "Right after deploy, the first requests are slow because nothing is loaded yet. How do you prevent that?",
+    "termsKo": "cold start: 캐시나 인스턴스가 준비 안 된 상태에서 첫 요청이 느려지는 현상."
+  },
+  {
+    "key": "cl:bump-the-version",
+    "en": "bump the version",
+    "ko": "버전을 올리다",
+    "example": "Bump the version to 2.4 and tag it.",
+    "situations": [
+      "릴리즈 준비 절차를 말할 때",
+      "버전 올리는 걸 깜빡했을 때"
+    ],
+    "detail": "버전 숫자를 톡 쳐서 한 칸 올리는 그림. increase나 update보다 bump가 압도적으로 입말이고, 패치/마이너/메이저 어디든 쓴다. bump the timeout, bump the limit처럼 숫자 설정값 올리는 데도 똑같이 쓰는 만능 동사야.",
+    "exampleKo": "버전 2.4로 올리고 태그 달아.",
+    "questionEn": "Before releasing, the number in the package file still says 2.3. What small change is needed?",
+    "termsKo": "semver: major.minor.patch 형식의 버전 규칙. 변경 크기에 따라 올리는 자리가 다름."
+  },
+  {
+    "key": "cl:bump-a-dependency",
+    "en": "bump a dependency",
+    "ko": "의존성 버전을 올리다",
+    "example": "I bumped the Spring dependency to fix the CVE.",
+    "situations": [
+      "보안 패치로 라이브러리를 올릴 때",
+      "dependabot PR을 설명할 때"
+    ],
+    "detail": "쓰고 있는 라이브러리의 버전을 한 단계 올리는 것. 보안 취약점(CVE) 대응이나 dependabot PR 얘기에서 매일 보는 표현이야. upgrade보다 가볍고 일상적인 뉘앙스라서 사소한 버전 업엔 bump가 딱이다.",
+    "exampleKo": "CVE 고치려고 Spring 의존성 버전 올렸어.",
+    "questionEn": "A security advisory says your library version is vulnerable. What is the fix commit going to do?",
+    "termsKo": "CVE: 공개적으로 등록된 보안 취약점 식별 번호."
+  },
+  {
+    "key": "cl:pin-a-dependency",
+    "en": "pin a dependency",
+    "ko": "의존성 버전을 고정하다",
+    "example": "Pin the dependency to 1.8 until the regression is fixed.",
+    "situations": [
+      "새 버전이 버그를 일으킬 때",
+      "재현 가능한 빌드를 논의할 때"
+    ],
+    "detail": "핀으로 꽂아 고정하듯 라이브러리를 특정 버전에 못 박는 것. 최신 버전이 버그를 일으켜서 '일단 구버전에 고정하자'고 할 때, 또는 빌드 재현성을 위해 범위 지정 대신 정확한 버전을 박을 때 쓴다. bump의 반대 방향 조치라고 보면 된다.",
+    "exampleKo": "리그레션 고쳐질 때까지 그 의존성 1.8로 고정해.",
+    "questionEn": "The latest library release breaks your build, so you want to stay on the old version for now. What do you do?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:file-a-ticket",
+    "en": "file a ticket",
+    "ko": "티켓을 등록하다(이슈 발행)",
+    "example": "Can you file a ticket so we don't lose track of it?",
+    "situations": [
+      "대화 중 나온 문제를 기록으로 남길 때",
+      "버그 제보를 정식 절차로 돌릴 때"
+    ],
+    "detail": "서류를 정식으로 접수하듯 Jira 같은 시스템에 이슈를 등록하는 것. 회의나 슬랙에서 문제가 나왔을 때 '까먹지 않게 티켓 파놔'라는 흐름으로 매일 쓴다. open a ticket, raise a ticket도 같은 뜻이지만 file이 가장 미국 현장스럽다.",
+    "exampleKo": "잊어버리지 않게 티켓 하나 등록해줄래?",
+    "questionEn": "A bug came up in conversation and you want it tracked formally in Jira. What do you ask a teammate to do?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:triage-bugs",
+    "en": "triage bugs",
+    "ko": "버그를 분류하고 우선순위를 매기다",
+    "example": "We triage bugs every Monday and assign severity.",
+    "situations": [
+      "버그 처리 프로세스를 설명할 때",
+      "이슈 백로그가 쌓였을 때"
+    ],
+    "detail": "응급실에서 환자 중증도를 나누는 트리아지가 그대로 넘어온 말. 쌓인 버그들을 심각도와 우선순위로 분류해서 누가 언제 볼지 정하는 활동이야. bug triage meeting이라는 정기 회의 이름으로도 흔히 박혀 있다.",
+    "exampleKo": "매주 월요일에 버그 분류하고 심각도 매겨.",
+    "questionEn": "Forty new bug reports came in this week. What does your team do every Monday morning with them?",
+    "termsKo": "severity: 버그의 심각도 등급. 보통 critical/major/minor로 나눔."
+  },
+  {
+    "key": "cl:reproduce-a-bug",
+    "en": "reproduce a bug",
+    "ko": "버그를 재현하다",
+    "example": "I can't reproduce the bug on my machine.",
+    "situations": [
+      "버그 리포트를 검증할 때",
+      "재현 조건을 요청할 때"
+    ],
+    "detail": "리포트된 버그를 내 환경에서 똑같이 일으켜보는 것으로, 디버깅의 사실상 첫 단계야. 'can't reproduce'는 이슈를 닫는 사유로도 쓰이는 공식 문구. 짧게 repro라고 줄여서 'do you have a repro?'(재현 방법 있어?)처럼도 매일 쓴다.",
+    "exampleKo": "내 컴퓨터에선 그 버그가 재현이 안 돼.",
+    "questionEn": "A user reports a crash, but it never happens when you try the same steps. What do you say?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:root-cause-an-issue",
+    "en": "root-cause an issue",
+    "ko": "이슈의 근본 원인을 밝혀내다",
+    "example": "We root-caused the outage to a bad config push.",
+    "situations": [
+      "장애 분석 결과를 보고할 때",
+      "임시 조치와 근본 해결을 구분할 때"
+    ],
+    "detail": "root cause(근본 원인)라는 명사를 그대로 동사로 굴린, 굉장히 현장 냄새 나는 표현. 증상 완화가 아니라 진짜 원인을 끝까지 파서 밝혀냈다는 뜻이야. root-caused it to X 형태로 '원인은 X였다'고 보고할 때 제일 빛난다.",
+    "exampleKo": "장애 근본 원인이 잘못된 설정 배포였던 걸로 밝혀냈어.",
+    "questionEn": "The outage is mitigated, but your manager wants to know what actually went wrong underneath. What work remains?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:fork-a-process",
+    "en": "fork a process",
+    "ko": "프로세스를 포크하다(복제 생성)",
+    "example": "The server forks a process for each connection.",
+    "situations": [
+      "유닉스 프로세스 모델을 설명할 때",
+      "멀티프로세스 구조를 논의할 때"
+    ],
+    "detail": "포크처럼 한 줄기가 두 갈래로 갈라지는 그림으로, 부모 프로세스가 자신을 복제해 자식을 만드는 유닉스 시스템콜 fork()에서 온 말이야. 웹서버 동작 방식이나 멀티프로세싱 얘기에서 나온다. 레포를 복제하는 fork a repo와는 맥락이 다르니 구분.",
+    "exampleKo": "그 서버는 커넥션마다 프로세스를 하나씩 포크해.",
+    "questionEn": "In the classic Unix server model, what happens for each incoming connection?",
+    "termsKo": "fork(): 현재 프로세스를 복제해 자식 프로세스를 만드는 유닉스 시스템콜."
+  },
+  {
+    "key": "cl:kill-a-process",
+    "en": "kill a process",
+    "ko": "프로세스를 강제 종료하다",
+    "example": "The process hung, so I just killed it.",
+    "situations": [
+      "멈춘 프로세스를 정리할 때",
+      "메모리 먹는 프로세스를 처리할 때"
+    ],
+    "detail": "kill 명령어가 그대로 일상 동사가 된 케이스로, 멈췄거나 폭주하는 프로세스를 강제로 끝내는 것. kill -9으로 보내버렸다고 하면 '협상 없이 즉시 종료'라는 뉘앙스까지 전달돼. OOM killer가 프로세스를 죽였다처럼 수동태로도 자주 쓴다.",
+    "exampleKo": "프로세스가 멈춰서 그냥 죽여버렸어.",
+    "questionEn": "A job on the server is frozen and not responding to anything. What did you do to it?",
+    "termsKo": "kill -9 (SIGKILL): 프로세스가 거부할 수 없는 즉시 종료 시그널."
+  },
+  {
+    "key": "cl:leak-memory",
+    "en": "leak memory",
+    "ko": "메모리를 누수시키다",
+    "example": "That listener leaks memory if you never unregister it.",
+    "situations": [
+      "메모리 사용량이 계속 늘 때",
+      "리소스 정리 코드를 리뷰할 때"
+    ],
+    "detail": "수도관이 새듯 다 쓴 메모리가 회수되지 않고 계속 새어나가 쌓이는 그림. '이 코드 메모리 새는데'처럼 코드 리뷰에서도, 'pod가 메모리 누수로 죽었다'처럼 운영에서도 매일 쓴다. 명사형 memory leak과 동사형 둘 다 입에 붙여둘 것.",
+    "exampleKo": "그 리스너 해제 안 하면 메모리 새.",
+    "questionEn": "Heap usage climbs steadily for days until the service dies, even with flat traffic. What is the code doing?",
+    "termsKo": "memory leak: 더 이상 안 쓰는 메모리가 해제되지 않고 계속 쌓이는 결함."
+  },
+  {
+    "key": "cl:free-memory",
+    "en": "free memory",
+    "ko": "메모리를 해제하다",
+    "example": "The buffer never gets freed, that's our leak.",
+    "situations": [
+      "메모리 누수 원인을 짚을 때",
+      "수동 메모리 관리 코드를 설명할 때"
+    ],
+    "detail": "쓰던 메모리를 풀어줘서 시스템에 돌려주는 것으로, C의 free() 함수가 그대로 동사가 된 말이야. never gets freed(해제가 안 된다)는 누수 진단의 핵심 문장. GC 언어에서는 직접 free할 일이 없어서 주로 네이티브 자원이나 buffer 얘기에서 나온다.",
+    "exampleKo": "그 버퍼가 해제가 안 돼. 그게 누수 원인이야.",
+    "questionEn": "You allocated a big buffer in native code and usage keeps growing. What step did the code forget?",
+    "termsKo": "GC(garbage collection): 안 쓰는 메모리를 런타임이 자동으로 회수하는 메커니즘."
+  },
+  {
+    "key": "cl:exhaust-the-connection-pool",
+    "en": "exhaust the connection pool",
+    "ko": "커넥션 풀을 고갈시키다",
+    "example": "A slow query exhausted the connection pool.",
+    "situations": [
+      "DB 연결 대기로 장애가 났을 때",
+      "풀 사이즈 설정을 논의할 때"
+    ],
+    "detail": "한정된 연결 자원을 바닥까지 다 써버려서 새 요청이 빌릴 게 없는 상태. 느린 쿼리나 반납 안 된 커넥션이 원인인 장애 보고에서 단골로 나오는 문장이야. thread pool, worker pool 등 다른 풀에도 exhaust를 똑같이 쓴다.",
+    "exampleKo": "느린 쿼리 하나가 커넥션 풀을 고갈시켰어.",
+    "questionEn": "Requests are timing out because there are no free database handles left to give out. What happened?",
+    "termsKo": "connection pool: DB 연결을 미리 만들어두고 빌려 쓰는 재사용 풀. 바닥나면 요청이 대기."
+  },
+  {
+    "key": "cl:saturate-the-cpu",
+    "en": "saturate the CPU",
+    "ko": "CPU를 포화시키다(100%로 꽉 채우다)",
+    "example": "The retry loop saturated the CPU on every node.",
+    "situations": [
+      "CPU 100% 장애를 보고할 때",
+      "부하 테스트 결과를 설명할 때"
+    ],
+    "detail": "스펀지가 물을 더 못 빨아들이듯 CPU가 100%에 붙어서 여유가 전혀 없는 상태. 단순히 high CPU보다 '한계까지 꽉 찼다'는 정도가 강한 표현이야. 네트워크 대역폭이나 디스크 IO에도 saturate를 똑같이 쓴다.",
+    "exampleKo": "재시도 루프가 모든 노드의 CPU를 포화시켰어.",
+    "questionEn": "Every node is pinned at one hundred percent processor usage because of a tight retry loop. Describe the state.",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:take-a-heap-dump",
+    "en": "take a heap dump",
+    "ko": "힙 덤프를 뜨다",
+    "example": "Take a heap dump before you restart the pod.",
+    "situations": [
+      "메모리 누수를 조사할 때",
+      "재시작 전에 증거를 확보할 때"
+    ],
+    "detail": "힙 메모리의 그 순간 상태를 사진 찍듯 파일로 떠내는 것. 메모리 이상 징후가 보이면 '재시작하기 전에 덤프부터 떠'가 정석 멘트인데, 재시작하면 증거가 사라지기 때문이야. thread dump도 take a thread dump로 똑같은 패턴.",
+    "exampleKo": "파드 재시작하기 전에 힙 덤프부터 떠놔.",
+    "questionEn": "Memory looks wrong and you are about to restart, but you need evidence to analyze later. What do you grab first?",
+    "termsKo": "heap dump: JVM 힙 메모리 전체 상태를 떠낸 스냅샷 파일. 누수 분석의 핵심 자료."
+  },
+  {
+    "key": "cl:profile-the-service",
+    "en": "profile the service",
+    "ko": "서비스 성능을 프로파일링하다",
+    "example": "Let's profile the service and find the hot path.",
+    "situations": [
+      "성능 병목을 찾을 때",
+      "추측 대신 측정하자고 할 때"
+    ],
+    "detail": "어디서 시간과 자원을 먹는지 측정 도구를 붙여 들여다보는 것. '느린 것 같다'는 추측 대신 측정하자고 할 때 나오는 동사야. profile the query, profile the function처럼 대상만 바꿔 쓰면 되고, 결과로 찾는 게 hot path(시간을 제일 먹는 경로)다.",
+    "exampleKo": "서비스 프로파일링해서 핫 패스 찾아보자.",
+    "questionEn": "The API feels slow but nobody knows which part eats the time. What do you do instead of guessing?",
+    "termsKo": "profiler: 함수별 실행 시간과 메모리 사용을 측정해주는 분석 도구."
+  },
+  {
+    "key": "cl:tail-the-logs",
+    "en": "tail the logs",
+    "ko": "로그를 실시간으로 보다",
+    "example": "I'm tailing the logs while you send the request.",
+    "situations": [
+      "라이브 디버깅 중 로그를 지켜볼 때",
+      "배포 직후 모니터링할 때"
+    ],
+    "detail": "tail -f 명령어에서 온 말로, 로그 파일 꼬리를 잡고 새 줄이 찍히는 걸 실시간으로 지켜보는 그림. '내가 로그 보고 있을 테니 요청 쏴봐' 같은 페어 디버깅 상황의 단골 문장이야. 과거 로그를 뒤지는 grep과 달리 tail은 지금 흐르는 걸 본다는 뉘앙스.",
+    "exampleKo": "네가 요청 보내는 동안 내가 로그 띄워놓고 볼게.",
+    "questionEn": "Your teammate will trigger the bug now, and you want to watch server output live as it happens. What do you do?",
+    "termsKo": "tail -f: 파일 끝에 추가되는 내용을 실시간으로 출력해주는 유닉스 명령."
+  },
+  {
+    "key": "cl:grab-the-logs",
+    "en": "grab the logs",
+    "ko": "로그를 확보하다(가져오다)",
+    "example": "Grab the logs from that pod before it gets recycled.",
+    "situations": [
+      "사라지기 전에 로그를 확보할 때",
+      "분석용 로그를 요청할 때"
+    ],
+    "detail": "로그를 손으로 낚아채 오는 그림으로, get보다 다급하고 캐주얼한 동사야. 파드가 재시작되면 로그가 날아가니까 '죽기 전에 챙겨놔' 같은 상황에서 빛난다. grab a coffee, grab a snapshot처럼 grab은 개발자 입말의 만능 동사.",
+    "exampleKo": "그 파드 재활용되기 전에 로그 챙겨놔.",
+    "questionEn": "The container will be recycled in minutes and its output will vanish. What do you tell your teammate to do?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:raise-an-alert",
+    "en": "raise an alert",
+    "ko": "알림(경보)을 발생시키다",
+    "example": "The monitor raises an alert when latency tops 500ms.",
+    "situations": [
+      "모니터링 규칙을 설명할 때",
+      "알림 조건을 설계할 때"
+    ],
+    "detail": "경보 깃발을 들어올리는 그림으로, 모니터링 시스템이 임계치를 넘었을 때 알림을 쏘는 것. fire an alert, trigger an alert도 같은 뜻으로 호환돼. 알림 조건 설계 회의에서 'when do we raise an alert?'처럼 쓴다.",
+    "exampleKo": "레이턴시가 500ms 넘으면 모니터가 알림을 올려.",
+    "questionEn": "Describe what your monitoring system does when latency crosses the threshold you configured.",
+    "termsKo": "threshold: 알림을 울릴지 결정하는 기준값(임계치)."
+  },
+  {
+    "key": "cl:mute-an-alert",
+    "en": "mute an alert",
+    "ko": "알림을 음소거하다(일시 중지)",
+    "example": "Mute the alert during the maintenance window.",
+    "situations": [
+      "계획된 작업 중 알림이 쏟아질 때",
+      "노이즈 알림을 정리할 때"
+    ],
+    "detail": "휴대폰 음소거하듯 알림을 잠시 꺼두는 것. 점검 시간에 뻔히 울릴 알림을 미리 꺼두거나, 노이즈만 만드는 알림을 잠재울 때 쓴다. silence an alert도 완전히 같은 뜻이고, 영구히 끄는 게 아니라 일시적이라는 뉘앙스가 핵심.",
+    "exampleKo": "점검 시간 동안엔 그 알림 꺼놔.",
+    "questionEn": "Planned maintenance tonight will set off pages that everyone already expects. What do you do beforehand?",
+    "termsKo": "maintenance window: 점검 작업을 하기로 미리 공지된 시간대."
+  },
+  {
+    "key": "cl:page-the-on-call",
+    "en": "page the on-call",
+    "ko": "온콜 담당자를 호출하다",
+    "example": "If error rates double, page the on-call immediately.",
+    "situations": [
+      "에스컬레이션 기준을 정할 때",
+      "새벽 장애 대응을 이야기할 때"
+    ],
+    "detail": "옛날 삐삐(pager)에서 온 말로, 당직 엔지니어를 긴급 호출하는 것. PagerDuty라는 서비스 이름에도 박혀 있을 만큼 표준 어휘야. 'I got paged at 3am'(새벽 3시에 호출당했다)은 온콜 고생담의 클리셰 문장이니 통째로 외워둘 것.",
+    "exampleKo": "에러율이 두 배 되면 즉시 온콜 호출해.",
+    "questionEn": "It is 3am, production is down, and someone is on duty this week. What does the alert system do?",
+    "termsKo": "on-call: 장애 발생 시 즉시 대응하기로 당번이 정해진 엔지니어."
+  },
+  {
+    "key": "cl:declare-an-incident",
+    "en": "declare an incident",
+    "ko": "장애(인시던트)를 공식 선포하다",
+    "example": "This is bad enough — let's declare an incident.",
+    "situations": [
+      "장애 대응 체계를 가동할 때",
+      "심각도를 판단할 때"
+    ],
+    "detail": "'지금부터 공식 장애 상황이다'라고 선언해서 대응 프로세스를 가동시키는 것. 선포하는 순간 incident channel이 열리고 역할이 배정되는 등 절차가 굴러가기 시작해. 가볍게 보던 문제의 심각성을 격상시키는 결정의 말이라 무게가 있다.",
+    "exampleKo": "이건 좀 심각한데. 정식으로 장애 선포하자.",
+    "questionEn": "The outage is worse than first thought, and you need the formal response process started. What is the call you make?",
+    "termsKo": "incident: 공식 대응 절차가 따르는 서비스 장애 이벤트. 보통 SEV 등급을 매김."
+  },
+  {
+    "key": "cl:write-a-postmortem",
+    "en": "write a postmortem",
+    "ko": "장애 회고 문서를 쓰다",
+    "example": "I'll write the postmortem for yesterday's outage.",
+    "situations": [
+      "장애 종료 후 회고 절차를 말할 때",
+      "재발 방지 논의를 시작할 때"
+    ],
+    "detail": "부검이라는 뜻 그대로, 끝난 장애를 해부해서 원인과 타임라인, 재발 방지책을 문서로 남기는 것. 장애가 끝나면 'who's writing the postmortem?'이 자동으로 따라오는 질문이야. blameless postmortem(책임 추궁 없는 회고)이라는 수식어와 세트로 자주 다닌다.",
+    "exampleKo": "어제 장애 회고 문서는 내가 쓸게.",
+    "questionEn": "The outage is resolved, and now the team needs a document explaining what happened and how to prevent it. Who does what?",
+    "termsKo": "postmortem: 장애 원인, 타임라인, 액션 아이템을 정리하는 사후 분석 문서."
+  },
+  {
+    "key": "cl:bounce-the-service",
+    "en": "bounce the service",
+    "ko": "서비스를 재시작하다(껐다 켜기)",
+    "example": "Just bounce the service and see if it recovers.",
+    "situations": [
+      "임시 조치로 재시작을 제안할 때",
+      "메모리 이상 시 응급 처치할 때"
+    ],
+    "detail": "공을 바닥에 한 번 튕기듯 서비스를 껐다 켜는 것. restart의 캐주얼한 입말 버전으로, '일단 한번 튕겨보고 되는지 보자'는 응급처치 뉘앙스야. bounce the server, bounce the pod처럼 대상은 자유롭게 바꿔 쓴다.",
+    "exampleKo": "서비스 한번 재시작해보고 복구되는지 봐.",
+    "questionEn": "Memory looks weird and you want the classic turn-it-off-and-on-again fix for the service. How do you say it casually?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:rotate-the-credentials",
+    "en": "rotate the credentials",
+    "ko": "자격증명(키/비밀번호)을 교체하다",
+    "example": "The key leaked, so we rotated all the credentials.",
+    "situations": [
+      "키 유출 사고에 대응할 때",
+      "정기 보안 절차를 설명할 때"
+    ],
+    "detail": "자물쇠를 통째로 갈아끼우듯 쓰던 키를 새것으로 교체하는 것. 유출 사고 대응의 1순위 조치이자, 사고가 없어도 주기적으로 하는 보안 루틴이야. rotate the keys, rotate the secrets, rotate the tokens 모두 같은 패턴으로 쓴다.",
+    "exampleKo": "키가 유출돼서 자격증명 전부 교체했어.",
+    "questionEn": "An API key was accidentally committed to a public repo. What is the very first security action?",
+    "termsKo": "credential rotation: 키와 비밀번호를 주기적으로 새것으로 바꾸는 보안 관행."
+  },
+  {
+    "key": "cl:run-a-migration",
+    "en": "run a migration",
+    "ko": "DB 마이그레이션을 실행하다",
+    "example": "Run the migration before you start the new version.",
+    "situations": [
+      "배포 절차에서 DB 변경 순서를 말할 때",
+      "스키마 변경을 적용할 때"
+    ],
+    "detail": "DB 스키마를 바꾸는 스크립트를 실행해서 구조를 한 단계 옮기는 것. 배포 순서 얘기에서 '마이그레이션 먼저 돌리고 앱 띄워' 식으로 매일 나온다. apply a migration도 같은 뜻이고, Flyway나 Liquibase 같은 도구 이름과 세트로 등장한다.",
+    "exampleKo": "새 버전 띄우기 전에 마이그레이션부터 돌려.",
+    "questionEn": "The new release needs an extra database column. What must happen before the app starts?",
+    "termsKo": "migration: DB 스키마 변경을 버전 관리되는 스크립트로 적용하는 방식."
+  },
+  {
+    "key": "cl:seed-the-database",
+    "en": "seed the database",
+    "ko": "DB에 초기 데이터를 심다",
+    "example": "The script seeds the database with test users.",
+    "situations": [
+      "로컬 개발 환경을 셋업할 때",
+      "테스트용 데이터 준비를 말할 때"
+    ],
+    "detail": "씨앗을 뿌리듯 빈 DB에 시작용 데이터를 넣어주는 것. 신규 입사자 온보딩이나 로컬 환경 셋업 설명에서 'run the seed script'로 단골 등장해. 운영 데이터 이전과는 다른, 개발/테스트용 초기값이라는 뉘앙스가 핵심이다.",
+    "exampleKo": "그 스크립트가 DB에 테스트 유저들을 심어줘.",
+    "questionEn": "A new teammate's local environment has an empty database and the app needs sample users. What does the setup script do?",
+    "termsKo": "seed data: 개발과 테스트를 위해 미리 넣어두는 초기 데이터."
+  },
+  {
+    "key": "cl:backfill-data",
+    "en": "backfill data",
+    "ko": "과거 데이터를 소급해서 채우다",
+    "example": "We need to backfill data for the last six months.",
+    "situations": [
+      "새 컬럼을 기존 행에 채울 때",
+      "누락된 기간의 데이터를 복구할 때"
+    ],
+    "detail": "구덩이를 뒤에서부터 메우듯, 새로 생긴 컬럼이나 누락된 기간의 데이터를 과거분까지 소급해 채우는 작업. 새 필드 추가나 파이프라인 장애 복구 뒤에 거의 반드시 따라오는 말이야. backfill job이라는 명사형으로도 흔하게 쓴다.",
+    "exampleKo": "지난 6개월치 데이터를 소급해서 채워야 해.",
+    "questionEn": "You added a new column, but every existing row from the past six months has it empty. What job do you run?",
+    "termsKo": ""
+  },
+  {
+    "key": "cl:add-an-index",
+    "en": "add an index",
+    "ko": "(DB 컬럼에) 인덱스를 추가하다",
+    "example": "Adding an index on user_id cut the query to 20ms.",
+    "situations": [
+      "느린 쿼리를 개선할 때",
+      "쿼리 플랜을 분석할 때"
+    ],
+    "detail": "책 뒤의 색인처럼 컬럼에 찾아보기를 만들어 조회를 빠르게 하는 것. 느린 쿼리 얘기가 나오면 'is there an index on that column?'이 반사적으로 나오는 첫 질문이야. 쓰기 비용이 늘어나는 트레이드오프 얘기까지 이어지면 금상첨화.",
+    "exampleKo": "user_id에 인덱스 추가했더니 쿼리가 20ms로 줄었어.",
+    "questionEn": "A query filtering on user_id scans the whole table and takes ten seconds. What is the standard fix?",
+    "termsKo": "index: 특정 컬럼 조회를 빠르게 하는 자료구조. 풀 스캔을 피하게 해줌."
+  },
+  {
+    "key": "cl:mock-a-dependency",
+    "en": "mock a dependency",
+    "ko": "의존성을 모킹하다(가짜로 대체)",
+    "example": "We mock the payment client so tests don't hit the real API.",
+    "situations": [
+      "단위 테스트 전략을 설명할 때",
+      "외부 API 없이 테스트할 때"
+    ],
+    "detail": "테스트에서 진짜 의존성 대신 흉내내는 가짜를 끼워넣는 것. '실제 API 안 때리려고 mock했다'는 단위 테스트 설명의 공식 문장이야. Mockito 같은 도구 이름이 보여주듯 mock은 완전히 동사로 굳었고, 단순 고정 응답만 주는 stub과는 결이 약간 다르다.",
+    "exampleKo": "테스트가 진짜 API 안 치게 결제 클라이언트는 모킹해.",
+    "questionEn": "Your unit tests must not call the real payment provider. How do you isolate that part?",
+    "termsKo": "mock: 진짜 객체를 흉내내며 호출 여부까지 검증할 수 있는 테스트 대역."
+  },
+  {
+    "key": "cl:stub-a-method",
+    "en": "stub a method",
+    "ko": "메서드를 스텁 처리하다(고정 응답 주입)",
+    "example": "Just stub the method to return an empty list.",
+    "situations": [
+      "테스트 시나리오별 응답을 정할 때",
+      "아직 없는 구현을 임시로 막을 때"
+    ],
+    "detail": "메서드가 정해진 값만 돌려주게 고정시키는 것. '이 테스트에선 빈 리스트 리턴하게 스텁해' 같은 테스트 작성 대화에서 매일 나와. 호출 검증까지 하는 mock과 달리 stub은 그냥 '미리 짠 대답'이라는 뉘앙스로, 실무에선 둘을 섞어 쓰기도 한다.",
+    "exampleKo": "그 메서드는 빈 리스트 리턴하게 스텁 처리해.",
+    "questionEn": "For this test case you need the lookup call to always return an empty list. What do you do to it?",
+    "termsKo": "stub: 미리 정한 고정 응답만 돌려주는 단순한 테스트 대역."
+  },
+  {
+    "key": "cl:assert-on-the-result",
+    "en": "assert on the result",
+    "ko": "결과값을 검증(어서션)하다",
+    "example": "The test asserts on the result, not the implementation.",
+    "situations": [
+      "테스트가 무엇을 검증하는지 설명할 때",
+      "깨지기 쉬운 테스트를 리뷰할 때"
+    ],
+    "detail": "테스트에서 '이 값이어야 한다'고 단언하고 아니면 실패시키는 것. assert on X 형태로 검증 대상을 말하는 게 포인트야. '구현 말고 결과에 assert해라'는 깨지기 쉬운 테스트를 지적하는 단골 리뷰 멘트로 통째로 외워둘 만하다.",
+    "exampleKo": "그 테스트는 구현이 아니라 결과를 검증해.",
+    "questionEn": "Your test breaks on every refactor because it checks internal calls. What should it verify instead?",
+    "termsKo": "assertion: 테스트에서 기대값과 실제값이 같은지 단언하는 검증 구문."
+  },
+  {
+    "key": "cl:the-test-is-flaky",
+    "en": "the test is flaky",
+    "ko": "테스트가 들쭉날쭉하다(될 때도 안 될 때도)",
+    "example": "That test is flaky — it fails maybe once in ten runs.",
+    "situations": [
+      "CI가 간헐적으로 실패할 때",
+      "테스트 신뢰도를 논의할 때"
+    ],
+    "detail": "flaky는 페인트가 들떠 벗겨지듯 미덥지 못하다는 뜻으로, 코드 변경 없이도 됐다 안 됐다 하는 테스트를 말해. 보통 타이밍이나 실행 순서 의존이 원인이야. 'rerun it, it's just flaky'(그냥 들쭉날쭉한 거니 다시 돌려)는 CI 잡담의 최빈출 문장.",
+    "exampleKo": "그 테스트 들쭉날쭉해. 열 번에 한 번꼴로 실패해.",
+    "questionEn": "A test fails randomly in CI but always passes when rerun, with no code changes. How do you describe it?",
+    "termsKo": "flaky test: 같은 코드인데 실행마다 결과가 달라지는 비결정적 테스트."
+  },
+  {
+    "key": "cl:cover-an-edge-case",
+    "en": "cover an edge case",
+    "ko": "엣지 케이스를 (테스트로) 커버하다",
+    "example": "Does this test cover the edge case where the list is empty?",
+    "situations": [
+      "테스트 누락을 지적할 때",
+      "경계 조건 처리를 확인할 때"
+    ],
+    "detail": "빈 리스트, null, 0, 최대값 같은 경계 상황까지 테스트 그물로 덮는다는 그림. 코드 리뷰에서 'edge case 커버됐어?'는 가장 흔한 질문 중 하나야. handle an edge case는 코드가 처리한다는 쪽, cover는 테스트가 보장한다는 쪽으로 미묘하게 갈린다.",
+    "exampleKo": "리스트가 비어 있는 엣지 케이스도 이 테스트가 커버해?",
+    "questionEn": "The happy path is tested, but what about empty input, nulls, and boundary values? What is missing?",
+    "termsKo": "edge case: 정상 흐름 바깥의 극단적 입력이나 경계 조건 상황."
+  }
+];
+export const WORKSHOP_COUNTS = { particles: 58, particleGroups: 11, collocations: 72 };
