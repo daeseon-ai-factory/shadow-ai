@@ -18,7 +18,9 @@ import {
   CONNECTORS,
   PARTICLE_GROUPS,
   PREP_GROUPS,
+  REASONING_PREP_GROUPS,
   COLLOCATION_CARDS,
+  ARGUMENT_GROUPS,
   type ReflexCard,
   type InterviewCard,
   type PhraseCard,
@@ -60,7 +62,7 @@ export function phraseIv(c: PhraseCard): IvItem {
   return {
     key: c.key,
     tag: c.en,
-    promptKo: `${sit}\n\n→ “${c.exampleKo || c.ko}”`,
+    promptKo: `${sit}\n\n→ “${c.cueKo || c.exampleKo || c.ko}”`,
     promptEn: c.questionEn || c.en,
     answer: c.example,
     meaningKo: c.ko,
@@ -77,7 +79,7 @@ export function backendIv(c: PhraseCard): IvItem {
   return {
     key: c.key,
     tag: 'Backend',
-    promptKo: `${sit}\n\n→ “${c.exampleKo || c.ko}”`,
+    promptKo: `${sit}\n\n→ “${c.cueKo || c.exampleKo || c.ko}”`,
     promptEn: c.questionEn || 'Backend',
     answer: c.en,
     meaningKo: c.ko,
@@ -156,6 +158,7 @@ export type ScopeKind =
   | 'particle'
   | 'prep'
   | 'collocation'
+  | 'argument'
   | 'weak';
 
 // Always-visible drill banner — the particle's core image belongs at the TOP of the drill,
@@ -166,7 +169,7 @@ export function scopeBanner(kind: ScopeKind, clusterId?: string): string | undef
     if (g) return `🧲 '${g.particle}' 그림 — ${g.coreKo}`;
   }
   if (kind === 'prep' && clusterId) {
-    const g = PREP_GROUPS.find((x) => x.particle === clusterId);
+    const g = [...PREP_GROUPS, ...REASONING_PREP_GROUPS].find((x) => x.particle === clusterId);
     if (g) return `🧲 '${g.particle}' 그림 — ${g.coreKo}`;
   }
   return undefined;
@@ -192,6 +195,8 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
         ...COLLOCATION_CARDS.map(phraseIv),
         ...PARTICLE_GROUPS.flatMap((g) => g.items.map((it) => particleIv(it, g))),
         ...PREP_GROUPS.flatMap((g) => g.items.map((it) => particleIv(it, g))),
+        ...REASONING_PREP_GROUPS.flatMap((g) => g.items.map((it) => particleIv(it, g))),
+        ...ARGUMENT_GROUPS.flatMap((g) => g.items.map(phraseIv)),
       ];
     case 'core':
       return CORE_REFLEX.map(reflexIv);
@@ -234,8 +239,13 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       return [...g.items, ...olds].map((it) => particleIv(it, g));
     }
     case 'prep': {
-      const g = PREP_GROUPS.find((x) => x.particle === clusterId);
+      const g = [...PREP_GROUPS, ...REASONING_PREP_GROUPS].find((x) => x.particle === clusterId);
       return g ? g.items.map((it) => particleIv(it, g)) : [];
+    }
+    case 'argument': {
+      const g = ARGUMENT_GROUPS.find((x) => x.fn === clusterId);
+      const items = g ? g.items : ARGUMENT_GROUPS.flatMap((x) => x.items);
+      return items.map(phraseIv);
     }
     case 'weak':
       return []; // needs SRS states — interview-run resolves this via weakItems()
