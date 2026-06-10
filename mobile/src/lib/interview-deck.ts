@@ -55,11 +55,12 @@ export function phraseIv(c: PhraseCard): IvItem {
     key: c.key,
     tag: c.en,
     promptKo: sit,
-    promptEn: c.en,
+    promptEn: c.questionEn || c.en,
     answer: c.example,
     meaningKo: c.ko,
     note: c.exampleKo || c.ko,
     detail: c.detail || undefined,
+    terms: c.termsKo || undefined,
   };
 }
 
@@ -71,11 +72,12 @@ export function backendIv(c: PhraseCard): IvItem {
     key: c.key,
     tag: 'Backend',
     promptKo: sit,
-    promptEn: 'Backend',
+    promptEn: c.questionEn || 'Backend',
     answer: c.en,
     meaningKo: c.ko,
     note: c.exampleKo || c.ko,
     detail: c.detail || undefined,
+    terms: c.termsKo || undefined,
   };
 }
 
@@ -94,6 +96,7 @@ export function chainIv(c: Connector): IvItem {
     meaningKo: c.ko,
     note: c.exampleKo || undefined,
     detail: c.detail || undefined,
+    terms: c.termsKo || undefined,
   };
 }
 
@@ -109,11 +112,12 @@ export function connectorIv(c: Connector): IvItem {
     key: c.key,
     tag: c.fn,
     promptKo: `${c.ko} — 짧은 두 문장을 '${c.en}'(으)로 잇기`,
-    promptEn: c.en,
+    promptEn: c.questionEn || c.en,
     answer: c.example,
     meaningKo: c.ko,
     note: c.exampleKo || undefined,
     detail: c.detail || undefined,
+    terms: c.termsKo || undefined,
   };
 }
 

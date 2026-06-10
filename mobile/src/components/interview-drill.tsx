@@ -21,6 +21,7 @@ export interface IvItem {
   code?: string; // a code snippet to explain (shown as a monospace block instead of a text prompt)
   note?: string; // gloss under the answer (e.g. Korean translation of the model sentence)
   detail?: string; // friendly Korean explanation: nuance, when it's said, pitfalls — shown on reveal
+  terms?: string; // Korean glossary of the technical CONCEPTS the card touches (멱등성이 뭔지 등)
 }
 
 /**
@@ -163,6 +164,9 @@ export function InterviewDrill({
             {it.note || it.meaningKo ? (
               <ThemedText type="small" style={styles.detailText}>{it.note ?? it.meaningKo}</ThemedText>
             ) : null}
+            {it.terms ? (
+              <ThemedText type="small" style={styles.termsText}>📚 {it.terms}</ThemedText>
+            ) : null}
             {it.detail ? (
               <ThemedText type="small" style={styles.detailText}>{it.detail}</ThemedText>
             ) : null}
@@ -196,9 +200,14 @@ export function InterviewDrill({
               {!enOnly ? (
                 <ThemedText style={styles.meaning}>{item.meaningKo ?? item.promptKo}</ThemedText>
               ) : null}
-              {!enOnly && item.detail ? (
+              {!enOnly && (item.detail || item.terms) ? (
                 <View style={styles.detailBox}>
-                  <ThemedText type="small" style={styles.detailText}>{item.detail}</ThemedText>
+                  {item.terms ? (
+                    <ThemedText type="small" style={styles.termsText}>📚 {item.terms}</ThemedText>
+                  ) : null}
+                  {item.detail ? (
+                    <ThemedText type="small" style={styles.detailText}>{item.detail}</ThemedText>
+                  ) : null}
                 </View>
               ) : null}
               {enOnly ? explainToggle(item) : null}
@@ -243,9 +252,14 @@ export function InterviewDrill({
                       </ThemedText>
                     ) : null}
                   </View>
-                  {!enOnly && item.detail ? (
+                  {!enOnly && (item.detail || item.terms) ? (
                     <View style={styles.detailBox}>
-                      <ThemedText type="small" style={styles.detailText}>{item.detail}</ThemedText>
+                      {item.terms ? (
+                        <ThemedText type="small" style={styles.termsText}>📚 {item.terms}</ThemedText>
+                      ) : null}
+                      {item.detail ? (
+                        <ThemedText type="small" style={styles.detailText}>{item.detail}</ThemedText>
+                      ) : null}
                     </View>
                   ) : null}
                   {enOnly ? explainToggle(item) : null}
@@ -317,6 +331,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   detailText: { lineHeight: 20, color: '#4b5563' },
+  termsText: { lineHeight: 20, color: '#1d4ed8', marginBottom: 6 },
   detailToggle: { alignSelf: 'center', paddingVertical: 6, paddingHorizontal: 14 },
   detailToggleText: { color: '#208AEF', fontWeight: '600' },
   meaning: { fontSize: 16, textAlign: 'center', color: '#6b7280' },
