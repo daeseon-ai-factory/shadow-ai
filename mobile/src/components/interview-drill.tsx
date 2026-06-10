@@ -36,11 +36,13 @@ export function InterviewDrill({
   mode,
   onExit,
   timerSec,
+  enOnly,
 }: {
   items: IvItem[];
   mode: IvMode;
   onExit: () => void;
   timerSec?: number; // speed round: seconds to answer before the model auto-reveals
+  enOnly?: boolean; // EN immersion: hide Korean gloss/translation; detail collapses behind a tap
 }) {
   const [queue, setQueue] = useState<IvItem[]>(items);
   const [pos, setPos] = useState(0);
@@ -48,6 +50,7 @@ export function InterviewDrill({
   const [got, setGot] = useState(0);
   const [streak, setStreak] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
   const graded = useRef<Set<string>>(new Set());
   const qc = useQueryClient();
 
@@ -136,6 +139,7 @@ export function InterviewDrill({
       if (ok) setGot((g) => g + 1);
     }
     // "Again" repeats THIS card immediately — do NOT advance. Drill the missed one until "Got it".
+    setShowDetail(false);
     if (!ok) {
       setRevealed(mode === 'shadow');
       return;
@@ -143,6 +147,29 @@ export function InterviewDrill({
     setPos((p) => p + 1);
     setRevealed(mode === 'shadow');
   };
+
+  // EN immersion: the Korean layer (translation + 해설) collapses behind one tap instead of
+  // rendering inline — peek when stuck, otherwise the rep stays English-only.
+  const explainToggle = (it: IvItem) =>
+    it.detail || it.note || it.meaningKo ? (
+      <View style={styles.gap}>
+        <Pressable style={styles.detailToggle} onPress={() => setShowDetail((s) => !s)}>
+          <ThemedText type="small" style={styles.detailToggleText}>
+            💡 {t(showDetail ? 'iv.hideDetail' : 'iv.showDetail')}
+          </ThemedText>
+        </Pressable>
+        {showDetail ? (
+          <View style={styles.detailBox}>
+            {it.note || it.meaningKo ? (
+              <ThemedText type="small" style={styles.detailText}>{it.note ?? it.meaningKo}</ThemedText>
+            ) : null}
+            {it.detail ? (
+              <ThemedText type="small" style={styles.detailText}>{it.detail}</ThemedText>
+            ) : null}
+          </View>
+        ) : null}
+      </View>
+    ) : null;
 
   return (
     <ThemedView style={styles.flex}>
@@ -160,18 +187,21 @@ export function InterviewDrill({
             <View style={styles.gap}>
               <View style={styles.modelBox}>
                 <ThemedText style={styles.model}>{item.answer}</ThemedText>
-                {item.note ? (
+                {!enOnly && item.note ? (
                   <ThemedText type="small" style={styles.gloss}>
                     {item.note}
                   </ThemedText>
                 ) : null}
               </View>
-              <ThemedText style={styles.meaning}>{item.meaningKo ?? item.promptKo}</ThemedText>
-              {item.detail ? (
+              {!enOnly ? (
+                <ThemedText style={styles.meaning}>{item.meaningKo ?? item.promptKo}</ThemedText>
+              ) : null}
+              {!enOnly && item.detail ? (
                 <View style={styles.detailBox}>
                   <ThemedText type="small" style={styles.detailText}>{item.detail}</ThemedText>
                 </View>
               ) : null}
+              {enOnly ? explainToggle(item) : null}
               <ThemedText type="small" style={styles.hint}>{t('iv.sayAloud')}</ThemedText>
               <View style={styles.row}>
                 <Pressable style={[styles.gradeBtn, styles.again]} onPress={() => advance(false)}>
@@ -207,17 +237,18 @@ export function InterviewDrill({
                 <View style={styles.gap}>
                   <View style={styles.modelBox}>
                     <ThemedText style={styles.model}>{item.answer}</ThemedText>
-                    {item.note ? (
+                    {!enOnly && item.note ? (
                       <ThemedText type="small" style={styles.gloss}>
                         {item.note}
                       </ThemedText>
                     ) : null}
                   </View>
-                  {item.detail ? (
+                  {!enOnly && item.detail ? (
                     <View style={styles.detailBox}>
                       <ThemedText type="small" style={styles.detailText}>{item.detail}</ThemedText>
                     </View>
                   ) : null}
+                  {enOnly ? explainToggle(item) : null}
                   <View style={styles.row}>
                     <Pressable style={[styles.gradeBtn, styles.again]} onPress={() => advance(false)}>
                       <ThemedText style={styles.againText}>{t('drill.again')}</ThemedText>
@@ -286,6 +317,8 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   detailText: { lineHeight: 20, color: '#4b5563' },
+  detailToggle: { alignSelf: 'center', paddingVertical: 6, paddingHorizontal: 14 },
+  detailToggleText: { color: '#208AEF', fontWeight: '600' },
   meaning: { fontSize: 16, textAlign: 'center', color: '#6b7280' },
   hint: { textAlign: 'center', opacity: 0.7 },
   primaryBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 14, alignItems: 'center', marginTop: 8 },

@@ -8,6 +8,7 @@ import { ThemedView } from '@/components/themed-view';
 import { InterviewDrill, type IvMode } from '@/components/interview-drill';
 import { scopeItems, weakItems, type ScopeKind } from '@/lib/interview-deck';
 import { useAuthStore } from '@/lib/auth-store';
+import { useIvSettings } from '@/lib/iv-settings';
 
 /**
  * The drill runs as its OWN pushed route (not an in-place state swap), so iOS gives us the native
@@ -22,6 +23,7 @@ export default function InterviewRunScreen() {
     speed?: string;
   }>();
   const srs = useQuery({ queryKey: ['srs'], queryFn: () => practiceApi.srsStates(), enabled: !!token });
+  const enOnly = useIvSettings((s) => s.enOnly);
 
   const states = srs.data;
   // Build the session once per (scope, states) so re-renders don't reshuffle mid-drill.
@@ -51,6 +53,7 @@ export default function InterviewRunScreen() {
       items={items}
       mode={mode ?? 'produce'}
       timerSec={speed ? 8 : undefined}
+      enOnly={enOnly}
       onExit={() => router.back()}
     />
   );

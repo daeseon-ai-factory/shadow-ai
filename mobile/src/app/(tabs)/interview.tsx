@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
@@ -9,6 +9,7 @@ import { ThemedView } from '@/components/themed-view';
 import { type IvMode } from '@/components/interview-drill';
 import { type ScopeKind } from '@/lib/interview-deck';
 import { useAuthStore } from '@/lib/auth-store';
+import { useIvSettings } from '@/lib/iv-settings';
 import { t } from '@/lib/i18n';
 
 const MODES: { id: IvMode; label: string }[] = [
@@ -33,6 +34,10 @@ const codeCount = (cat: string) =>
 export default function InterviewScreen() {
   const token = useAuthStore((s) => s.token);
   const [mode, setMode] = useState<IvMode>('produce');
+  const { enOnly, setEnOnly, hydrate } = useIvSettings();
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
   if (!token) return <Redirect href="/login" />;
 
@@ -82,6 +87,14 @@ export default function InterviewScreen() {
                 </ThemedText>
               </Pressable>
             ))}
+            <Pressable
+              style={[styles.modeChip, enOnly && styles.enChipOn]}
+              onPress={() => setEnOnly(!enOnly)}
+            >
+              <ThemedText style={enOnly ? styles.modeChipOnText : styles.modeChipText}>
+                🇺🇸 {t('iv.enOnly')}
+              </ThemedText>
+            </Pressable>
           </View>
           <ThemedText type="small" style={styles.modeHint}>{t(`iv.modeHint.${mode}`)}</ThemedText>
 
@@ -216,6 +229,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   coreBtn: { backgroundColor: '#208AEF', borderRadius: 12, paddingVertical: 16, alignItems: 'center' },
+  enChipOn: { backgroundColor: '#16a34a', borderColor: '#16a34a' },
   mockBtn: {
     backgroundColor: '#16a34a',
     borderRadius: 12,
