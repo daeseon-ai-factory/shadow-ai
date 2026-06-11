@@ -21,6 +21,7 @@ import {
   REASONING_PREP_GROUPS,
   COLLOCATION_CARDS,
   ARGUMENT_GROUPS,
+  TRAP_CARDS,
   type ReflexCard,
   type InterviewCard,
   type PhraseCard,
@@ -159,6 +160,7 @@ export type ScopeKind =
   | 'prep'
   | 'collocation'
   | 'argument'
+  | 'trap'
   | 'weak';
 
 // Always-visible drill banner — the particle's core image belongs at the TOP of the drill,
@@ -197,6 +199,7 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
         ...PREP_GROUPS.flatMap((g) => g.items.map((it) => particleIv(it, g))),
         ...REASONING_PREP_GROUPS.flatMap((g) => g.items.map((it) => particleIv(it, g))),
         ...ARGUMENT_GROUPS.flatMap((g) => g.items.map(phraseIv)),
+        ...TRAP_CARDS.map(phraseIv),
       ];
     case 'core':
       return CORE_REFLEX.map(reflexIv);
@@ -242,6 +245,8 @@ export function scopeItems(kind: ScopeKind, clusterId?: string): IvItem[] {
       const g = [...PREP_GROUPS, ...REASONING_PREP_GROUPS].find((x) => x.particle === clusterId);
       return g ? g.items.map((it) => particleIv(it, g)) : [];
     }
+    case 'trap':
+      return TRAP_CARDS.map(phraseIv);
     case 'argument': {
       const g = ARGUMENT_GROUPS.find((x) => x.fn === clusterId);
       const items = g ? g.items : ARGUMENT_GROUPS.flatMap((x) => x.items);

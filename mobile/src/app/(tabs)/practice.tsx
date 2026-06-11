@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router, type Href } from 'expo-router';
-import { PATTERNS, COLLOCATIONS, PARTICLE_GROUPS, PREP_GROUPS, REASONING_PREP_GROUPS, ARGUMENT_GROUPS, WORKSHOP_COUNTS } from '@shadow-ai/core';
+import { PATTERNS, COLLOCATIONS, PARTICLE_GROUPS, PREP_GROUPS, REASONING_PREP_GROUPS, ARGUMENT_GROUPS, TRAP_CARDS, WORKSHOP_COUNTS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -71,6 +71,17 @@ export default function PracticeMenuScreen() {
               </Pressable>
             ))}
           </View>
+          <Pressable
+            style={[styles.card, styles.trapCard]}
+            onPress={() => router.push({ pathname: '/interview-run', params: { mode: 'produce', scope: 'trap' } })}
+          >
+            <ThemedText style={styles.icon}>🚨</ThemedText>
+            <View style={styles.cardBody}>
+              <ThemedText type="smallBold">{t('practice.traps')}</ThemedText>
+              <ThemedText type="small" style={styles.sub}>{t('practice.trapsSub', { n: TRAP_CARDS.length })}</ThemedText>
+            </View>
+            <ThemedText style={styles.chev}>›</ThemedText>
+          </Pressable>
           <ThemedText type="small" style={styles.sub}>{t('practice.argHint')}</ThemedText>
           <View style={styles.chips}>
             {ARGUMENT_GROUPS.map((g) => (
@@ -133,4 +144,5 @@ const styles = StyleSheet.create({
   },
   prepChip: { borderColor: '#16a34a88' },
   argChip: { borderColor: '#d9770688' },
+  trapCard: { borderColor: '#dc2626', backgroundColor: '#dc262611' },
 });

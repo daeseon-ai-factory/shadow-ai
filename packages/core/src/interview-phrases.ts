@@ -5084,6 +5084,1232 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "What helped you grow the most as an engineer in the last year?",
         "termsKo": "",
         "cueKo": "페어링하는 것이 · 시니어들과 · 정말 도와줬다 · 내가 · 레벨업하도록 · 내 설계 스킬을"
+      },
+      {
+        "key": "ev:wake-up",
+        "en": "wake up",
+        "ko": "잠에서 깨다",
+        "example": "I woke up at six without an alarm today.",
+        "situations": [
+          "아침 루틴 설명",
+          "잠버릇·수면의 질 얘기"
+        ],
+        "detail": "의식이 잠 아래에서 위로 떠오른다는 up의 그림. 눈이 떠지는 순간 자체를 말해 — 침대에서 나오는 동작은 get up으로 구분해. \"6시에 깼는데 7시에 일어났어\"처럼 둘을 나눠 쓸 수 있어야 자연스러워.",
+        "exampleKo": "오늘 알람 없이 6시에 깼어.",
+        "questionEn": "What time do you usually open your eyes in the morning, alarm or no alarm?",
+        "termsKo": "",
+        "cueKo": "나 · 깼어 · 6시에 · 알람 없이 · 오늘"
+      },
+      {
+        "key": "ev:get-up",
+        "en": "get up",
+        "ko": "(잠자리에서) 일어나다",
+        "example": "I got up late and skipped breakfast.",
+        "situations": [
+          "아침 루틴 설명",
+          "늦게 일어난 변명"
+        ],
+        "detail": "누워 있던 몸을 위로 일으켜 세우는 그림. 침대에서 실제로 몸을 빼는 동작이라 wake up(깨다)의 다음 단계야. \"깼는데 못 일어났어\"는 I woke up but couldn't get up — 이 한 문장으로 둘의 차이가 정리돼.",
+        "exampleKo": "늦게 일어나서 아침은 걸렀어.",
+        "questionEn": "Do you leave your bed right away in the morning, or stay there scrolling for a while?",
+        "termsKo": "",
+        "cueKo": "나 · 일어났어 · 늦게 · 그리고 걸렀어 · 아침을"
+      },
+      {
+        "key": "ev:stay-up",
+        "en": "stay up",
+        "ko": "안 자고 깨어 있다",
+        "example": "I stayed up till two watching the game.",
+        "situations": [
+          "피곤한 이유 설명",
+          "밤샘 습관 얘기"
+        ],
+        "detail": "잠으로 내려가지 않고 깬 상태로 위에(up) 버틴다는 그림. 늦게까지 안 자고 뭔가를 했다고 할 때 표준이고, stay up late가 한 덩어리처럼 쓰여. 밤을 아예 새우면 stay up all night 또는 pull an all-nighter야.",
+        "exampleKo": "경기 보느라 2시까지 안 잤어.",
+        "questionEn": "How late were you awake last night, and what kept you from going to bed?",
+        "termsKo": "",
+        "cueKo": "나 · 안 자고 버텼어 · 2시까지 · 보면서 · 경기를"
+      },
+      {
+        "key": "ev:meet-up",
+        "en": "meet up",
+        "ko": "(약속해서) 만나다",
+        "example": "Let's meet up for coffee this weekend.",
+        "situations": [
+          "약속 잡기",
+          "오랜만에 보자는 연락"
+        ],
+        "detail": "흩어져 있던 사람들이 한 지점으로 모여 만난다(up)는 그림. meet 혼자 쓰면 '처음 만나다'로 들릴 수 있어서, 아는 사이의 약속엔 meet up이 더 자연스러워. meetup이라는 명사는 모임 이벤트 자체를 뜻해.",
+        "exampleKo": "이번 주말에 커피 마시러 만나자.",
+        "questionEn": "You haven't seen your old coworker in months. What do you suggest over text?",
+        "termsKo": "",
+        "cueKo": "우리 만나자 · 커피 마시러 · 이번 주말에"
+      },
+      {
+        "key": "ev:catch-up",
+        "en": "catch up",
+        "ko": "밀린 근황을 나누다; 밀린 일을 따라잡다",
+        "example": "We should grab lunch and catch up soon.",
+        "situations": [
+          "오랜만에 연락 온 친구",
+          "밀린 일·잠 처리 계획"
+        ],
+        "detail": "뒤처진 간격을 따라잡아 나란히 서는(up) 그림. 오랜만에 만난 사람과 그간 얘기를 나누는 것, 밀린 일·잠·드라마를 따라잡는 것 둘 다야. \"Let's catch up soon\"은 '밀린 수다 떨자'는 미국식 단골 인사야.",
+        "exampleKo": "조만간 점심 먹으면서 밀린 얘기 하자.",
+        "questionEn": "An old friend texts you after six months of silence. What do you suggest doing together?",
+        "termsKo": "",
+        "cueKo": "우리 · 해야 해 · 점심을 · 그리고 밀린 얘기 · 조만간"
+      },
+      {
+        "key": "ev:break-up",
+        "en": "break up",
+        "ko": "(연인이) 헤어지다",
+        "example": "They broke up after five years together.",
+        "situations": [
+          "친구 연애사 얘기",
+          "이별 위로"
+        ],
+        "detail": "하나였던 관계가 조각조각(up) 부서지는 그림. 연인이 헤어지는 것의 표준 표현이고 명사형 breakup도 그대로 써. 통화 중 \"you're breaking up\"은 '신호가 끊겨 소리가 끊긴다'는 전혀 다른 뜻이니 문맥으로 구분해.",
+        "exampleKo": "걔네 5년 만나고 헤어졌어.",
+        "questionEn": "Your friend and his girlfriend of five years are no longer together. What happened?",
+        "termsKo": "",
+        "cueKo": "걔네 · 헤어졌어 · 5년 후에 · 같이한"
+      },
+      {
+        "key": "ev:make-up",
+        "en": "make up",
+        "ko": "화해하다; 지어내다; 만회하다",
+        "example": "We argued, but we made up the next day.",
+        "situations": [
+          "싸우고 화해한 얘기",
+          "핑계·거짓말 지적"
+        ],
+        "detail": "깨졌던 걸 다시 쌓아 올려(up) 완성하는 그림. 싸운 뒤 화해하기, 없는 얘기 지어내기(make up an excuse), 빠진 것 만회하기(make up for it)까지 전부 '메워서 완성'이라는 같은 그림이야. 화장(makeup)도 얼굴을 만들어 올린다는 같은 어원이야.",
+        "exampleKo": "우리 다퉜는데 다음 날 화해했어.",
+        "questionEn": "You and your sister had a big fight last month, but things are fine now. What changed?",
+        "termsKo": "",
+        "cueKo": "우리 · 다퉜어 · 하지만 우리 · 화해했어 · 다음 날"
+      },
+      {
+        "key": "ev:open-up",
+        "en": "open up",
+        "ko": "마음을 터놓다",
+        "example": "He finally opened up about what was bothering him.",
+        "situations": [
+          "고민 들어준 얘기",
+          "속 안 터놓는 사람 묘사"
+        ],
+        "detail": "닫혀 있던 마음의 뚜껑을 활짝(up) 여는 그림. 속에 담아둔 고민이나 감정을 드러내기 시작할 때 써 — about과 자주 붙어. 가게가 문을 연다, 자리가 난다(a spot opened up)는 뜻도 같은 그림이야.",
+        "exampleKo": "걔가 드디어 뭐가 힘들었는지 털어놨어.",
+        "questionEn": "Your quiet coworker finally told you what's been troubling him for weeks. How would you describe that moment?",
+        "termsKo": "",
+        "cueKo": "걔가 · 드디어 · 털어놨어 · 뭐가 · 괴롭히고 있었는지 · 자기를"
+      },
+      {
+        "key": "ev:grow-up",
+        "en": "grow up",
+        "ko": "자라다, 철들다",
+        "example": "I grew up in a small town near Busan.",
+        "situations": [
+          "출신·어린 시절 소개",
+          "철없는 행동 지적"
+        ],
+        "detail": "키와 나이가 위로(up) 자라나는 그림. 어디서 자랐는지 말하는 자기소개 필수 표현이고, \"Grow up!\"(철 좀 들어!)이라는 핀잔으로도 써. 명사형 grown-up은 아이들이 말하는 '어른'이야.",
+        "exampleKo": "나는 부산 근처 작은 동네에서 자랐어.",
+        "questionEn": "Where did you spend your childhood, and what was it like?",
+        "termsKo": "",
+        "cueKo": "나 · 자랐어 · 작은 동네에서 · 부산 근처"
+      },
+      {
+        "key": "ev:bring-up",
+        "en": "bring up",
+        "ko": "(화제를) 꺼내다; (아이를) 키우다",
+        "example": "Don't bring up politics at dinner tonight.",
+        "situations": [
+          "민감한 주제 단속",
+          "회의에서 안건 꺼내기"
+        ],
+        "detail": "가라앉아 있던 화제를 수면 위로(up) 들어 올리는 그림. 대화에서 어떤 주제를 꺼낸다는 일상 필수 표현이야. 아이를 키운다(brought up three kids)는 뜻도 있는데, 이건 raise와 같은 의미야.",
+        "exampleKo": "오늘 저녁 자리에서 정치 얘기 꺼내지 마.",
+        "questionEn": "There's a sensitive topic you want to avoid at the family dinner. What do you warn your partner?",
+        "termsKo": "",
+        "cueKo": "꺼내지 마 · 정치 얘기를 · 저녁 자리에서 · 오늘 밤"
+      },
+      {
+        "key": "ev:put-up-with",
+        "en": "put up with",
+        "ko": "참다, 견디다",
+        "example": "I can't put up with the noise upstairs anymore.",
+        "situations": [
+          "층간소음 하소연",
+          "불편한 상황 견디기"
+        ],
+        "detail": "불쾌한 걸 옆에 세워둔 채(up) 같이(with) 지낸다는 그림. 싫지만 어쩔 수 없이 견디는 상황의 표준 구어 표현이야. tolerate의 일상 버전이고, 거의 항상 can't put up with(더는 못 참겠다) 형태로 등장해.",
+        "exampleKo": "위층 소음 더는 못 참겠어.",
+        "questionEn": "Your neighbors stomp around every night at 2am. How much longer can you stand it?",
+        "termsKo": "",
+        "cueKo": "나 · 못 참겠어 · 그 소음을 · 위층의 · 더 이상"
+      },
+      {
+        "key": "ev:cheer-up",
+        "en": "cheer up",
+        "ko": "기운 내다; 기운 나게 해 주다",
+        "example": "I baked cookies to cheer her up.",
+        "situations": [
+          "우울한 친구 위로",
+          "기분 전환 방법 얘기"
+        ],
+        "detail": "가라앉은 기분을 위로(up) 끌어올리는 그림. 자동사로 \"Cheer up!\"(기운 내!), 타동사로 cheer her up(걔 기분 풀어 주다) 둘 다 매일 쓰여. 위로의 첫마디로 만만하지만, 심각한 상황에선 가볍게 들릴 수 있으니 톤 조절이 필요해.",
+        "exampleKo": "걔 기운 내라고 쿠키를 구웠어.",
+        "questionEn": "Your roommate failed their driving test and looks miserable. What do you do for them?",
+        "termsKo": "",
+        "cueKo": "나 · 구웠어 · 쿠키를 · 기운 나게 하려고 · 걔를"
+      },
+      {
+        "key": "ev:blow-up",
+        "en": "blow up",
+        "ko": "폭발하다; 버럭 화내다; 갑자기 확 뜨다",
+        "example": "He blew up at me over nothing.",
+        "situations": [
+          "버럭 한 상사 얘기",
+          "SNS 게시물 떡상 썰"
+        ],
+        "detail": "압력이 차오르다 위로(up) 터져버리는 그림. 사람이 주어면 참던 화가 폭발하는 것, 풍선·타이어면 부풀리거나 터지는 것, 게시물이면 갑자기 확 뜨는 것(the post blew up)까지 다 같은 그림이야.",
+        "exampleKo": "걔가 별것도 아닌 일로 나한테 버럭 했어.",
+        "questionEn": "Your manager suddenly started yelling over a tiny mistake. How would you describe that?",
+        "termsKo": "",
+        "cueKo": "걔가 · 폭발했어 · 나한테 · 아무것도 아닌 일로"
+      },
+      {
+        "key": "ev:crack-up",
+        "en": "crack up",
+        "ko": "빵 터지다; 빵 터지게 하다",
+        "example": "That video cracked me up.",
+        "situations": [
+          "웃긴 영상·짤 공유",
+          "웃음 참기 실패 썰"
+        ],
+        "detail": "참던 웃음이 금 가듯 쩍 갈라지며 위로(up) 터지는 그림. \"That cracks me up\"(그거 완전 웃겨)처럼 타동사로도, \"I cracked up\"(빵 터졌어)처럼 자동사로도 써. laugh보다 '참다가 터졌다'는 어감이 강해.",
+        "exampleKo": "그 영상 보고 빵 터졌어.",
+        "questionEn": "What's the funniest thing you've seen online this week, and what did it do to you?",
+        "termsKo": "",
+        "cueKo": "그 영상이 · 빵 터지게 했어 · 나를"
+      },
+      {
+        "key": "ev:mess-up",
+        "en": "mess up",
+        "ko": "망치다, 실수하다",
+        "example": "I messed up the reservation dates.",
+        "situations": [
+          "실수 인정하기",
+          "일 그르친 상황 설명"
+        ],
+        "detail": "정돈된 걸 엉망(mess)으로 만들어버리는 그림. 일이나 물건을 망쳤을 때 가장 만만한 구어체고, screw up도 같은 뜻으로 그만큼 자주 들려. 자기 실수를 가볍게 인정할 때 \"My bad, I messed up\" 하면 자연스러워.",
+        "exampleKo": "내가 예약 날짜를 잘못 잡았어.",
+        "questionEn": "You booked the hotel for the wrong weekend. How do you admit it to your partner?",
+        "termsKo": "",
+        "cueKo": "나 · 망쳤어 · 예약 날짜를"
+      },
+      {
+        "key": "ev:speak-up",
+        "en": "speak up",
+        "ko": "더 크게 말하다; 의견을 내다",
+        "example": "Could you speak up a bit? I can't hear you.",
+        "situations": [
+          "전화 소리 안 들릴 때",
+          "회의에서 의견 내기 독려"
+        ],
+        "detail": "목소리를 위로(up) 끌어올린다는 그림. 잘 안 들릴 때 크게 말해 달라는 부탁이 기본이고, 회의에서 \"Don't be afraid to speak up\"(주저 말고 의견 내)처럼 목소리를 낸다는 뜻으로 확장돼. 둘 다 일상 최상위 빈도야.",
+        "exampleKo": "조금만 크게 말해 줄래? 잘 안 들려.",
+        "questionEn": "The person on the phone is too quiet to hear. What do you ask them to do?",
+        "termsKo": "",
+        "cueKo": "해 줄래 · 크게 말하기를 · 조금 · 나 못 들어 · 너를"
+      },
+      {
+        "key": "ev:look-up",
+        "en": "look up",
+        "ko": "(정보를) 찾아보다, 검색하다",
+        "example": "Let me look up the opening hours real quick.",
+        "situations": [
+          "영업시간·단어 검색",
+          "모르는 것 바로 확인"
+        ],
+        "detail": "사전이나 목록에서 시선을 위로 올려가며 찾던 동작이 굳은 그림. 단어·영업시간·주소처럼 특정 정보를 찾아본다는 뜻이야. search가 행위 전반이라면 look up은 '딱 그 항목을 찾아본다'는 핀포인트 어감이야.",
+        "exampleKo": "영업시간 금방 찾아볼게.",
+        "questionEn": "You don't know if the pharmacy is open on Sundays. What do you do with your phone?",
+        "termsKo": "",
+        "cueKo": "내가 · 찾아볼게 · 영업시간을 · 금방"
+      },
+      {
+        "key": "ev:come-up",
+        "en": "come up",
+        "ko": "(일이) 갑자기 생기다; (화제로) 나오다",
+        "example": "Sorry, something came up — can we reschedule?",
+        "situations": [
+          "약속 미루는 연락",
+          "회의에서 나온 화제 전달"
+        ],
+        "detail": "예정에 없던 일이 수면 위로(up) 불쑥 올라오는 그림. 약속을 미룰 때 \"갑자기 일이 생겼어(something came up)\"가 가장 정중하고 만능인 사유야. 회의에서 어떤 얘기가 나왔다(it came up in the meeting)도 같은 그림이야.",
+        "exampleKo": "미안, 갑자기 일이 생겼어 — 일정 다시 잡을 수 있을까?",
+        "questionEn": "You need to cancel tonight's dinner without giving details. What do you text?",
+        "termsKo": "",
+        "cueKo": "미안 · 뭔가 · 생겼어 · 우리 다시 잡을 수 있을까?"
+      },
+      {
+        "key": "ev:show-up",
+        "en": "show up",
+        "ko": "나타나다, 오다",
+        "example": "He showed up an hour late without calling.",
+        "situations": [
+          "지각·노쇼 썰",
+          "꾸준한 출석 강조"
+        ],
+        "detail": "안 보이던 사람이 시야에 불쑥(up) 나타나는 그림. 약속 장소에 '오다/안 오다'를 말하는 가장 구어적인 동사야 — didn't show up은 바람맞혔다는 뜻이 돼. \"Just keep showing up\"(꾸준히 나오는 게 답이다)이라는 긍정 용법도 많아.",
+        "exampleKo": "걔가 연락도 없이 한 시간 늦게 나타났어.",
+        "questionEn": "Your date never arrived at the restaurant and never called. What happened?",
+        "termsKo": "",
+        "cueKo": "걔가 · 나타났어 · 한 시간 늦게 · 전화도 없이"
+      },
+      {
+        "key": "ev:hang-up",
+        "en": "hang up",
+        "ko": "전화를 끊다; (옷을) 걸다",
+        "example": "She hung up before I could explain.",
+        "situations": [
+          "통화가 끊긴 상황",
+          "전화 예절 얘기"
+        ],
+        "detail": "옛날 벽걸이 전화기를 위에 걸어(up) 통화를 끝내던 동작이 그대로 굳은 표현이야. 통화를 끊는 것의 표준이고, 화나서 일방적으로 끊으면 hang up on someone이라고 해. 옷이나 액자를 건다는 원래 그림도 그대로 살아 있어.",
+        "exampleKo": "내가 설명하기도 전에 걔가 전화를 끊었어.",
+        "questionEn": "You were mid-sentence and suddenly heard the dial tone. What did the other person do?",
+        "termsKo": "",
+        "cueKo": "걔가 · 끊었어 · 전에 · 내가 설명할 수 있기"
+      },
+      {
+        "key": "ev:throw-up",
+        "en": "throw up",
+        "ko": "토하다",
+        "example": "The kid threw up in the car on the way.",
+        "situations": [
+          "체했던 경험 얘기",
+          "멀미·숙취 묘사"
+        ],
+        "detail": "뱃속 내용물이 위로(up) 솟구쳐 나오는 직설적인 그림. 토하다의 표준 구어로, vomit은 진료실 단어에 가깝고 일상에선 throw up이 기본이야. 완곡하게는 get sick, 속이 메스껍기만 한 건 feel nauseous로 단계를 구분해.",
+        "exampleKo": "애가 가는 길에 차에서 토했어.",
+        "questionEn": "The roller coaster was too much for your stomach. What almost happened after the ride?",
+        "termsKo": "",
+        "cueKo": "애가 · 토했어 · 차에서 · 가는 길에"
+      },
+      {
+        "key": "ev:warm-up",
+        "en": "warm up",
+        "ko": "몸을 풀다; 데우다",
+        "example": "Warm up properly before you lift anything heavy.",
+        "situations": [
+          "운동 전 준비 조언",
+          "엔진·몸 예열 얘기"
+        ],
+        "detail": "차가운 몸의 온도를 위로(up) 올려 준비시키는 그림. 운동 전 준비 운동의 표준이고 명사 warm-up도 그대로 써. 음식을 데운다(warm up the soup), 처음 어색하던 사람과 분위기가 풀린다(warm up to someone)는 확장도 자연스러워.",
+        "exampleKo": "무거운 거 들기 전에 몸 제대로 풀어.",
+        "questionEn": "What do you do for the first ten minutes at the gym, before the real exercise?",
+        "termsKo": "",
+        "cueKo": "몸 풀어 · 제대로 · 전에 · 네가 들기 · 무거운 걸"
+      },
+      {
+        "key": "ev:give-up",
+        "en": "give up",
+        "ko": "포기하다; (습관을) 끊다",
+        "example": "I gave up sugar for a month.",
+        "situations": [
+          "도전 포기 고백",
+          "금주·금연 결심"
+        ],
+        "detail": "쥐고 있던 걸 위로 들어 내놓는(up) 항복의 그림. 시도를 포기하는 것과 습관을 끊는 것 둘 다 커버해. quit과 거의 같지만 give up은 뒤에 동명사(gave up trying)나 명사가 자유롭게 와서 활용도가 더 높아.",
+        "exampleKo": "한 달 동안 설탕을 끊었어.",
+        "questionEn": "You tried learning guitar for two months and then just stopped. What did you do?",
+        "termsKo": "",
+        "cueKo": "나 · 끊었어 · 설탕을 · 한 달 동안"
+      },
+      {
+        "key": "ev:take-up",
+        "en": "take up",
+        "ko": "(취미를) 시작하다; (공간·시간을) 차지하다",
+        "example": "I took up tennis last spring.",
+        "situations": [
+          "새 취미 소개",
+          "공간 차지하는 물건 불평"
+        ],
+        "detail": "새로운 활동을 손에 들어 올려(up) 내 생활에 넣는 그림. 취미나 운동을 새로 시작했다고 할 때 가장 자연스러운 동사야. \"The table takes up half the room\"(테이블이 방 반을 차지해)처럼 공간·시간을 차지한다는 뜻도 같이 알아둬.",
+        "exampleKo": "지난봄에 테니스를 시작했어.",
+        "questionEn": "You needed a new weekend hobby, so last spring you started something with a racket. Say it naturally.",
+        "termsKo": "",
+        "cueKo": "나 · 시작했어 · 테니스를 · 지난봄에"
+      },
+      {
+        "key": "ev:keep-up-with",
+        "en": "keep up with",
+        "ko": "(속도·소식을) 따라가다, 놓치지 않다",
+        "example": "I can't keep up with all the group chats.",
+        "situations": [
+          "밀리는 단톡방·뉴스",
+          "빠른 변화 따라가기"
+        ],
+        "detail": "앞서가는 대상과 같은 높이(up)를 유지하며 같이(with) 가는 그림. 뉴스·유행·단톡방·운동 속도를 놓치지 않고 따라간다는 뜻이야. catch up이 '뒤처진 걸 만회'라면 keep up은 '뒤처지지 않게 유지'라는 차이를 기억해.",
+        "exampleKo": "단톡방들을 도저히 다 못 따라가겠어.",
+        "questionEn": "There are too many shows, news, and chats to follow these days. How do you feel?",
+        "termsKo": "",
+        "cueKo": "나 · 못 따라가 · 모든 단톡방을"
+      },
+      {
+        "key": "ev:follow-up",
+        "en": "follow up",
+        "ko": "(진료·연락의) 후속 확인을 하다",
+        "example": "The doctor wants to follow up in two weeks.",
+        "situations": [
+          "진료 후 재방문 안내",
+          "보낸 연락 재확인"
+        ],
+        "detail": "한 번 한 일을 뒤따라가며(follow) 마저(up) 챙기는 그림. 진료 후 경과 확인, 보낸 메일에 대한 재확인 연락이 대표 장면이야. 명사형 follow-up(후속 진료, 후속 메일)도 그대로 굳어 있어.",
+        "exampleKo": "의사가 2주 뒤에 경과를 보재.",
+        "questionEn": "The doctor checked your test results and wants to see you again in two weeks. Why?",
+        "termsKo": "",
+        "cueKo": "의사가 · 원해 · 후속 확인하길 · 2주 뒤에"
+      },
+      {
+        "key": "ev:clear-up",
+        "en": "clear up",
+        "ko": "(날씨가) 개다; (피부·오해가) 깨끗해지다",
+        "example": "The rain should clear up by noon.",
+        "situations": [
+          "날씨 전망 얘기",
+          "오해 풀기"
+        ],
+        "detail": "흐리던 게 싹 걷혀 말끔해지는(up) 그림. 날씨가 개는 것, 피부 트러블이 가라앉는 것, 오해를 푸는 것(clear up the confusion)까지 전부 같은 그림이야. 세 장면 모두 일상 빈도가 높아서 가성비 좋은 동사야.",
+        "exampleKo": "비는 정오쯤이면 갤 거야.",
+        "questionEn": "The forecast says the morning rain won't last. How do you describe the afternoon?",
+        "termsKo": "",
+        "cueKo": "비가 · 갤 거야 · 정오까지는"
+      },
+      {
+        "key": "ev:pick-up",
+        "en": "pick up",
+        "ko": "데리러 가다, 찾아오다; (전화를) 받다; 사 오다",
+        "example": "Can you pick up the kids at five?",
+        "situations": [
+          "아이 픽업 부탁",
+          "세탁물·택배 찾기",
+          "오는 길에 장보기 부탁"
+        ],
+        "detail": "아래 있는 걸 집어 올리는(up) 그림이 사방으로 확장돼. 사람을 차로 데리러 가기, 맡긴 세탁물 찾아오기, 울리는 전화 받기, 오는 길에 우유 사 오기(pick up some milk)까지 일상 빈도 최상위 동사야. 언어·기술을 어깨너머로 익힌다(picked up Spanish)는 뜻도 있어.",
+        "exampleKo": "5시에 애들 좀 데리러 가 줄래?",
+        "questionEn": "The kids finish school at five and someone needs to drive them home. What do you ask your partner?",
+        "termsKo": "",
+        "cueKo": "너 · 데리러 갈 수 있어 · 애들을 · 5시에?"
+      },
+      {
+        "key": "ev:pull-up",
+        "en": "pull up",
+        "ko": "(화면에) 띄우다; (차가) 다가와 서다",
+        "example": "Let me pull up the photo on my phone.",
+        "situations": [
+          "폰으로 보여주기",
+          "집 앞에 차 도착"
+        ],
+        "detail": "보이지 않던 걸 눈앞으로 끌어 올리는(up) 그림. 폰·노트북 화면에 사진·지도·예약 내역을 띄울 때 매일 쓰는 표현이야. 차가 스르륵 다가와 선다(the taxi pulled up)는 뜻도 있는데, 우버 기다릴 때 자주 듣게 돼.",
+        "exampleKo": "폰으로 그 사진 띄워 볼게.",
+        "questionEn": "You want to show your friend the map on your phone. What do you say first?",
+        "termsKo": "",
+        "cueKo": "내가 · 띄울게 · 그 사진을 · 내 폰에"
+      },
+      {
+        "key": "ev:fill-up",
+        "en": "fill up",
+        "ko": "가득 채우다; (기름을) 가득 넣다",
+        "example": "Let's fill up before we hit the highway.",
+        "situations": [
+          "주유소 들르기",
+          "물병·배 채우기"
+        ],
+        "detail": "빈 공간을 끝까지(up) 가득 채우는 그림. 주유소에서 기름 가득 넣는 게 대표 장면이고, \"Fill it up, please\"(가득이요)가 그대로 주문 멘트야. 배가 찼다(I'm filling up)처럼 먹는 맥락에도 써.",
+        "exampleKo": "고속도로 타기 전에 기름 가득 넣자.",
+        "questionEn": "The gas gauge is almost on empty and a long drive is ahead. What's the first stop?",
+        "termsKo": "",
+        "cueKo": "우리 가득 채우자 · 전에 · 우리가 타기 · 고속도로를"
+      },
+      {
+        "key": "ev:speed-up",
+        "en": "speed up",
+        "ko": "속도를 올리다, 빨라지다",
+        "example": "The line finally sped up after they opened another register.",
+        "situations": [
+          "줄·진행 빨라진 상황",
+          "일정 서두르기"
+        ],
+        "detail": "속도 게이지를 위로(up) 올리는 그림. slow down의 정확한 반대말로, 차·줄·작업 진행 어디에나 써. 과거형이 sped up이라는 불규칙 변화만 주의하면 돼.",
+        "exampleKo": "계산대 하나 더 열리니까 줄이 드디어 빨리 줄었어.",
+        "questionEn": "The checkout line was crawling until they added another cashier. What changed?",
+        "termsKo": "",
+        "cueKo": "줄이 · 드디어 · 빨라졌어 · 후에 · 그들이 열고 · 계산대 하나 더"
+      },
+      {
+        "key": "ev:hurry-up",
+        "en": "hurry up",
+        "ko": "서두르다",
+        "example": "Hurry up, the movie starts in ten minutes!",
+        "situations": [
+          "늦을 때 재촉",
+          "꾸물대는 가족 채근"
+        ],
+        "detail": "꾸물대는 속도를 위로(up) 확 끌어올리라는 그림. \"빨리빨리!\"의 표준 표현으로 거의 명령문으로 굳어 있어. 정중하게는 \"We should hurry\"처럼 up 없이 쓰면 재촉의 날이 좀 무뎌져.",
+        "exampleKo": "서둘러, 영화 10분 뒤에 시작해!",
+        "questionEn": "Your friend is still choosing an outfit and the movie starts soon. What do you yell?",
+        "termsKo": "",
+        "cueKo": "서둘러 · 영화가 · 시작해 · 10분 뒤에"
+      },
+      {
+        "key": "ev:dress-up",
+        "en": "dress up",
+        "ko": "차려입다; 분장하다",
+        "example": "You don't need to dress up — it's casual.",
+        "situations": [
+          "드레스코드 안내",
+          "핼러윈 분장 얘기"
+        ],
+        "detail": "평소보다 옷차림 수준을 위로(up) 끌어올리는 그림. 격식 있는 자리에 맞춰 차려입는 것이고, 핼러윈에 뭔가로 분장하는 것(dress up as a pirate)도 같은 표현이야. 반대로 편하게 낮춰 입는 건 dress down이라고 해.",
+        "exampleKo": "차려입을 필요 없어 — 편한 자리야.",
+        "questionEn": "Your friend asks what to wear to the dinner. It's just a casual place. What do you tell them?",
+        "termsKo": "",
+        "cueKo": "너 · 필요 없어 · 차려입을 · 캐주얼한 자리야"
+      },
+      {
+        "key": "ev:bundle-up",
+        "en": "bundle up",
+        "ko": "(춥지 않게) 껴입다, 단단히 챙겨 입다",
+        "example": "Bundle up — it's minus fifteen out there.",
+        "situations": [
+          "한파 외출 당부",
+          "겨울 등교 준비"
+        ],
+        "detail": "몸을 보따리(bundle)처럼 겹겹이 싸 올리는(up) 그림. 토론토 겨울처럼 혹한에 단단히 챙겨 입으라는 단골 당부야. dress warmly보다 훨씬 구어적이고, 캐나다·미국 북부에선 겨울 인사처럼 쓰여.",
+        "exampleKo": "단단히 껴입어 — 밖에 영하 15도야.",
+        "questionEn": "It's minus fifteen in Toronto and your friend is leaving in a hoodie. What do you tell them?",
+        "termsKo": "",
+        "cueKo": "껴입어 · 영하 15도야 · 밖에"
+      },
+      {
+        "key": "ev:tidy-up",
+        "en": "tidy up",
+        "ko": "정리 정돈하다",
+        "example": "Let's tidy up before the guests arrive.",
+        "situations": [
+          "손님맞이 정리",
+          "책상·방 정돈"
+        ],
+        "detail": "어질러진 것들을 끌어올려(up) 말끔한 상태로 만드는 그림. 본격 청소(clean)보다는 널린 물건을 제자리에 두는 가벼운 정돈이야. 곤도 마리에 덕분에 tidying up이라는 표현 자체가 유명해졌지.",
+        "exampleKo": "손님 오기 전에 정리 좀 하자.",
+        "questionEn": "Guests arrive in thirty minutes and the living room is a disaster. What needs doing?",
+        "termsKo": "",
+        "cueKo": "우리 정리하자 · 전에 · 손님들이 도착하기"
+      },
+      {
+        "key": "ev:heat-up",
+        "en": "heat up",
+        "ko": "데우다",
+        "example": "I'll just heat up last night's leftovers.",
+        "situations": [
+          "남은 음식 데우기",
+          "전자레인지 사용"
+        ],
+        "detail": "온도를 위로(up) 끌어올려 데우는 그림. 남은 음식을 전자레인지에 데울 때의 표준 동사야. warm up도 데운다는 뜻이지만, heat up이 '뜨겁게'까지 올리는 어감이고 warm up은 '미지근하게'에 가까워.",
+        "exampleKo": "그냥 어젯밤 남은 음식 데워 먹을래.",
+        "questionEn": "You're too tired to cook, but there's leftover pasta in the fridge. What's your dinner plan?",
+        "termsKo": "",
+        "cueKo": "나 그냥 · 데울 거야 · 어젯밤 남은 음식을"
+      },
+      {
+        "key": "ev:turn-up",
+        "en": "turn up",
+        "ko": "(소리·온도를) 올리다; 나타나다",
+        "example": "Turn up the heat — I'm freezing.",
+        "situations": [
+          "볼륨·난방 올리기",
+          "잃어버린 물건이 나타난 상황"
+        ],
+        "detail": "다이얼을 위로(up) 돌려 세기를 올리는 그림. 볼륨·난방·에어컨 세기를 올릴 때의 표준이야. 잃어버린 물건이나 사람이 불쑥 나타난다(my keys turned up)는 뜻도 있는데, 이건 show up과 비슷한 그림이야.",
+        "exampleKo": "난방 좀 올려 줘 — 얼어 죽겠어.",
+        "questionEn": "The volume is too low to hear the dialogue. What do you ask the person with the remote?",
+        "termsKo": "",
+        "cueKo": "올려 · 난방을 · 나 · 얼고 있어"
+      },
+      {
+        "key": "ev:charge-up",
+        "en": "charge up",
+        "ko": "(배터리를) 충전하다",
+        "example": "Charge up your phone before the road trip.",
+        "situations": [
+          "외출 전 충전 챙기기",
+          "보조배터리 준비"
+        ],
+        "detail": "배터리 게이지를 위로(up) 끝까지 채우는 그림. 그냥 charge만 써도 되지만, up이 붙으면 '가득'이라는 완성의 어감이 더해져. 사람한테 쓰면 푹 쉬어 에너지를 채운다는 비유도 돼(all charged up).",
+        "exampleKo": "장거리 운전 전에 폰 충전해 둬.",
+        "questionEn": "Your phone is at five percent and you leave for a trip in an hour. What do you do?",
+        "termsKo": "",
+        "cueKo": "충전해 · 네 폰을 · 전에 · 장거리 운전"
+      },
+      {
+        "key": "ev:act-up",
+        "en": "act up",
+        "ko": "(기계·몸이) 말썽 부리다",
+        "example": "The Wi-Fi has been acting up all day.",
+        "situations": [
+          "기기 오작동 불평",
+          "고질병 도진 얘기"
+        ],
+        "detail": "얌전하던 게 위로 튀며(up) 말썽을 부리는 그림. 와이파이·프린터 같은 기기가 오락가락할 때, 무릎·허리가 도질 때(my knee is acting up) 둘 다 써. 완전 고장(broken)까진 아니고 '상태가 이상하다'는 단계라는 게 포인트야.",
+        "exampleKo": "와이파이가 하루 종일 말썽이야.",
+        "questionEn": "The Wi-Fi keeps dropping every ten minutes but technically still works. How do you describe it?",
+        "termsKo": "간헐적으로 말썽인 시스템을 개발에선 flaky하다고 하는데, act up은 그 일상 구어 사촌.",
+        "cueKo": "와이파이가 · 말썽 부리고 있어 · 하루 종일"
+      },
+      {
+        "key": "ev:set-up",
+        "en": "set up",
+        "ko": "설치하다, 준비하다; (만남을) 주선하다",
+        "example": "It took an hour to set up the new TV.",
+        "situations": [
+          "새 기기 설치",
+          "행사 준비",
+          "소개팅 주선"
+        ],
+        "detail": "부품들을 세워서(up) 돌아가는 상태로 만드는 그림. 기기 설치, 계정 개설, 행사 준비까지 '쓸 수 있게 만드는 모든 준비'를 커버하는 만능 동사야. 친구에게 소개팅을 주선한다(set them up)는 뜻도 일상에서 자주 나와.",
+        "exampleKo": "새 TV 설치하는 데 한 시간 걸렸어.",
+        "questionEn": "The new TV arrived in a box with thirty cables. How was your afternoon?",
+        "termsKo": "개발에서도 환경 구축을 setup/set up이라고 함 — 셋업 스크립트, 계정 셋업 모두 같은 그림.",
+        "cueKo": "걸렸어 · 한 시간이 · 설치하는 데 · 새 TV를"
+      },
+      {
+        "key": "ev:stock-up-on",
+        "en": "stock up on",
+        "ko": "쟁여 두다, 미리 사 두다",
+        "example": "We stocked up on water before the storm.",
+        "situations": [
+          "태풍·한파 대비 장보기",
+          "세일 때 대량 구매"
+        ],
+        "detail": "재고(stock)를 위로(up) 쌓아 올리는 그림. 폭풍 전 생수 사재기, 세일 때 휴지 대량 구매처럼 미리 쟁여 두는 상황의 표준 표현이야. run low on(떨어져 간다)을 느끼면 stock up on(쟁인다)으로 응답하는 한 쌍이야.",
+        "exampleKo": "폭풍 오기 전에 물을 잔뜩 사 뒀어.",
+        "questionEn": "A big storm is coming this weekend. What do people do at the grocery store?",
+        "termsKo": "",
+        "cueKo": "우리 · 쟁여 뒀어 · 물을 · 폭풍 전에"
+      },
+      {
+        "key": "ev:sign-up",
+        "en": "sign up",
+        "ko": "가입하다, 등록하다",
+        "example": "I signed up for a morning yoga class.",
+        "situations": [
+          "헬스장·클래스 등록",
+          "서비스 가입"
+        ],
+        "detail": "명단에 서명해서 이름을 올리는(up) 그림. 수업·헬스장·뉴스레터·서비스에 등록하는 표준 동사로, 대상 앞엔 for가 와. register의 일상 버전이고, 자원해서 나선다(I signed up for this)는 자조적 용법도 자주 들려.",
+        "exampleKo": "아침 요가 수업 등록했어.",
+        "questionEn": "The gym near your house has a new yoga class and you joined yesterday. What did you do?",
+        "termsKo": "서비스 가입 플로우를 sign-up flow라고 부름 — 버튼 문구도 Sign up.",
+        "cueKo": "나 · 등록했어 · 아침 요가 수업에"
+      },
+      {
+        "key": "ev:save-up",
+        "en": "save up",
+        "ko": "(목돈을) 모으다",
+        "example": "We're saving up for a down payment.",
+        "situations": [
+          "집·여행 자금 모으기",
+          "소비 줄이는 이유 설명"
+        ],
+        "detail": "돈을 차곡차곡 쌓아 올리는(up) 그림. 그냥 save가 '아끼다'라면 save up은 '목표를 위해 목돈을 모은다'는 어감이야. 목표 앞엔 for가 와서 saving up for a house처럼 써.",
+        "exampleKo": "우리 계약금 모으는 중이야.",
+        "questionEn": "You skip eating at restaurants these days because of a future house purchase. What are you doing?",
+        "termsKo": "",
+        "cueKo": "우리 · 모으고 있어 · 계약금을 위해"
+      },
+      {
+        "key": "ev:add-up",
+        "en": "add up",
+        "ko": "(조금씩) 쌓여 커지다; 계산이 맞다",
+        "example": "Small delivery fees really add up.",
+        "situations": [
+          "자잘한 지출 경고",
+          "앞뒤 안 맞는 얘기 의심"
+        ],
+        "detail": "숫자를 위로(up) 차곡차곡 더해 합계를 내는 그림. 잔돈 같은 지출이 쌓여 커진다는 게 일상 1순위 용법이야. 부정문 \"it doesn't add up\"은 숫자가 안 맞는다는 뜻에서 '말이 안 된다, 수상하다'로 확장돼.",
+        "exampleKo": "소소한 배달비가 진짜 무시 못 하게 쌓여.",
+        "questionEn": "Four-dollar fees feel small, but your monthly delivery total shocked you. What did those fees do?",
+        "termsKo": "",
+        "cueKo": "작은 배달비들이 · 정말 · 쌓여"
+      },
+      {
+        "key": "ev:go-up",
+        "en": "go up",
+        "ko": "(가격이) 오르다",
+        "example": "Rent went up again this year.",
+        "situations": [
+          "월세·물가 인상 불평",
+          "주가·금리 얘기"
+        ],
+        "detail": "가격 그래프가 위로(up) 올라가는 그림. 월세·물가·금리가 올랐다는 일상 경제 표현의 기본이야. 반대는 go down이고, 더 구체적으로 확 뛰면 shoot up, 슬금슬금 오르면 creep up이라고 해.",
+        "exampleKo": "올해 월세가 또 올랐어.",
+        "questionEn": "Your landlord sent the new lease and the number is higher again. What happened to rent?",
+        "termsKo": "",
+        "cueKo": "월세가 · 올랐어 · 또 · 올해"
+      },
+      {
+        "key": "ev:wrap-up",
+        "en": "wrap up",
+        "ko": "마무리하다; 포장하다",
+        "example": "Let's wrap up dinner — the movie starts at eight.",
+        "situations": [
+          "회의·식사 마무리",
+          "선물 포장"
+        ],
+        "detail": "다 된 것을 포장지로 싸서(up) 끝맺는 그림. 회의·식사·하루 일과를 마무리할 때 \"let's wrap up\"이 표준이야. 선물을 포장하다, 몸을 감싸다라는 원래 그림도 그대로 살아 있고, 명사 wrap-up은 '마무리 정리'야.",
+        "exampleKo": "저녁 마무리하자 — 영화 8시에 시작해.",
+        "questionEn": "The movie starts at eight and everyone's still eating slowly. What do you suggest?",
+        "termsKo": "",
+        "cueKo": "우리 마무리하자 · 저녁을 · 영화가 · 시작해 · 8시에"
+      },
+      {
+        "key": "ev:use-up",
+        "en": "use up",
+        "ko": "남김없이 다 써 버리다",
+        "example": "We used up all the butter on the cookies.",
+        "situations": [
+          "재료 다 떨어진 상황",
+          "데이터·포인트 소진"
+        ],
+        "detail": "남은 양을 끝까지(up) 다 써서 비우는 그림. 버터·치약·데이터·연차를 바닥냈다고 할 때 써. run out of가 '떨어졌다'는 결과 상태라면, use up은 '내가 다 써 버렸다'는 행위 쪽이야.",
+        "exampleKo": "쿠키 만드느라 버터를 다 써 버렸어.",
+        "questionEn": "You wanted toast with butter, but the cookie baking yesterday left none. What happened to it?",
+        "termsKo": "",
+        "cueKo": "우리 · 다 써 버렸어 · 버터 전부를 · 쿠키에"
+      },
+      {
+        "key": "ev:mix-up",
+        "en": "mix up",
+        "ko": "헷갈리다, 뒤바꾸다",
+        "example": "I mixed up the twins' names again.",
+        "situations": [
+          "이름·날짜 착각",
+          "예약 뒤바뀐 소동"
+        ],
+        "detail": "둘 이상을 섞어버려서(up) 서로 뒤바뀌는 그림. 이름·날짜·가방이 뒤바뀌는 실수에 쓰고, \"I always get them mixed up\"(맨날 헷갈려)이 단골 형태야. 명사 mix-up은 예약 착오 같은 행정 실수를 말할 때 자주 나와.",
+        "exampleKo": "쌍둥이 이름을 또 바꿔 불렀어.",
+        "questionEn": "You joined at 3 PM but the call was at 2 PM. What do you say in your apology message?",
+        "termsKo": "",
+        "cueKo": "나 · 헷갈렸어 · 쌍둥이 이름을 · 또"
+      },
+      {
+        "key": "ev:move-up",
+        "en": "move up",
+        "ko": "(일정을) 앞당기다",
+        "example": "They moved up the launch to next Monday.",
+        "situations": [
+          "출시일 앞당기기 공지",
+          "면접/회의 시간 당기기"
+        ],
+        "detail": "달력에서 위쪽(더 이른 날짜)으로 끌어올린다는 그림. push back(미루다)의 정반대 짝으로 묶어 외우면 평생 안 헷갈려. 일정 외에도 move up the ladder처럼 승진·상승의 뜻도 있어. 한국식으로 '당기다'를 pull로 직역하면 안 통하니 이 단어가 정답이야.",
+        "exampleKo": "출시를 다음 주 월요일로 앞당겼대요.",
+        "questionEn": "The launch was planned for July, but marketing wants it sooner. What happened to the date?",
+        "termsKo": "",
+        "cueKo": "그들은 · 앞당겼다 · 그 출시를 · 다음 주 월요일로"
+      },
+      {
+        "key": "ev:write-up",
+        "en": "write up",
+        "ko": "(정식 문서로) 정리해 작성하다",
+        "example": "I'll write up the meeting notes and share them today.",
+        "situations": [
+          "회의록 정리",
+          "장애 보고서 작성",
+          "제안서 초안 만들기"
+        ],
+        "detail": "흩어진 내용을 완성된 문서 상태로 끌어올린다(up)는 그림. 그냥 write가 '쓰다'라면 write up은 '정리해서 문서화하다'야. 회의록, 포스트모템, 제안서처럼 남에게 공유할 정식 글에 써. 명사 write-up(정리 문서)도 슬랙에서 매일 보여.",
+        "exampleKo": "회의록 정리해서 오늘 중으로 공유할게요.",
+        "questionEn": "The meeting just ended with lots of decisions. How will absent teammates learn what was decided?",
+        "termsKo": "",
+        "cueKo": "나는 · 정리해 쓸 거다 · 그 회의 노트를 · 그리고 공유할 거다 · 그것들을 · 오늘"
+      },
+      {
+        "key": "ev:type-up",
+        "en": "type up",
+        "ko": "(손글씨·메모를) 타이핑해 정리하다",
+        "example": "Give me an hour to type up my handwritten notes.",
+        "situations": [
+          "손으로 적은 메모 문서화",
+          "인터뷰 녹취 정리"
+        ],
+        "detail": "이미 있는 내용을 타이핑해서 완성본(up)으로 만든다는 그림. 손글씨 메모나 녹취록을 깔끔한 디지털 문서로 옮길 때 써. write up이 내용 자체를 구성해 쓰는 거라면, type up은 형태만 바꿔 치는 작업이라는 미묘한 차이가 있어.",
+        "exampleKo": "손으로 적은 메모 타이핑해 정리할 시간 한 시간만 줘요.",
+        "questionEn": "Your notebook is full of handwritten interview notes. What do you do before sharing them digitally?",
+        "termsKo": "",
+        "cueKo": "줘 · 나에게 · 한 시간을 · 타이핑해 정리하도록 · 내 손글씨 노트를"
+      },
+      {
+        "key": "ev:team-up",
+        "en": "team up",
+        "ko": "팀을 이뤄 협력하다",
+        "example": "We teamed up with the data team to build the dashboard.",
+        "situations": [
+          "타 팀과 협업 설명",
+          "파트너십 발표",
+          "해커톤 팀 구성"
+        ],
+        "detail": "흩어져 있던 사람들이 하나의 팀 상태로 묶인다(up)는 그림. 다른 팀·회사와 손잡고 일했다고 말할 때 collaborate보다 캐주얼하고 생기 있어. team up with X 구조가 기본. 일회성 프로젝트 협력의 뉘앙스가 강해서 장기 조직 통합에는 잘 안 써.",
+        "exampleKo": "데이터팀이랑 손잡고 대시보드를 만들었어요.",
+        "questionEn": "The dashboard needed skills your group didn't have. How did you get it built?",
+        "termsKo": "",
+        "cueKo": "우리는 · 팀을 이뤘다 · 데이터팀과 · 만들기 위해 · 그 대시보드를"
+      },
+      {
+        "key": "ev:line-up",
+        "en": "line up",
+        "ko": "미리 준비해 확보하다; 일정이 잡혀 있다",
+        "example": "We have three candidate interviews lined up for next week.",
+        "situations": [
+          "면접/미팅 일정 확보",
+          "후임자·대안 미리 준비",
+          "발표 순서 정리"
+        ],
+        "detail": "여러 개를 줄 세워(line) 준비 완료 상태로 만든다(up)는 그림. 면접, 미팅, 후보, 대체 인력을 '미리 잡아뒀다'고 할 때 써. have X lined up 형태가 압도적으로 흔해. schedule과 달리 '확보해서 대기시켜 놓았다'는 준비성의 뉘앙스가 핵심이야.",
+        "exampleKo": "다음 주에 후보자 면접 세 건이 잡혀 있어요.",
+        "questionEn": "The hiring manager asks how recruiting is going. Three interviews are already scheduled. What do you say?",
+        "termsKo": "",
+        "cueKo": "우리는 · 가지고 있다 · 세 건의 후보자 면접을 · 준비된 채로 · 다음 주에"
+      },
+      {
+        "key": "ev:draw-up",
+        "en": "draw up",
+        "ko": "(계약서·계획서를) 작성하다",
+        "example": "Legal will draw up the contract by Friday.",
+        "situations": [
+          "계약서 작성 진행 공유",
+          "제안서/명세 초안 의뢰"
+        ],
+        "detail": "공식 문서를 형태가 갖춰진 상태로 끌어올린다(up)는 그림. 계약서, 합의서, 제안서처럼 격식 있는 문서를 '작성하다'에 쓰는 말이야. write up이 회의록 같은 일상 문서라면 draw up은 법무·공식 문서 쪽으로 기울어. draw up a contract/agreement/proposal 콜로케이션으로 외워.",
+        "exampleKo": "법무팀이 금요일까지 계약서를 작성할 거예요.",
+        "questionEn": "Both sides agreed on the deal terms verbally. What's the next step before anyone signs?",
+        "termsKo": "",
+        "cueKo": "법무팀이 · 작성할 거다 · 그 계약서를 · 금요일까지"
+      },
+      {
+        "key": "ev:hold-up",
+        "en": "hold up",
+        "ko": "지연시키다, 발목을 잡다",
+        "example": "What's holding up the approval on my expense report?",
+        "situations": [
+          "지연 원인 추궁",
+          "블로커 파악"
+        ],
+        "detail": "가던 것을 붙잡아(hold) 공중에 매달아 둔다(up)는 그림. 진행을 막고 있는 원인을 물을 때 'What's holding it up?'이 표준 문장이야. 수동태 'the release is held up by legal'(법무에서 막혀 있다)도 흔해. blocker라는 명사와 한 세트로 다니는 동사라고 보면 돼.",
+        "exampleKo": "제 경비 보고서 승인이 뭐 때문에 막혀 있는 거예요?",
+        "questionEn": "Your expense report has been pending for two weeks with no explanation. What do you ask?",
+        "termsKo": "",
+        "cueKo": "무엇이 · 막고 있나 · 그 승인을 · 내 경비 보고서에 대한?"
+      },
+      {
+        "key": "ev:keep-up",
+        "en": "keep up",
+        "ko": "(속도·수준을) 계속 따라가다, 유지하다",
+        "example": "It's hard to keep up with all the changes in this industry.",
+        "situations": [
+          "업계 트렌드 따라가기",
+          "빠른 업무 속도 적응",
+          "좋은 성과 유지 격려"
+        ],
+        "detail": "높은 위치(up)를 계속 유지한다(keep)는 그림. keep up with X는 빠르게 변하는 것을 놓치지 않고 따라간다는 뜻으로, 기술 업계 사람들의 영원한 고민 표현이야. 'Keep up the good work'(계속 잘해줘)는 칭찬의 고정 멘트. catch up(뒤처진 걸 따라잡기)과 달리 keep up은 안 뒤처지게 유지하는 거야.",
+        "exampleKo": "이 업계 변화 속도를 따라가기가 쉽지 않아요.",
+        "questionEn": "New tools and frameworks appear every month in your field. How does that make you feel?",
+        "termsKo": "",
+        "cueKo": "어렵다 · 따라가는 것이 · 모든 변화를 · 이 업계의"
+      },
+      {
+        "key": "ev:step-up",
+        "en": "step up",
+        "ko": "(필요할 때) 나서서 책임을 맡다",
+        "example": "When the lead left, Maria stepped up and ran the team.",
+        "situations": [
+          "리더 공백 메우기",
+          "주도성 어필 behavioral 답변"
+        ],
+        "detail": "한 단계 위로(up) 올라선다는 그림. 공백이나 위기 상황에서 자청해서 더 큰 역할을 맡는 거야. behavioral 인터뷰에서 주도성 보여줄 때 최고의 동사 중 하나. step in(문제에 개입해 수습)과 달리 step up은 '역할 자체를 키워서 맡음'이고, 명사구 step up(승격 기회)으로도 쓰여.",
+        "exampleKo": "리드가 나갔을 때 마리아가 나서서 팀을 이끌었어요.",
+        "questionEn": "The team lead suddenly quit and someone had to fill the gap. What did Maria do?",
+        "termsKo": "",
+        "cueKo": "리드가 · 떠났을 때 · 마리아가 · 나섰다 · 그리고 운영했다 · 그 팀을"
+      },
+      {
+        "key": "ev:pile-up",
+        "en": "pile up",
+        "ko": "(일·메일이) 쌓이다",
+        "example": "Emails really pile up when I'm out for even two days.",
+        "situations": [
+          "부재 후 밀린 업무 묘사",
+          "업무 과부하 호소"
+        ],
+        "detail": "하나씩 떨어진 것들이 더미(pile)로 위로(up) 쌓인다는 그림. 메일, 티켓, 빨래까지 처리 속도보다 유입이 빠를 때 쓰는 동사야. accumulate의 구어판. queue up(순서대로 정렬돼 쌓임)과 달리 pile up은 무질서하게 쌓여 압박이 되는 부정적 뉘앙스가 있어.",
+        "exampleKo": "이틀만 자리 비워도 메일이 진짜 쌓여요.",
+        "questionEn": "You took just two days off and your inbox is a disaster. What happened while you were gone?",
+        "termsKo": "",
+        "cueKo": "이메일들은 · 정말 쌓인다 · 내가 · 자리 비울 때 · 단 이틀이라도"
+      },
+      {
+        "key": "ev:split-up",
+        "en": "split up",
+        "ko": "(일을) 나누다, 분담하다",
+        "example": "Let's split up the test cases so we finish today.",
+        "situations": [
+          "업무 분담 제안",
+          "대규모 작업 병렬 처리"
+        ],
+        "detail": "한 덩어리를 여러 조각으로 쪼갠다(up)는 그림. 일거리를 나눠 맡자고 할 때 'let's split it up'이 가장 자연스러운 제안이야. divide보다 구어적이고, break down(구조적으로 분해)과 달리 split up은 '사람들끼리 나눠 갖기'에 초점이 있어. divvy up도 같은 뜻의 캐주얼 버전.",
+        "exampleKo": "오늘 안에 끝내게 테스트 케이스 나눠서 합시다.",
+        "questionEn": "There are eighty test cases and four of you. How do you finish before the deadline?",
+        "termsKo": "",
+        "cueKo": "나누자 · 그 테스트 케이스들을 · 그래서 우리가 · 끝내도록 · 오늘"
+      },
+      {
+        "key": "ev:brush-up-on",
+        "en": "brush up on",
+        "ko": "(녹슨 실력을) 다시 다듬다",
+        "example": "I need to brush up on SQL before the interview.",
+        "situations": [
+          "면접 전 복습 계획",
+          "오래 안 쓴 기술 재정비"
+        ],
+        "detail": "먼지 쌓인 실력을 솔로 털어 다시 윤이 나게(up) 만든다는 그림. 예전에 알았는데 녹슨 기술·언어를 재정비할 때 전용으로 써. learn(새로 배움)과 달리 '한때 했던 것의 복습'이라는 전제가 깔려 있어. brush up on my Spanish/SQL/statistics처럼 on 뒤에 과목이 와.",
+        "exampleKo": "면접 전에 SQL 좀 다시 봐둬야 해요.",
+        "questionEn": "The interview includes database questions and you haven't written queries in two years. What's your plan?",
+        "termsKo": "",
+        "cueKo": "나는 · 다시 다듬어야 한다 · SQL을 · 그 면접 전에"
+      },
+      {
+        "key": "ev:head-up",
+        "en": "head up",
+        "ko": "(팀·프로젝트를) 이끌다, 총괄하다",
+        "example": "She heads up the entire APAC sales organization.",
+        "situations": [
+          "조직 소개",
+          "리더 역할 설명",
+          "자기 역할 어필"
+        ],
+        "detail": "조직의 머리(head) 자리, 즉 맨 위(up)에 선다는 그림. 팀·부서·프로젝트의 총괄 리더를 맡고 있다고 할 때 lead보다 살짝 격식 있으면서도 자연스러워. 'She heads up marketing'은 조직 소개의 표준 문형. 이력서·링크드인 자기소개에서도 'headed up a team of 12'처럼 쓰여.",
+        "exampleKo": "그분이 APAC 영업 조직 전체를 총괄해요.",
+        "questionEn": "Someone asks who runs the entire APAC sales organization. How do you introduce her?",
+        "termsKo": "",
+        "cueKo": "그녀는 · 총괄한다 · 전체 APAC 영업 조직을"
+      },
+      {
+        "key": "ev:sum-up",
+        "en": "sum up",
+        "ko": "요약하다, 정리하다",
+        "example": "To sum up, we ship Friday or we slip a week.",
+        "situations": [
+          "회의 마지막에 결론을 정리할 때",
+          "긴 논의를 한 문장으로 줄일 때",
+          "발표를 마무리할 때"
+        ],
+        "detail": "흩어진 숫자를 위로 합산하듯(up) 논의를 한 덩어리로 묶는 그림이에요. 회의 끝에 'To sum up...' 하고 결론을 정리할 때 쓰는 정석 표현이죠. summarize와 같지만 말할 때는 sum up이 훨씬 자연스럽고, 'That sums it up(딱 그 말이야)'도 자주 써요.",
+        "exampleKo": "정리하면, 금요일에 출시하거나 일주일 밀리거나예요.",
+        "questionEn": "The meeting ran long and people look lost. As the host, what do you do in the final minute?",
+        "termsKo": "",
+        "cueKo": "요약하면 · 우리는 출시한다 · 금요일에 · 아니면 밀린다 · 일주일"
+      },
+      {
+        "key": "ev:shut-up",
+        "en": "shut up",
+        "ko": "입 다물다; (감탄) 말도 안 돼!",
+        "example": "You got the offer? Shut up, that's amazing!",
+        "situations": [
+          "친한 사이에서 놀라움을 표현할 때",
+          "무례하게 입 다물라고 할 때 (주의)",
+          "스스로 말을 멈췄다고 할 때"
+        ],
+        "detail": "입을 닫아 잠그는(up) 그림이에요. 직접 명령으로 쓰면 상당히 무례하니 조심해야 하지만, 친한 사이에서 'Shut up!'은 '헐, 진짜?!'라는 반가운 감탄으로 훨씬 자주 쓰여요. 'I should've just shut up(그냥 입 다물고 있을걸)'처럼 자책에도 쓰죠.",
+        "exampleKo": "오퍼 받았다고? 말도 안 돼, 대박!",
+        "questionEn": "Your best friend just told you incredible news you can hardly believe. React the casual American way.",
+        "termsKo": "",
+        "cueKo": "너 받았어 · 그 오퍼를? · 말도 안 돼 · 그거 대단해"
+      },
+      {
+        "key": "ev:pick-up-on",
+        "en": "pick up on",
+        "ko": "눈치채다, 알아차리다",
+        "example": "She picked up on the tension right away.",
+        "situations": [
+          "분위기 변화를 감지했을 때",
+          "미묘한 힌트를 알아챘을 때",
+          "눈치 빠른 사람을 묘사할 때"
+        ],
+        "detail": "바닥에 떨어진 미세한 신호를 집어 올려(up) 인식하는(on) 그림이에요. 말로 표현되지 않은 분위기, 긴장, 힌트를 감지할 때 쓰죠. notice가 눈에 보이는 걸 보는 거라면 pick up on은 공기 중의 미묘한 것을 잡아내는 느낌이라 '눈치'라는 한국어와 가장 가까운 표현이에요.",
+        "exampleKo": "그녀는 그 미묘한 긴장을 바로 눈치챘어.",
+        "questionEn": "Your new manager noticed the team's unspoken conflict within minutes of joining the call. How do you describe her?",
+        "termsKo": "",
+        "cueKo": "그녀는 · 눈치챘다 · 그 긴장을 · 곧바로"
+      },
+      {
+        "key": "ev:warm-up-to",
+        "en": "warm up to",
+        "ko": "서서히 마음이 열리다, 점점 호감이 생기다",
+        "example": "She's slowly warming up to the new plan.",
+        "situations": [
+          "처음엔 반대하던 사람이 누그러질 때",
+          "낯가리는 사람/아이가 마음을 열 때",
+          "새 아이디어가 받아들여질 때"
+        ],
+        "detail": "차갑던 온도가 서서히 올라가는(up) 그림이에요. 처음엔 경계하거나 반대하던 사람이 시간이 지나며 호의적으로 변하는 과정을 담죠. 사람에게도(The dog warmed up to me) 아이디어에도 쓰고, '단번에'가 아니라 '서서히'라는 점진성이 like와의 결정적 차이예요.",
+        "exampleKo": "그녀도 새 계획에 서서히 마음이 열리고 있어.",
+        "questionEn": "Your boss hated the proposal last month, but lately she keeps asking thoughtful questions about it. What's happening?",
+        "termsKo": "",
+        "cueKo": "그녀는 · 천천히 · 마음이 열리고 있다 · 그 새 계획에"
+      },
+      {
+        "key": "ev:stand-up-for",
+        "en": "stand up for",
+        "ko": "(공개적으로) 옹호하다, 맞서서 지키다",
+        "example": "You need to stand up for yourself in that meeting.",
+        "situations": [
+          "부당한 대우에 맞설 때",
+          "자기 의견을 지키라고 조언할 때",
+          "약자를 변호할 때"
+        ],
+        "detail": "앉아 있다가 벌떡 일어나(up) 누군가를 위해(for) 맞서는 그림이에요. 부당한 공격이나 비난 앞에서 물러서지 않고 방어한다는 뜻이죠. 특히 'stand up for yourself(네 권리는 네가 지켜)'는 당하고만 사는 사람에게 해주는 단골 조언이에요. defend보다 용기의 뉘앙스가 강해요.",
+        "exampleKo": "그 회의에서는 네 입장을 당당히 지켜야 해.",
+        "questionEn": "Your friend gets talked over and blamed unfairly at work but never protests. What advice do you give?",
+        "termsKo": "",
+        "cueKo": "너는 필요해 · 맞서 지키기가 · 너 자신을 · 그 회의에서"
+      },
+      {
+        "key": "ev:stick-up-for",
+        "en": "stick up for",
+        "ko": "편들다, 감싸주다",
+        "example": "Thanks for sticking up for me back there.",
+        "situations": [
+          "나를 변호해준 동료에게 감사할 때",
+          "형제/친구를 감싸줄 때",
+          "뒷담화에서 누군가를 변호할 때"
+        ],
+        "detail": "쓰러지려는 사람을 받쳐 세워주는(up) 그림이에요. stand up for와 거의 같지만 더 구어적이고 사적인 느낌이라, 형제·친구·동료를 감싸주는 일상 장면에 잘 어울리죠. 특히 본인이 없는 자리에서 비난받을 때 대신 변호해주는 의리의 뉘앙스가 강해요.",
+        "exampleKo": "아까 내 편 들어줘서 고마워.",
+        "questionEn": "A coworker defended you while others criticized your work in the meeting. What do you say to her afterward?",
+        "termsKo": "",
+        "cueKo": "고마워 · 편들어준 것 · 나를 · 아까 거기서"
+      },
+      {
+        "key": "ev:look-up-to",
+        "en": "look up to",
+        "ko": "존경하다, 우러러보다",
+        "example": "I've always looked up to my older sister.",
+        "situations": [
+          "롤모델을 말할 때",
+          "존경하는 선배/상사 이야기",
+          "아이들이 따르는 어른"
+        ],
+        "detail": "시선이 위를(up) 향하는 그대로, 누군가를 높은 곳에 두고 우러러보는 그림이에요. respect보다 따뜻하고 개인적인 존경이라 멘토, 부모, 선배에게 쓰기 좋죠. 반대말 look down on(깔보다)과 세트로 외우면 시선의 방향이 곧 마음의 방향이라는 게 보여요.",
+        "exampleKo": "난 언제나 언니를 존경해왔어.",
+        "questionEn": "An interviewer asks who shaped you most as a professional. How do you start your answer about your mentor?",
+        "termsKo": "",
+        "cueKo": "나는 항상 · 우러러봐왔다 · 내 언니를"
+      },
+      {
+        "key": "ev:live-up-to",
+        "en": "live up to",
+        "ko": "(기대·명성에) 부응하다",
+        "example": "The movie didn't live up to the hype.",
+        "situations": [
+          "기대에 못 미친 결과물 평가",
+          "부모/회사의 기대가 부담될 때",
+          "명성만큼 좋은지 따질 때"
+        ],
+        "detail": "높이 걸린 기대치까지(up) 자신의 삶/성과를 끌어올려 맞추는 그림이에요. 기대, 명성, 평판이라는 보이지 않는 기준선과 실제를 비교할 때 쓰죠. 'didn't live up to the hype(소문만 못하더라)'는 영화·맛집 리뷰의 단골이고, 부모의 기대에 부응해야 한다는 부담을 말할 때도 자주 나와요.",
+        "exampleKo": "그 영화는 소문만큼은 아니었어.",
+        "questionEn": "Everyone raved about that restaurant for months, but your meal there was just okay. How do you review it?",
+        "termsKo": "",
+        "cueKo": "그 영화는 · 부응하지 못했다 · 그 기대치에"
+      },
+      {
+        "key": "ev:patch-things-up",
+        "en": "patch things up",
+        "ko": "(틀어진 관계를) 회복하다, 봉합하다",
+        "example": "I'm trying to patch things up with my brother.",
+        "situations": [
+          "오래 틀어진 관계를 복구할 때",
+          "갈등 후 관계 개선 노력",
+          "비즈니스 관계 복원"
+        ],
+        "detail": "찢어진 옷에 헝겊을 덧대 깁듯(patch) 상한 관계를 수선하는 그림이에요. make up이 싸움 직후의 화해라면 patch things up은 금이 간 관계를 시간 들여 복구하는 노력의 뉘앙스죠. 완벽한 복원이 아니라 '기워서라도 다시 쓰는' 느낌이라, 오래 소원했던 가족·친구 사이에 잘 어울려요.",
+        "exampleKo": "형이랑 관계를 회복해보려고 노력 중이야.",
+        "questionEn": "You and your brother haven't talked since the inheritance dispute two years ago. What's your new year resolution?",
+        "termsKo": "",
+        "cueKo": "나는 노력 중이다 · 봉합하기를 · 관계를 · 내 형과"
+      },
+      {
+        "key": "ev:gang-up-on",
+        "en": "gang up on",
+        "ko": "여럿이 한 명을 몰아붙이다",
+        "example": "It felt like the whole room ganged up on me.",
+        "situations": [
+          "회의에서 집중포화를 맞았을 때",
+          "여럿이 한 명을 비난할 때",
+          "형제들이 한 명을 놀릴 때"
+        ],
+        "detail": "여러 명이 패거리(gang)로 뭉쳐서(up) 한 사람 위에(on) 올라타는 그림이에요. 1대 다수의 불공정한 구도가 핵심이라, 논쟁의 내용보다 '수적으로 몰아붙였다'는 부당함을 강조하죠. 회의에서 혼자 반대 의견을 냈다가 집중포화를 맞은 경험담에 딱 맞는 표현이에요.",
+        "exampleKo": "회의실 전체가 나 하나를 몰아붙이는 느낌이었어.",
+        "questionEn": "You raised one objection in the meeting, and suddenly five people were criticizing you at once. How did that feel?",
+        "termsKo": "",
+        "cueKo": "그건 느껴졌다 · 마치 그 방 전체가 · 몰아붙이는 것처럼 · 나를"
+      },
+      {
+        "key": "ev:own-up-to",
+        "en": "own up to",
+        "ko": "(잘못을) 솔직히 인정하다",
+        "example": "He owned up to the mistake before anyone noticed.",
+        "situations": [
+          "실수를 먼저 자백할 때",
+          "책임 회피 문화 비판",
+          "아이에게 정직을 가르칠 때"
+        ],
+        "detail": "잘못을 자기 것(own)으로 들어 올려(up) 떠안는 그림이에요. 들키기 전에 스스로 '제가 그랬습니다' 하고 책임을 지는 용기 있는 인정이죠. admit이 사실 인정이라면 own up to는 책임까지 끌어안는 태도라서, 신뢰를 지키는 어른의 행동을 묘사할 때 딱이에요.",
+        "exampleKo": "걔는 아무도 눈치채기 전에 실수를 먼저 인정했어.",
+        "questionEn": "You broke the build last night and nobody knows yet. What's the right move this morning?",
+        "termsKo": "",
+        "cueKo": "그는 · 솔직히 인정했다 · 그 실수를 · 누가 알아채기 전에"
+      },
+      {
+        "key": "ev:hit-up",
+        "en": "hit up",
+        "ko": "(캐주얼하게) 연락하다",
+        "example": "Hit me up when you're back in town.",
+        "situations": [
+          "편하게 연락하라고 할 때",
+          "놀자고 먼저 연락할 때",
+          "오랜만에 연락 온 친구"
+        ],
+        "detail": "어깨를 톡 치듯(hit) 가볍게 연락을 거는 캐주얼 슬랭이에요. 'Hit me up(연락해)'은 문자·DM 시대의 표준 인사로, contact me보다 백 배 자연스럽죠. 친구·또래 사이 전용이라 상사나 격식 자리에서는 피하고, 줄여서 HMU로도 써요.",
+        "exampleKo": "동네 돌아오면 연락해.",
+        "questionEn": "Your old roommate is moving back to your city next month. How do you casually end the text conversation?",
+        "termsKo": "",
+        "cueKo": "연락해 · 나에게 · 네가 돌아올 때 · 동네에"
+      },
+      {
+        "key": "ev:bottle-up",
+        "en": "bottle up",
+        "ko": "(감정을) 꾹꾹 눌러 담다",
+        "example": "He bottles up his anger until it explodes.",
+        "situations": [
+          "감정 표현 못 하는 사람",
+          "속앓이하는 동료를 걱정할 때",
+          "감정을 털어놓으라고 조언할 때"
+        ],
+        "detail": "감정을 병에 넣고 뚜껑을 꽉 닫는(up) 그림이에요. 화, 슬픔, 스트레스를 표현하지 않고 안에 가두는 습관을 말하는데, 거의 항상 '언젠가 터진다'는 경고와 세트로 쓰이죠. 'Don't bottle it up(혼자 담아두지 마)'은 open up(털어놓다)을 권하는 위로의 짝꿍 표현이에요.",
+        "exampleKo": "걔는 화를 꾹꾹 눌러 담다가 한 번에 터뜨려.",
+        "questionEn": "Your friend never complains, never argues, then once a year has a massive meltdown. What's his pattern?",
+        "termsKo": "",
+        "cueKo": "그는 눌러 담는다 · 그의 화를 · 그것이 터질 때까지"
+      },
+      {
+        "key": "ev:suck-up-to",
+        "en": "suck up to",
+        "ko": "아부하다, 비위를 맞추다",
+        "example": "He got the promotion by sucking up to the director.",
+        "situations": [
+          "아부로 승진한 동료 험담",
+          "상사 비위만 맞추는 문화 비판",
+          "아첨꾼 묘사"
+        ],
+        "detail": "윗사람에게(up) 바짝 달라붙어 빨아대는, 노골적으로 비굴한 그림이에요. 이익을 위해 윗사람 비위를 맞추는 아부를 경멸조로 말할 때 쓰죠. flatter보다 훨씬 험담스러운 슬랭이라 본인 앞에서는 금물이고, 명사 suck-up(아첨꾼)과 brown-nose(아부하다)가 같은 부족의 단어예요.",
+        "exampleKo": "걔 이사한테 아부해서 승진한 거야.",
+        "questionEn": "That guy laughs at every joke the boss makes and volunteers for her errands. How do coworkers describe him?",
+        "termsKo": "",
+        "cueKo": "그는 얻었다 · 그 승진을 · 아부해서 · 그 이사에게"
+      },
+      {
+        "key": "ev:give-up-on",
+        "en": "give up on",
+        "ko": "(사람·일에 대한 기대를) 포기하다",
+        "example": "Her teachers gave up on her, but her mom never did.",
+        "situations": [
+          "사람에 대한 믿음을 접을 때",
+          "끝까지 믿어준 사람 이야기",
+          "오래된 꿈을 접을 때"
+        ],
+        "detail": "붙들고 있던 기대를 위로 들어 내놓고(up) 그 대상에게서(on) 손을 떼는 그림이에요. give up이 행위의 포기라면 give up on은 사람이나 가능성에 대한 '믿음의 철회'라서 훨씬 아프죠. 'Don't give up on me(나 포기하지 마)'는 관계 회복의 간절한 문장이에요.",
+        "exampleKo": "선생님들은 걔를 포기했지만 엄마는 끝까지 안 그랬어.",
+        "questionEn": "Everyone said the troubled kid would amount to nothing, except one person who kept believing. Tell that story.",
+        "termsKo": "",
+        "cueKo": "그녀의 선생님들은 · 포기했다 · 그녀를 · 그러나 그녀의 엄마는 · 절대 안 그랬다"
+      },
+      {
+        "key": "ev:pop-up",
+        "en": "pop up",
+        "ko": "(에러·창·이슈가) 불쑥 나타나다",
+        "example": "The same error keeps popping up after every deploy.",
+        "situations": [
+          "반복되는 에러 보고",
+          "갑자기 생긴 이슈 공유",
+          "알림창 동작 설명"
+        ],
+        "detail": "up은 없던 것이 시야 위로 불쑥 솟아오르는 그림이야. 에러, 알림창, 예상 못 한 이슈가 갑자기 나타날 때 appear보다 훨씬 자주 쓰는 구어체지. 명사 popup(팝업창)은 한 단어고, '예고 없이 갑자기'라는 뉘앙스가 핵심이라 계획된 표시에는 어색해.",
+        "exampleKo": "배포할 때마다 같은 에러가 계속 떠요.",
+        "questionEn": "A weird alert appears on your screen every few minutes without warning. How do you describe it?",
+        "termsKo": "",
+        "cueKo": "그 같은 에러가 · 계속 불쑥 뜬다 · 매번 배포 후에"
+      },
+      {
+        "key": "ev:screw-up",
+        "en": "screw up",
+        "ko": "망치다, 실수로 그르치다 (mess up보다 거친 구어)",
+        "example": "I screwed up the release config last night.",
+        "situations": [
+          "실수를 솔직하게 인정할 때",
+          "장애 원인을 캐주얼하게 공유",
+          "동료끼리 자책 섞인 대화"
+        ],
+        "detail": "up은 망침이 끝까지 완성됐다는 그림이야. mess up과 같은 뜻인데 한 단계 더 세고 거친 구어라서, 친한 동료끼리 솔직하게 자책할 때 쓰면 자연스러워. 고객 앞이나 격식 있는 보고에서는 mess up이나 made a mistake로 낮춰 말하는 게 안전하고, 명사 screw-up(대형 실수)도 자주 들려.",
+        "exampleKo": "어젯밤에 내가 릴리스 설정을 망쳐 놨어.",
+        "questionEn": "You broke staging with a bad config and want a blunt, casual confession. What do you say?",
+        "termsKo": "",
+        "cueKo": "내가 · 망쳤다 · 그 릴리스 설정을 · 어젯밤에"
+      },
+      {
+        "key": "ev:build-up",
+        "en": "build up",
+        "ko": "(트래픽·스트레스·일이) 점점 쌓이다, 쌓아 올리다",
+        "example": "Messages build up in the queue during peak hours.",
+        "situations": [
+          "큐/부하 적체 설명",
+          "스트레스·피로 누적 얘기",
+          "기술 부채 누적 논의"
+        ],
+        "detail": "up은 0에서 차곡차곡 쌓여 올라오는 그림이야. 큐에 메시지가 적체될 때, 트래픽·스트레스·기술 부채가 서서히 누적될 때 전부 build up 하나로 말할 수 있어. 자동사(stress builds up)와 타동사(build up trust) 양쪽으로 다 쓰이고, pile up도 비슷한데 build up이 더 점진적인 누적 느낌이야.",
+        "exampleKo": "피크 시간에는 큐에 메시지가 쌓여요.",
+        "questionEn": "The queue keeps growing during rush hour faster than workers can drain it. How do you describe that?",
+        "termsKo": "백프레셔(backpressure): 소비보다 생산이 빠를 때 쌓임을 제어해 시스템을 보호하는 기법.",
+        "cueKo": "메시지들이 · 쌓인다 · 그 큐 안에 · 피크 시간 동안"
+      },
+      {
+        "key": "ev:wind-up",
+        "en": "wind up",
+        "ko": "결국 ~하게 되다 (wound up doing X)",
+        "example": "We wound up rewriting the whole module anyway.",
+        "situations": [
+          "계획과 다르게 끝난 일 회고",
+          "예상 밖 결말 스토리텔링",
+          "면접에서 프로젝트 전개 설명"
+        ],
+        "detail": "태엽을 감듯 빙빙 돌고 돌아 결국 어떤 지점에 도착해 있는(up) 그림이야. end up과 거의 같은 뜻인데 wind up이 살짝 더 구어적이고 북미 일상 대화에서 정말 자주 들려. 발음이 /waɪnd/ '와인드'라서 바람 wind와 다르고, 과거형 wound /waʊnd/도 통째로 외워 둬.",
+        "exampleKo": "결국엔 모듈 전체를 다시 짜게 됐어요.",
+        "questionEn": "Despite the original plan, the team eventually rewrote everything. How do you tell that story casually?",
+        "termsKo": "",
+        "cueKo": "우리는 · 결국 하게 됐다 · 다시 짜는 걸 · 그 전체 모듈을 · 어차피"
       }
     ]
   },
@@ -5165,6 +6391,358 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "The original design had twenty endpoints. How did you simplify it?",
         "termsKo": "",
         "cueKo": "우리는 · 쳐서 줄였다 · API 표면을 · 딱 다섯 개 엔드포인트로"
+      },
+      {
+        "key": "ev:lie-down",
+        "en": "lie down",
+        "ko": "눕다",
+        "example": "I need to lie down for a few minutes.",
+        "situations": [
+          "두통·피곤 호소",
+          "낮잠 루틴 얘기"
+        ],
+        "detail": "몸을 수평으로 낮춘다(down)는 그대로의 그림. 머리 아프거나 어지러울 때 \"잠깐 누울게\"가 딱 이 표현이야. 과거형이 lay down이라 타동사 lay(눕히다, 놓다)와 헷갈리기 쉬운데, 원어민도 자주 틀리는 포인트야.",
+        "exampleKo": "몇 분만 좀 누워야겠어.",
+        "questionEn": "You have a headache and twenty free minutes at home. What do you do?",
+        "termsKo": "",
+        "cueKo": "나 · 필요해 · 눕는 게 · 몇 분 동안"
+      },
+      {
+        "key": "ev:wind-down",
+        "en": "wind down",
+        "ko": "(하루를 마무리하며) 긴장을 풀다",
+        "example": "I watch something light to wind down before bed.",
+        "situations": [
+          "자기 전 루틴 설명",
+          "스트레스 관리법 얘기"
+        ],
+        "detail": "감긴 태엽이 천천히 풀리며(down) 멈춰가는 그림. 자기 전에 속도를 늦추는 루틴 — 샤워, 독서, 가벼운 영상 — 을 말할 때 써. relax가 상태라면 wind down은 '하루를 끄는 과정'이라는 뉘앙스야.",
+        "exampleKo": "자기 전에 긴장 풀려고 가벼운 거 봐.",
+        "questionEn": "What's your routine in the last hour before bed to relax your brain?",
+        "termsKo": "",
+        "cueKo": "나 · 봐 · 가벼운 뭔가를 · 긴장 풀려고 · 자기 전에"
+      },
+      {
+        "key": "ev:settle-down",
+        "en": "settle down",
+        "ko": "정착하다; (마음이) 가라앉다",
+        "example": "They want to settle down and buy a house.",
+        "situations": [
+          "결혼·정착 계획 얘기",
+          "들뜬 아이 진정시키기"
+        ],
+        "detail": "떠돌던 삶이 한곳에 내려앉는(down) 그림. 결혼하고 집 사고 한곳에 뿌리내리는 인생 단계를 말하는 표준 표현이야. 들뜬 아이들에게 \"Settle down!\"(진정해, 자리 잡아) 하는 교실 용법도 같은 그림이야.",
+        "exampleKo": "걔네는 정착해서 집을 사고 싶어 해.",
+        "questionEn": "Your friend has moved cities every year but now talks about buying a home. What changed?",
+        "termsKo": "",
+        "cueKo": "걔네 · 원해 · 정착하길 · 그리고 사길 · 집을"
+      },
+      {
+        "key": "ev:let-down",
+        "en": "let down",
+        "ko": "실망시키다",
+        "example": "I don't want to let my parents down.",
+        "situations": [
+          "기대 부담 얘기",
+          "약속 못 지킨 사과"
+        ],
+        "detail": "기대하며 올려다보던 사람을 아래로(down) 떨어뜨리는 그림. 믿어준 사람을 실망시킨다는 뜻으로, disappoint보다 '신뢰를 저버린다'는 관계의 뉘앙스가 강해. 명사형 letdown은 '김빠지는 일'이라는 뜻이야.",
+        "exampleKo": "부모님을 실망시키고 싶지 않아.",
+        "questionEn": "Why are you so stressed about this exam? Who else cares about the result?",
+        "termsKo": "",
+        "cueKo": "나 · 원하지 않아 · 실망시키는 걸 · 부모님을"
+      },
+      {
+        "key": "ev:calm-down",
+        "en": "calm down",
+        "ko": "진정하다, 진정시키다",
+        "example": "Take a deep breath and calm down first.",
+        "situations": [
+          "흥분한 사람 진정시키기",
+          "화났던 경험 묘사"
+        ],
+        "detail": "끓어오른 감정을 아래로(down) 가라앉히는 그림. 화·패닉·흥분 어디에나 쓰는 표준 표현이야. 단, 화난 사람에게 직접 \"Calm down\"이라고 하면 오히려 불에 기름 붓는 효과가 나는 것까지가 원어민 상식이야.",
+        "exampleKo": "일단 심호흡하고 진정해.",
+        "questionEn": "Your friend is panicking over a small mistake at work. What do you tell them first?",
+        "termsKo": "",
+        "cueKo": "쉬어 · 깊은 숨을 · 그리고 진정해 · 먼저"
+      },
+      {
+        "key": "ev:come-down-with",
+        "en": "come down with",
+        "ko": "(감기 등 병에) 걸리다",
+        "example": "I think I'm coming down with a cold.",
+        "situations": [
+          "몸살 기운 보고",
+          "병가 내는 연락"
+        ],
+        "detail": "몸 상태가 병과 함께(with) 아래로(down) 주저앉는 그림. 감기·독감 기운이 '오는 것 같다'는 초기 단계에서 주로 진행형으로 써. catch a cold가 결과라면 come down with는 걸려가는 과정의 어감이야.",
+        "exampleKo": "나 감기 걸리려는 것 같아.",
+        "questionEn": "You're sneezing, your throat hurts, and you feel chills starting. What do you tell your manager?",
+        "termsKo": "",
+        "cueKo": "나 · 생각해 · 내가 걸리고 있다고 · 감기에"
+      },
+      {
+        "key": "ev:cool-down",
+        "en": "cool down",
+        "ko": "(운동 후) 몸을 식히다; 식다",
+        "example": "I stretch for five minutes to cool down after running.",
+        "situations": [
+          "운동 마무리 루틴",
+          "뜨거운 음식 식히기"
+        ],
+        "detail": "올라간 체온과 심박을 아래로(down) 내리는 그림. 운동 마무리 단계의 표준 표현이고 명사 cooldown도 그대로 써. 화가 가라앉는다는 뜻으로도 쓰여서 calm down과 비슷하게 들리지만, cool down은 몸·온도 쪽이 기본이야.",
+        "exampleKo": "달리고 나서 몸 식히려고 5분 스트레칭해.",
+        "questionEn": "What do you do right after a hard run, before hitting the shower?",
+        "termsKo": "",
+        "cueKo": "나 · 스트레칭해 · 5분 동안 · 몸 식히려고 · 달리기 후에"
+      },
+      {
+        "key": "ev:cut-down-on",
+        "en": "cut down on",
+        "ko": "(양을) 줄이다",
+        "example": "I'm trying to cut down on caffeine.",
+        "situations": [
+          "커피·술 줄이는 중",
+          "지출 줄이기 결심"
+        ],
+        "detail": "소비량을 잘라서 아래로(down) 낮추는 그림. 카페인·술·배달비처럼 과한 걸 줄여간다고 할 때의 표준 표현이야. 완전히 끊는 cut out과 달리 '줄이는 중'이라는 과정의 어감이라, 거의 항상 trying to와 같이 다녀.",
+        "exampleKo": "카페인을 줄이려고 노력 중이야.",
+        "questionEn": "Four coffees a day was too much, so now you drink two. What are you doing?",
+        "termsKo": "",
+        "cueKo": "나 · 노력 중이야 · 줄이려고 · 카페인을"
+      },
+      {
+        "key": "ev:slow-down",
+        "en": "slow down",
+        "ko": "속도를 늦추다",
+        "example": "Slow down, the roads are icy tonight.",
+        "situations": [
+          "운전 중 주의 주기",
+          "말 빠른 사람에게 부탁"
+        ],
+        "detail": "속도 게이지를 아래로(down) 내리는 그림. 운전 속도부터 말하는 속도, 인생의 페이스까지 전부 커버해. 영어가 빠를 때 \"Could you slow down a bit?\"는 생존 필수 문장이니 입에 붙여둬.",
+        "exampleKo": "속도 줄여, 오늘 밤 길 얼었어.",
+        "questionEn": "Your friend is driving too fast on icy roads. What do you tell them?",
+        "termsKo": "",
+        "cueKo": "속도 줄여 · 도로가 · 얼었어 · 오늘 밤"
+      },
+      {
+        "key": "ev:wipe-down",
+        "en": "wipe down",
+        "ko": "(표면을) 구석구석 닦다",
+        "example": "I wipe down the counters every night.",
+        "situations": [
+          "주방 마무리 청소",
+          "헬스장 기구 닦기"
+        ],
+        "detail": "표면을 따라 위에서 아래로(down) 훑으며 닦는 그림. 주방 조리대, 식탁, 헬스장 기구처럼 넓은 표면을 행주로 싹 닦을 때 써. wipe 한 번 닦기와 달리 down이 붙으면 '전체를 구석구석'이라는 어감이 생겨.",
+        "exampleKo": "매일 밤 조리대를 싹 닦아.",
+        "questionEn": "What's the last kitchen chore you do every night after cooking?",
+        "termsKo": "",
+        "cueKo": "나 · 닦아 · 조리대를 · 매일 밤"
+      },
+      {
+        "key": "ev:turn-down",
+        "en": "turn down",
+        "ko": "(소리를) 줄이다; 거절하다",
+        "example": "I turned down the job offer in the end.",
+        "situations": [
+          "볼륨 줄이기 부탁",
+          "제안 거절 경험"
+        ],
+        "detail": "다이얼을 아래로(down) 돌려 세기를 줄이는 그림이 '제안을 줄여 거절하다'로 확장됐어. 소리·온도를 낮추는 물리적 용법과 제안·초대를 정중히 거절하는 용법 둘 다 최상위 빈도야. reject보다 부드러워서 \"I had to turn it down\"이 훨씬 자연스러워.",
+        "exampleKo": "결국 그 이직 제안은 거절했어.",
+        "questionEn": "They offered you the job, but the pay was too low, so you said no. How do you phrase that?",
+        "termsKo": "",
+        "cueKo": "나 · 거절했어 · 그 일자리 제안을 · 결국"
+      },
+      {
+        "key": "ev:step-down",
+        "en": "step down",
+        "ko": "(직책에서) 물러나다, 사임하다",
+        "example": "Our director is stepping down at the end of the quarter.",
+        "situations": [
+          "리더 사임 소식 전달",
+          "직책 내려놓는 결정 설명"
+        ],
+        "detail": "올라가 있던 자리에서 아래로(down) 내려온다는 그림. 직책이나 역할에서 물러날 때 쓰는 표준 표현이야. resign이 회사를 떠나는 것까지 포함할 수 있다면, step down은 자리만 내려놓고 회사에 남을 수도 있어. step down as chair처럼 as로 직책을 붙여.",
+        "exampleKo": "우리 디렉터가 분기 말에 물러나요.",
+        "questionEn": "The director announced she's leaving her leadership role at quarter end. How do you describe that news?",
+        "termsKo": "",
+        "cueKo": "우리 디렉터는 · 물러난다 · 분기 말에"
+      },
+      {
+        "key": "ev:back-down",
+        "en": "back down",
+        "ko": "(주장을) 굽히다, 물러서다",
+        "example": "He refused to back down on the security requirements.",
+        "situations": [
+          "의견 충돌에서 입장 고수/양보",
+          "협상 결렬 묘사"
+        ],
+        "detail": "맞서 있던 자세에서 내려와(down) 뒤로 물러난다는 그림. 논쟁이나 협상에서 주장을 굽히는 거야. refuse to back down(끝까지 안 굽히다)이 가장 흔한 패턴. push back on(반대 의견을 내다)이 공격이라면 back down은 수비 포기 — behavioral 인터뷰의 갈등 스토리에서 두 단어가 짝으로 나와.",
+        "exampleKo": "그는 보안 요구사항에서 절대 물러서지 않았어요.",
+        "questionEn": "Both sides argued for an hour, but he never softened his position. How would you describe him?",
+        "termsKo": "",
+        "cueKo": "그는 · 거부했다 · 물러서기를 · 보안 요구사항에 대해"
+      },
+      {
+        "key": "ev:jot-down",
+        "en": "jot down",
+        "ko": "(빠르게) 메모하다, 적어두다",
+        "example": "Let me jot down your number before I forget.",
+        "situations": [
+          "회의 중 빠른 메모",
+          "아이디어 즉시 기록"
+        ],
+        "detail": "떠 있는 정보를 종이 위로 빠르게 내려(down) 적는 그림. 정식 기록이 아니라 잊기 전에 휙 적어두는 가벼운 메모야. write down보다 '급히, 짧게'의 뉘앙스가 있어. jot down a few notes/ideas처럼 회의 중 행동 묘사에 매일 쓰여.",
+        "exampleKo": "잊기 전에 번호 좀 적어둘게요.",
+        "questionEn": "Someone gives you their phone number while you're walking to another meeting. What do you do?",
+        "termsKo": "",
+        "cueKo": "하게 해줘 · 내가 · 빠르게 적게 · 너의 번호를 · 내가 잊기 전에"
+      },
+      {
+        "key": "ev:shoot-down",
+        "en": "shoot down",
+        "ko": "(아이디어를) 단칼에 거부하다",
+        "example": "My proposal got shot down before I even finished explaining.",
+        "situations": [
+          "아이디어 묵살 경험",
+          "아이디어 죽이는 문화 비판"
+        ],
+        "detail": "날아오르던 것을 쏘아 떨어뜨린다(down)는 그림. 아이디어·제안이 검토도 제대로 안 받고 격추당할 때 써. 거의 항상 수동태 'got shot down'으로 나오고, 묵살당한 억울함의 뉘앙스가 실려 있어. turn down(정중한 거절)보다 훨씬 거칠고 즉각적인 거부야.",
+        "exampleKo": "설명 다 끝내기도 전에 제 제안이 묵살당했어요.",
+        "questionEn": "You barely started presenting your idea when the director dismissed it completely. How do you describe that?",
+        "termsKo": "",
+        "cueKo": "내 제안은 · 격추당했다 · 내가 · 끝내기도 전에 · 설명을"
+      },
+      {
+        "key": "ev:play-down",
+        "en": "play down",
+        "ko": "(심각성을) 축소해서 말하다",
+        "example": "Leadership played down the impact of the data breach.",
+        "situations": [
+          "리스크 축소 발표 비판",
+          "겸손하게 성과 줄여 말하기"
+        ],
+        "detail": "실제 크기보다 아래로(down) 눌러서 연기한다(play)는 그림. 문제의 심각성이나 자기 성과를 실제보다 작게 말하는 거야. downplay라는 한 단어 동사와 완전히 같은 뜻. 반대는 play up(부풀리다). 위기 커뮤니케이션 비판('they played it down')과 겸손 묘사 양쪽에 쓰여.",
+        "exampleKo": "경영진이 데이터 유출 영향을 축소해서 발표했어요.",
+        "questionEn": "The breach was serious, but the official statement made it sound minor. What did leadership do?",
+        "termsKo": "",
+        "cueKo": "경영진은 · 축소해 말했다 · 그 영향을 · 데이터 유출의"
+      },
+      {
+        "key": "ev:quiet-down",
+        "en": "quiet down",
+        "ko": "조용해지다, 조용히 시키다",
+        "example": "Okay everyone, quiet down — we're starting.",
+        "situations": [
+          "시끄러운 회의실을 정돈할 때",
+          "아이들을 조용히 시킬 때",
+          "소란이 가라앉았다고 말할 때"
+        ],
+        "detail": "소음 레벨을 아래로(down) 끌어내리는 그림이에요. 웅성거리는 교실이나 회의실에서 '자, 조용히 합시다' 할 때 쓰죠. 명령으로도 쓰지만 'Things quieted down after launch(출시 후 좀 잠잠해졌어)'처럼 상황이 저절로 가라앉을 때도 써요.",
+        "exampleKo": "자 여러분, 조용히 해주세요 — 시작합니다.",
+        "questionEn": "The room is buzzing with side conversations and the presentation needs to begin. What does the host say?",
+        "termsKo": "",
+        "cueKo": "자 여러분 · 조용히 · 우리는 시작해요"
+      },
+      {
+        "key": "ev:look-down-on",
+        "en": "look down on",
+        "ko": "깔보다, 무시하다",
+        "example": "He looks down on anyone without a degree.",
+        "situations": [
+          "사람을 차별하는 태도를 비판할 때",
+          "학벌/직업 차별 이야기",
+          "무시당한 경험담"
+        ],
+        "detail": "시선이 아래로(down) 향하며 상대를 낮은 곳에 두는 그림이에요. 학벌, 직업, 출신으로 사람을 아래로 보는 태도를 비판할 때 쓰죠. ignore(무시하다=신경 안 씀)와 혼동하기 쉬운데, look down on은 '얕잡아본다'는 경멸의 무시라는 게 달라요.",
+        "exampleKo": "걔는 학위 없는 사람은 다 깔봐.",
+        "questionEn": "A new executive treats junior staff like they're invisible because of their titles. How do you describe his attitude?",
+        "termsKo": "",
+        "cueKo": "그는 · 깔본다 · 누구든 · 학위 없는"
+      },
+      {
+        "key": "ev:talk-down-to",
+        "en": "talk down to",
+        "ko": "깔보듯 말하다, 가르치려 들다",
+        "example": "I hate how he talks down to the junior devs.",
+        "situations": [
+          "거들먹거리는 선배를 비판할 때",
+          "고객을 무시하는 응대",
+          "아이 취급당했을 때"
+        ],
+        "detail": "높은 곳에서 아래로(down) 내려다보며 말하는 그림이에요. 상대를 무지하거나 어리다고 가정하고 가르치듯, 깔보듯 말하는 태도를 비판하는 말이죠. look down on이 마음속 태도라면 talk down to는 그것이 말투로 새어 나온 것이고, condescending(거들먹거리는)과 단짝 단어예요.",
+        "exampleKo": "걔가 주니어 개발자들한테 가르치려 드는 게 정말 싫어.",
+        "questionEn": "The senior engineer lectures experienced juniors about basics using a slow, patronizing voice. What's your complaint about him?",
+        "termsKo": "",
+        "cueKo": "나는 싫다 · 그가 깔보듯 말하는 방식이 · 그 주니어 개발자들에게"
+      },
+      {
+        "key": "ev:put-down",
+        "en": "put down",
+        "ko": "깎아내리다, 비하하다",
+        "example": "She's always putting herself down in interviews.",
+        "situations": [
+          "자기비하가 심한 친구에게",
+          "남을 깎아내리는 사람 비판",
+          "농담을 가장한 비하"
+        ],
+        "detail": "사람의 가치를 아래로(down) 눌러 놓는 그림이에요. 말로 누군가를 깎아내리고 작아지게 만드는 것으로, 명사 put-down(비하 발언)으로도 쓰죠. 특히 put yourself down(자기비하하다)은 겸손과 구분해야 할 습관이라, 'Stop putting yourself down(자꾸 자신을 깎아내리지 마)'이 단골 조언이에요.",
+        "exampleKo": "걔는 면접에서 맨날 자기를 깎아내려.",
+        "questionEn": "Your talented friend describes herself as 'just lucky' and 'not that skilled' to every recruiter. What habit concerns you?",
+        "termsKo": "",
+        "cueKo": "그녀는 항상 · 깎아내린다 · 자기 자신을 · 면접들에서"
+      },
+      {
+        "key": "ev:go-down",
+        "en": "go down",
+        "ko": "(서버·사이트가) 죽다; (가격·수치가) 내려가다",
+        "example": "The payment service went down right after the deploy.",
+        "situations": [
+          "장애 발생 상황 공유",
+          "가격/지표 하락 언급",
+          "배포 직후 모니터링 보고"
+        ],
+        "detail": "down은 위에 떠서 돌아가던 것이 주저앉는 그림이야. 서버·사이트가 죽는 순간(went down)과 가격·수치가 내려가는 흐름 둘 다 커버해. is down은 '죽어 있는 상태', go down은 '죽는 사건'이라서 장애 타임라인 설명할 때 구분해 주면 깔끔해.",
+        "exampleKo": "배포 직후에 결제 서비스가 죽었어요.",
+        "questionEn": "Users suddenly can't reach the site at all. How do you describe what just happened?",
+        "termsKo": "",
+        "cueKo": "그 결제 서비스가 · 죽었다 · 바로 직후에 · 그 배포"
+      },
+      {
+        "key": "ev:sit-down",
+        "en": "sit down",
+        "ko": "앉다; (시간 잡고) 자리 잡고 논의하다",
+        "example": "Let's sit down next week and review the roadmap together.",
+        "situations": [
+          "진지한 1:1 논의 제안",
+          "손님에게 자리 권하기",
+          "면담 일정 잡기"
+        ],
+        "detail": "down은 몸을 아래로 내려 자리에 고정하는 그림이야. 단순히 '앉다'도 되지만, 회사에서는 sit down with someone이 '시간 제대로 잡고 차분히 논의하다'라는 뜻으로 훨씬 자주 들려. 그냥 sit과 달리 sit down은 앉는 동작 자체를 강조하고, 명령형 Sit down은 어조에 따라 딱딱하게 들릴 수 있어.",
+        "exampleKo": "다음 주에 자리 한번 잡고 로드맵 같이 보시죠.",
+        "questionEn": "You want a proper one-on-one talk about the roadmap, not a hallway chat. How do you propose it?",
+        "termsKo": "",
+        "cueKo": "하자 · 앉는 걸 · 다음 주에 · 그리고 검토하자 · 그 로드맵을 · 함께"
+      },
+      {
+        "key": "ev:write-down",
+        "en": "write down",
+        "ko": "적어 두다, 기록해 두다",
+        "example": "Write down the steps so we don't forget them later.",
+        "situations": [
+          "회의 중 결정사항 기록",
+          "장애 대응 절차 메모",
+          "온보딩 때 받아 적기"
+        ],
+        "detail": "down은 머릿속이나 공중에 떠 있던 말을 종이 위로 내려 고정하는 그림이야. 회의 결정사항이나 장애 대응 순서처럼 나중에 다시 봐야 할 걸 적어둘 때 기본으로 쓰는 말이지. jot down은 빠르게 휘갈겨 메모하는 느낌이고, write down은 속도 상관없이 '기록해 두다' 전반을 커버해.",
+        "exampleKo": "나중에 까먹지 않게 그 단계들 적어 둬.",
+        "questionEn": "The fix involves five steps and you'll need them again next month. What should you do now?",
+        "termsKo": "",
+        "cueKo": "적어 둬 · 그 단계들을 · 그래서 우리가 · 까먹지 않게 · 그것들을 · 나중에"
       }
     ]
   },
@@ -5261,6 +6839,848 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "In a social feed design, what happens when a celebrity posts something?",
         "termsKo": "팬아웃(fan-out): 요청·메시지 하나가 여러 대상으로 퍼지는 패턴. 트위터식 피드 설계의 단골 주제.",
         "cueKo": "쓰기 한 번이 · 퍼져 나간다 · 수천 개의 팔로워 피드로"
+      },
+      {
+        "key": "ev:head-out",
+        "en": "head out",
+        "ko": "나서다, 출발하다",
+        "example": "I'm heading out in ten minutes.",
+        "situations": [
+          "퇴근 인사",
+          "출발 시간 알리기"
+        ],
+        "detail": "머리(head)가 향하는 방향으로 밖으로(out) 움직이기 시작한다는 그림. \"나 이제 나간다\"를 leave보다 가볍고 구어적으로 말하는 표현이야. 퇴근할 때 \"I'm heading out, see you tomorrow\"가 미국 사무실 단골 멘트야.",
+        "exampleKo": "나 10분 뒤에 나가.",
+        "questionEn": "You're about to leave the office for the day. What do you say to your teammates?",
+        "termsKo": "",
+        "cueKo": "나 · 나갈 거야 · 10분 뒤에"
+      },
+      {
+        "key": "ev:go-out",
+        "en": "go out",
+        "ko": "외출하다, 놀러 나가다; (전기·불이) 나가다",
+        "example": "We're going out for drinks after work.",
+        "situations": [
+          "퇴근 후 약속 얘기",
+          "정전 상황 설명"
+        ],
+        "detail": "집이라는 울타리 밖으로(out) 나간다는 그림. 친구들과 놀러 나가는 것, 데이트하는 것(go out with someone)까지 다 커버해. 주어가 전기나 불이면 \"the power went out\"(정전됐다)처럼 꺼진다는 뜻이 되는 것도 같이 외워둬.",
+        "exampleKo": "우리 퇴근하고 한잔하러 나가.",
+        "questionEn": "What do you and your friends usually do on Friday evenings?",
+        "termsKo": "",
+        "cueKo": "우리 · 나갈 거야 · 한잔하러 · 퇴근 후에"
+      },
+      {
+        "key": "ev:eat-out",
+        "en": "eat out",
+        "ko": "외식하다",
+        "example": "We eat out maybe twice a week.",
+        "situations": [
+          "식비·식습관 얘기",
+          "외식 빈도 비교"
+        ],
+        "detail": "집 밖에서(out) 식사를 해결한다는 그림. 식당에서 먹는 것 전반을 가리키는 표준 표현이야. 배달은 order in, 포장은 get takeout으로 셋을 세트로 기억하면 식사 얘기가 편해져.",
+        "exampleKo": "우리는 일주일에 두 번쯤 외식해.",
+        "questionEn": "How often do you cook at home versus going to restaurants?",
+        "termsKo": "",
+        "cueKo": "우리 · 외식해 · 아마 두 번 · 일주일에"
+      },
+      {
+        "key": "ev:hang-out",
+        "en": "hang out",
+        "ko": "놀다, 어울려 시간을 보내다",
+        "example": "We hung out at his place all afternoon.",
+        "situations": [
+          "주말 근황 얘기",
+          "친구 사귀는 얘기"
+        ],
+        "detail": "특별한 목적 없이 밖에 널려(out) 있듯 느긋하게 시간을 보내는 그림. 한국어 '놀다'에 가장 가까운 성인용 표현이야 — play는 아이들·게임·악기에만 쓰니 주의해. \"Let's hang out sometime\"은 가볍게 친해지자는 단골 멘트야.",
+        "exampleKo": "오후 내내 걔네 집에서 놀았어.",
+        "questionEn": "What did you and your friends do last weekend, nothing fancy?",
+        "termsKo": "",
+        "cueKo": "우리 · 놀았어 · 걔네 집에서 · 오후 내내"
+      },
+      {
+        "key": "ev:ask-out",
+        "en": "ask out",
+        "ko": "데이트 신청하다",
+        "example": "He finally asked her out after months.",
+        "situations": [
+          "연애 상담",
+          "썸 진행 상황 얘기"
+        ],
+        "detail": "같이 나가자고(out) 청한다는 그림 — go out(데이트하다)을 하자고 묻는 거야. 데이트 신청의 표준 표현이고 ask her out처럼 사람이 가운데 들어가. 점잖은 date라는 동사보다 일상 대화에선 이게 압도적으로 많이 쓰여.",
+        "exampleKo": "걔가 몇 달 만에 드디어 그녀에게 데이트 신청했어.",
+        "questionEn": "Your friend has a crush on someone at the gym but hasn't acted. What should they do?",
+        "termsKo": "",
+        "cueKo": "걔가 · 드디어 · 데이트 신청했어 · 그녀에게 · 몇 달 만에"
+      },
+      {
+        "key": "ev:move-out",
+        "en": "move out",
+        "ko": "이사 나가다, 독립하다",
+        "example": "I moved out of my parents' place at twenty.",
+        "situations": [
+          "독립 시기 얘기",
+          "룸메이트가 나간 상황"
+        ],
+        "detail": "살던 공간 밖으로(out) 짐과 삶을 빼는 그림. 부모님 집에서 독립하는 것, 룸메이트가 방을 빼는 것 모두 이 표현이야. 독립 시기는 북미 스몰토크 단골 주제라 \"When did you move out?\"을 자주 듣게 돼.",
+        "exampleKo": "나 스무 살에 부모님 집에서 독립했어.",
+        "questionEn": "When did you first live away from your parents?",
+        "termsKo": "",
+        "cueKo": "나 · 이사 나왔어 · 부모님 집에서 · 스무 살에"
+      },
+      {
+        "key": "ev:chill-out",
+        "en": "chill out",
+        "ko": "느긋하게 쉬다; 흥분을 가라앉히다",
+        "example": "I just chilled out at home all Sunday.",
+        "situations": [
+          "주말 근황 얘기",
+          "예민한 사람 달래기"
+        ],
+        "detail": "열기를 식혀 밖으로(out) 빼고 늘어진다는 그림. 아무것도 안 하고 쉬었다는 뜻과 \"흥분 가라앉혀(chill out)\"라는 뜻 둘 다야. 요즘은 그냥 chill 한 단어로도 같은 뜻을 다 커버해 — \"let's just chill\".",
+        "exampleKo": "일요일 내내 그냥 집에서 뒹굴었어.",
+        "questionEn": "What did you do last Sunday? Anything productive?",
+        "termsKo": "",
+        "cueKo": "나 그냥 · 늘어져 쉬었어 · 집에서 · 일요일 내내"
+      },
+      {
+        "key": "ev:freak-out",
+        "en": "freak out",
+        "ko": "기겁하다, 패닉하다",
+        "example": "She freaked out when she saw the spider.",
+        "situations": [
+          "놀란 순간 묘사",
+          "패닉한 친구 진정시키기"
+        ],
+        "detail": "평정심이 통제 밖으로(out) 튀어나가 버리는 그림. 무서움·충격·패닉에 다 쓰는 구어 1순위 표현이야. \"Don't freak out, but...\"(놀라지 말고 들어)는 나쁜 소식 꺼낼 때의 단골 서두야.",
+        "exampleKo": "걔 거미 보고 기겁했어.",
+        "questionEn": "Describe your reaction the last time you saw a cockroach in your kitchen.",
+        "termsKo": "",
+        "cueKo": "걔 · 기겁했어 · 봤을 때 · 거미를"
+      },
+      {
+        "key": "ev:point-out",
+        "en": "point out",
+        "ko": "짚어 주다, 지적하다",
+        "example": "She pointed out a mistake in the bill.",
+        "situations": [
+          "계산 오류 지적",
+          "상대가 놓친 것 알려주기"
+        ],
+        "detail": "손가락으로 콕 집어 밖으로(out) 드러나게 가리키는 그림. 상대가 못 본 사실을 알려줄 때 쓰는 중립적인 표현이야. 공개적으로 잘못을 따지는 call out과 달리 비난 뉘앙스가 없어서 일상에서 부담 없이 쓸 수 있어.",
+        "exampleKo": "걔가 계산서에서 틀린 부분을 짚어 줬어.",
+        "questionEn": "The restaurant charged you for a dish you never ordered. What did you do?",
+        "termsKo": "",
+        "cueKo": "걔가 · 짚어 줬어 · 틀린 걸 · 계산서에서"
+      },
+      {
+        "key": "ev:find-out",
+        "en": "find out",
+        "ko": "알게 되다, 알아내다",
+        "example": "I found out the flight was canceled this morning.",
+        "situations": [
+          "새 소식 접한 얘기",
+          "숨겨진 사실 알게 된 썰"
+        ],
+        "detail": "가려져 있던 정보가 밖으로(out) 드러나 알게 되는 그림. 노력해서 알아낸 것뿐 아니라 우연히 알게 된 것도 다 find out이야. 머리를 굴려 답을 만들어내는 figure out과 달리, 이미 존재하는 사실을 '접하는' 쪽이라는 게 차이야.",
+        "exampleKo": "오늘 아침에 비행기가 취소된 걸 알았어.",
+        "questionEn": "When did you first learn that your flight had been canceled?",
+        "termsKo": "",
+        "cueKo": "나 · 알게 됐어 · 비행기가 · 취소됐다는 걸 · 오늘 아침"
+      },
+      {
+        "key": "ev:turn-out",
+        "en": "turn out",
+        "ko": "알고 보니 ~이다; 결과가 ~로 나오다",
+        "example": "It turned out the noise was just the fridge.",
+        "situations": [
+          "반전 있는 썰 풀기",
+          "요리·시도 결과 평가"
+        ],
+        "detail": "안에 숨어 있던 결과가 밖으로(out) 드러나는 그림. \"알고 보니 ~더라(it turned out that...)\"로 반전을 말하는 일상 필수 표현이야. 케이크가 잘 나왔다(the cake turned out great)처럼 결과물 품질을 말할 때도 똑같이 써.",
+        "exampleKo": "알고 보니 그 소리는 그냥 냉장고였어.",
+        "questionEn": "You thought someone was breaking into your house, but the truth was much sillier. Tell the story.",
+        "termsKo": "",
+        "cueKo": "알고 보니 · 그 소음은 · 그냥 냉장고였어"
+      },
+      {
+        "key": "ev:pass-out",
+        "en": "pass out",
+        "ko": "기절하다; 곯아떨어지다",
+        "example": "I passed out on the couch right after dinner.",
+        "situations": [
+          "과로로 뻗은 얘기",
+          "더위·헌혈 중 기절 썰"
+        ],
+        "detail": "의식이 몸 밖으로(out) 빠져나가 버리는 그림. 진짜 기절하는 것과, 너무 피곤해서 눕자마자 곯아떨어지는 것 둘 다 써. faint보다 구어적이고 과로·더위·음주 어느 맥락에도 자연스러워.",
+        "exampleKo": "저녁 먹자마자 소파에서 뻗었어.",
+        "questionEn": "You were so exhausted after the move that you don't even remember lying on the couch. What happened?",
+        "termsKo": "",
+        "cueKo": "나 · 뻗었어 · 소파에서 · 바로 · 저녁 후에"
+      },
+      {
+        "key": "ev:work-out",
+        "en": "work out",
+        "ko": "운동하다; (일이) 잘 풀리다",
+        "example": "I work out three times a week before work.",
+        "situations": [
+          "운동 루틴 소개",
+          "일이 잘 풀린/안 풀린 결과 얘기"
+        ],
+        "detail": "몸 안의 힘을 밖으로(out) 끌어내 단련하는 그림. 헬스장 운동의 표준 동사고 명사 workout도 그대로 써. 주어가 일이면 \"it worked out\"(잘 풀렸다), \"it didn't work out\"(잘 안 됐다)으로 결과를 말하는 만능 표현이 돼.",
+        "exampleKo": "출근 전에 일주일에 세 번 운동해.",
+        "questionEn": "How do you stay in shape with such a busy schedule?",
+        "termsKo": "",
+        "cueKo": "나 · 운동해 · 세 번 · 일주일에 · 출근 전에"
+      },
+      {
+        "key": "ev:burn-out",
+        "en": "burn out",
+        "ko": "번아웃되다, 완전히 소진되다",
+        "example": "I burned out after a year of overtime.",
+        "situations": [
+          "과로 경험 회고",
+          "워라밸 중요성 얘기"
+        ],
+        "detail": "연료가 다 타서 불이 밖으로 꺼져버리는(out) 그림. 일·공부에 에너지를 다 써서 의욕이 완전히 바닥난 상태를 말해. 명사 burnout이 이미 한국어로도 굳었지, 동사로는 \"I'm burning out\"(번아웃 오고 있어)처럼 진행형 경고로도 써.",
+        "exampleKo": "야근 1년 하고 번아웃 왔어.",
+        "questionEn": "After twelve months of nonstop overtime, you couldn't even open your laptop. What happened to you?",
+        "termsKo": "",
+        "cueKo": "나 · 번아웃됐어 · 1년 후에 · 야근의"
+      },
+      {
+        "key": "ev:wear-out",
+        "en": "wear out",
+        "ko": "닳아서 못 쓰게 되다; 녹초로 만들다",
+        "example": "These shoes wore out in six months.",
+        "situations": [
+          "낡은 물건 교체 이유",
+          "애 보고 녹초 된 얘기"
+        ],
+        "detail": "쓰고 또 써서 수명이 밖으로(out) 다 빠져나간 그림. 신발·옷이 닳아 못 쓰게 되는 것과, 사람이 진이 빠지는 것(I'm worn out) 둘 다야. wear off(약효가 사라지다)와 헷갈리기 쉬운데 — out은 물건·체력, off는 약효·기분으로 구분해.",
+        "exampleKo": "이 신발 6개월 만에 다 닳았어.",
+        "questionEn": "Why are you buying new running shoes again? You got those six months ago.",
+        "termsKo": "",
+        "cueKo": "이 신발 · 다 닳았어 · 6개월 만에"
+      },
+      {
+        "key": "ev:break-out",
+        "en": "break out",
+        "ko": "(피부 트러블이) 올라오다; (전쟁·화재가) 발발하다",
+        "example": "My skin breaks out when I'm stressed.",
+        "situations": [
+          "스트레스성 피부 트러블",
+          "뉴스 사건 묘사"
+        ],
+        "detail": "갇혀 있던 게 뚫고 밖으로(out) 터져 나오는 그림. 여드름·발진이 올라오는 게 일상 1순위 용법이고, 명사 breakout도 그대로 써. 전쟁·화재가 발발한다, 감옥을 탈출한다(break out of prison)도 같은 그림이야.",
+        "exampleKo": "스트레스 받으면 피부에 뭐가 올라와.",
+        "questionEn": "Every time you have a stressful week, your face shows it. How?",
+        "termsKo": "",
+        "cueKo": "내 피부는 · 트러블 나 · 내가 스트레스 받을 때"
+      },
+      {
+        "key": "ev:cut-out",
+        "en": "cut out",
+        "ko": "(음식·습관을) 완전히 끊다",
+        "example": "I cut out soda completely last year.",
+        "situations": [
+          "식단 관리 얘기",
+          "나쁜 습관 끊은 경험"
+        ],
+        "detail": "식단에서 가위로 오려내(out) 아예 없애버리는 그림. 설탕·술·카페인을 '완전히 끊었다'고 할 때 써 — 줄이는 건 cut down on으로 구분해. \"Cut it out!\"(그만해!)이라는 명령형 관용구도 일상에서 정말 자주 들려.",
+        "exampleKo": "작년에 탄산음료를 완전히 끊었어.",
+        "questionEn": "You completely stopped drinking soda last year, not just reduced it. How do you say that?",
+        "termsKo": "",
+        "cueKo": "나 · 끊었어 · 탄산음료를 · 완전히 · 작년에"
+      },
+      {
+        "key": "ev:clean-out",
+        "en": "clean out",
+        "ko": "(속을) 싹 비우며 청소하다",
+        "example": "I cleaned out the fridge over the weekend.",
+        "situations": [
+          "냉장고·옷장 대청소",
+          "이사 전 짐 정리"
+        ],
+        "detail": "안에 든 걸 다 꺼내(out) 싹 비우며 정리하는 그림. 냉장고·옷장·차고처럼 '속이 있는 공간'을 통째로 정리할 때 써. 표면을 정돈하는 clean up과 달리, 비우는 것 자체가 핵심이야.",
+        "exampleKo": "주말 동안 냉장고를 싹 비우고 정리했어.",
+        "questionEn": "The fridge was full of expired sauces and mystery leftovers. What did you finally do on Saturday?",
+        "termsKo": "",
+        "cueKo": "나 · 싹 비웠어 · 냉장고를 · 주말 동안"
+      },
+      {
+        "key": "ev:take-out",
+        "en": "take out",
+        "ko": "(쓰레기를) 내놓다; 포장해 가다; (대출을) 받다",
+        "example": "Can you take out the trash tonight?",
+        "situations": [
+          "쓰레기 당번 정하기",
+          "포장 주문",
+          "대출 얘기"
+        ],
+        "detail": "안에 있던 걸 밖으로(out) 꺼내 가는 그림. 쓰레기를 집 밖에 내놓기, 음식 포장해 가기(takeout), 대출 받기(take out a loan)까지 전부 '꺼내 간다'는 같은 그림이야. 식당의 \"For here or to go?\"에서 to go가 takeout과 같은 뜻인 것도 알아둬.",
+        "exampleKo": "오늘 밤 쓰레기 좀 내놔 줄래?",
+        "questionEn": "The kitchen bin is overflowing and collection is tomorrow morning. What do you ask your partner?",
+        "termsKo": "",
+        "cueKo": "너 · 내놔 줄래 · 쓰레기를 · 오늘 밤?"
+      },
+      {
+        "key": "ev:run-out-of",
+        "en": "run out of",
+        "ko": "다 떨어지다",
+        "example": "We ran out of milk again this morning.",
+        "situations": [
+          "생필품 떨어진 상황",
+          "시간·돈 바닥난 얘기"
+        ],
+        "detail": "갖고 있던 양이 바닥나 밖으로(out) 다 새어 나간 그림. 우유·휴지·시간·돈, 뭐든 '다 떨어졌다'의 표준 표현이야. of 없이 \"time is running out\"(시간이 얼마 안 남았다)처럼 자동사로도 써.",
+        "exampleKo": "오늘 아침에 우유가 또 다 떨어졌어.",
+        "questionEn": "You open the fridge for cereal and the milk carton is empty again. What's the situation?",
+        "termsKo": "",
+        "cueKo": "우리 · 다 떨어졌어 · 우유가 · 또 · 오늘 아침"
+      },
+      {
+        "key": "ev:lock-out",
+        "en": "lock out",
+        "ko": "(열쇠를 안에 두고) 못 들어가게 잠기다",
+        "example": "I locked myself out again this morning.",
+        "situations": [
+          "열쇠 두고 나온 사고",
+          "계정 로그인 잠김"
+        ],
+        "detail": "문이 잠기면서 나만 밖에(out) 남겨지는 그림. 열쇠·폰을 안에 두고 나와 못 들어가는 상황의 표준 표현으로, 거의 항상 lock myself out 형태로 써. 비밀번호를 너무 많이 틀려 계정이 잠겼을 때(locked out of my account)도 같은 그림이야.",
+        "exampleKo": "오늘 아침에 또 열쇠 두고 나와서 못 들어갔어.",
+        "questionEn": "You closed the door, then saw your keys still on the kitchen table. What just happened?",
+        "termsKo": "로그인 시도 초과로 계정이 잠기는 것도 locked out — IT에서도 동일하게 쓰는 표현.",
+        "cueKo": "나 · 잠가서 못 들어가게 했어 · 나 자신을 · 또 · 오늘 아침"
+      },
+      {
+        "key": "ev:pick-out",
+        "en": "pick out",
+        "ko": "골라내다, 고르다",
+        "example": "Help me pick out a gift for Mom.",
+        "situations": [
+          "선물 고르기",
+          "옷·가구 고르기 동행"
+        ],
+        "detail": "여러 개 중 하나를 집어 밖으로(out) 꺼내는 그림. 선물·옷·페인트 색처럼 후보가 많은 데서 고를 때 써. choose보다 '눈으로 고르는 쇼핑의 동작'이 살아 있는 표현이야.",
+        "exampleKo": "엄마 선물 고르는 것 좀 도와줘.",
+        "questionEn": "You're staring at fifty candle options for Mom's birthday. What do you ask your sister?",
+        "termsKo": "",
+        "cueKo": "도와줘 · 나를 · 고르는 걸 · 선물을 · 엄마를 위한"
+      },
+      {
+        "key": "ev:try-out",
+        "en": "try out",
+        "ko": "시험 삼아 해 보다, 써 보다",
+        "example": "I tried out that new ramen place yesterday.",
+        "situations": [
+          "새 식당·앱 체험 후기",
+          "장비 테스트"
+        ],
+        "detail": "실전에 꺼내(out) 시험해 보는 그림. 새 식당·앱·운동을 처음 경험해 본다고 할 때 써. 몸에 걸치는 try on과 달리 try out은 경험·성능을 시험하는 쪽이고, 명사 tryout은 선발 테스트야.",
+        "exampleKo": "어제 그 새로 생긴 라멘집 가 봤어.",
+        "questionEn": "A new ramen place opened near the office and you went first. What did you do?",
+        "termsKo": "",
+        "cueKo": "나 · 시도해 봤어 · 그 새 라멘집을 · 어제"
+      },
+      {
+        "key": "ev:check-out",
+        "en": "check out",
+        "ko": "살펴보다, 구경하다; 계산하고 나가다",
+        "example": "Check out this café I found.",
+        "situations": [
+          "발견한 곳 추천",
+          "호텔 체크아웃·마트 계산"
+        ],
+        "detail": "꺼내서(out) 확인해 본다는 그림. \"이것 좀 봐(check this out)\"라는 권유가 일상 1순위 용법이야. 호텔 퇴실, 마트 계산대(checkout) 통과, 도서관 대출까지 '확인하고 나간다'는 같은 그림으로 다 이어져.",
+        "exampleKo": "내가 찾은 이 카페 좀 봐 봐.",
+        "questionEn": "You found an amazing café and want your friend to visit it too. What do you say?",
+        "termsKo": "이커머스 결제 단계가 checkout — 장바구니에서 계산대로 나가는 같은 그림.",
+        "cueKo": "봐 봐 · 이 카페를 · 내가 찾은"
+      },
+      {
+        "key": "ev:sell-out",
+        "en": "sell out",
+        "ko": "매진되다",
+        "example": "The tickets sold out in ten minutes.",
+        "situations": [
+          "콘서트 티켓팅 실패",
+          "인기 상품 품절"
+        ],
+        "detail": "재고가 다 팔려 밖으로(out) 동나는 그림. 티켓·한정판이 동났다는 표준 표현이고, 형용사처럼 sold out(매진)으로 더 자주 보여. 사람에 쓰면 '신념을 팔았다(he sold out)'는 비난이 되니 주어를 잘 봐.",
+        "exampleKo": "티켓이 10분 만에 매진됐어.",
+        "questionEn": "You tried to buy concert tickets at 10:01 and got nothing. What happened?",
+        "termsKo": "",
+        "cueKo": "티켓이 · 매진됐어 · 10분 만에"
+      },
+      {
+        "key": "ev:come-out",
+        "en": "come out",
+        "ko": "출시되다; (결과물·얼룩이) 나오다",
+        "example": "The new model comes out next Friday.",
+        "situations": [
+          "신제품·영화 출시일",
+          "사진·요리 결과 평가"
+        ],
+        "detail": "안에서 만들어지던 게 세상 밖으로(out) 나오는 그림. 신제품·영화·앨범 출시가 기본이고, 사진이 잘 나왔다(the photos came out great), 얼룩이 빠졌다(the stain came out)도 같은 그림이야. 커밍아웃이라는 말도 이 동사에서 왔어.",
+        "exampleKo": "신형 모델은 다음 주 금요일에 나와.",
+        "questionEn": "When can people finally buy the new phone everyone's been waiting for?",
+        "termsKo": "",
+        "cueKo": "새 모델이 · 나와 · 다음 금요일에"
+      },
+      {
+        "key": "ev:fill-out",
+        "en": "fill out",
+        "ko": "(양식을) 작성하다",
+        "example": "Fill out this form and bring your ID.",
+        "situations": [
+          "병원 문진표 작성",
+          "신청서·세관 신고서"
+        ],
+        "detail": "빈칸을 끝까지(out) 가득 채워 문서를 완성하는 그림. 신청서·문진표·세관 신고서 등 '서류 작성'의 표준 동사야. fill in은 빈칸 하나하나, fill out은 문서 전체라는 미묘한 차이가 있지만 미국에선 fill out이 기본이야.",
+        "exampleKo": "이 양식 작성하시고 신분증 가져오세요.",
+        "questionEn": "The clinic receptionist hands you a clipboard with papers before your first visit. What do they ask?",
+        "termsKo": "",
+        "cueKo": "작성하세요 · 이 양식을 · 그리고 가져오세요 · 신분증을"
+      },
+      {
+        "key": "ev:watch-out",
+        "en": "watch out",
+        "ko": "조심하다",
+        "example": "Watch out — the floor is wet.",
+        "situations": [
+          "위험 경고 외치기",
+          "사기·소매치기 주의 당부"
+        ],
+        "detail": "시야를 바깥으로(out) 넓혀 위험을 살피라는 그림. 눈앞의 위험을 알리는 즉각적인 외침으로, look out과 완전히 같아. 특정 대상을 조심하라면 watch out for pickpockets처럼 for를 붙여.",
+        "exampleKo": "조심해 — 바닥이 젖었어.",
+        "questionEn": "Someone is about to step on a wet floor. What do you shout?",
+        "termsKo": "",
+        "cueKo": "조심해 · 바닥이 · 젖었어"
+      },
+      {
+        "key": "ev:leave-out",
+        "en": "leave out",
+        "ko": "빼다, 빠뜨리다",
+        "example": "You left out the best part of the story!",
+        "situations": [
+          "빠진 내용 지적",
+          "소외감 표현"
+        ],
+        "detail": "넣어야 할 걸 바깥에(out) 남겨둔 채 빼먹는 그림. 이야기·요리·명단에서 뭔가 빠졌을 때 다 써. \"I felt left out\"(나만 소외된 기분이었어)이라는 감정 표현도 일상에서 정말 자주 나와.",
+        "exampleKo": "이야기에서 제일 재밌는 부분을 빼먹었잖아!",
+        "questionEn": "Your friend told everyone the story but skipped the funniest moment. What do you say?",
+        "termsKo": "",
+        "cueKo": "너 · 빼먹었어 · 제일 좋은 부분을 · 그 이야기의"
+      },
+      {
+        "key": "ev:help-out",
+        "en": "help out",
+        "ko": "거들다, 도와주다",
+        "example": "My brother helped out with the move.",
+        "situations": [
+          "이사 도와준 사람 언급",
+          "일손 보태기 제안"
+        ],
+        "detail": "곤란한 상황 밖으로(out) 꺼내 주듯 거드는 그림. help와 거의 같지만, help out은 '품을 보태 거든다'는 구체적인 노동의 어감이 있어. 대상 일 앞엔 with를 붙여 help out with the dishes처럼 써.",
+        "exampleKo": "이사할 때 남동생이 거들어 줬어.",
+        "questionEn": "Moving day would've been impossible alone. Who made it manageable and how?",
+        "termsKo": "",
+        "cueKo": "내 동생이 · 거들었어 · 이사를"
+      },
+      {
+        "key": "ev:send-out",
+        "en": "send out",
+        "ko": "(여러 명에게) 발송하다, 뿌리다",
+        "example": "I'll send out the invite to the whole team today.",
+        "situations": [
+          "회의 초대장 발송",
+          "설문/공지 일괄 전송"
+        ],
+        "detail": "한 지점에서 여러 곳으로 바깥에(out) 퍼뜨린다는 그림. 초대장, 설문, 뉴스레터처럼 다수에게 뿌리는 발송에 써. 한 명에게 보내는 send와 달리 '배포'의 뉘앙스가 핵심이야. send out the agenda beforehand(아젠다 미리 발송)는 회의 문화 얘기의 단골 문장.",
+        "exampleKo": "오늘 팀 전체에 초대장 보낼게요.",
+        "questionEn": "Fifty people need the meeting invite before tomorrow morning. What's your next move?",
+        "termsKo": "",
+        "cueKo": "나는 · 발송할 거다 · 그 초대장을 · 팀 전체에게 · 오늘"
+      },
+      {
+        "key": "ev:carry-out",
+        "en": "carry out",
+        "ko": "(계획·업무를) 실행하다, 수행하다",
+        "example": "The team carried out the migration plan without any downtime.",
+        "situations": [
+          "계획 실행 보고",
+          "감사/테스트 수행",
+          "지시사항 이행"
+        ],
+        "detail": "계획을 들고 끝까지(out) 옮겨 실행한다는 그림. 계획, 조사, 감사, 지시를 실제로 수행했다고 말할 때 쓰는 약간 격식 있는 동사야. do보다 공식적이고 execute보다 부드러워서 보고서·회의 양쪽에 다 어울려. carry out a plan/an audit/a survey 콜로케이션으로 외워.",
+        "exampleKo": "팀이 다운타임 없이 마이그레이션 계획을 실행했어요.",
+        "questionEn": "The migration plan looked good on paper. How did the actual execution go?",
+        "termsKo": "",
+        "cueKo": "그 팀은 · 실행했다 · 그 마이그레이션 계획을 · 어떤 다운타임도 없이"
+      },
+      {
+        "key": "ev:spell-out",
+        "en": "spell out",
+        "ko": "하나하나 명확하게 풀어 설명하다",
+        "example": "The contract spells out exactly who owns the data.",
+        "situations": [
+          "요구사항 명문화",
+          "모호한 책임 분담 명확화"
+        ],
+        "detail": "철자를 한 글자씩 불러주듯(spell) 끝까지 다(out) 풀어서 명시한다는 그림. 계약서·요구사항·역할 분담처럼 모호하면 사고 나는 것들을 '명확히 적시하다'라고 할 때 써. explain보다 '빠짐없이, 오해 여지 없이'라는 강도가 세. spell out the requirements는 PM 회의 단골 표현이야.",
+        "exampleKo": "계약서에 데이터 소유권이 누구한테 있는지 정확히 명시돼 있어요.",
+        "questionEn": "Data ownership caused a fight last time. What should the new contract do differently?",
+        "termsKo": "",
+        "cueKo": "그 계약서는 · 명확히 풀어 적는다 · 정확히 · 누가 소유하는지 · 그 데이터를"
+      },
+      {
+        "key": "ev:zone-out",
+        "en": "zone out",
+        "ko": "멍때리다, 딴생각에 빠지다",
+        "example": "I zoned out for a second — could you repeat the question?",
+        "situations": [
+          "긴 회의 중 집중력 상실 고백",
+          "멍때리다 놓친 내용 다시 묻기"
+        ],
+        "detail": "정신이 현재 구역(zone) 밖으로(out) 빠져나간다는 그림. 긴 회의에서 잠깐 딴생각하다 놓쳤을 때 'Sorry, I zoned out'이라고 솔직하게 말하면 오히려 자연스러워. space out, tune out도 거의 같은 뜻. 비격식이니 가벼운 자리에서만 써.",
+        "exampleKo": "잠깐 멍때렸어요 — 질문 다시 해주실래요?",
+        "questionEn": "Someone asks you a question in hour three of the meeting, but your mind was elsewhere. What do you admit?",
+        "termsKo": "",
+        "cueKo": "나는 · 멍때렸다 · 잠깐 — 반복해 줄 수 있어 · 그 질문을?"
+      },
+      {
+        "key": "ev:carve-out",
+        "en": "carve out",
+        "ko": "(시간·영역을) 일부러 떼어 만들다",
+        "example": "You have to carve out time for learning, or it never happens.",
+        "situations": [
+          "학습/딥워크 시간 확보 조언",
+          "신규 역할·영역 만들기"
+        ],
+        "detail": "통짜 덩어리에서 조각해서(carve) 떼어낸다(out)는 그림. 없는 시간을 의지로 만들어 낼 때 carve out time이 정석 표현이야. set aside보다 '깎아서라도 만들어 낸다'는 적극성이 강해. carve out a niche(자기 영역을 개척하다)처럼 커리어 얘기에도 쓰여.",
+        "exampleKo": "학습 시간은 일부러 떼어놔야지, 안 그러면 영영 안 생겨요.",
+        "questionEn": "A junior asks how you manage to keep learning despite a busy schedule. What's your advice?",
+        "termsKo": "",
+        "cueKo": "너는 · 떼어내야 한다 · 시간을 · 학습을 위해 · 아니면 그건 · 절대 일어나지 않는다"
+      },
+      {
+        "key": "ev:push-out",
+        "en": "push out",
+        "ko": "(마감·출시를) 뒤로 밀다",
+        "example": "We pushed out the release to the end of the month.",
+        "situations": [
+          "출시일 연기 공지",
+          "로드맵 조정 설명"
+        ],
+        "detail": "날짜를 더 먼 바깥쪽으로(out) 밀어낸다는 그림. 마감·출시·마일스톤을 연기할 때 미국 PM들이 입에 달고 사는 말이야. push back과 같은 뜻인데 push out은 'to + 새 날짜'와 특히 잘 붙어. 배포한다는 push out(내보내다) 용법도 있으니 목적어로 구분해.",
+        "exampleKo": "릴리스를 월말로 미뤘어요.",
+        "questionEn": "The release was due next week, but QA found serious bugs. What happened to the date?",
+        "termsKo": "",
+        "cueKo": "우리는 · 밀어냈다 · 그 릴리스를 · 월말로"
+      },
+      {
+        "key": "ev:map-out",
+        "en": "map out",
+        "ko": "(계획을) 전체 그림으로 짜다",
+        "example": "We mapped out the hiring plan for the next two quarters.",
+        "situations": [
+          "분기 로드맵 수립",
+          "프로젝트 단계 설계",
+          "커리어 계획"
+        ],
+        "detail": "지도를 펼치듯 전체 경로를 끝까지(out) 그려낸다는 그림. 분기 계획, 채용 계획, 커리어 경로처럼 단계가 있는 큰 그림을 짤 때 써. plan보다 '시작부터 끝까지 시각화했다'는 구체성이 있어. map out the roadmap은 동어반복처럼 들리니 map out the plan/steps 정도가 자연스러워.",
+        "exampleKo": "다음 두 분기 채용 계획을 짜놨어요.",
+        "questionEn": "Leadership wants to see the full hiring picture for the next six months. What did your team prepare?",
+        "termsKo": "",
+        "cueKo": "우리는 · 그려냈다 · 그 채용 계획을 · 다음 두 분기 동안의"
+      },
+      {
+        "key": "ev:knock-out",
+        "en": "knock out",
+        "ko": "(일을) 후딱 해치우다",
+        "example": "Give me the morning and I'll knock out those reviews.",
+        "situations": [
+          "밀린 일 빠른 처리 약속",
+          "짧은 집중으로 일 쳐내기"
+        ],
+        "detail": "권투에서 한 방에 눕히듯 일을 단번에 끝내버린다(out)는 그림. 밀린 리뷰, 작은 티켓 묶음처럼 '마음먹고 후딱 쳐낼 수 있는 일'에 써. finish보다 속도감과 시원함이 있는 캐주얼한 표현이야. 사람에게 쓰면 '기절시키다'니까 목적어는 일거리로.",
+        "exampleKo": "오전만 주면 그 리뷰들 다 쳐낼게요.",
+        "questionEn": "Five code reviews are waiting and you have a free morning. What do you tell the team?",
+        "termsKo": "",
+        "cueKo": "줘 · 나에게 · 오전을 · 그러면 나는 · 해치울 거다 · 그 리뷰들을"
+      },
+      {
+        "key": "ev:put-out",
+        "en": "put out",
+        "ko": "(급한 불을) 끄다; (자료를) 내놓다",
+        "example": "I spent the whole week putting out fires instead of building.",
+        "situations": [
+          "급한 이슈 대응만 한 주간 회고",
+          "공지/자료 배포"
+        ],
+        "detail": "불을 꺼서 없애거나, 무언가를 바깥세상에(out) 내놓는다는 두 갈래 그림. 직장에선 putting out fires(급한 문제들 수습하기)가 압도적으로 흔한 관용구야. put out a statement/newsletter(공지를 내다)처럼 배포의 뜻도 있어. 본업을 못 하고 수습만 했다는 한탄에 딱이야.",
+        "exampleKo": "이번 주는 개발은 못 하고 급한 불만 끄다 끝났어요.",
+        "questionEn": "You planned to build features this week, but urgent issues kept interrupting. How do you describe your week?",
+        "termsKo": "",
+        "cueKo": "나는 · 보냈다 · 한 주 전부를 · 불 끄면서 · 만드는 대신"
+      },
+      {
+        "key": "ev:start-out",
+        "en": "start out",
+        "ko": "(커리어·일을) ~로 시작하다",
+        "example": "I started out as a QA tester before moving into development.",
+        "situations": [
+          "커리어 스토리 소개",
+          "프로젝트 초기 모습 회고"
+        ],
+        "detail": "출발점에서 바깥 여정으로(out) 첫발을 내딛는 그림. 커리어 서사의 첫 문장 전용 동사로, 'I started out as...'는 자기소개 인터뷰의 정석 오프닝이야. start와 달리 '지금은 달라졌다'는 변화의 서사를 예고해. 프로젝트가 'started out as a side project'(사이드 프로젝트로 출발했다)처럼 사물에도 써.",
+        "exampleKo": "개발로 옮기기 전에 QA 테스터로 시작했어요.",
+        "questionEn": "Walk me through your career — what was your very first role?",
+        "termsKo": "",
+        "cueKo": "나는 · 시작했다 · QA 테스터로 · 옮기기 전에 · 개발로"
+      },
+      {
+        "key": "ev:stand-out",
+        "en": "stand out",
+        "ko": "눈에 띄다, 두드러지다",
+        "example": "Her portfolio really stood out from the other applicants.",
+        "situations": [
+          "지원자/이력서 차별화",
+          "제품 차별점 설명"
+        ],
+        "detail": "줄지어 선 무리에서 혼자 바깥으로(out) 튀어나와 서 있는 그림. 지원자, 이력서, 제품이 경쟁자들 사이에서 두드러질 때 써. stand out from the crowd가 고정 콜로케이션. 면접 준비의 영원한 질문 'What makes you stand out?'(당신의 차별점은?)으로 익혀두면 좋아.",
+        "exampleKo": "그분 포트폴리오가 다른 지원자들 사이에서 확 눈에 띄었어요.",
+        "questionEn": "You reviewed forty portfolios, but you remember exactly one. What did it do?",
+        "termsKo": "",
+        "cueKo": "그녀의 포트폴리오는 · 정말 · 두드러졌다 · 다른 지원자들로부터"
+      },
+      {
+        "key": "ev:blurt-out",
+        "en": "blurt out",
+        "ko": "불쑥 말해버리다",
+        "example": "I blurted out the surprise before she even sat down.",
+        "situations": [
+          "비밀을 실수로 말해버렸을 때",
+          "생각 없이 말이 튀어나왔을 때",
+          "면접에서 말실수한 경험담"
+        ],
+        "detail": "생각이 거르지 않고 입 밖으로(out) 확 튀어나오는 그림이에요. 비밀이나 하면 안 되는 말을 참지 못하고 내뱉었을 때 쓰죠. say와 달리 '통제 실패'의 뉘앙스가 핵심이라, 'It just slipped out(나도 모르게 튀어나왔어)'과 짝으로 알아두면 사과할 때 유용해요.",
+        "exampleKo": "그녀가 앉기도 전에 내가 서프라이즈를 불쑥 말해버렸어.",
+        "questionEn": "You accidentally revealed the surprise party plan to the guest of honor. How do you describe what happened?",
+        "termsKo": "",
+        "cueKo": "나는 불쑥 말했다 · 그 서프라이즈를 · 그녀가 앉기도 전에"
+      },
+      {
+        "key": "ev:look-out-for",
+        "en": "look out for",
+        "ko": "챙겨주다, 보살피다",
+        "example": "We look out for each other on this team.",
+        "situations": [
+          "서로 챙기는 팀 문화를 말할 때",
+          "후배를 보살펴줄 때",
+          "위험을 경계할 때"
+        ],
+        "detail": "망루에서 밖을(out) 살피며 동료에게 위험이 오는지 지켜보는 그림이에요. 누군가의 안전과 이익을 늘 신경 쓰며 챙긴다는 뜻으로, 'look out for each other(서로 챙기다)'는 좋은 팀 문화의 대표 문장이죠. take care of보다 '뒤를 봐주는' 보호자 느낌이 강해요.",
+        "exampleKo": "우리 팀은 서로서로 챙겨요.",
+        "questionEn": "A candidate asks what you like most about your team's culture. What's your one-line answer?",
+        "termsKo": "",
+        "cueKo": "우리는 · 챙긴다 · 서로를 · 이 팀에서"
+      },
+      {
+        "key": "ev:fall-out-with",
+        "en": "fall out with",
+        "ko": "~와 사이가 틀어지다",
+        "example": "He fell out with his business partner over money.",
+        "situations": [
+          "돈 문제로 절교한 이야기",
+          "틀어진 동업/우정",
+          "가족 간 불화"
+        ],
+        "detail": "잘 맞물려 있던 관계에서 한쪽이 튕겨 나가는(out) 그림이에요. 특정 사건(주로 돈, 배신)을 계기로 사이가 틀어져 연락이 끊기는 것을 말하죠. 명사형 'a falling-out'도 흔해서 'They had a falling-out(걔네 크게 틀어졌어)'으로 자주 쓰고, grow apart(자연스런 멀어짐)와 대비되는 '사건형 단절'이에요.",
+        "exampleKo": "걔는 돈 문제로 동업자랑 사이가 틀어졌어.",
+        "questionEn": "Two co-founders who built the company together haven't spoken since the funding dispute. How do you describe their relationship?",
+        "termsKo": "",
+        "cueKo": "그는 · 틀어졌다 · 그의 동업자와 · 돈 문제로"
+      },
+      {
+        "key": "ev:lash-out",
+        "en": "lash out",
+        "ko": "(말로) 마구 쏘아붙이다, 분풀이하듯 공격하다",
+        "example": "She lashed out at everyone after the bad review.",
+        "situations": [
+          "스트레스로 주변에 화풀이할 때",
+          "비난을 받고 공격적으로 반응할 때",
+          "감정 폭발을 묘사할 때"
+        ],
+        "detail": "채찍(lash)이 사방으로(out) 휘둘러지는 그림이에요. 궁지에 몰리거나 상처받은 사람이 주변을 가리지 않고 말로 공격하는 것을 말하죠. blow up이 압력의 폭발이라면 lash out은 휘두르는 공격성이 핵심이라, 'Hurt people lash out(상처받은 사람이 사납게 군다)'처럼 심리 설명에 자주 등장해요.",
+        "exampleKo": "나쁜 평가 받고 나서 걔가 모두에게 마구 쏘아붙였어.",
+        "questionEn": "After the harsh performance review, your coworker snapped at three different people in one afternoon. What's she doing?",
+        "termsKo": "",
+        "cueKo": "그녀는 쏘아붙였다 · 모두에게 · 그 나쁜 평가 후에"
+      },
+      {
+        "key": "ev:take-it-out-on",
+        "en": "take it out on",
+        "ko": "~에게 화풀이하다",
+        "example": "I know you're stressed, but don't take it out on me.",
+        "situations": [
+          "애꿎은 사람에게 화풀이할 때",
+          "가족에게 짜증을 옮길 때",
+          "화풀이 사과"
+        ],
+        "detail": "안에 쌓인 화를 꺼내서(out) 엉뚱한 사람 위에(on) 쏟아붓는 그림이에요. 화의 원인과 화풀이 대상이 다르다는 게 핵심이라, 회사 스트레스를 가족에게 푸는 전형적 장면에 쓰죠. 'Don't take it out on me(나한테 화풀이하지 마)'는 부당한 불똥을 막는 정당방위 문장이에요.",
+        "exampleKo": "스트레스받는 건 아는데, 나한테 화풀이하지는 마.",
+        "questionEn": "Your partner had a terrible day at work and is now criticizing everything you do at home. What boundary do you set?",
+        "termsKo": "",
+        "cueKo": "나는 알아 · 네가 스트레스받는 거 · 그러나 풀지 마 · 그걸 · 나에게"
+      },
+      {
+        "key": "ev:single-out",
+        "en": "single out",
+        "ko": "한 명만 콕 집다, 지목하다",
+        "example": "I felt singled out in front of the whole team.",
+        "situations": [
+          "여럿 중 혼자 지목당했을 때",
+          "특별 대우/차별을 논할 때",
+          "칭찬으로 한 명을 꼽을 때"
+        ],
+        "detail": "무리 속에서 한 명(single)만 밖으로(out) 끄집어내는 그림이에요. 비난이든 칭찬이든 '왜 하필 나만'이라는 단독 지목이 핵심이죠. pick on이 반복적 괴롭힘이라면 single out은 한 번의 공개적 지목이고, 'singled out for praise(칭찬받으려 지목되다)'처럼 좋은 쪽으로도 써요.",
+        "exampleKo": "팀 전체 앞에서 나만 콕 집힌 기분이었어.",
+        "questionEn": "Several people missed the deadline, but the boss named only you in the all-hands email. How do you feel?",
+        "termsKo": "",
+        "cueKo": "나는 느꼈다 · 지목된 것을 · 그 팀 전체 앞에서"
+      },
+      {
+        "key": "ev:stay-out-of",
+        "en": "stay out of",
+        "ko": "(남의 일에) 끼어들지 않다",
+        "example": "This is between them — I'm staying out of it.",
+        "situations": [
+          "남의 싸움에 휘말리지 않을 때",
+          "중립을 선언할 때",
+          "참견하지 말라고 할 때"
+        ],
+        "detail": "분쟁이라는 울타리 바깥에(out) 머무르는 그림이에요. 남의 갈등이나 문제에 개입하지 않겠다는 선언으로, 'Stay out of it(끼어들지 마)'은 경계선 긋기, 'I'm staying out of it(난 빠질게)'은 중립 선언이죠. step in(개입하다)의 정확한 반대 표현이에요.",
+        "exampleKo": "이건 걔네 둘 문제야 — 난 안 끼어들래.",
+        "questionEn": "Two close friends are fighting and each wants you on their side. What's your position?",
+        "termsKo": "",
+        "cueKo": "이건 · 그들 사이 일이야 · 나는 머물래 · 바깥에"
+      },
+      {
+        "key": "ev:talk-out-of",
+        "en": "talk out of",
+        "ko": "설득해서 단념시키다",
+        "example": "She talked me out of quitting on the spot.",
+        "situations": [
+          "충동적 결정을 말렸을 때",
+          "사표/탕진을 막아준 친구",
+          "위험한 계획을 단념시킬 때"
+        ],
+        "detail": "행동 직전의 사람을 말로 끌어내는(out of) 그림으로, talk into의 정확한 반대예요. talk someone out of doing(설득해서 안 하게 만들다) 구조로, 충동적인 사표·고백·큰 지출을 막아준 은인 이야기에 딱이죠. dissuade라는 딱딱한 단어 대신 회화에서는 무조건 이걸 써요.",
+        "exampleKo": "그 자리에서 사표 내려는 걸 걔가 말렸어.",
+        "questionEn": "You were ready to resign right after that awful meeting, but your friend intervened. What did she do?",
+        "termsKo": "",
+        "cueKo": "그녀는 설득했다 · 나를 · 그만두지 않도록 · 그 자리에서"
+      },
+      {
+        "key": "ev:hear-out",
+        "en": "hear out",
+        "ko": "(끝까지) 들어주다",
+        "example": "Just hear me out before you say no.",
+        "situations": [
+          "반대부터 하는 상대를 붙잡을 때",
+          "파격적 제안을 꺼낼 때",
+          "변명할 기회를 청할 때"
+        ],
+        "detail": "상대의 말을 처음부터 끝까지(out=완료) 다 듣는 그림이에요. 'Hear me out(일단 끝까지 들어봐)'은 거절당하기 전에 발언권을 확보하는 마법의 문장으로, 무모해 보이는 아이디어를 꺼낼 때의 단골 서두죠. listen이 행위라면 hear out은 '판단을 유보하고 완청하기'라는 약속이에요.",
+        "exampleKo": "안 된다고 하기 전에 일단 끝까지 들어봐.",
+        "questionEn": "Your idea sounds crazy at first and you know your boss will instantly object. How do you open the pitch?",
+        "termsKo": "",
+        "cueKo": "그냥 들어봐 · 나를 · 끝까지 · 네가 말하기 전에 · 노라고"
+      },
+      {
+        "key": "ev:stress-out",
+        "en": "stress out",
+        "ko": "스트레스로 지치게 하다, 스트레스받다",
+        "example": "This deadline is seriously stressing me out.",
+        "situations": [
+          "업무 압박을 호소할 때",
+          "시험 기간의 상태",
+          "스트레스 주는 요인 지목"
+        ],
+        "detail": "스트레스가 사람을 쥐어짜서 진이 다 빠져나간(out) 그림이에요. 'I'm stressed out(스트레스 만빵이야)'은 상태, 'It's stressing me out(그것 때문에 미치겠어)'은 원인 지목으로, stressed 혼자보다 out이 붙으면 한계치라는 강조가 실리죠. 학업·업무·인간관계 모든 압박에 쓰는 일상어예요.",
+        "exampleKo": "이 데드라인 때문에 진짜 스트레스받아 죽겠어.",
+        "questionEn": "Your friend asks why you've been snappy and sleeping badly all week. What's the honest answer about work?",
+        "termsKo": "",
+        "cueKo": "이 데드라인은 · 심각하게 · 스트레스 주고 있다 · 나를"
+      },
+      {
+        "key": "ev:get-out-get-out-of",
+        "en": "get out / get out of",
+        "ko": "나가다, (회의·집에서) 빠져나오다; (하기로 한 일을) 모면하다",
+        "example": "I'm trying to get out of the Friday afternoon meeting.",
+        "situations": [
+          "회의에서 빠지고 싶을 때",
+          "퇴근하거나 집 밖에 나가자고 할 때",
+          "하기 싫은 일에서 빠져나오기"
+        ],
+        "detail": "out은 안에 갇혀 있던 게 밖으로 나오는 그림이야. get out of a meeting은 회의에서 빠져나오기, get out of doing something은 맡기로 한 일을 모면하기까지 확장돼. Get out!만 단독으로 쓰면 '나가!'도 되지만 북미에선 '에이 설마!' 하는 감탄으로도 쓰이니 톤 주의해.",
+        "exampleKo": "금요일 오후 회의에서 어떻게든 빠지려고 하는 중이야.",
+        "questionEn": "A meeting landed on your Friday afternoon and you'd rather not attend. What do you tell a teammate?",
+        "termsKo": "",
+        "cueKo": "나는 · 시도하는 중이다 · 빠져나가는 걸 · 그 금요일 오후 회의에서"
+      },
+      {
+        "key": "ev:throw-out",
+        "en": "throw out",
+        "ko": "버리다 (북미 기본 표현); (아이디어를) 가볍게 던져 보다",
+        "example": "Just throw out the old drafts and keep the final one.",
+        "situations": [
+          "필요 없는 물건/파일 폐기",
+          "브레인스토밍에서 아이디어 던지기",
+          "사무실 책상 정리"
+        ],
+        "detail": "out은 내 영역 밖으로 내보내는 그림이야. 북미에서는 쓰레기 버릴 때 throw away보다 throw out이 사실상 기본값이고, 회의에서는 'let me throw out an idea(아이디어 하나 던져 볼게)'처럼 가볍게 제안할 때도 써. 버리기와 제안하기, 두 뜻의 온도가 완전히 달라서 맥락으로 구분해야 해.",
+        "exampleKo": "옛날 초안들은 그냥 버리고 최종본만 남겨.",
+        "questionEn": "Your desk is buried under old printouts you no longer need. What do you do?",
+        "termsKo": "",
+        "cueKo": "그냥 버려 · 그 옛날 초안들을 · 그리고 남겨 · 그 최종본을"
+      },
+      {
+        "key": "ev:miss-out-on",
+        "en": "miss out on",
+        "ko": "(좋은 기회·혜택을) 놓치다",
+        "example": "Sign up early so you don't miss out on the discount.",
+        "situations": [
+          "마감 임박 혜택 알림",
+          "행사 불참의 아쉬움 표현",
+          "기회를 놓친 경험 얘기"
+        ],
+        "detail": "out은 다들 누리는 판의 바깥에 나만 남겨지는 그림이야. 할인, 행사, 좋은 기회처럼 '남들은 챙기는데 나만 못 챙기는' 상황에 쓰고, 뒤에 on으로 놓치는 대상을 붙여. 그냥 miss는 버스를 놓치듯 단순히 빗나간 거고, miss out on은 아쉬움과 FOMO가 실린 놓침이라는 게 차이야.",
+        "exampleKo": "할인 놓치지 않게 일찍 등록해.",
+        "questionEn": "Early-bird pricing ends Friday and a coworker still hasn't registered. What warning do you give?",
+        "termsKo": "",
+        "cueKo": "등록해 · 일찍 · 그래서 네가 · 놓치지 않게 · 그 할인을"
+      },
+      {
+        "key": "ev:opt-out",
+        "en": "opt out",
+        "ko": "(기본 포함 상태에서 스스로) 빠지다, 수신 거부하다",
+        "example": "You can opt out of the marketing emails anytime.",
+        "situations": [
+          "수신 거부 방법 안내",
+          "기능 기본값 설계 논의",
+          "데이터 수집 동의 설명"
+        ],
+        "detail": "out은 기본으로 들어가 있던 명단 밖으로 스스로 걸어 나가는 그림이야. 마케팅 메일 수신 거부, 데이터 수집 거부처럼 '기본은 포함, 원하면 빠짐' 구조를 설명할 때 쓰지. opt in(스스로 선택해 들어감)의 정확한 반대말이라, 제품 기본값 설계 논의에서 짝으로 자주 등장해.",
+        "exampleKo": "마케팅 메일은 언제든 수신 거부할 수 있어요.",
+        "questionEn": "A user wants no more marketing emails from your product. What choice does the settings page offer?",
+        "termsKo": "옵트아웃(opt-out): 기본 포함 상태에서 원할 때 빠지는 방식. 옵트인(opt-in)은 그 반대.",
+        "cueKo": "당신은 · 빠질 수 있다 · 그 마케팅 이메일에서 · 언제든"
       }
     ]
   },
@@ -5343,6 +7763,387 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "If every client retries a failing server at once, things get worse. What's the standard fix?",
         "termsKo": "지수 백오프(exponential backoff): 재시도 간격을 1초, 2초, 4초처럼 배로 늘려 서버 과부하를 막는 전략.",
         "cueKo": "클라이언트는 · 물러나 간격을 벌린다 · 지수적으로 · 매번 실패한 재시도 후에"
+      },
+      {
+        "key": "ev:doze-off",
+        "en": "doze off",
+        "ko": "깜빡 잠들다, 졸다",
+        "example": "I dozed off on the couch after dinner.",
+        "situations": [
+          "피곤했던 하루 묘사",
+          "회의·영화 중 존 경험"
+        ],
+        "detail": "깨어 있는 상태에서 똑 떨어져 나가듯(off) 의식이 끊기는 그림. 자려고 한 게 아니라 나도 모르게 잠든 상황에 써. fall asleep보다 '깜빡'의 뉘앙스가 강하고, nod off도 같은 뜻이야.",
+        "exampleKo": "저녁 먹고 소파에서 깜빡 잠들었어.",
+        "questionEn": "Have you ever accidentally fallen asleep during a meeting or a movie?",
+        "termsKo": "",
+        "cueKo": "나 · 깜빡 잠들었어 · 소파에서 · 저녁 후에"
+      },
+      {
+        "key": "ev:go-off",
+        "en": "go off",
+        "ko": "(알람·경보가) 울리다",
+        "example": "My alarm went off three times this morning.",
+        "situations": [
+          "아침 루틴 얘기",
+          "화재경보 소동 썰"
+        ],
+        "detail": "잠겨 있던 게 탁 풀리며(off) 터진다는 그림. 알람·화재경보가 울리는 순간의 표준 동사고, 폭탄이 터지는 것도 같은 표현이야. 영국식으로는 우유가 상했다(the milk's gone off)는 뜻도 있어.",
+        "exampleKo": "오늘 아침에 알람이 세 번 울렸어.",
+        "questionEn": "What's the first sound you hear every morning, and how many times do you snooze it?",
+        "termsKo": "",
+        "cueKo": "내 알람이 · 울렸어 · 세 번 · 오늘 아침"
+      },
+      {
+        "key": "ev:hit-it-off",
+        "en": "hit it off",
+        "ko": "(처음 만나) 죽이 맞다",
+        "example": "We hit it off right away at the party.",
+        "situations": [
+          "소개팅 후기",
+          "새 동료와 친해진 얘기"
+        ],
+        "detail": "만나자마자 불꽃이 탁 튀듯(off) 잘 맞는다는 그림. 첫 만남에서 대화가 잘 통했을 때 쓰는 굳은 표현이고, it을 빼면 안 돼. 연애뿐 아니라 새 동료·친구와 바로 친해졌다고 할 때도 자연스러워.",
+        "exampleKo": "우리 파티에서 보자마자 죽이 잘 맞았어.",
+        "questionEn": "How did the blind date go — was the conversation easy from the start?",
+        "termsKo": "",
+        "cueKo": "우리 · 죽이 맞았어 · 바로 · 파티에서"
+      },
+      {
+        "key": "ev:show-off",
+        "en": "show off",
+        "ko": "자랑하다, 으스대다",
+        "example": "He's always showing off his new car.",
+        "situations": [
+          "과시하는 사람 흉보기",
+          "새로 산 물건 자랑"
+        ],
+        "detail": "잘 보이게 떼어내 들고(off) 전시한다는 그림. 남들 보라고 과시한다는 뜻으로, 살짝 비꼬는 뉘앙스가 기본이야. 명사 show-off는 '잘난 척하는 사람'이고, 긍정적으로 솜씨를 선보인다는 맥락에서도 가볍게 써.",
+        "exampleKo": "걔는 맨날 새 차 자랑이야.",
+        "questionEn": "Your neighbor keeps parking his new sports car where everyone can see. What's he doing?",
+        "termsKo": "",
+        "cueKo": "걔는 · 항상 · 자랑해 · 자기 새 차를"
+      },
+      {
+        "key": "ev:call-off",
+        "en": "call off",
+        "ko": "취소하다",
+        "example": "They called off the picnic because of rain.",
+        "situations": [
+          "행사 취소 공지",
+          "결혼·계획 무산 얘기"
+        ],
+        "detail": "진행하기로 외쳐둔(call) 걸 떼어내(off) 무른다는 그림. 행사·회의·결혼식처럼 예정된 일을 취소할 때 써. cancel과 같지만 더 구어적이고, '주최자가 결단해서 접었다'는 어감이 있어.",
+        "exampleKo": "비 때문에 걔네가 소풍을 취소했어.",
+        "questionEn": "The weather forecast shows a storm during tomorrow's outdoor event. What will the organizers probably do?",
+        "termsKo": "",
+        "cueKo": "걔네가 · 취소했어 · 소풍을 · 비 때문에"
+      },
+      {
+        "key": "ev:put-off",
+        "en": "put off",
+        "ko": "미루다",
+        "example": "I keep putting off my dentist appointment.",
+        "situations": [
+          "미루는 습관 고백",
+          "결정 보류 상황"
+        ],
+        "detail": "해야 할 일을 지금에서 떼어내(off) 나중으로 밀어두는 그림. 병원 예약, 귀찮은 전화처럼 하기 싫은 일을 미룰 때 딱이야. postpone의 구어 버전이고, '미루는 죄책감'의 뉘앙스가 살짝 묻어 있어 procrastinate와 단짝이야.",
+        "exampleKo": "치과 예약을 계속 미루고 있어.",
+        "questionEn": "You've needed a dentist visit for three months but still haven't booked it. Describe this habit.",
+        "termsKo": "",
+        "cueKo": "나 · 계속 미뤄 · 치과 예약을"
+      },
+      {
+        "key": "ev:wear-off",
+        "en": "wear off",
+        "ko": "(약효·효과가) 점점 사라지다",
+        "example": "The painkiller wore off after four hours.",
+        "situations": [
+          "진통제 효과 얘기",
+          "마취 풀린 경험"
+        ],
+        "detail": "발라져 있던 효과가 시간이 지나며 떨어져 나가는(off) 그림. 진통제·마취·카페인 효과가 다할 때의 표준 표현이야. 신기함이 가신다(the novelty wore off)처럼 감정·인상이 옅어질 때도 똑같이 써.",
+        "exampleKo": "진통제 효과가 4시간 만에 떨어졌어.",
+        "questionEn": "The dentist's anesthetic stopped working around dinnertime. How would you say that?",
+        "termsKo": "",
+        "cueKo": "진통제가 · 효과 떨어졌어 · 4시간 후에"
+      },
+      {
+        "key": "ev:drop-off",
+        "en": "drop off",
+        "ko": "(사람·물건을) 내려 주다, 맡기다",
+        "example": "I'll drop you off at the station.",
+        "situations": [
+          "가는 길에 태워다 주기",
+          "세탁물·아이 맡기기"
+        ],
+        "detail": "싣고 가던 것을 한 지점에 떨어뜨려(off) 놓고 가는 그림. 사람을 목적지에 내려 주는 것, 세탁물·서류·아이를 맡기고 가는 것 모두 커버해. pick up(찾아오기)과 정확한 한 쌍이라 둘을 세트로 외워야 일상 동선 얘기가 돼.",
+        "exampleKo": "역에 내려 줄게.",
+        "questionEn": "Your friend needs a ride to the station on your way to work. What do you offer?",
+        "termsKo": "",
+        "cueKo": "내가 · 내려 줄게 · 너를 · 역에"
+      },
+      {
+        "key": "ev:get-off",
+        "en": "get off",
+        "ko": "(버스·지하철에서) 내리다; 퇴근하다",
+        "example": "Get off at the third stop.",
+        "situations": [
+          "내릴 정거장 안내",
+          "퇴근 시간 묻기"
+        ],
+        "detail": "타고 있던 것 위에서 떨어져(off) 내리는 그림. 대중교통에서 내리는 것의 표준이고, get off work(퇴근하다)도 매일 쓰는 표현이야. \"What time do you get off?\"는 퇴근 시간을 묻는 단골 질문이야.",
+        "exampleKo": "세 번째 정거장에서 내려.",
+        "questionEn": "A tourist asks which stop is theirs for the museum. What do you tell them?",
+        "termsKo": "",
+        "cueKo": "내려 · 세 번째 정거장에서"
+      },
+      {
+        "key": "ev:take-off",
+        "en": "take off",
+        "ko": "(옷·신발을) 벗다; 이륙하다; (휴가를) 내다",
+        "example": "Take off your shoes at the door, please.",
+        "situations": [
+          "현관에서 신발 벗기",
+          "비행기 이륙",
+          "연차 쓰기"
+        ],
+        "detail": "몸에 붙어 있던 걸 떼어내는(off) 그림. 옷·신발을 벗는 것, 비행기가 땅에서 떨어져 이륙하는 것, 사업이 급성장하는 것(the business took off)까지 다 같은 그림이야. \"I'm taking Friday off\"(금요일 연차 냈어)처럼 날짜를 떼어내는 용법도 매주 쓰는 표현이야.",
+        "exampleKo": "현관에서 신발 벗어 주세요.",
+        "questionEn": "You're entering a Korean home and your host glances at your sneakers. What do they expect?",
+        "termsKo": "",
+        "cueKo": "벗어 · 네 신발을 · 현관에서 · 부탁해"
+      },
+      {
+        "key": "ev:turn-off",
+        "en": "turn off",
+        "ko": "(기기·불을) 끄다",
+        "example": "Did you turn off the stove before we left?",
+        "situations": [
+          "외출 후 가스 불안",
+          "소등·전원 차단"
+        ],
+        "detail": "스위치를 접점에서 떼어(off) 전류를 끊는 그림. 끄는 것 전반의 기본 동사이고, 외출 후 \"가스 껐나?\" 불안이 대표 장면이야. 알림을 끈다(turn off notifications)처럼 설정 메뉴 어휘로도 그대로 쓰여.",
+        "exampleKo": "우리 나오기 전에 가스 불 껐어?",
+        "questionEn": "Halfway to the airport, you panic about the stove. What do you ask?",
+        "termsKo": "",
+        "cueKo": "너 · 껐어 · 가스레인지를 · 전에 · 우리 나오기?"
+      },
+      {
+        "key": "ev:rip-off",
+        "en": "rip off",
+        "ko": "바가지 씌우다",
+        "example": "Ten dollars for a coffee? That's a rip-off.",
+        "situations": [
+          "관광지 바가지 불평",
+          "수리비 덤터기 경험"
+        ],
+        "detail": "남의 살을 찢어 뜯어가듯(off) 돈을 과하게 받는 그림. 바가지 썼다는 \"I got ripped off\", 바가지라는 명사는 rip-off야. 관광지 가격, 수리비 덤터기 같은 장면에서 매일 쓰는 표현이야.",
+        "exampleKo": "커피 한 잔에 10달러? 완전 바가지네.",
+        "questionEn": "The tourist café charged you ten dollars for a basic americano. How do you describe that price?",
+        "termsKo": "",
+        "cueKo": "10달러 · 커피 한 잔에? · 그건 바가지야"
+      },
+      {
+        "key": "ev:pay-off",
+        "en": "pay off",
+        "ko": "(빚을) 다 갚다; (노력이) 결실을 보다",
+        "example": "We finally paid off the car loan.",
+        "situations": [
+          "대출 완납 자축",
+          "노력이 보상받은 얘기"
+        ],
+        "detail": "빚 장부에서 항목을 떼어내(off) 끝장내는 그림. 대출·카드빚을 '완전히' 갚는 것이고, 노력이 주어면 \"the hard work paid off\"(노력이 결실을 봤다)는 일상 최상위 표현이 돼. 일부씩 갚는 pay back과 달리 off는 '완납'의 어감이야.",
+        "exampleKo": "드디어 차 할부를 다 갚았어.",
+        "questionEn": "After three years, the car loan balance finally hit zero. How do you announce it?",
+        "termsKo": "",
+        "cueKo": "우리 · 드디어 · 다 갚았어 · 차 대출을"
+      },
+      {
+        "key": "ev:hold-off",
+        "en": "hold off",
+        "ko": "(일단) 미루다, 보류하다",
+        "example": "Let's hold off on the sofa until the sale.",
+        "situations": [
+          "구매 보류 결정",
+          "결정 미루기 제안"
+        ],
+        "detail": "다가오는 행동을 손으로 밀어 떼어놓고(off) 버틴다는 그림. put off가 '해야 할 일을 미루는' 쪽이면, hold off는 '아직 안 하기로 선택하고 기다리는' 쪽이야. 보류 대상 앞에 on을 붙여 hold off on buying처럼 자주 써.",
+        "exampleKo": "소파는 세일 때까지 보류하자.",
+        "questionEn": "The sofa you want goes on sale next month. What's the smart move now?",
+        "termsKo": "",
+        "cueKo": "우리 보류하자 · 소파를 · 세일 때까지"
+      },
+      {
+        "key": "ev:block-off",
+        "en": "block off",
+        "ko": "(캘린더 시간을) 통째로 막아두다",
+        "example": "I block off my mornings for focused work.",
+        "situations": [
+          "집중 시간 확보",
+          "면접/워크숍용 시간 차단"
+        ],
+        "detail": "캘린더의 한 구간을 떼어서(off) 벽으로 막아두는 그림. 다른 미팅이 못 들어오게 시간을 통째로 차단하는 거야. set aside가 '용도를 정해 빼두기'라면 block off는 '침범 금지 구역 설정'이라는 방어적 뉘앙스가 강해. block off the afternoon처럼 구간 명사가 목적어로 와.",
+        "exampleKo": "오전 시간은 집중 업무용으로 막아놔요.",
+        "questionEn": "Meetings keep landing in your calendar during your best focus hours. What's your defense?",
+        "termsKo": "",
+        "cueKo": "나는 · 막아둔다 · 내 오전들을 · 집중 업무를 위해"
+      },
+      {
+        "key": "ev:check-off",
+        "en": "check off",
+        "ko": "(목록에서) 하나씩 지워가다, 완료 표시하다",
+        "example": "It feels great to check off everything on the list by Friday.",
+        "situations": [
+          "할 일 목록 관리",
+          "출시 체크리스트 점검"
+        ],
+        "detail": "목록의 항목에 체크 표시를 하고 떼어낸다(off)는 그림. 할 일을 하나 끝낼 때마다 지워가는 그 쾌감의 동사야. cross off도 같은 뜻. 체크리스트 문화가 강한 미국 직장에서 check off the boxes(요건을 하나씩 충족하다)는 관용구로도 굳어져 있어.",
+        "exampleKo": "금요일까지 리스트 전부 지워내면 기분 최고죠.",
+        "questionEn": "Your to-do list had nine items Monday and zero by Friday. How does that feel?",
+        "termsKo": "",
+        "cueKo": "기분 좋다 · 지워내는 것은 · 모든 것을 · 그 리스트에서 · 금요일까지"
+      },
+      {
+        "key": "ev:lay-off",
+        "en": "lay off",
+        "ko": "(인원을) 정리해고하다",
+        "example": "The company laid off ten percent of the workforce last month.",
+        "situations": [
+          "구조조정 뉴스 얘기",
+          "해고 경험 인터뷰 설명"
+        ],
+        "detail": "인력을 일에서 떼어내 내려놓는다(off)는 그림. 성과 문제로 자르는 fire와 달리 lay off는 회사 사정(비용 절감, 구조조정)에 의한 해고야 — 이 구분이 정말 중요해. 수동태 'I was laid off'는 본인 잘못이 아니라는 뉘앙스를 지켜주고, 명사 layoffs는 뉴스 헤드라인 단골이야.",
+        "exampleKo": "그 회사 지난달에 인력 10%를 정리해고했대요.",
+        "questionEn": "The company cut a tenth of its staff for budget reasons, not performance. What's the right word for that?",
+        "termsKo": "",
+        "cueKo": "그 회사는 · 정리해고했다 · 10퍼센트를 · 인력의 · 지난달에"
+      },
+      {
+        "key": "ev:slack-off",
+        "en": "slack off",
+        "ko": "농땡이 부리다, 설렁설렁하다",
+        "example": "Nobody slacks off during crunch time, so don't worry.",
+        "situations": [
+          "근태/몰입도 얘기",
+          "연말 분위기 묘사"
+        ],
+        "detail": "팽팽하던 줄이 느슨해지며(slack) 일에서 떨어져 나간다(off)는 그림. 해야 할 일을 설렁설렁 하는 것을 말해. lazy가 성격이라면 slack off는 행동이야. 협업툴 Slack이랑은 무관하니 농담 소재로만 써먹고, 'I'm not slacking off, I'm thinking'처럼 가볍게 변명할 때도 좋아.",
+        "exampleKo": "크런치 기간엔 아무도 농땡이 안 부리니까 걱정 마요.",
+        "questionEn": "The manager worries people relax too much near the deadline. How do you reassure her about the team?",
+        "termsKo": "",
+        "cueKo": "아무도 · 농땡이 부리지 않는다 · 크런치 기간 동안 · 그러니 · 걱정 마"
+      },
+      {
+        "key": "ev:write-off",
+        "en": "write off",
+        "ko": "가망 없다고 제쳐두다; (비용을) 손실 처리하다",
+        "example": "Don't write off the intern's idea — it might actually work.",
+        "situations": [
+          "아이디어/사람 섣부른 무시 경계",
+          "실패 프로젝트 손절 결정"
+        ],
+        "detail": "장부에서 줄을 그어 지워버린다(off)는 회계 그림. 손실 처리(write off the investment)가 원뜻이고, 사람·아이디어를 '가망 없다고 일찌감치 제쳐둔다'는 비유 용법이 직장 대화에선 더 흔해. 'don't write him off yet'(아직 포기하긴 일러)처럼 부정문으로 자주 써.",
+        "exampleKo": "인턴 아이디어라고 무시하지 마요 — 진짜 될 수도 있어요.",
+        "questionEn": "People dismissed the intern's suggestion instantly because of her title. What do you warn them against?",
+        "termsKo": "",
+        "cueKo": "제쳐두지 마 · 그 인턴의 아이디어를 — 그건 · 어쩌면 · 실제로 통할지도"
+      },
+      {
+        "key": "ev:log-off",
+        "en": "log off",
+        "ko": "(업무를) 끝내고 접속을 끊다",
+        "example": "I'm logging off for the day — see you all tomorrow.",
+        "situations": [
+          "재택근무 퇴근 인사",
+          "주말 전 업무 종료 선언"
+        ],
+        "detail": "시스템에서 연결을 끊고(off) 나간다는 그림. 재택근무 시대에 'logging off for the day'는 사무실 퇴근 인사를 대체한 표준 멘트가 됐어. sign off도 같은 뜻으로 쓰여. 단순 로그아웃 동작을 넘어 '오늘 업무 종료'라는 선언의 기능이 핵심이야.",
+        "exampleKo": "오늘은 여기까지 할게요 — 내일 봬요.",
+        "questionEn": "It's the end of your remote workday. What do you post in the team channel before closing your laptop?",
+        "termsKo": "",
+        "cueKo": "나는 · 접속을 끊는다 · 오늘은 — 보자 · 너희 모두 · 내일"
+      },
+      {
+        "key": "ev:bounce-off",
+        "en": "bounce off",
+        "ko": "(아이디어를) 던져보고 반응을 보다",
+        "example": "I just need someone to bounce ideas off.",
+        "situations": [
+          "브레인스토밍 상대가 필요할 때",
+          "혼자 막혀서 생각을 나누고 싶을 때",
+          "기획 초기 단계 대화"
+        ],
+        "detail": "공을 벽에 던지면 튕겨(off) 돌아오듯, 아이디어를 상대에게 던지고 반응을 받아보는 그림이에요. 정답을 바라는 게 아니라 생각을 주고받으며 다듬고 싶을 때 쓰죠. run by가 '검토 요청'이라면 bounce off는 더 캐주얼한 핑퐁 느낌이에요.",
+        "exampleKo": "그냥 아이디어 주고받을 사람이 필요해.",
+        "questionEn": "You're stuck on a design problem and thinking alone isn't working. What kind of help do you ask a teammate for?",
+        "termsKo": "",
+        "cueKo": "나는 그냥 필요해 · 누군가가 · 던져볼 · 아이디어들을 · 그 사람에게"
+      },
+      {
+        "key": "ev:tell-off",
+        "en": "tell off",
+        "ko": "호되게 야단치다",
+        "example": "My mom told me off for skipping the family dinner.",
+        "situations": [
+          "꾸지람 들은 이야기",
+          "무례한 사람에게 한마디 했을 때",
+          "아이를 혼낼 때"
+        ],
+        "detail": "쌓인 말을 상대에게 쏟아내 끝장내는(off) 그림이에요. 화를 담아 따끔하게 꾸짖는 것으로, scold보다 구어적이고 감정이 실려 있죠. 부모·상사가 아랫사람을 혼내는 장면뿐 아니라, 무례한 사람에게 참다못해 한 소리 해주는 통쾌한 장면에도 써요.",
+        "exampleKo": "가족 저녁 빼먹었다고 엄마한테 한 소리 들었어.",
+        "questionEn": "You skipped grandma's birthday dinner for a video game session, and your mom found out. What happened next?",
+        "termsKo": "",
+        "cueKo": "내 엄마는 · 야단쳤다 · 나를 · 빼먹은 것 때문에 · 그 가족 저녁을"
+      },
+      {
+        "key": "ev:knock-it-off",
+        "en": "knock it off",
+        "ko": "그만해, 집어치워",
+        "example": "Hey, knock it off — people are trying to work.",
+        "situations": [
+          "장난이 도를 넘을 때",
+          "시끄러운 행동을 멈추게 할 때",
+          "형제 싸움을 말릴 때"
+        ],
+        "detail": "하고 있던 행동을 쳐서(knock) 떨어뜨려 버리는(off) 그림이에요. 짜증을 담아 '그만 좀 해'라고 할 때 쓰는 명령형 굳은 표현으로, 거의 항상 'Knock it off!' 그대로 쓰죠. stop it보다 거칠고 직접적이라 장난, 소란, 유치한 싸움을 끊을 때 딱이에요. cut it out도 같은 뜻의 형제 표현이에요.",
+        "exampleKo": "야, 그만 좀 해 — 다들 일하려고 하잖아.",
+        "questionEn": "Two coworkers keep throwing paper balls and giggling while everyone else races a deadline. What do you snap at them?",
+        "termsKo": "",
+        "cueKo": "야 · 그만해 · 사람들이 노력 중이야 · 일하려고"
+      },
+      {
+        "key": "ev:blow-off",
+        "en": "blow off",
+        "ko": "(약속·사람을) 바람맞히다, 무시하다",
+        "example": "He blew off our meeting twice this week.",
+        "situations": [
+          "약속을 일방적으로 깬 사람",
+          "연락을 씹는 상대",
+          "중요한 일을 무시할 때"
+        ],
+        "detail": "먼지를 입으로 후 불어 날려버리듯(off) 약속이나 사람을 하찮게 털어내는 그림이에요. 정식 취소(cancel)가 아니라 연락도 없이 안 나타나거나 대충 무시하는 무성의함이 핵심이죠. 'He blew me off(걔가 나 바람맞혔어)'는 데이트든 회의든 다 쓰는 푸념이에요.",
+        "exampleKo": "걔 이번 주에만 우리 미팅을 두 번 바람맞혔어.",
+        "questionEn": "Your colleague skipped the sync twice without a word of notice or apology. How do you complain about him?",
+        "termsKo": "",
+        "cueKo": "그는 바람맞혔다 · 우리 미팅을 · 두 번 · 이번 주에"
+      },
+      {
+        "key": "ev:brush-off",
+        "en": "brush off",
+        "ko": "대수롭지 않게 넘기다, 일축하다",
+        "example": "She brushed off my concerns about the deadline.",
+        "situations": [
+          "우려가 무시당했을 때",
+          "비판을 가볍게 넘길 때",
+          "경고를 흘려들은 결과"
+        ],
+        "detail": "어깨에 앉은 먼지를 손으로 슥 털어내듯(off) 남의 말이나 우려를 가볍게 쳐내는 그림이에요. shoot down이 공격적 격추라면 brush off는 '에이, 별거 아니야' 하는 무성의한 일축이죠. 나중에 그 우려가 현실이 되는 이야기의 복선으로 자주 등장해요.",
+        "exampleKo": "그녀는 데드라인에 대한 내 우려를 대수롭지 않게 넘겼어.",
+        "questionEn": "You warned your manager the timeline was impossible, and she just waved her hand and changed topics. What did she do?",
+        "termsKo": "",
+        "cueKo": "그녀는 털어냈다 · 내 우려들을 · 그 데드라인에 대한"
       }
     ]
   },
@@ -5425,6 +8226,204 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "Compare caching strategies where the database is updated immediately versus later.",
         "termsKo": "write-back 캐시: 일단 캐시에만 쓰고 원본 저장소엔 나중에 반영하는 방식. 빠르지만 장애 시 유실 위험이 있어 write-through와 대비된다.",
         "cueKo": "캐시는 · 다시 써 넣는다 · 데이터베이스로 · 비동기로"
+      },
+      {
+        "key": "ev:come-back",
+        "en": "come back",
+        "ko": "돌아오다",
+        "example": "When do you come back from vacation?",
+        "situations": [
+          "휴가 일정 묻기",
+          "돌아올 시간 알려주기"
+        ],
+        "detail": "떠났던 자리로 되돌아(back) 오는 그림. return보다 압도적으로 구어적이고, 출장·휴가·외출 어디에나 써. 내가 상대 쪽으로 돌아가는 거면 go back, 상대가 있는 곳으로 돌아오는 거면 come back으로 방향을 구분해.",
+        "exampleKo": "휴가에서 언제 돌아와?",
+        "questionEn": "Your coworker leaves for a two-week trip tomorrow. What do you ask about their return?",
+        "termsKo": "",
+        "cueKo": "언제 · 너 돌아와 · 휴가에서"
+      },
+      {
+        "key": "ev:call-back",
+        "en": "call back",
+        "ko": "다시 전화하다",
+        "example": "I'm in a meeting — can I call you back?",
+        "situations": [
+          "바쁠 때 전화 받기",
+          "부재중 전화 응대"
+        ],
+        "detail": "걸려온 전화를 받지 못한 자리로 되돌려(back) 거는 그림. 통화 중·회의 중일 때 \"다시 걸게\"의 표준 표현이야. 명사처럼 굳은 \"I'll give you a call back\"도 같은 뜻으로 자주 들려.",
+        "exampleKo": "나 회의 중이야 — 다시 걸어도 될까?",
+        "questionEn": "You're busy when your mom phones. What do you promise before ending it quickly?",
+        "termsKo": "",
+        "cueKo": "나 · 회의 중이야 · 내가 다시 걸어도 될까 · 너한테?"
+      },
+      {
+        "key": "ev:put-back",
+        "en": "put back",
+        "ko": "제자리에 돌려놓다",
+        "example": "Put it back where you found it.",
+        "situations": [
+          "물건 제자리 잔소리",
+          "마트에서 물건 빼기"
+        ],
+        "detail": "꺼냈던 자리로 도로(back) 돌려놓는 그림. 빌려 쓴 물건, 마트에서 집었다가 안 사는 물건을 제자리에 두라고 할 때 써. put away가 '보관 장소로'라면 put back은 '원래 있던 그 자리로'라는 차이야.",
+        "exampleKo": "찾은 자리에 도로 갖다 놔.",
+        "questionEn": "Your kid grabbed a toy from the store shelf and you're not buying it. What do you say?",
+        "termsKo": "",
+        "cueKo": "돌려놔 · 그걸 · 네가 찾은 곳에"
+      },
+      {
+        "key": "ev:give-back",
+        "en": "give back",
+        "ko": "돌려주다",
+        "example": "He still hasn't given back my drill.",
+        "situations": [
+          "빌려준 물건 회수",
+          "사회 환원 얘기"
+        ],
+        "detail": "받았던 것을 원래 주인에게 도로(back) 건네는 그림. 빌린 물건을 돌려준다는 기본 뜻에 더해, 사회에 환원한다(give back to the community)는 따뜻한 용법도 미국에서 정말 자주 들려.",
+        "exampleKo": "걔 아직도 내 드릴 안 돌려줬어.",
+        "questionEn": "Your neighbor borrowed your drill three months ago and it's still at his place. What's the problem?",
+        "termsKo": "",
+        "cueKo": "걔 · 아직 안 돌려줬어 · 내 드릴을"
+      },
+      {
+        "key": "ev:take-back",
+        "en": "take back",
+        "ko": "반품하다; (말을) 취소하다",
+        "example": "I'm taking the toaster back — it doesn't work.",
+        "situations": [
+          "불량품 반품",
+          "말실수 주워 담기"
+        ],
+        "detail": "산 물건을 가게로 도로(back) 가져가는 그림. 반품의 일상 표현이고, \"I take it back\"(방금 말 취소)처럼 뱉은 말을 거둬들일 때도 똑같이 써. return보다 구어적이고 '내가 직접 들고 간다'는 동작감이 있어.",
+        "exampleKo": "토스터 반품하러 가져갈 거야 — 작동을 안 해.",
+        "questionEn": "The toaster you bought yesterday is already broken. What's your plan with the store?",
+        "termsKo": "",
+        "cueKo": "나 · 가져갈 거야 · 토스터를 · 도로 · 작동 안 해"
+      },
+      {
+        "key": "ev:pay-back",
+        "en": "pay back",
+        "ko": "(빌린 돈을) 갚다",
+        "example": "I'll pay you back on Friday, promise.",
+        "situations": [
+          "밥값 빌린 뒤 약속",
+          "빌린 돈 정산"
+        ],
+        "detail": "받았던 돈을 원래 주인에게 도로(back) 돌려보내는 그림. 소액을 빌렸다 갚는 일상 장면의 표준 표현이야. 복수한다(I'll pay you back for this)는 살벌한 뜻도 있는데, 톤과 문맥으로 바로 구분돼.",
+        "exampleKo": "금요일에 갚을게, 약속해.",
+        "questionEn": "Your coworker covered your lunch because you forgot your wallet. What do you promise?",
+        "termsKo": "",
+        "cueKo": "내가 · 갚을게 · 너한테 · 금요일에 · 약속해"
+      },
+      {
+        "key": "ev:push-back",
+        "en": "push back",
+        "ko": "(일정을) 뒤로 미루다",
+        "example": "Can we push back the demo by a couple of days?",
+        "situations": [
+          "마감/데모 일정 조정 요청",
+          "회의 시간 미루기"
+        ],
+        "detail": "달력 위의 일정을 뒤로(back) 밀어낸다는 그림. 미팅이나 마감을 며칠 뒤로 옮기자고 할 때 가장 자연스러운 표현이야. by two days(이틀만큼), to Friday(금요일로)를 붙여서 써. 목적어가 의견·요구면 push back on(반대하다)이라는 전혀 다른 뜻이 되니 구분해.",
+        "exampleKo": "데모 며칠만 뒤로 미룰 수 있을까요?",
+        "questionEn": "The demo is Friday but the feature isn't ready. What do you ask the organizer?",
+        "termsKo": "",
+        "cueKo": "우리가 · 뒤로 밀 수 있을까 · 그 데모를 · 며칠 정도?"
+      },
+      {
+        "key": "ev:kick-back",
+        "en": "kick back",
+        "ko": "긴장 풀고 쉬다",
+        "example": "After the launch, we kicked back with some pizza.",
+        "situations": [
+          "출시 후 회식/휴식",
+          "퇴근 후 계획 얘기"
+        ],
+        "detail": "의자에 등을 기대고 다리를 뒤로(back) 뻗는 그림. 큰일 끝내고 긴장 풀고 쉴 때 쓰는 캐주얼한 말이야. kick back and relax로 묶어 다니는 경우가 많아. 주의: 명사 kickback은 '리베이트, 뒷돈'이라는 전혀 다른 뜻이라 맥락 구분이 필수야.",
+        "exampleKo": "출시 끝나고 피자 시켜놓고 좀 쉬었어요.",
+        "questionEn": "The launch finally shipped after three hard weeks. What did the team do that evening?",
+        "termsKo": "",
+        "cueKo": "출시 후에 · 우리는 · 편하게 쉬었다 · 피자와 함께"
+      },
+      {
+        "key": "ev:hear-back",
+        "en": "hear back",
+        "ko": "(보낸 것에 대한) 답을 받다",
+        "example": "I applied last week but haven't heard back yet.",
+        "situations": [
+          "지원/제안 후 응답 대기",
+          "견적 요청 후 회신 확인"
+        ],
+        "detail": "내가 보낸 것에 대한 답이 되돌아온다(back)는 그림. 지원서, 제안, 메일을 보내고 회신을 기다리는 상황의 전용 동사야. hear back from X(X에게서 답을 받다) 구조가 기본. get back to(내가 답을 줌)와 방향이 반대라는 것만 잡으면 안 헷갈려.",
+        "exampleKo": "지난주에 지원했는데 아직 답이 없어요.",
+        "questionEn": "You applied for the internal role a week ago and your inbox is still empty. What's the situation?",
+        "termsKo": "",
+        "cueKo": "나는 · 지원했다 · 지난주에 · 하지만 · 못 받았다 · 답을 · 아직"
+      },
+      {
+        "key": "ev:cut-back",
+        "en": "cut back",
+        "ko": "(지출·소비를) 줄이다",
+        "example": "We're cutting back on travel until the budget recovers.",
+        "situations": [
+          "비용 절감 정책 공지",
+          "과도한 회의/야근 줄이기"
+        ],
+        "detail": "자라난 가지를 원래 수준으로 되돌려(back) 쳐낸다는 그림. 지출, 출장, 회의, 야식까지 '하던 것의 양을 줄인다'에 폭넓게 써. cut back on X 구조가 기본. scale back이 계획·규모의 축소라면 cut back은 소비·지출 절감에 더 가까워. 명사 cutbacks(감축)도 뉴스 단골이야.",
+        "exampleKo": "예산 회복될 때까지 출장을 줄이는 중이에요.",
+        "questionEn": "The budget is tight this quarter, and travel is the biggest expense. What's the new policy?",
+        "termsKo": "",
+        "cueKo": "우리는 · 줄이고 있다 · 출장을 · 예산이 · 회복될 때까지"
+      },
+      {
+        "key": "ev:get-back-together",
+        "en": "get back together",
+        "ko": "(헤어진 연인이) 재결합하다",
+        "example": "Did you hear they got back together last month?",
+        "situations": [
+          "재결합 소식을 전할 때",
+          "전 연인과의 재회를 고민할 때",
+          "밴드 재결합 뉴스"
+        ],
+        "detail": "갈라섰던 두 사람이 다시(back) 하나로(together) 돌아오는 그림이에요. break up의 정확한 반대말로, 헤어졌던 커플의 재결합 전용 표현이죠. make up은 싸운 커플의 화해, get back together는 완전히 끝났던 관계의 재시작이라는 단계 차이를 기억하세요.",
+        "exampleKo": "걔네 지난달에 재결합했다는 거 들었어?",
+        "questionEn": "The couple everyone thought was finished just walked into the party holding hands. What clearly happened?",
+        "termsKo": "",
+        "cueKo": "너 들었어 · 그들이 재결합했다고 · 지난달에"
+      },
+      {
+        "key": "ev:go-back",
+        "en": "go back",
+        "ko": "(원래 자리·이전 상태·주제로) 되돌아가다",
+        "example": "Can we go back to the slide before this one?",
+        "situations": [
+          "발표 중 이전 슬라이드 요청",
+          "이전 버전/설정으로 복귀 논의",
+          "아까 하던 주제 다시 꺼내기"
+        ],
+        "detail": "back은 떠나온 원래 지점으로 방향을 되돌리는 그림이야. 발표에서 앞 슬라이드로, 코드에서 이전 버전으로, 대화에서 아까 주제로 돌아갈 때 전부 이 한 단어로 처리돼. 배포를 이전 상태로 되돌리는 건 roll back이 더 정확하고, go back은 그보다 훨씬 일반적인 '되돌아가기'야.",
+        "exampleKo": "이거 바로 앞 슬라이드로 돌아가 볼 수 있을까요?",
+        "questionEn": "You realize the earlier slide had the key diagram. What do you ask the presenter?",
+        "termsKo": "",
+        "cueKo": "갈 수 있을까 · 우리가 · 되돌아 · 그 슬라이드로 · 이것 바로 앞의"
+      },
+      {
+        "key": "ev:step-back",
+        "en": "step back",
+        "ko": "한발 물러나 큰 그림을 보다",
+        "example": "Let's step back and look at the big picture first.",
+        "situations": [
+          "논의가 디테일에 매몰될 때",
+          "설계 방향 재점검 제안",
+          "감정적 논쟁 식히기"
+        ],
+        "detail": "back은 코앞에 붙어 있던 시점에서 뒤로 물러나는 그림이야. 회의가 디테일 싸움에 매몰됐을 때 '한발 물러나서 큰 그림부터 봅시다' 하고 흐름을 끊는 진행용 표현이지. step down(직책 사임), step up(나서서 맡기)과는 다른 뜻이니 방향 입자만 바꿔서 같이 묶어 외워 둬.",
+        "exampleKo": "일단 한발 물러나서 큰 그림부터 봅시다.",
+        "questionEn": "The team is stuck arguing tiny details and losing sight of the goal. What do you suggest?",
+        "termsKo": "",
+        "cueKo": "하자 · 물러나는 걸 · 그리고 보자 · 그 큰 그림을 · 먼저"
       }
     ]
   },
@@ -5521,6 +8520,466 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "When is the right time to start thinking about security in a project?",
         "termsKo": "",
         "cueKo": "보안은 · 처음부터 구워 넣어져야 한다 · 나중에 덧붙이는 게 아니라"
+      },
+      {
+        "key": "ev:sleep-in",
+        "en": "sleep in",
+        "ko": "(일부러) 늦잠 자다",
+        "example": "I slept in till ten on Saturday.",
+        "situations": [
+          "주말 계획 얘기",
+          "휴가 중 아침 묘사"
+        ],
+        "detail": "잠 속에(in) 그대로 머문다는 그림. 주말에 일부러 늦게까지 자는 여유를 말해 — 실수로 늦잠 자서 지각한 건 oversleep이야. 이 둘을 바꿔 쓰면 뉘앙스가 완전히 달라지니 주의해.",
+        "exampleKo": "토요일엔 10시까지 늦잠 잤어.",
+        "questionEn": "What's your Saturday morning like — do you get out of bed early or stay much later than weekdays?",
+        "termsKo": "",
+        "cueKo": "나 · 늦잠 잤어 · 10시까지 · 토요일에"
+      },
+      {
+        "key": "ev:turn-in",
+        "en": "turn in",
+        "ko": "잠자리에 들다; 제출하다",
+        "example": "Don't forget to turn in your timesheet by Friday.",
+        "situations": [
+          "먼저 자러 갈 때 인사",
+          "과제·서류 제출"
+        ],
+        "detail": "하루를 접고 침대 안으로(in) 들어간다는 그림. \"오늘은 일찍 자야겠다\"를 go to bed보다 살짝 점잖게 말하는 표현이야. 과제나 서류를 제출한다(turn in the report)는 전혀 다른 일상 용법도 똑같이 자주 쓰여.",
+        "exampleKo": "금요일까지 타임시트 제출하는 거 잊지 마세요.",
+        "questionEn": "Timesheets are due Friday. What does HR keep reminding everyone to do?",
+        "termsKo": "",
+        "cueKo": "잊지 마세요 · 제출하는 것을 · 당신의 타임시트를 · 금요일까지"
+      },
+      {
+        "key": "ev:get-in",
+        "en": "get in",
+        "ko": "(집·목적지에) 도착하다; (승용차에) 타다",
+        "example": "I got in late last night, around midnight.",
+        "situations": [
+          "귀가·도착 시간 얘기",
+          "택시 타는 상황"
+        ],
+        "detail": "어떤 공간 안으로(in) 들어와 닿는 그림. \"어젯밤 늦게 들어왔어\", \"비행기 몇 시에 도착해?(What time does your flight get in?)\"처럼 도착을 말하는 구어체야. 택시·승용차에 타는 것도 get in — 버스·기차처럼 올라타는 건 get on으로 구분해.",
+        "exampleKo": "어젯밤 자정쯤 늦게 들어왔어.",
+        "questionEn": "What time did you finally arrive home after the trip last night?",
+        "termsKo": "",
+        "cueKo": "나 · 들어왔어 · 늦게 · 어젯밤 · 자정쯤에"
+      },
+      {
+        "key": "ev:stay-in",
+        "en": "stay in",
+        "ko": "(외출 안 하고) 집에 있다",
+        "example": "Let's just stay in and watch a movie tonight.",
+        "situations": [
+          "금요일 밤 계획",
+          "약속 대신 집 선택"
+        ],
+        "detail": "집이라는 울타리 안에(in) 머문다는 그림. go out(나가 놀다)의 정확한 반대말로, \"오늘은 그냥 집에 있자\"가 딱 이 표현이야. stay home과 같지만 stay in은 '나갈 수도 있었는데 안 나간다'는 선택의 뉘앙스가 있어.",
+        "exampleKo": "오늘 밤엔 그냥 집에서 영화 보자.",
+        "questionEn": "It's Friday night, it's raining, and you're exhausted. What's your plan?",
+        "termsKo": "",
+        "cueKo": "우리 그냥 · 집에 있자 · 그리고 보자 · 영화를 · 오늘 밤"
+      },
+      {
+        "key": "ev:order-in",
+        "en": "order in",
+        "ko": "배달시켜 먹다",
+        "example": "Let's just order in tonight, I'm too tired to cook.",
+        "situations": [
+          "요리 귀찮은 저녁",
+          "야근 중 저녁 해결"
+        ],
+        "detail": "음식을 집 안으로(in) 들어오게 주문한다는 그림. 배달시켜 먹자는 가장 자연스러운 표현이고, get delivery도 같은 뜻이야. eat out(외식)·cook(집밥)과 묶어서 저녁 옵션 삼총사로 기억해.",
+        "exampleKo": "오늘은 그냥 시켜 먹자, 요리하기 너무 피곤해.",
+        "questionEn": "You're hungry but don't want to cook or go to a restaurant. What's your move?",
+        "termsKo": "",
+        "cueKo": "우리 그냥 · 배달시키자 · 오늘 밤 · 나 너무 피곤해 · 요리하기엔"
+      },
+      {
+        "key": "ev:move-in",
+        "en": "move in",
+        "ko": "이사 들어오다; 동거를 시작하다",
+        "example": "We're moving in next weekend.",
+        "situations": [
+          "이사 일정 얘기",
+          "동거 시작 소식"
+        ],
+        "detail": "새 공간 안으로(in) 짐과 삶을 옮겨 넣는 그림. 새집에 입주하는 것이고, move in together면 커플이 동거를 시작한다는 뜻이야. 반대는 move out — 이 한 쌍으로 주거 얘기 대부분이 커버돼.",
+        "exampleKo": "우리 다음 주말에 이사 들어가.",
+        "questionEn": "You just signed the lease for a new apartment. What happens next weekend?",
+        "termsKo": "",
+        "cueKo": "우리 · 이사 들어가 · 다음 주말에"
+      },
+      {
+        "key": "ev:settle-in",
+        "en": "settle in",
+        "ko": "(새 집·직장에) 적응하다, 자리 잡다",
+        "example": "It took a month to settle in at the new job.",
+        "situations": [
+          "이직 후 안부",
+          "이사 후 적응 얘기"
+        ],
+        "detail": "떠 있던 짐과 마음이 새 공간 안에(in) 가라앉아 자리 잡는 그림. 이사나 이직 직후 \"잘 적응하고 있어?(Are you settling in okay?)\"가 단골 안부야. settle down(정착하다)이 인생 단위라면 settle in은 새 환경 단위야.",
+        "exampleKo": "새 직장에 적응하는 데 한 달 걸렸어.",
+        "questionEn": "You started at a new company two weeks ago. How's the adjustment going?",
+        "termsKo": "",
+        "cueKo": "걸렸어 · 한 달이 · 적응하는 데 · 새 직장에"
+      },
+      {
+        "key": "ev:give-in",
+        "en": "give in",
+        "ko": "(버티다가) 결국 굴복하다",
+        "example": "I gave in and ordered the cake.",
+        "situations": [
+          "유혹에 진 얘기",
+          "아이 떼쓰기에 진 부모"
+        ],
+        "detail": "버티던 저항을 거두고 안으로(in) 항복해 들어가는 그림. 유혹이나 떼쓰기에 결국 졌다고 할 때 딱이야. give up이 '내가 하던 시도를 접는 것'이라면 give in은 '상대나 유혹에 지는 것'이라는 방향 차이가 있어.",
+        "exampleKo": "결국 못 참고 케이크 시켰어.",
+        "questionEn": "You resisted the dessert menu for ten minutes, then ordered the biggest cake. What happened?",
+        "termsKo": "",
+        "cueKo": "나 · 굴복했어 · 그리고 시켰어 · 케이크를"
+      },
+      {
+        "key": "ev:break-in",
+        "en": "break in",
+        "ko": "(도둑이) 침입하다; (새 신발을) 길들이다",
+        "example": "Someone broke in while they were on vacation.",
+        "situations": [
+          "빈집털이 뉴스 얘기",
+          "새 신발 길들이기"
+        ],
+        "detail": "막힌 걸 부수고 안으로(in) 들어오는 그림. 도둑 침입의 표준 표현이고 명사형 break-in도 뉴스에 매일 나와. 새 신발·장비를 써서 길들인다(break in new shoes)는 전혀 다른 일상 용법도 같이 외워둬.",
+        "exampleKo": "걔네 휴가 간 사이에 누가 침입했대.",
+        "questionEn": "Your neighbors came home from vacation to a smashed window and missing TV. What happened?",
+        "termsKo": "",
+        "cueKo": "누군가 · 침입했어 · 동안 · 걔네가 · 휴가 중인"
+      },
+      {
+        "key": "ev:chip-in",
+        "en": "chip in",
+        "ko": "(돈·일손을) 보태다, 갹출하다",
+        "example": "Everyone chipped in twenty bucks for the gift.",
+        "situations": [
+          "단체 선물 모금",
+          "이사·행사 일손 보태기"
+        ],
+        "detail": "각자 칩을 판 안에(in) 던져 넣는 그림. 선물비·회식비를 나눠 내자고 할 때 \"let's all chip in\"이 표준이야. 돈뿐 아니라 일손을 보탠다는 뜻으로도 써서, 다 같이 거드는 분위기를 만들 때 좋은 표현이야.",
+        "exampleKo": "선물 사려고 다들 20달러씩 보탰어.",
+        "questionEn": "The team gift costs two hundred dollars and there are ten of you. What's the plan?",
+        "termsKo": "",
+        "cueKo": "모두가 · 보탰어 · 20달러를 · 선물을 위해"
+      },
+      {
+        "key": "ev:fill-in",
+        "en": "fill in",
+        "ko": "빈칸을 채우다; 상황을 알려주다; 대신 일하다",
+        "example": "Can you fill me in on what I missed?",
+        "situations": [
+          "자리 비운 사이 업데이트",
+          "대타 부탁"
+        ],
+        "detail": "빈 곳 안에(in) 내용을 채워 넣는 그림. 빈칸 채우기, 자리 빈 사람 대신 들어가기(fill in for her), 모르는 사람에게 상황을 채워 주기(fill me in)까지 전부 같은 그림이야. 휴가 다녀와서 \"fill me in\"은 매번 쓰는 문장이야.",
+        "exampleKo": "내가 놓친 거 좀 알려 줄래?",
+        "questionEn": "You were away during the big team meeting. What do you ask a coworker afterward?",
+        "termsKo": "",
+        "cueKo": "너 · 채워 줄래 · 나를 · 내가 놓친 것에 대해?"
+      },
+      {
+        "key": "ev:hand-in",
+        "en": "hand in",
+        "ko": "제출하다",
+        "example": "I handed in my expense report right before the deadline.",
+        "situations": [
+          "경비 보고서/서류 제출",
+          "사직서 제출"
+        ],
+        "detail": "내 손에 있던 걸 받는 쪽 안으로(in) 건네 넣는다는 그림. 보고서, 과제, 서류 제출의 기본 동사이고 submit의 구어판이야. hand in my notice(사직서를 내다)는 퇴사 표현의 고정 문구. turn in과 거의 같은 뜻인데 미국에선 turn in이 약간 더 흔해.",
+        "exampleKo": "경비 보고서를 마감 직전에 냈어요.",
+        "questionEn": "The expense report deadline was five o'clock today. What did you manage to do at 4:55?",
+        "termsKo": "",
+        "cueKo": "나는 · 제출했다 · 내 경비 보고서를 · 바로 직전에 · 마감"
+      },
+      {
+        "key": "ev:step-in",
+        "en": "step in",
+        "ko": "(문제 상황에) 개입하다, 나서서 수습하다",
+        "example": "My manager stepped in when the client escalated the issue.",
+        "situations": [
+          "갈등/에스컬레이션 수습",
+          "막힌 논의에 제3자 개입"
+        ],
+        "detail": "바깥에 있던 사람이 상황 안으로(in) 걸어 들어온다는 그림. 일이 꼬였을 때 누군가 끼어들어 수습하는 거야. intervene의 구어판이고, behavioral 인터뷰에서 갈등 해결 얘기할 때 유용해. step up(자발적으로 책임을 맡다)과 헷갈리기 쉬운데, step in은 '진행 중인 문제에 개입'이라는 차이가 있어.",
+        "exampleKo": "고객이 이슈를 에스컬레이션했을 때 매니저가 나서줬어요.",
+        "questionEn": "The client call was going badly and you couldn't handle it alone. What did your manager do?",
+        "termsKo": "",
+        "cueKo": "내 매니저가 · 개입했다 · 고객이 · 에스컬레이션했을 때 · 그 이슈를"
+      },
+      {
+        "key": "ev:put-in",
+        "en": "put in",
+        "ko": "(시간을) 들이다; (요청을) 정식으로 넣다",
+        "example": "She put in a lot of extra hours to hit the deadline.",
+        "situations": [
+          "야근/노력 어필",
+          "휴가·장비 요청 제출",
+          "추천 한마디 부탁"
+        ],
+        "detail": "시간·노력·요청을 시스템 안에(in) 집어넣는다는 그림. put in long hours(오래 일하다), put in a request(요청을 정식으로 넣다), put in a good word(잘 말해주다)까지 직장 3대 용법을 다 외워둘 가치가 있어. work hard보다 '투입했다'는 구체적인 느낌이 살아.",
+        "exampleKo": "그분은 마감 맞추려고 추가 근무를 엄청 했어요.",
+        "questionEn": "The deadline was nearly impossible, but she made it. How would you describe her effort?",
+        "termsKo": "",
+        "cueKo": "그녀는 · 들였다 · 많은 추가 시간을 · 맞추기 위해 · 그 마감을"
+      },
+      {
+        "key": "ev:weigh-in",
+        "en": "weigh in",
+        "ko": "(논의에) 의견을 보태다",
+        "example": "Can the legal team weigh in before we sign anything?",
+        "situations": [
+          "전문가 의견 요청",
+          "결정 전 이해관계자 의견 수렴"
+        ],
+        "detail": "저울에 무게를 올리듯 논의 안에(in) 자기 의견의 무게를 보탠다는 그림. 특히 전문성이나 권한 있는 사람의 의견을 청할 때 써. 'Can you weigh in on this thread?'는 슬랙 단골 멘트. chime in이 가볍게 거드는 거라면 weigh in은 판단에 무게가 실리는 의견이야.",
+        "exampleKo": "서명하기 전에 법무팀 의견 좀 받을 수 있을까요?",
+        "questionEn": "The contract decision is big and you want legal's opinion first. What do you ask?",
+        "termsKo": "",
+        "cueKo": "법무팀이 · 의견을 보탤 수 있을까 · 우리가 서명하기 전에 · 무엇이든?"
+      },
+      {
+        "key": "ev:chime-in",
+        "en": "chime in",
+        "ko": "(대화에) 가볍게 끼어들어 거들다",
+        "example": "Feel free to chime in if I miss anything.",
+        "situations": [
+          "발표 중 보충 요청",
+          "회의에서 한마디 보태기",
+          "스레드 참여 독려"
+        ],
+        "detail": "종소리(chime)가 울리듯 대화에 짧게 끼어든다(in)는 그림. 'Feel free to chime in'은 발표자가 청중 참여를 여는 표준 멘트야. weigh in이 무게 있는 판단을 보태는 거라면 chime in은 누구든 가볍게 한마디 거드는 것. 동의하며 보탤 때 'Just to chime in...'으로 시작해도 자연스러워.",
+        "exampleKo": "제가 빠뜨린 거 있으면 편하게 말씀 얹어주세요.",
+        "questionEn": "You're presenting and want teammates to add anything you miss. What do you tell them?",
+        "termsKo": "",
+        "cueKo": "편하게 · 끼어들어 · 만약 내가 · 놓치면 · 뭐든"
+      },
+      {
+        "key": "ev:jump-in",
+        "en": "jump in",
+        "ko": "(대화·작업에) 바로 뛰어들다, 끼어들다",
+        "example": "Sorry to jump in, but we only have five minutes left.",
+        "situations": [
+          "회의에서 정중히 끼어들기",
+          "새 업무에 즉시 합류",
+          "화상회의 발언 시작"
+        ],
+        "detail": "물에 뛰어들듯 대화나 일 한가운데로(in) 바로 들어간다는 그림. 'Sorry to jump in'은 화상회의에서 끼어들 때의 표준 쿠션 멘트야. chime in이 가볍게 한마디 보태는 거라면 jump in은 흐름을 끊고 들어오는 적극성이 있어. 'just jump in anytime'(언제든 끼어들어)으로 참여를 열어줄 때도 써.",
+        "exampleKo": "끼어들어 죄송한데, 5분밖에 안 남았어요.",
+        "questionEn": "The discussion is dragging and the meeting ends soon. How do you politely interrupt?",
+        "termsKo": "",
+        "cueKo": "미안 · 끼어들어서 · 하지만 우리는 · 가지고 있다 · 딱 5분만 · 남은"
+      },
+      {
+        "key": "ev:sit-in-on",
+        "en": "sit in on",
+        "ko": "(참관인으로) 회의에 들어가 보다",
+        "example": "Mind if I sit in on the planning meeting tomorrow?",
+        "situations": [
+          "타 팀 회의 참관 요청",
+          "신입 온보딩 견학"
+        ],
+        "detail": "발언자가 아니라 자리 안에(in) 앉아 지켜본다는 그림. 의사결정 멤버는 아니지만 배우거나 파악하려고 회의에 들어가는 것을 말해. 'Mind if I sit in?'은 참관을 부탁하는 정중한 표준 문장. attend와 달리 '관찰자 신분'이라는 뉘앙스가 핵심이야.",
+        "exampleKo": "내일 플래닝 회의에 저도 들어가서 봐도 될까요?",
+        "questionEn": "You're new and want to watch how the planning meeting works without participating. What do you ask?",
+        "termsKo": "",
+        "cueKo": "괜찮을까 · 내가 · 참관해도 · 그 플래닝 회의를 · 내일?"
+      },
+      {
+        "key": "ev:pencil-in",
+        "en": "pencil in",
+        "ko": "(변경 가능 전제로) 일정을 임시로 잡다",
+        "example": "Let's pencil in Thursday and confirm once travel is booked.",
+        "situations": [
+          "미확정 일정 가계약",
+          "바쁜 사람과 잠정 약속"
+        ],
+        "detail": "펜이 아니라 연필로(pencil) 달력 안에(in) 적는다는 그림 — 지울 수 있다는 게 핵심이야. 확정은 아니지만 자리를 잡아두자고 할 때 써. 'penciled in for Thursday'면 목요일로 잠정 확보된 상태. 확정으로 바꿀 땐 confirm이나 lock in으로 넘어가는 게 자연스러워.",
+        "exampleKo": "일단 목요일로 잡아두고 출장 확정되면 컨펌하죠.",
+        "questionEn": "You both want Thursday, but travel plans might change. How do you schedule it for now?",
+        "termsKo": "",
+        "cueKo": "임시로 잡아두자 · 목요일을 · 그리고 확정하자 · 출장이 · 예약되면"
+      },
+      {
+        "key": "ev:squeeze-in",
+        "en": "squeeze in",
+        "ko": "(빡빡한 일정에) 비집어 넣다",
+        "example": "I can squeeze in a fifteen-minute sync before lunch.",
+        "situations": [
+          "빡빡한 일정에 미팅 끼우기",
+          "바쁜 와중 작은 일 처리"
+        ],
+        "detail": "꽉 찬 틈을 쥐어짜서(squeeze) 그 안에(in) 밀어 넣는 그림. 일정이 빡빡한데 짧은 미팅이나 작은 일을 끼워 넣을 때 써. 'I can squeeze you in at 3'은 바쁜 사람이 시간을 내주는 표준 표현. fit in과 비슷하지만 squeeze in은 '무리해서 비집는' 느낌이 더 강해.",
+        "exampleKo": "점심 전에 15분 싱크는 끼워 넣을 수 있어요.",
+        "questionEn": "Your day is packed, but a teammate needs fifteen minutes urgently. What do you offer?",
+        "termsKo": "",
+        "cueKo": "나는 · 비집어 넣을 수 있다 · 15분 싱크를 · 점심 전에"
+      },
+      {
+        "key": "ev:pitch-in",
+        "en": "pitch in",
+        "ko": "(다 같이) 힘을 보태다",
+        "example": "Everyone pitched in to get the booth ready overnight.",
+        "situations": [
+          "전원 협동 미담",
+          "급한 일에 자발적 합류"
+        ],
+        "detail": "각자가 일판 안으로(in) 자기 몫을 던져 넣는다(pitch)는 그림. 위기나 마감 때 너도나도 손을 보태는 장면의 전용 동사야. help out이 1:1 거들기라면 pitch in은 '여럿이 십시일반'의 그림. chip in은 돈이나 의견을 보탤 때도 쓰는 사촌 표현이야.",
+        "exampleKo": "부스 준비하느라 밤새 다들 손을 보탰어요.",
+        "questionEn": "The conference booth had to be ready by morning and it wasn't one person's job. How did it happen?",
+        "termsKo": "",
+        "cueKo": "모두가 · 힘을 보탰다 · 준비시키기 위해 · 그 부스를 · 밤사이에"
+      },
+      {
+        "key": "ev:bring-in",
+        "en": "bring in",
+        "ko": "(외부 인력을) 데려오다; (매출을) 벌어들이다",
+        "example": "We brought in a consultant to fix the data pipeline.",
+        "situations": [
+          "외부 전문가 영입",
+          "신규 매출 기여 설명"
+        ],
+        "detail": "바깥에 있던 자원을 조직 안으로(in) 들여온다는 그림. 컨설턴트·전문가 영입(bring in an expert)과 매출 창출(brings in revenue) 두 용법이 다 흔해. hire가 정식 채용이라면 bring in은 '필요해서 투입'이라는 유연한 뉘앙스야. 회의에 사람을 부르는 loop in과 달리 bring in은 일 자체에 투입하는 것.",
+        "exampleKo": "데이터 파이프라인 고치려고 컨설턴트를 데려왔어요.",
+        "questionEn": "Nobody on the team had the expertise to fix the pipeline. How did you solve that?",
+        "termsKo": "",
+        "cueKo": "우리는 · 데려왔다 · 컨설턴트를 · 고치기 위해 · 그 데이터 파이프라인을"
+      },
+      {
+        "key": "ev:call-in",
+        "en": "call in",
+        "ko": "병가 전화를 하다; (전문가를) 불러들이다",
+        "example": "Half the team called in sick during flu season.",
+        "situations": [
+          "병가 통보",
+          "외부 전문가 긴급 투입"
+        ],
+        "detail": "전화를 회사 안으로(in) 걸어 알린다는 그림. call in sick(아파서 못 나간다고 연락하다)은 미국 직장 문화의 기본 표현이야. 또 하나는 call in an expert(전문가를 불러들이다)처럼 외부 도움을 소환하는 용법. 'phone it in'(대충 하다)이라는 사촌 관용구와는 뜻이 다르니 주의.",
+        "exampleKo": "독감 시즌에 팀 절반이 병가 냈어요.",
+        "questionEn": "You wake up with a fever on a workday. What's the first thing you do?",
+        "termsKo": "",
+        "cueKo": "절반의 팀이 · 병가 연락을 했다 · 독감 시즌 동안"
+      },
+      {
+        "key": "ev:cut-in",
+        "en": "cut in",
+        "ko": "말을 끊고 끼어들다",
+        "example": "He kept cutting in before I could finish a sentence.",
+        "situations": [
+          "말을 자꾸 끊는 사람에 대해 불평할 때",
+          "급한 일로 대화에 끼어들 때",
+          "운전 중 끼어들기"
+        ],
+        "detail": "진행 중인 말의 흐름을 칼로 자르고 안으로(in) 들어오는 그림이에요. jump in보다 무례한 쪽에 가까워서, 남이 내 말을 자꾸 끊을 때 불평하는 문맥에서 제일 많이 쓰죠. 운전에서 차가 '끼어들다'에도 똑같이 써요.",
+        "exampleKo": "내가 문장을 끝내기도 전에 걔가 자꾸 말을 끊었어.",
+        "questionEn": "A coworker never lets you finish a sentence during meetings. How do you describe his habit to a friend?",
+        "termsKo": "",
+        "cueKo": "그가 계속했다 · 끼어들기를 · 내가 끝내기도 전에 · 한 문장을"
+      },
+      {
+        "key": "ev:sink-in",
+        "en": "sink in",
+        "ko": "(말·사실이) 실감 나다, 와닿다",
+        "example": "The news still hasn't sunk in yet.",
+        "situations": [
+          "큰 소식이 아직 실감 안 날 때",
+          "설명 후 소화할 시간을 줄 때",
+          "합격/부고 직후의 멍한 상태"
+        ],
+        "detail": "물이 스펀지에 천천히 스며들듯(in) 정보가 머리에서 가슴까지 내려오는 그림이에요. 합격, 해고, 부고처럼 큰 소식을 '들었지만 아직 실감이 안 나는' 상태에 딱이죠. understand가 머리의 일이라면 sink in은 시간이 걸리는 체감의 일이라, 'Let it sink in(소화할 시간을 가져)'처럼 써요.",
+        "exampleKo": "그 소식이 아직도 실감이 안 나.",
+        "questionEn": "You just learned you got the job of your dreams, but you feel strangely numb. How do you describe it?",
+        "termsKo": "",
+        "cueKo": "그 소식은 · 아직 안 스며들었어 · 여태"
+      },
+      {
+        "key": "ev:fit-in",
+        "en": "fit in",
+        "ko": "(무리에) 자연스럽게 섞이다, 어울리다",
+        "example": "It took me months to fit in at the new office.",
+        "situations": [
+          "새 직장/학교 적응기",
+          "조직문화와 안 맞을 때",
+          "전학생/이민자의 고충"
+        ],
+        "detail": "퍼즐 조각이 빈자리에 딱 들어맞는(in) 그림이에요. 새 직장이나 모임에서 이질감 없이 무리의 일원이 되는 것을 말하죠. get along이 개별 관계의 원만함이라면 fit in은 집단 전체와의 소속감이라, 'I never really fit in there(거긴 나랑 안 맞았어)'처럼 문화 부적응을 말할 때 자주 써요.",
+        "exampleKo": "새 사무실에 적응해 섞이는 데 몇 달 걸렸어.",
+        "questionEn": "Your friend just joined a company where everyone has known each other for years. What worry might he share?",
+        "termsKo": "",
+        "cueKo": "그건 걸렸다 · 나에게 · 몇 달이 · 섞이는 데 · 새 사무실에서"
+      },
+      {
+        "key": "ev:come-in",
+        "en": "come in",
+        "ko": "출근하다; (결과·소식이) 들어오다; (come in handy) 요긴하게 쓰이다",
+        "example": "The test results just came in, and everything looks green.",
+        "situations": [
+          "결과/리포트 도착 공유",
+          "출근 시간 얘기",
+          "물건이 쓸모 있을 거라고 말할 때 (handy)"
+        ],
+        "detail": "in은 바깥에 있던 것이 내 영역 안으로 들어오는 그림이야. 사람이 사무실로 들어오면 출근(come in to work), 결과·데이터·소식이 도착하면 results came in, 거기에 come in handy(나중에 요긴하게 쓰이다)까지 세 갈래로 매일 들리는 말이지. arrive보다 훨씬 구어적이고, handy 용법은 통째로 외워 두는 게 편해.",
+        "exampleKo": "테스트 결과 방금 나왔는데, 전부 초록불이에요.",
+        "questionEn": "You were waiting on the QA report and it finally arrived. What do you tell the team?",
+        "termsKo": "",
+        "cueKo": "그 테스트 결과가 · 방금 들어왔다 · 그리고 모든 것이 · 보인다 · 초록으로"
+      },
+      {
+        "key": "ev:kick-in",
+        "en": "kick in",
+        "ko": "(약·카페인·할인·정책이) 효과를 내기 시작하다, 발동하다",
+        "example": "The caffeine is finally kicking in, I can focus now.",
+        "situations": [
+          "커피/약 효과 얘기",
+          "할인·정책 적용 시점 설명",
+          "폴백·자동 장치 발동 설명"
+        ],
+        "detail": "in은 잠자고 있던 효과가 시스템 안으로 차서 발동되는 그림이야. 카페인이나 약이 듣기 시작할 때, 할인이나 새 요금제가 적용될 때, 레이트 리밋이나 폴백 같은 자동 장치가 작동할 때 전부 kick in이야. 주어가 사람이 아니라 효과·장치·정책이라는 점이 포인트고, start working을 한 단어로 줄여 주는 느낌이지.",
+        "exampleKo": "이제야 카페인이 도는 것 같아, 집중이 되네.",
+        "questionEn": "Half an hour after your morning coffee, you suddenly feel sharp and awake. How do you describe that?",
+        "termsKo": "",
+        "cueKo": "그 카페인이 · 마침내 · 발동하는 중이다 · 나는 · 집중할 수 있다 · 이제"
+      },
+      {
+        "key": "ev:log-in",
+        "en": "log in",
+        "ko": "로그인하다, 시스템에 접속해 들어가다",
+        "example": "I can't log in to the admin console this morning.",
+        "situations": [
+          "접속 장애 보고",
+          "계정 문제 문의",
+          "새 시스템 접근 권한 확인"
+        ],
+        "detail": "in은 인증이라는 문을 통과해 시스템 안으로 들어가는 그림이야. 접속 문제를 보고하거나 권한을 요청할 때 매일 쓰는 기본 동사지. 동사는 log in 두 단어, 명사·형용사는 login 한 단어(login page)로 갈리고, sign in도 같은 뜻으로 자유롭게 섞어 써.",
+        "exampleKo": "오늘 아침에 어드민 콘솔에 로그인이 안 돼요.",
+        "questionEn": "The admin console rejects your password every time you try. What problem do you report?",
+        "termsKo": "",
+        "cueKo": "나는 · 로그인할 수 없다 · 그 어드민 콘솔에 · 오늘 아침"
+      },
+      {
+        "key": "ev:factor-in",
+        "en": "factor in",
+        "ko": "(계산·계획에) 변수로 포함시키다, 감안하다",
+        "example": "Did we factor in holiday traffic when sizing the servers?",
+        "situations": [
+          "용량/비용 산정 회의",
+          "일정 추정에 버퍼 반영",
+          "리스크 검토"
+        ],
+        "detail": "in은 계산식 안에 요소 하나를 집어넣는 그림이야. 서버 용량, 일정, 예산을 추정할 때 '연휴 트래픽도 감안했어?'처럼 빠뜨리기 쉬운 변수를 챙길 때 쓰지. factor out은 수학이나 리팩터링에서 공통 요소를 밖으로 빼내는 반대 방향이라, in/out 짝으로 기억하면 안 헷갈려.",
+        "exampleKo": "서버 산정할 때 연휴 트래픽도 감안했나요?",
+        "questionEn": "The capacity estimate looked fine until the holiday spike hit. What went wrong during planning?",
+        "termsKo": "",
+        "cueKo": "우리가 · 포함시켰나 · 연휴 트래픽을 · 산정할 때 · 그 서버들을"
       }
     ]
   },
@@ -5602,6 +9061,129 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "What happened to the separate authentication service after the re-architecture?",
         "termsKo": "",
         "cueKo": "우리는 · 접어 넣었다 · 인증 서비스를 · 메인 API 안으로"
+      },
+      {
+        "key": "ev:bump-into",
+        "en": "bump into",
+        "ko": "우연히 마주치다",
+        "example": "I bumped into my old boss at Costco.",
+        "situations": [
+          "마트에서 지인 만난 썰",
+          "우연한 재회 얘기"
+        ],
+        "detail": "길 가다 쿵(bump) 부딪히듯 사람을 우연히 만나는 그림. 약속 없이 마주쳤다는 뉘앙스가 핵심이야. run into도 같은 뜻이지만 run into는 문제와 마주칠 때도 쓰이니, 사람 만난 얘기엔 bump into가 제일 깔끔해.",
+        "exampleKo": "코스트코에서 옛날 상사를 우연히 만났어.",
+        "questionEn": "You saw your old boss unexpectedly at Costco yesterday. How do you tell that story?",
+        "termsKo": "",
+        "cueKo": "나 · 우연히 마주쳤어 · 내 옛 상사를 · 코스트코에서"
+      },
+      {
+        "key": "ev:get-into",
+        "en": "get into",
+        "ko": "푹 빠지다, 재미를 붙이다",
+        "example": "I got into hiking during the pandemic.",
+        "situations": [
+          "취미 입덕 계기",
+          "요즘 빠진 것 소개"
+        ],
+        "detail": "어떤 활동 속으로(into) 들어가 빠져드는 그림. 취미·드라마·음악에 재미 붙였다고 할 때 가장 구어적인 표현이야. take up이 '시작했다'는 행위라면 get into는 '빠져들었다'는 마음 상태에 가까워.",
+        "exampleKo": "팬데믹 때 등산에 빠졌어.",
+        "questionEn": "When did hiking become such a big part of your weekends?",
+        "termsKo": "",
+        "cueKo": "나 · 빠졌어 · 등산에 · 팬데믹 동안"
+      },
+      {
+        "key": "ev:talk-into",
+        "en": "talk into",
+        "ko": "설득해서 ~하게 만들다",
+        "example": "She talked me into buying the bigger TV.",
+        "situations": [
+          "충동구매 변명",
+          "억지로 끌려간 모임"
+        ],
+        "detail": "말로 사람을 어떤 행동 속으로(into) 밀어 넣는 그림. \"걔가 꼬셔서 샀어(she talked me into it)\"처럼 떠밀려 한 일을 말할 때 딱이야. 반대로 못 하게 설득하는 건 talk out of — 짝으로 외워둬.",
+        "exampleKo": "걔가 설득해서 더 큰 TV를 샀잖아.",
+        "questionEn": "You didn't plan to buy the seventy-inch TV, but the salesperson was persuasive. What happened?",
+        "termsKo": "",
+        "cueKo": "걔가 · 설득했어 · 나를 · 사도록 · 더 큰 TV를"
+      },
+      {
+        "key": "ev:dive-into",
+        "en": "dive into",
+        "ko": "(주제·작업에) 본격적으로 뛰어들다",
+        "example": "Let's dive into the customer feedback after a quick intro.",
+        "situations": [
+          "회의 본론 시작",
+          "새 주제 깊이 파기 선언"
+        ],
+        "detail": "수영장에 다이빙하듯 주제 한가운데로(into) 곧장 들어간다는 그림. 회의 서두에 'let's dive in'은 본론 시작을 알리는 가장 흔한 멘트야. dig into(파고들다)와 거의 같지만 dive into는 '주저 없이 곧장'이라는 속도감이 더 살아 있어. deep dive(심층 분석)라는 명사형도 회의실 단골이야.",
+        "exampleKo": "짧게 인사하고 바로 고객 피드백으로 들어갑시다.",
+        "questionEn": "The intros are done and the real topic is customer feedback. How do you kick things off?",
+        "termsKo": "",
+        "cueKo": "뛰어들자 · 고객 피드백 속으로 · 짧은 소개 후에"
+      },
+      {
+        "key": "ev:buy-into",
+        "en": "buy into",
+        "ko": "(비전·방향에) 동의하고 받아들이다",
+        "example": "The team never really bought into the new process.",
+        "situations": [
+          "조직 변화 수용도 얘기",
+          "비전 공감대 형성"
+        ],
+        "detail": "돈을 내고 지분을 사서 그 안으로(into) 들어가듯, 아이디어·비전을 자기 것으로 받아들인다는 그림. 명사 buy-in(동의, 지지 확보)은 'get buy-in from stakeholders'(이해관계자 동의를 얻다)로 미국 회사에서 하루에도 몇 번씩 나와. agree가 머리의 동의라면 buy into는 몸까지 따라오는 수용이야.",
+        "exampleKo": "팀이 새 프로세스를 진심으로 받아들인 적이 없어요.",
+        "questionEn": "The new process exists on paper, but nobody follows it with conviction. What's missing?",
+        "termsKo": "",
+        "cueKo": "그 팀은 · 결코 · 진심으로 받아들이지 않았다 · 그 새 프로세스를"
+      },
+      {
+        "key": "ev:read-into",
+        "en": "read into",
+        "ko": "(없는 의미까지) 과하게 해석하다",
+        "example": "Don't read too much into her short reply.",
+        "situations": [
+          "짧은 답장에 의미부여할 때",
+          "상사의 한마디를 곱씹는 동료에게",
+          "불필요한 걱정을 덜어줄 때"
+        ],
+        "detail": "글자 속으로(into) 파고들어 적혀 있지도 않은 의미를 읽어내는 그림이에요. 'ok.' 한 글자 답장에 '화났나?' 하고 의미부여하는 상황에서 'Don't read too much into it(너무 확대해석하지 마)'이 정석이죠. 거의 항상 too much와 붙어 다니는 게 특징이에요.",
+        "exampleKo": "그녀의 짧은 답장에 너무 의미부여하지 마.",
+        "questionEn": "Your friend is spiraling because the boss replied with a single word. What advice do you give?",
+        "termsKo": "",
+        "cueKo": "읽어내지 마 · 너무 많이 · 그녀의 짧은 답장 속에서"
+      },
+      {
+        "key": "ev:drag-into",
+        "en": "drag into",
+        "ko": "(원치 않는 일에) 끌어들이다",
+        "example": "Please don't drag me into your argument.",
+        "situations": [
+          "남의 싸움에 휘말렸을 때",
+          "원치 않는 논쟁에 소환됐을 때",
+          "제3자를 끌어들이는 사람 비판"
+        ],
+        "detail": "버티는 사람을 억지로 잡아끌어 분쟁 안으로(into) 집어넣는 그림이에요. 본인 의사와 무관하게 갈등이나 문제에 휘말리게 한다는 뜻이죠. involve가 중립적 '포함'이라면 drag into는 저항하는데 끌려 들어가는 강제성이 핵심이라, 'Don't drag me into this(나 끌어들이지 마)'가 단골 방어선이에요.",
+        "exampleKo": "너희 싸움에 나 좀 끌어들이지 마.",
+        "questionEn": "Your two roommates are fighting about chores and both keep texting you for backup. What do you tell them?",
+        "termsKo": "",
+        "cueKo": "제발 끌지 마 · 나를 · 너희 싸움 속으로"
+      },
+      {
+        "key": "ev:turn-into",
+        "en": "turn into",
+        "ko": "~로 변해 버리다, (일이) 커지다",
+        "example": "A quick config fix turned into a three-day refactor.",
+        "situations": [
+          "일이 예상보다 커졌을 때",
+          "회고에서 사건 전개 요약",
+          "작은 버그가 큰 이슈로 번진 경험"
+        ],
+        "detail": "into는 한 상태에서 다른 상태 안으로 통째로 들어가 변해 버리는 그림이야. 가볍게 시작한 일이 예상 밖으로 커졌을 때 'it turned into a whole thing(일이 아주 커져 버렸어)'처럼 푸념조로 자주 써. become보다 '변질·전개'의 과정이 느껴지는 말이라 회고 스토리텔링에 잘 어울려.",
+        "exampleKo": "간단한 설정 수정이 3일짜리 리팩터링이 돼 버렸어요.",
+        "questionEn": "The tiny bug fix somehow consumed your entire week. How do you summarize what happened?",
+        "termsKo": "",
+        "cueKo": "하나의 빠른 설정 수정이 · 변해 버렸다 · 3일짜리 리팩터링으로"
       }
     ]
   },
@@ -5683,6 +9265,98 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "The retro produced ten action items last month. What actually happened to them?",
         "termsKo": "",
         "cueKo": "우리는 · 합의했다 · 그 수정안에 · 하지만 아무도 · 끝까지 하지 않았다"
+      },
+      {
+        "key": "ev:get-through",
+        "en": "get through",
+        "ko": "(힘든 시기를) 견뎌내다; (전화가) 연결되다",
+        "example": "Coffee is what gets me through Mondays.",
+        "situations": [
+          "힘든 시기 버티는 법",
+          "고객센터 연결 시도"
+        ],
+        "detail": "터널 같은 구간을 뚫고(through) 반대편까지 통과하는 그림. 힘든 하루나 시기를 버텨낸다는 게 기본이고, 전화가 드디어 연결됐다(I finally got through)는 뜻도 같은 그림이야. survive보다 가볍게 일상의 고비에 부담 없이 써.",
+        "exampleKo": "월요일을 버티게 해 주는 건 커피야.",
+        "questionEn": "Mondays are brutal for you. What keeps you functioning until the evening?",
+        "termsKo": "",
+        "cueKo": "커피가 · 그거야 · 버티게 해 주는 · 나를 · 월요일 내내"
+      },
+      {
+        "key": "ev:go-through",
+        "en": "go through",
+        "ko": "(힘든 일을) 겪다; 샅샅이 살펴보다",
+        "example": "She's going through a rough divorce right now.",
+        "situations": [
+          "힘든 시기인 지인 얘기",
+          "서랍·서류 뒤지기"
+        ],
+        "detail": "어떤 상황의 한가운데를 통과해(through) 지나가는 그림. 힘든 일을 '겪는 중'이라는 게 일상 대화 1순위 용법이야. 서랍이나 서류를 처음부터 끝까지 훑는다는 뜻, 한때의 시기를 지난다(going through a phase)는 뜻도 같은 그림이야.",
+        "exampleKo": "걔 지금 힘든 이혼 과정을 겪고 있어.",
+        "questionEn": "Your coworker has been quiet and tired since the divorce started. How would you describe her situation?",
+        "termsKo": "",
+        "cueKo": "걔는 · 겪고 있어 · 힘든 이혼을 · 지금"
+      },
+      {
+        "key": "ev:run-through",
+        "en": "run through",
+        "ko": "처음부터 끝까지 빠르게 훑다, 리허설하다",
+        "example": "Can we run through the demo once before the client joins?",
+        "situations": [
+          "데모/발표 리허설",
+          "아젠다 빠르게 훑기"
+        ],
+        "detail": "처음부터 끝까지 달려서 통과한다(through)는 그림. 발표나 데모를 실전처럼 한 바퀴 돌려보는 리허설, 또는 목록을 순서대로 빠르게 훑는 것 둘 다야. go over가 내용을 따지는 검토라면 run through는 '순서대로 한 바퀴'라는 속도감이 핵심. 명사 run-through(리허설)도 흔해.",
+        "exampleKo": "고객 들어오기 전에 데모 한 번 돌려볼까요?",
+        "questionEn": "The client presentation starts in ten minutes. How do you make sure the demo goes smoothly?",
+        "termsKo": "",
+        "cueKo": "우리가 · 한 바퀴 돌려볼 수 있을까 · 그 데모를 · 한 번 · 고객이 들어오기 전에?"
+      },
+      {
+        "key": "ev:come-through",
+        "en": "come through",
+        "ko": "(기대에) 부응해 해내다; (요청한 것이) 도착하다",
+        "example": "The infra team really came through for us during the outage.",
+        "situations": [
+          "위기 때 도와준 팀 칭찬",
+          "승인/지원이 제때 나옴"
+        ],
+        "detail": "장벽을 뚫고(through) 끝까지 도달한다는 그림. 어려운 순간에 약속이나 기대를 실제로 해냈을 때 'they came through (for us)'라고 칭찬해. 승인이 드디어 났을 때도 'the approval came through'라고 써. follow through(끝까지 실행)가 과정이라면 come through는 '결정적 순간에 해냄'이야.",
+        "exampleKo": "장애 때 인프라팀이 진짜 든든하게 해줬어요.",
+        "questionEn": "During the outage, the infra team dropped everything and saved you. How do you praise them?",
+        "termsKo": "",
+        "cueKo": "인프라팀이 · 정말 · 해냈다 · 우리를 위해 · 그 장애 동안"
+      },
+      {
+        "key": "ev:talk-through",
+        "en": "talk through",
+        "ko": "처음부터 끝까지 얘기하며 풀다",
+        "example": "Let's talk through the options before we commit.",
+        "situations": [
+          "복잡한 결정을 말로 정리할 때",
+          "불안해하는 동료와 차근차근 짚을 때",
+          "선택지를 하나씩 검토할 때"
+        ],
+        "detail": "문제의 입구부터 출구까지(through) 말로 통과하는 그림이에요. 복잡한 문제를 빠뜨리는 부분 없이 차근차근 얘기하며 정리할 때 쓰죠. talk over가 '상의'라면 talk through는 '말로 끝까지 풀어내기'에 가깝고, 누군가를 진정시키며 단계별로 같이 짚어줄 때(talk someone through it)도 써요.",
+        "exampleKo": "확정하기 전에 선택지들을 차근차근 얘기해봅시다.",
+        "questionEn": "The team must choose between three architectures and everyone is anxious. What process do you propose for the next hour?",
+        "termsKo": "",
+        "cueKo": "얘기해봅시다 · 끝까지 · 그 선택지들을 · 우리가 확정하기 전에"
+      },
+      {
+        "key": "ev:get-through-to",
+        "en": "get through to",
+        "ko": "(사람에게) 말이 통하게 하다",
+        "example": "I just can't get through to him anymore.",
+        "situations": [
+          "아무리 말해도 안 통하는 사람",
+          "사춘기 자녀와의 소통",
+          "고집 센 동료 설득 실패"
+        ],
+        "detail": "상대를 둘러싼 벽을 뚫고(through) 메시지가 안까지 도달하는 그림이에요. 똑같은 말을 백 번 해도 상대가 받아들이지 않을 때의 무력감을 담은 표현이죠. get across가 '뜻 전달'이라면 get through to는 '사람 자체에 닿기'라서, 관계가 막힌 상황(반항하는 자녀, 고집불통 상사)에서 주로 써요.",
+        "exampleKo": "이제 걔한테는 도무지 말이 안 통해.",
+        "questionEn": "You've warned your stubborn coworker about the same risk five times and nothing changes. How do you vent about it?",
+        "termsKo": "",
+        "cueKo": "나는 그냥 못 한다 · 뚫고 닿기를 · 그에게 · 더 이상"
       }
     ]
   },
@@ -5764,6 +9438,205 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "The first implementation was a mess. Did you refactor it or do something else?",
         "termsKo": "",
         "cueKo": "프로토타입이 · 가르쳐줬다 · 우리에게 · 충분히 · 처음부터 다시 하는 게 · 더 빠르다는 걸"
+      },
+      {
+        "key": "ev:come-over",
+        "en": "come over",
+        "ko": "(우리 집에) 놀러 오다",
+        "example": "Come over for dinner on Saturday.",
+        "situations": [
+          "집들이 초대",
+          "친구 집에 부르기"
+        ],
+        "detail": "상대가 있는 곳에서 내 쪽으로 건너온다(over)는 그림. 내 집으로 초대할 때 쓰는 가장 자연스러운 동사로, visit보다 훨씬 캐주얼해. \"Want to come over?\" 한마디면 초대 끝이야.",
+        "exampleKo": "토요일에 저녁 먹으러 우리 집에 와.",
+        "questionEn": "You want to invite a friend to your place this weekend. What do you say?",
+        "termsKo": "",
+        "cueKo": "건너와 · 저녁 먹으러 · 토요일에"
+      },
+      {
+        "key": "ev:sleep-over",
+        "en": "sleep over",
+        "ko": "(남의 집에서) 자고 가다",
+        "example": "It's late — you can just sleep over.",
+        "situations": [
+          "늦은 밤 친구 배려",
+          "아이들 파자마 파티"
+        ],
+        "detail": "남의 집에 건너가(over) 하룻밤 자는 그림. 늦어서 자고 가라고 권할 때 쓰고, 명사 sleepover는 아이들 파자마 파티를 말해. 성인끼리는 \"you can crash here\"(대충 자고 가)도 같은 장면에서 자주 들려.",
+        "exampleKo": "늦었네 — 그냥 자고 가.",
+        "questionEn": "Your friend missed the last train home after hanging at your place. What do you offer?",
+        "termsKo": "",
+        "cueKo": "늦었어 · 너 · 그냥 자고 가도 돼"
+      },
+      {
+        "key": "ev:get-over",
+        "en": "get over",
+        "ko": "(병·이별을) 극복하다, 털어내다",
+        "example": "It took me months to get over that cold.",
+        "situations": [
+          "감기 회복 얘기",
+          "이별 극복 위로"
+        ],
+        "detail": "가로막은 언덕을 넘어(over) 반대편으로 가는 그림. 감기 같은 병, 이별, 충격에서 회복된다는 일상 필수 표현이야. \"I can't get over how good this is\"(이게 이렇게 좋다니 믿기지 않아)처럼 놀라움이 가시지 않는다는 감탄 용법도 정말 자주 들려.",
+        "exampleKo": "그 감기 떨쳐내는 데 몇 달 걸렸어.",
+        "questionEn": "Your friend still cries about an ex from two years ago. What hasn't happened yet?",
+        "termsKo": "",
+        "cueKo": "걸렸어 · 나한테 · 몇 달이 · 극복하는 데 · 그 감기를"
+      },
+      {
+        "key": "ev:pull-over",
+        "en": "pull over",
+        "ko": "(차를) 길가에 세우다",
+        "example": "Pull over here — I'll just run in.",
+        "situations": [
+          "잠깐 차 세우기",
+          "경찰 단속 경험"
+        ],
+        "detail": "차를 차선 너머(over) 길가로 끌어다 대는 그림. 잠깐 세울 때도, 경찰이 세울 때(got pulled over)도 이 표현이야. park(주차)와 달리 '달리다가 갓길에 잠시 댄다'는 일시적인 어감이야.",
+        "exampleKo": "여기 세워 줘 — 금방 들어갔다 올게.",
+        "questionEn": "You see flashing police lights in your mirror. What does the officer want you to do?",
+        "termsKo": "",
+        "cueKo": "차 세워 · 여기 · 나 · 그냥 뛰어 들어갔다 올게"
+      },
+      {
+        "key": "ev:go-over",
+        "en": "go over",
+        "ko": "하나하나 검토하다, 짚어 보다",
+        "example": "Let's go over the trip plan tonight.",
+        "situations": [
+          "여행 계획 점검",
+          "청구서·계약서 확인"
+        ],
+        "detail": "위에서 전체를 훑으며 넘어가는(over) 그림. 계획·청구서·계약서를 처음부터 끝까지 같이 확인하자고 할 때 써. review의 일상 버전이고, 다시 한번 설명한다(go over it again)는 뜻으로도 매일 쓰여.",
+        "exampleKo": "오늘 밤에 여행 계획 같이 점검하자.",
+        "questionEn": "The family trip is next week and nothing is finalized. What do you suggest doing tonight?",
+        "termsKo": "",
+        "cueKo": "우리 검토하자 · 여행 계획을 · 오늘 밤"
+      },
+      {
+        "key": "ev:take-over",
+        "en": "take over",
+        "ko": "(업무·프로젝트를) 넘겨받다, 인수하다",
+        "example": "Sarah will take over the project while I'm on leave.",
+        "situations": [
+          "휴가/이직 시 업무 인수",
+          "리더 교체 공지"
+        ],
+        "detail": "소유권과 통제가 이쪽으로 넘어온다(over)는 그림. 남이 하던 업무·프로젝트·역할을 이어받을 때 쓰고, hand over(넘겨주다)와 방향만 반대인 짝꿍이야. 회사 인수(takeover)도 같은 단어. take over from Sarah처럼 from으로 전임자를 붙일 수 있어.",
+        "exampleKo": "제가 휴가 간 동안 사라가 프로젝트를 맡을 거예요.",
+        "questionEn": "You're going on leave for a month. Who runs the project, and how do you announce it?",
+        "termsKo": "",
+        "cueKo": "사라가 · 넘겨받을 거다 · 그 프로젝트를 · 내가 · 휴가인 동안"
+      },
+      {
+        "key": "ev:run-over",
+        "en": "run over",
+        "ko": "(회의·일정이) 예정 시간을 넘기다",
+        "example": "The standup ran over by twenty minutes again.",
+        "situations": [
+          "회의 시간 초과 불만",
+          "다음 일정 지연 사과"
+        ],
+        "detail": "정해진 시간 경계를 넘어(over) 달려가 버린다는 그림. 회의가 예정 시간을 초과할 때의 전용 동사야. run over by ten minutes(10분 초과)처럼 by로 초과량을 붙여. 'my last meeting ran over'는 다음 회의에 늦은 이유를 대는 가장 흔한 문장이니 통째로 외워.",
+        "exampleKo": "스탠드업이 또 20분이나 길어졌어요.",
+        "questionEn": "You arrive ten minutes late because the previous meeting refused to end on time. What's your excuse?",
+        "termsKo": "",
+        "cueKo": "스탠드업이 · 시간을 넘겼다 · 20분만큼 · 또"
+      },
+      {
+        "key": "ev:pass-over",
+        "en": "pass over",
+        "ko": "(승진 등에서) 건너뛰고 배제하다",
+        "example": "She was passed over for the promotion twice before she left.",
+        "situations": [
+          "승진 누락 경험",
+          "이직 사유 설명"
+        ],
+        "detail": "선택의 손길이 그 사람을 건너뛰고(over) 지나간다는 그림. 승진·기회 후보였는데 다른 사람이 뽑혔을 때 'be passed over for X' 수동태로 거의 고정돼 쓰여. 이직 사유나 커리어 좌절 얘기의 핵심 어휘야. hand over(인계)와는 전혀 다른 말이니 주의.",
+        "exampleKo": "그분은 승진에서 두 번 밀리고 나서 회사를 떠났어요.",
+        "questionEn": "She was the obvious candidate twice, but they chose someone else both times. What happened to her?",
+        "termsKo": "",
+        "cueKo": "그녀는 · 건너뛰어졌다 · 그 승진에서 · 두 번 · 그녀가 떠나기 전에"
+      },
+      {
+        "key": "ev:win-over",
+        "en": "win over",
+        "ko": "(반대하던 사람을) 설득해 내 편으로 만들다",
+        "example": "It took a working demo to win over the skeptics.",
+        "situations": [
+          "이해관계자 설득 스토리",
+          "반대파 동의 얻기"
+        ],
+        "detail": "상대를 내 진영 쪽으로(over) 넘어오게 이긴다는 그림. 회의적이던 사람을 설득해 지지자로 만드는 과정이야. convince가 논리로 납득시키는 거라면 win over는 '마음까지 얻는' 결과에 초점이 있어. behavioral 인터뷰의 설득 스토리에서 'I won them over by...'로 클라이맥스를 만들면 좋아.",
+        "exampleKo": "회의적이던 사람들은 실제 데모를 보여주니까 넘어왔어요.",
+        "questionEn": "Half the room doubted your proposal until you showed it actually working. What did the demo accomplish?",
+        "termsKo": "",
+        "cueKo": "필요했다 · 작동하는 데모가 · 설득해 넘어오게 하는 데 · 그 회의론자들을"
+      },
+      {
+        "key": "ev:talk-over",
+        "en": "talk over",
+        "ko": "(결정 전에) 의논하다",
+        "example": "Can we talk it over before you decide anything?",
+        "situations": [
+          "큰 결정 전에 상의하자고 할 때",
+          "부부/가족 간 중요한 문제를 의논할 때",
+          "이직 고민을 나눌 때"
+        ],
+        "detail": "주제를 식탁 위에(over) 올려놓고 함께 둘러앉아 살펴보는 그림이에요. 이직, 이사, 큰 지출처럼 결정이 걸린 문제를 차분히 상의할 때 쓰죠. discuss보다 사적이고 따뜻한 느낌이라 'talk it over with my wife(아내랑 상의해볼게)' 같은 패턴이 전형적이에요.",
+        "exampleKo": "네가 뭔가 결정하기 전에 우리 그 얘기 좀 할 수 있을까?",
+        "questionEn": "Your partner is about to accept a job in another city without discussing it. What do you ask for?",
+        "termsKo": "",
+        "cueKo": "우리 할 수 있을까 · 의논을 · 그걸 · 네가 결정하기 전에 · 무엇이든"
+      },
+      {
+        "key": "ev:gloss-over",
+        "en": "gloss over",
+        "ko": "대충 얼버무리고 넘어가다",
+        "example": "The report glosses over the security risks.",
+        "situations": [
+          "발표가 문제점을 얼버무릴 때",
+          "불리한 사실을 축소할 때",
+          "제대로 다루라고 요구할 때"
+        ],
+        "detail": "흠집 위에(over) 광택제를 발라 반들반들하게 덮어버리는 그림이에요. 불리하거나 복잡한 부분을 제대로 다루지 않고 매끄럽게 지나갈 때 쓰죠. touch on은 '의도적으로 가볍게'라는 중립이지만 gloss over는 '덮으려 한다'는 비판의 뉘앙스가 실려요.",
+        "exampleKo": "그 보고서는 보안 리스크를 대충 얼버무리고 있어.",
+        "questionEn": "The launch deck spends one vague slide on serious security concerns. How do you criticize that to your manager?",
+        "termsKo": "",
+        "cueKo": "그 보고서는 · 얼버무린다 · 그 보안 리스크들을"
+      },
+      {
+        "key": "ev:smooth-over",
+        "en": "smooth over",
+        "ko": "(갈등을) 무마하다, 수습하다",
+        "example": "I spent the afternoon smoothing things over with the client.",
+        "situations": [
+          "화난 고객을 달랠 때",
+          "팀 내 갈등을 중재할 때",
+          "말실수를 수습할 때"
+        ],
+        "detail": "울퉁불퉁해진 표면 위를(over) 손으로 쓸어 매끈하게 펴는 그림이에요. 갈등이나 실수로 거칠어진 분위기를 달래서 관계를 다시 부드럽게 만드는 것이죠. resolve가 문제의 근본 해결이라면 smooth over는 감정과 분위기의 수습이라, 화난 고객 응대나 회식 자리 중재 같은 장면에 딱이에요.",
+        "exampleKo": "오후 내내 고객 달래서 상황 수습했어.",
+        "questionEn": "The client was furious about the missed deadline, so you took her to lunch and apologized. What were you doing?",
+        "termsKo": "",
+        "cueKo": "나는 보냈다 · 오후를 · 무마하면서 · 상황을 · 그 고객과"
+      },
+      {
+        "key": "ev:have-someone-over",
+        "en": "have (someone) over",
+        "ko": "(집에) 손님을 초대해 들이다",
+        "example": "We're having some friends over for dinner on Saturday.",
+        "situations": [
+          "주말 저녁 초대 얘기",
+          "스몰토크에서 주말 계획 공유",
+          "이웃/동료 초대"
+        ],
+        "detail": "over는 상대가 자기 공간에서 내 공간으로 건너오는 그림이야. 손님을 집으로 불러 저녁을 먹거나 노는 것을 말할 때 invite보다 훨씬 일상적인 표현으로, 주말 계획 스몰토크의 단골이지. come over(상대 집에 건너가다/오다)와 짝이고, have over는 '내가 호스트로 들인다'는 쪽이라는 것만 구분하면 돼.",
+        "exampleKo": "토요일에 친구들 몇 명 집에 불러서 저녁 먹기로 했어.",
+        "questionEn": "Friends are coming for dinner at your place Saturday. How do you mention your weekend plans?",
+        "termsKo": "",
+        "cueKo": "우리는 · 들일 예정이다 · 몇몇 친구들을 · 집으로 · 저녁 식사를 위해 · 토요일에"
       }
     ]
   },
@@ -5845,6 +9718,375 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "How did the timeline of that migration project actually go?",
         "termsKo": "",
         "cueKo": "마이그레이션은 · 질질 끌렸다 · 3개월이나 더 · 계획보다"
+      },
+      {
+        "key": "ev:go-on",
+        "en": "go on",
+        "ko": "계속하다; (일이) 일어나다",
+        "example": "Sorry, go on — I didn't mean to interrupt.",
+        "situations": [
+          "말 끊었다가 다시 권하기",
+          "무슨 일인지 묻기"
+        ],
+        "detail": "멈추지 않고 계속(on) 굴러간다는 그림. \"계속 말해(go on)\"와 \"무슨 일이야?(What's going on?)\" 두 장면이 압도적으로 많아. go on a trip(여행 가다), go on a diet(다이어트 시작하다)처럼 굳어진 표현도 세트로 알아둬.",
+        "exampleKo": "미안, 계속해 — 끊으려던 건 아니야.",
+        "questionEn": "You accidentally interrupted someone mid-story. How do you hand the floor back?",
+        "termsKo": "",
+        "cueKo": "미안 · 계속해 · 나 · 의도한 거 아니야 · 끊으려고"
+      },
+      {
+        "key": "ev:come-on",
+        "en": "come on",
+        "ko": "어서; 왜 이래, 설마 (재촉·불신·격려)",
+        "example": "Come on, we're going to be late!",
+        "situations": [
+          "꾸물대는 친구 재촉",
+          "말도 안 되는 소리에 반응"
+        ],
+        "detail": "상대를 내 쪽으로 끌어 움직이게 하는 그림이 굳어진 감탄사야. 재촉(어서!), 불신(에이 설마), 격려(힘내) 모두 억양만 바꿔서 써. 사전 뜻보다 톤이 의미를 결정하는 대표적인 표현이라, 상황별 억양을 통째로 외우는 게 좋아.",
+        "exampleKo": "빨리 와, 우리 늦겠어!",
+        "questionEn": "Your friend is taking forever to get ready and you're already late. What do you say?",
+        "termsKo": "",
+        "cueKo": "어서 · 우리 · 늦을 거야"
+      },
+      {
+        "key": "ev:move-on",
+        "en": "move on",
+        "ko": "(다음으로) 넘어가다, 털고 나아가다",
+        "example": "It hurt, but I've moved on.",
+        "situations": [
+          "이별·실패 극복 얘기",
+          "회의에서 다음 안건으로"
+        ],
+        "detail": "멈춰 있던 자리에서 계속(on) 앞으로 이동하는 그림. 이별이나 실패에 머무르지 않고 다음 단계로 간다는 감정 표현이 일상 1순위 용법이야. 회의에서 \"let's move on\"(다음으로 넘어가죠)처럼 화제 전환에도 매일 써.",
+        "exampleKo": "아팠지만, 이젠 다 털어냈어.",
+        "questionEn": "It's been a year since the layoff. How do you feel about it now?",
+        "termsKo": "",
+        "cueKo": "그건 · 아팠어 · 하지만 나 · 털고 나아갔어"
+      },
+      {
+        "key": "ev:count-on",
+        "en": "count on",
+        "ko": "믿다, 의지하다",
+        "example": "You can count on me to be there.",
+        "situations": [
+          "부탁 받고 안심시키기",
+          "믿을 만한 사람 묘사"
+        ],
+        "detail": "무언가를 기반(on) 삼아 계산에 넣는다는 그림. \"나만 믿어(you can count on me)\"처럼 사람이나 일이 기대대로 되리라 의지할 때 써. rely on과 같은 뜻이지만 더 구어적이고 따뜻한 어감이야.",
+        "exampleKo": "내가 꼭 갈 테니까 믿어도 돼.",
+        "questionEn": "Your friend is nervous you might not show at their big event. How do you reassure them?",
+        "termsKo": "",
+        "cueKo": "너 · 믿어도 돼 · 나를 · 거기 있을 거라고"
+      },
+      {
+        "key": "ev:hold-on",
+        "en": "hold on",
+        "ko": "잠깐 기다리다",
+        "example": "Hold on a second, I'll grab a pen.",
+        "situations": [
+          "통화 중 잠깐 멈춤",
+          "말 끊고 확인할 때"
+        ],
+        "detail": "하던 상태를 붙잡은 채(on) 유지하며 기다린다는 그림. \"잠깐만\"의 표준 표현으로 hold on a second/sec가 한 덩어리야. hang on도 완전히 같은 뜻이고, 둘 다 wait보다 부드럽게 들려.",
+        "exampleKo": "잠깐만, 펜 좀 가져올게.",
+        "questionEn": "Someone asks you a question over the phone, but you need a moment to find the answer. What do you say?",
+        "termsKo": "",
+        "cueKo": "기다려 · 잠깐 · 내가 가져올게 · 펜을"
+      },
+      {
+        "key": "ev:check-on",
+        "en": "check on",
+        "ko": "(잘 있는지) 들여다보다, 살피다",
+        "example": "I'll check on the kids before we leave.",
+        "situations": [
+          "아이·반려동물 살피기",
+          "오븐 속 음식 확인"
+        ],
+        "detail": "대상에 시선을 갖다 대고(on) 상태를 확인하는 그림. 아이·환자·반려동물이 잘 있는지, 오븐 속 음식이 잘 되는지 들여다볼 때 써. 안부 연락으로 \"just checking on you\"(잘 지내나 해서)도 따뜻한 단골 표현이야.",
+        "exampleKo": "나가기 전에 애들 좀 보고 올게.",
+        "questionEn": "The baby has been quiet upstairs for an hour. What do you do?",
+        "termsKo": "",
+        "cueKo": "내가 · 살펴볼게 · 애들을 · 전에 · 우리 나가기"
+      },
+      {
+        "key": "ev:get-on",
+        "en": "get on",
+        "ko": "(버스·지하철·비행기에) 타다",
+        "example": "We got on the wrong bus this morning.",
+        "situations": [
+          "대중교통 길 안내",
+          "탑승 실수 썰"
+        ],
+        "detail": "버스·기차·비행기처럼 올라서서 타는 교통수단 위로(on) 오르는 그림. 택시·승용차처럼 들어가 앉는 건 get in으로 구분하는 게 포인트야. '서서 타면 on, 앉아 들어가면 in'으로 기억하면 안 헷갈려.",
+        "exampleKo": "오늘 아침에 버스를 잘못 탔어.",
+        "questionEn": "Why were you late? Something about taking the wrong bus this morning.",
+        "termsKo": "",
+        "cueKo": "우리 · 탔어 · 잘못된 버스를 · 오늘 아침"
+      },
+      {
+        "key": "ev:put-on",
+        "en": "put on",
+        "ko": "(옷을) 입다, 걸치다; (살이) 찌다",
+        "example": "Put on a jacket — it's freezing outside.",
+        "situations": [
+          "옷 챙겨 입으라는 잔소리",
+          "체중 변화 얘기"
+        ],
+        "detail": "몸 표면에(on) 옷을 갖다 붙이는 '입는 동작'의 그림. 상태인 wear와 달리 put on은 입는 순간의 동작이야 — \"지금 입는 중\"은 putting on. put on weight(살찌다), put on music(음악 틀다)도 같은 그림으로 확장돼.",
+        "exampleKo": "재킷 입어 — 밖에 엄청 추워.",
+        "questionEn": "Your kid is heading outside in a T-shirt and it's minus ten. What do you say?",
+        "termsKo": "",
+        "cueKo": "입어 · 재킷을 · 밖이 · 엄청 추워"
+      },
+      {
+        "key": "ev:try-on",
+        "en": "try on",
+        "ko": "(옷·신발을) 입어 보다, 신어 보다",
+        "example": "Can I try this on in a medium?",
+        "situations": [
+          "피팅룸 요청",
+          "신발 사이즈 확인"
+        ],
+        "detail": "옷을 몸에(on) 시험 삼아 얹어 보는 그림. 옷가게에서 입어 봐도 되냐고 묻는 표준 문장이 \"Can I try this on?\"이야. 음식·서비스를 시험해 보는 try out과 달리, try on은 몸에 걸치는 것 전용이야.",
+        "exampleKo": "이거 미디엄으로 입어 볼 수 있어요?",
+        "questionEn": "You like a shirt at the store, but you're not sure about the size. What do you ask?",
+        "termsKo": "",
+        "cueKo": "제가 · 입어 봐도 돼요 · 이거 · 미디엄으로?"
+      },
+      {
+        "key": "ev:turn-on",
+        "en": "turn on",
+        "ko": "(기기·불을) 켜다",
+        "example": "Turn on the AC — it's boiling in here.",
+        "situations": [
+          "가전 켜기 부탁",
+          "불·TV 켜는 일상"
+        ],
+        "detail": "스위치를 접점에 붙여(on) 전류를 흐르게 하는 그림. 불·TV·에어컨 등 모든 기기를 켜는 기본 동사야. 목적어가 대명사면 turn it on처럼 가운데 끼워야 한다는 어순이 한국 분들이 가장 자주 틀리는 부분이야.",
+        "exampleKo": "에어컨 켜 — 여기 찜통이야.",
+        "questionEn": "It's thirty degrees inside and the AC is just sitting there. What do you do?",
+        "termsKo": "",
+        "cueKo": "켜 · 에어컨을 · 여기 · 찜통이야"
+      },
+      {
+        "key": "ev:run-low-on",
+        "en": "run low on",
+        "ko": "(얼마 안 남아) 부족해지다",
+        "example": "We're running low on toilet paper.",
+        "situations": [
+          "장보기 목록 작성",
+          "연료·배터리 잔량 경고"
+        ],
+        "detail": "잔량 게이지가 낮은(low) 쪽으로 내려가는 중이라는 그림. 완전히 떨어진 run out of의 직전 단계 — '슬슬 떨어져 간다'야. 장보기 목록 만들 때 \"we're running low on X\"가 단골 문장이야.",
+        "exampleKo": "휴지가 슬슬 떨어져 가.",
+        "questionEn": "There are only two rolls left in the bathroom closet. What do you note before grocery shopping?",
+        "termsKo": "",
+        "cueKo": "우리 · 부족해지고 있어 · 휴지가"
+      },
+      {
+        "key": "ev:sleep-on",
+        "en": "sleep on",
+        "ko": "하룻밤 자며 생각해 보다",
+        "example": "Let me sleep on it and decide tomorrow.",
+        "situations": [
+          "큰 결정 보류",
+          "구매·이직 제안 숙고"
+        ],
+        "detail": "결정을 베개 삼아 그 위에서(on) 하룻밤 잔다는 그림. 큰 결정을 바로 내리지 않고 하루 묵힌다는 뜻으로, 거의 항상 sleep on it 형태로 써. 구매나 이직 제안을 받았을 때 정중하게 시간을 버는 만능 표현이야.",
+        "exampleKo": "하룻밤 생각해 보고 내일 결정할게.",
+        "questionEn": "The dealer pushes you to buy the car today, but you want one more night. What do you say?",
+        "termsKo": "",
+        "cueKo": "내가 · 하룻밤 생각해 볼게 · 그것을 · 그리고 결정할게 · 내일"
+      },
+      {
+        "key": "ev:work-on",
+        "en": "work on",
+        "ko": "(고치거나 나아지게) 공들이다, 작업 중이다",
+        "example": "I'm working on my sleep schedule these days.",
+        "situations": [
+          "고치려는 습관 얘기",
+          "진행 중인 프로젝트"
+        ],
+        "detail": "대상 위에(on) 붙어서 계속 손을 대는 그림. 아직 완성은 아니지만 나아지게 만드는 중이라는 뜻으로, 습관·몸·관계·요리 실력까지 다 목적어가 돼. \"I'm working on it\"(지금 하고 있어)은 재촉에 대한 만능 대답이야.",
+        "exampleKo": "요즘 수면 패턴 고치는 중이야.",
+        "questionEn": "Your sleep schedule is a mess, and you've started fixing it bit by bit. What would you say?",
+        "termsKo": "",
+        "cueKo": "나 · 공들이고 있어 · 내 수면 패턴에 · 요즘"
+      },
+      {
+        "key": "ev:touch-on",
+        "en": "touch on",
+        "ko": "(주제를) 짧게 언급하고 지나가다",
+        "example": "I'll touch on the budget briefly at the end.",
+        "situations": [
+          "발표 아젠다 안내",
+          "깊이 안 다루고 넘어갈 때"
+        ],
+        "detail": "주제 표면에 살짝 손을 댔다가(touch on) 지나간다는 그림. 발표에서 '이건 뒤에서 짧게만 언급할게요'라고 예고할 때 딱이야. cover(제대로 다루다), dig into(파고들다)와의 깊이 차이로 기억해. as I touched on earlier(아까 짧게 언급했듯이)도 발표 단골 멘트.",
+        "exampleKo": "예산 얘기는 마지막에 짧게만 짚을게요.",
+        "questionEn": "Your presentation is short, and the budget topic only deserves thirty seconds. How do you preview that?",
+        "termsKo": "",
+        "cueKo": "나는 · 짧게 짚을 거다 · 예산을 · 간단히 · 마지막에"
+      },
+      {
+        "key": "ev:hop-on",
+        "en": "hop on",
+        "ko": "(콜·회의에) 잠깐 들어가다",
+        "example": "Can you hop on a quick call to sort this out?",
+        "situations": [
+          "슬랙으로 즉석 콜 제안",
+          "문제 생겨 긴급 통화"
+        ],
+        "detail": "버스에 폴짝 올라타듯(hop on) 콜에 가볍게 들어간다는 그림. 'hop on a quick call'은 슬랙으로 글 주고받다 답답할 때 즉석 통화를 제안하는 미국 직장의 1순위 문장이야. join보다 '잠깐, 부담 없이'라는 가벼움이 핵심. hop off(콜에서 나가다)도 짝으로 쓰여.",
+        "exampleKo": "이거 정리하게 잠깐 콜 가능해요?",
+        "questionEn": "The Slack thread is going in circles and a two-minute conversation would fix it. What do you suggest?",
+        "termsKo": "",
+        "cueKo": "너 · 들어올 수 있어? · 짧은 콜에 · 정리하기 위해 · 이걸"
+      },
+      {
+        "key": "ev:catch-on",
+        "en": "catch on",
+        "ko": "감을 잡다, 알아차리다; 유행하다",
+        "example": "Don't worry, you'll catch on quickly.",
+        "situations": [
+          "새 일을 배우는 신입을 격려할 때",
+          "눈치챘다고 말할 때",
+          "어떤 것이 유행할 때"
+        ],
+        "detail": "지나가는 것을 낚아채 붙잡는(on) 그림이에요. 새로운 일이나 규칙의 '감을 잡는다'는 뜻이 제일 흔하고, 숨겨진 상황을 '눈치챈다'(He never caught on that we knew), 트렌드가 '유행한다'(The app caught on fast)까지 셋 다 자주 쓰여요. learn보다 비공식적이고 직관적으로 익히는 느낌이죠.",
+        "exampleKo": "걱정 마, 금방 감 잡을 거야.",
+        "questionEn": "A new hire feels overwhelmed by the team's workflow during her second day. How do you reassure her?",
+        "termsKo": "",
+        "cueKo": "걱정 마 · 너는 잡을 거야 · 감을 · 빨리"
+      },
+      {
+        "key": "ev:dawn-on",
+        "en": "dawn on",
+        "ko": "문득 깨닫다",
+        "example": "It suddenly dawned on me why she was upset.",
+        "situations": [
+          "뒤늦게 이유를 깨달았을 때",
+          "이야기에서 반전을 묘사할 때",
+          "놓쳤던 사실이 떠오를 때"
+        ],
+        "detail": "해가 떠오르며 어둠 속 풍경이 서서히 보이듯, 깨달음이 사람 위에(on) 밝아오는 그림이에요. 한참 지나서야 '아, 그래서 그랬구나' 하는 순간을 묘사하는 스토리텔링 단골 표현이죠. realize와 달리 주어가 깨달음(It)이고 사람이 on 뒤에 온다는 어순이 포인트예요.",
+        "exampleKo": "그녀가 왜 화났는지 문득 깨달았어.",
+        "questionEn": "Halfway home, you suddenly understood why your friend seemed cold all evening. How do you tell that story?",
+        "termsKo": "",
+        "cueKo": "그게 갑자기 · 밝아왔다 · 내 위에 · 왜 그녀가 화났는지"
+      },
+      {
+        "key": "ev:grow-on",
+        "en": "grow on",
+        "ko": "점점 좋아지다, 정이 들다",
+        "example": "The city really grows on you after a while.",
+        "situations": [
+          "처음 별로였던 게 좋아질 때",
+          "새 동네/노래/사람에 정들 때",
+          "첫인상과 달라진 평가"
+        ],
+        "detail": "식물이 어떤 표면 위에(on) 뿌리내려 자라듯, 호감이 내 안에서 서서히 자라는 그림이에요. 첫인상은 별로였는데 볼수록 좋아지는 노래, 도시, 사람에 쓰죠. 주어가 대상이고 사람이 on 뒤에 오는 어순(It grows on you)이 특이한데, warm up to와 시점만 반대인 짝꿍 표현이에요.",
+        "exampleKo": "이 도시는 살다 보면 진짜 정들어.",
+        "questionEn": "You hated this neighborhood when you moved in, but now you'd never leave. How do you explain that change?",
+        "termsKo": "",
+        "cueKo": "그 도시는 · 정말 · 자란다 · 네 안에서 · 시간이 좀 지나면"
+      },
+      {
+        "key": "ev:lean-on",
+        "en": "lean on",
+        "ko": "(힘들 때) 기대다, 의지하다",
+        "example": "It's okay to lean on your friends sometimes.",
+        "situations": [
+          "힘든 시기에 도움을 청할 때",
+          "의지가 되는 사람을 말할 때",
+          "혼자 버티는 사람을 위로할 때"
+        ],
+        "detail": "지친 몸을 벽에(on) 기대듯 사람에게 정서적 무게를 싣는 그림이에요. count on이 '결과에 대한 신뢰'라면 lean on은 '힘들 때의 정서적 의지'에 가깝죠. 'You can lean on me(나한테 기대도 돼)'는 위로의 단골 문장이고, 혼자 다 짊어지려는 사람에게 해주기 좋은 말이에요.",
+        "exampleKo": "가끔은 친구들한테 기대도 괜찮아.",
+        "questionEn": "Your friend insists she can handle the divorce alone and refuses all help. What do you gently tell her?",
+        "termsKo": "",
+        "cueKo": "그건 괜찮아 · 기대는 것 · 네 친구들에게 · 가끔은"
+      },
+      {
+        "key": "ev:cheat-on",
+        "en": "cheat on",
+        "ko": "바람피우다",
+        "example": "She found out he'd been cheating on her for months.",
+        "situations": [
+          "외도 소식을 전할 때",
+          "드라마/연예 뉴스 이야기",
+          "이별 사유 설명"
+        ],
+        "detail": "규칙을 어기는 cheat가 사람 위에(on) 얹히면 '그 사람을 상대로 한 배신', 즉 외도가 돼요. cheat on her에서 her는 바람의 상대가 아니라 배신당한 사람이라는 어순이 한국인이 제일 헷갈리는 부분이죠. 시험 부정행위(cheat on the exam)에도 같은 구조를 써요.",
+        "exampleKo": "걔가 몇 달째 바람피우고 있었다는 걸 그녀가 알아냈어.",
+        "questionEn": "Your friend just discovered the real reason her boyfriend was so secretive with his phone. What happened?",
+        "termsKo": "",
+        "cueKo": "그녀는 알아냈다 · 그가 바람피워왔다는 걸 · 그녀를 상대로 · 몇 달간"
+      },
+      {
+        "key": "ev:pick-on",
+        "en": "pick on",
+        "ko": "트집 잡다, 괴롭히다",
+        "example": "The manager always picks on the newest hire.",
+        "situations": [
+          "한 사람만 갈구는 상사",
+          "학교 괴롭힘 이야기",
+          "왜 나만 갖고 그러냐고 항의할 때"
+        ],
+        "detail": "새가 한 지점만 콕콕 쪼아대듯(on) 특정 사람만 반복해서 집어 괴롭히는 그림이에요. 약한 상대를 골라 트집 잡는다는 뉘앙스가 핵심이라, 'Why are you picking on me?(왜 나만 갖고 그래?)'가 전형적 항변이죠. bully보다 가볍지만 지속성과 표적성이 있다는 게 특징이에요.",
+        "exampleKo": "그 매니저는 항상 제일 신입만 갈궈.",
+        "questionEn": "Every meeting, the director criticizes only the youngest member's work while ignoring identical mistakes from others. What's he doing?",
+        "termsKo": "",
+        "cueKo": "그 매니저는 · 항상 · 트집 잡는다 · 가장 새로운 직원을"
+      },
+      {
+        "key": "ev:pass-on",
+        "en": "pass on",
+        "ko": "전달하다; (제안을) 사양하다",
+        "example": "I'll pass on dessert, but thanks for offering.",
+        "situations": [
+          "권유를 가볍게 사양할 때",
+          "메시지를 전달할 때",
+          "기회를 패스할 때"
+        ],
+        "detail": "내 앞에 온 것을 받지 않고 다음으로 넘기는(on) 그림이라 두 가지 뜻이 나와요. 'I'll pass on that(난 사양할게)'은 거절 중 가장 가벼운 톤이고, 'pass on the message(말 전해줘)'는 릴레이 전달이죠. turn down보다 부담 없어서 디저트, 술자리, 게임 제안을 거절할 때 딱이에요.",
+        "exampleKo": "디저트는 사양할게, 권해줘서 고마워.",
+        "questionEn": "Everyone's ordering a third round of drinks, but you have an early flight. What do you say?",
+        "termsKo": "",
+        "cueKo": "나는 패스할게 · 디저트를 · 그래도 고마워 · 권해줘서"
+      },
+      {
+        "key": "ev:hang-on",
+        "en": "hang on",
+        "ko": "잠깐 기다리다 (hang on a sec)",
+        "example": "Hang on a sec, let me pull the logs.",
+        "situations": [
+          "잠깐만 기다려 달라고 할 때",
+          "통화 중 확인할 시간 벌기",
+          "질문에 바로 답하기 전 멈춤"
+        ],
+        "detail": "on은 지금 상태에 매달려 그대로 붙어 있는 그림이야. 상대에게 '끊지 말고, 가지 말고 잠깐만 그대로 있어 줘'라고 할 때 hang on a sec이 입에서 바로 나와야 하는 표현이지. hold on과 완전히 같은 뜻이고 hang on이 살짝 더 캐주얼한 정도의 차이, hang on to something은 '꼭 붙들다'라는 별개 뜻이야.",
+        "exampleKo": "잠깐만, 로그 좀 띄워 볼게.",
+        "questionEn": "A teammate asks a question and you need ten seconds before answering. What do you say first?",
+        "termsKo": "",
+        "cueKo": "기다려 · 잠깐 · 내가 띄우게 · 그 로그를"
+      },
+      {
+        "key": "ev:bail-on",
+        "en": "bail on",
+        "ko": "(약속·사람을) 바람맞히다, 막판에 펑크 내다",
+        "example": "Sorry I bailed on dinner last night, work blew up.",
+        "situations": [
+          "약속 취소를 사과할 때",
+          "갑자기 빠진 사람 얘기",
+          "모임에 못 가게 됐을 때"
+        ],
+        "detail": "bail은 원래 (보석으로) 빠져나간다는 말이고, on 뒤에는 남겨진 약속이나 사람이 붙는 구조야. 가기로 한 저녁 약속이나 모임에서 막판에 빠질 때 'sorry I bailed on you'가 북미 일상 사과의 단골 표현이지. cancel은 중립적인 취소고, bail on은 '상대를 남겨두고 펑크 냈다'는 미안함이나 비난이 실려 있어.",
+        "exampleKo": "어젯밤 저녁 약속 펑크 내서 미안, 일이 터졌어.",
+        "questionEn": "You skipped last night's dinner plans at the last minute because of work. How do you apologize?",
+        "termsKo": "",
+        "cueKo": "미안 · 내가 펑크 냈다 · 그 저녁 약속을 · 어젯밤 · 일이 · 터졌어"
       }
     ]
   },
@@ -5926,6 +10168,853 @@ export const PARTICLE_GROUPS: ParticleGroup[] = [
         "questionEn": "Why does that module still have zero test coverage?",
         "termsKo": "",
         "cueKo": "나는 · 끝내 짬을 내지 못했다 · 테스트 쓰는 데 · 그 모듈을 위한"
+      },
+      {
+        "key": "ev:shop-around",
+        "en": "shop around",
+        "ko": "여기저기 가격을 비교하다",
+        "example": "Shop around before you pick an insurance plan.",
+        "situations": [
+          "보험·가전 비교 구매",
+          "견적 여러 곳 받기"
+        ],
+        "detail": "이 가게 저 가게를 돌아다니며(around) 조건을 비교하는 그림. 보험·항공권·가전처럼 가격 차가 큰 물건 살 때 \"발품 팔아 봐\"가 딱 이 표현이야. 첫 견적에 바로 계약하지 말라는 조언으로 단골이야.",
+        "exampleKo": "보험 정하기 전에 여기저기 비교해 봐.",
+        "questionEn": "Your friend is about to buy the first insurance quote they got. What do you advise?",
+        "termsKo": "",
+        "cueKo": "비교해 다녀 · 전에 · 네가 고르기 · 보험 플랜을"
+      },
+      {
+        "key": "ev:look-around",
+        "en": "look around",
+        "ko": "둘러보다",
+        "example": "We're just looking around, thanks.",
+        "situations": [
+          "매장에서 구경만 할 때",
+          "새 동네 탐색"
+        ],
+        "detail": "시선을 사방으로(around) 돌리며 훑어보는 그림. 가게 직원이 도와줄까 물을 때 \"그냥 구경 중이에요(just looking around)\"가 표준 대답이야. 새 동네나 집을 둘러본다고 할 때도 그대로 써.",
+        "exampleKo": "그냥 둘러보는 중이에요, 감사해요.",
+        "questionEn": "A store clerk asks if you need help, but you're just browsing. What do you reply?",
+        "termsKo": "",
+        "cueKo": "우리 그냥 · 둘러보고 있어요 · 감사해요"
+      },
+      {
+        "key": "ev:come-around",
+        "en": "come around",
+        "ko": "(결국) 생각을 바꾸다, 받아들이다",
+        "example": "Dad will come around once he sees the apartment.",
+        "situations": [
+          "반대하는 가족 설득",
+          "시간이 해결해 줄 거란 위로"
+        ],
+        "detail": "반대편에 서 있던 사람이 한 바퀴 돌아(around) 내 쪽으로 오는 그림. 처음엔 반대하던 사람이 결국 받아들이게 된다는 뜻이야. 설득해서가 아니라 '시간이 지나며 스스로' 돌아온다는 어감이 포인트야.",
+        "exampleKo": "아빠도 그 아파트 보면 생각 바뀌실 거야.",
+        "questionEn": "Your dad hates the idea now, but you're sure he'll change his mind eventually. Say that.",
+        "termsKo": "",
+        "cueKo": "아빠는 · 생각 바뀔 거야 · 보면 · 그 아파트를"
+      },
+      {
+        "key": "ev:run-around",
+        "en": "run around",
+        "ko": "정신없이 돌아다니다",
+        "example": "I've been running around all day doing errands.",
+        "situations": [
+          "볼일 많았던 하루 묘사",
+          "바쁜 육아 일상"
+        ],
+        "detail": "여기저기로(around) 뛰어다니는 그림. 은행·약국·마트를 도는 볼일 많은 하루를 묘사하는 표준 표현이야. 명사 runaround는 '뺑뺑이 돌리기'(they gave me the runaround)라는 불평으로 쓰여.",
+        "exampleKo": "하루 종일 볼일 보러 정신없이 돌아다녔어.",
+        "questionEn": "Bank, pharmacy, post office, groceries — that was your whole Saturday. How do you describe it?",
+        "termsKo": "",
+        "cueKo": "나 · 정신없이 돌아다녔어 · 하루 종일 · 보면서 · 볼일을"
+      },
+      {
+        "key": "ev:stick-around",
+        "en": "stick around",
+        "ko": "(떠나지 않고) 좀 더 있다",
+        "example": "Stick around — we're cutting the cake soon.",
+        "situations": [
+          "손님 더 있다 가라고 붙잡기",
+          "행사 끝까지 남기"
+        ],
+        "detail": "그 자리 주변에(around) 붙어(stick) 머문다는 그림. 일어나려는 사람에게 \"좀 더 있다 가\"라고 붙잡는 표준 표현이야. stay보다 캐주얼하고, '곧 좋은 게 있으니 남아'라는 기대의 뉘앙스가 자주 실려.",
+        "exampleKo": "좀 더 있다 가 — 곧 케이크 자를 거야.",
+        "questionEn": "Your guest reaches for their coat, but dessert is almost ready. What do you say?",
+        "termsKo": "",
+        "cueKo": "더 있어 · 우리 · 자를 거야 · 케이크를 · 곧"
+      },
+      {
+        "key": "ev:turn-around",
+        "en": "turn around",
+        "ko": "(망해가던 것을) 회생시키다; 빠르게 처리해 돌려주다",
+        "example": "The new lead turned the project around in one quarter.",
+        "situations": [
+          "부진한 프로젝트 회생 스토리",
+          "빠른 작업 회신(turnaround) 얘기"
+        ],
+        "detail": "추락하던 방향을 빙 돌려(around) 반대로 바꾼다는 그림. 망해가던 프로젝트·팀·회사를 살려내는 서사의 핵심 동사야. 또 하나의 필수 용법은 명사 turnaround time(요청부터 회신까지 걸리는 시간) — 'quick turnaround'(빠른 처리)는 업무 요청 메일의 단골 표현이야.",
+        "exampleKo": "새 리드가 한 분기 만에 프로젝트를 살려냈어요.",
+        "questionEn": "The project was failing badly until the new lead arrived. What happened in the next three months?",
+        "termsKo": "",
+        "cueKo": "그 새 리드는 · 회생시켰다 · 그 프로젝트를 · 한 분기 만에"
+      },
+      {
+        "key": "ev:dance-around",
+        "en": "dance around",
+        "ko": "(핵심을) 빙빙 돌려 피하다",
+        "example": "Stop dancing around the issue and tell me what's wrong.",
+        "situations": [
+          "상대가 본론을 피할 때",
+          "어려운 주제를 회피하는 회의",
+          "돌려 말하지 말라고 요구할 때"
+        ],
+        "detail": "핵심 주제 주변을(around) 춤추듯 맴돌기만 하고 정작 밟지는 않는 그림이에요. 해고, 연봉, 갈등처럼 불편한 본론을 피해서 변죽만 울릴 때 쓰죠. beat around the bush와 같은 뜻인데 dance around가 더 시각적이고, 뒤에 the issue/the question이 단짝으로 와요.",
+        "exampleKo": "빙빙 돌리지 말고 뭐가 문제인지 말해.",
+        "questionEn": "Your friend clearly has bad news but keeps talking in circles. How do you push for the real story?",
+        "termsKo": "",
+        "cueKo": "그만해 · 빙빙 돌리기를 · 그 문제 주위를 · 그리고 말해줘 · 뭐가 잘못인지"
+      },
+      {
+        "key": "ev:wrap-one-s-head-around",
+        "en": "wrap one's head around",
+        "ko": "(어려운 것을) 머리로 이해해내다",
+        "example": "I still can't wrap my head around their pricing.",
+        "situations": [
+          "복잡한 개념이 이해 안 될 때",
+          "받아들이기 힘든 사실 앞에서",
+          "난해한 코드/구조를 마주했을 때"
+        ],
+        "detail": "머리를 물체에 빙 둘러 감싸서(around) 통째로 파악하려는 그림이에요. 거의 항상 can't와 함께 써서 '아무리 봐도 이해가 안 된다'는 분투를 표현하죠. don't understand보다 '노력 중인데 안 잡힌다'는 과정의 뉘앙스가 살아 있어서, 복잡한 시스템이나 믿기 힘든 사실 둘 다에 써요.",
+        "exampleKo": "걔네 가격 정책은 아직도 이해가 안 돼.",
+        "questionEn": "The new billing model has three tiers, four add-ons, and regional exceptions. How do you express your confusion?",
+        "termsKo": "",
+        "cueKo": "나는 여전히 못 해 · 머리로 감싸기를 · 걔네 가격 정책을"
+      },
+      {
+        "key": "ev:boss-around",
+        "en": "boss around",
+        "ko": "이래라저래라 하다, 부려먹다",
+        "example": "He's not even my manager, but he bosses everyone around.",
+        "situations": [
+          "권한 없이 지시하는 동료",
+          "형/언니의 잔소리",
+          "갑질하는 사람 묘사"
+        ],
+        "detail": "사장(boss)처럼 굴며 사람들을 이리저리(around) 돌리는 그림이에요. 정당한 권한 없이, 혹은 권한이 있어도 함부로 명령조로 부리는 태도를 비꼬는 말이죠. direct(지시하다)와 달리 항상 부정적이고, 'Stop bossing me around(나한테 이래라저래라 하지 마)'가 전형적 반격이에요.",
+        "exampleKo": "걔는 내 매니저도 아니면서 모두한테 이래라저래라 해.",
+        "questionEn": "A peer with zero authority keeps assigning you tasks and checking your hours. How do you describe his behavior?",
+        "termsKo": "",
+        "cueKo": "그는 아니다 · 심지어 내 매니저도 · 그런데 그는 부려먹는다 · 모두를"
+      },
+      {
+        "key": "ev:ask-around",
+        "en": "ask around",
+        "ko": "여기저기 물어보다, 수소문하다",
+        "example": "I'll ask around and see if anyone's hiring.",
+        "situations": [
+          "일자리/집을 수소문할 때",
+          "추천을 구할 때",
+          "정보를 모을 때"
+        ],
+        "detail": "질문을 들고 주변 사람들을 한 바퀴 도는(around) 그림이에요. 한 명에게 묻는 게 아니라 여러 사람에게 두루 물어 정보를 모으는 것이죠. '아는 사람 있나 알아볼게'를 영어로 옮길 때 정확히 이 표현이고, 구직·이사·맛집 추천 같은 생활밀착형 수소문에 다 써요.",
+        "exampleKo": "채용하는 데 있는지 여기저기 물어봐줄게.",
+        "questionEn": "Your cousin just moved here and needs a job lead fast. How do you offer to help?",
+        "termsKo": "",
+        "cueKo": "나는 물어볼게 · 여기저기 · 그리고 알아볼게 · 누가 채용 중인지"
+      }
+    ]
+  },
+  {
+    "particle": "away",
+    "coreKo": "멀어져서 시야/소유에서 사라지는 그림이에요. throw away(버려서 없앰), put away(치워서 안 보임), run away(멀리 달아남) — 전부 '여기서 멀어짐'이 깔려 있어요.",
+    "items": [
+      {
+        "key": "ev:pass-away",
+        "en": "pass away",
+        "ko": "돌아가시다",
+        "example": "Her grandfather passed away last spring.",
+        "situations": [
+          "부고 전하기",
+          "조문 인사"
+        ],
+        "detail": "이 세상에서 저쪽으로 멀어져(away) 간다는 완곡한 그림. die를 직접 말하기 어려운 자리에서 쓰는 표준 완곡어법이야. 부고를 전하거나 위로할 때는 거의 항상 이 표현을 쓰는 게 예의야.",
+        "exampleKo": "걔 할아버지가 지난봄에 돌아가셨어.",
+        "questionEn": "Your coworker's grandmother died, and you need to mention it gently to others. How do you phrase it?",
+        "termsKo": "",
+        "cueKo": "걔 할아버지가 · 돌아가셨어 · 지난봄에"
+      },
+      {
+        "key": "ev:put-away",
+        "en": "put away",
+        "ko": "(제자리에) 치우다, 넣어 두다",
+        "example": "Put away the dishes before you go out.",
+        "situations": [
+          "집안일 분담",
+          "아이 장난감 정리 잔소리"
+        ],
+        "detail": "나와 있던 걸 멀리(away) 제 보관 자리로 보내는 그림. 마른 그릇을 찬장에, 빨래를 서랍에 넣는 '정리의 마지막 단계'야. 버리는 throw away와 달리 보관하는 거라는 게 핵심 차이야.",
+        "exampleKo": "나가기 전에 그릇 정리해 둬.",
+        "questionEn": "The clean dishes have been sitting in the rack for two days. What needs to happen?",
+        "termsKo": "",
+        "cueKo": "치워 둬 · 그릇들을 · 전에 · 네가 나가기"
+      },
+      {
+        "key": "ev:throw-away",
+        "en": "throw away",
+        "ko": "버리다",
+        "example": "Don't throw away the receipt — we might return it.",
+        "situations": [
+          "영수증·서류 보관 당부",
+          "대청소 중 버릴지 결정"
+        ],
+        "detail": "손에서 멀리(away) 던져 없애는 그림. 쓰레기통에 버리는 것의 표준 표현이고 throw out도 완전히 같아. 기회를 날려버린다(threw away his chance)는 비유 확장도 자주 들려.",
+        "exampleKo": "영수증 버리지 마 — 반품할지도 몰라.",
+        "questionEn": "You're holding a receipt you might need for a refund later. What do you tell your partner not to do?",
+        "termsKo": "",
+        "cueKo": "버리지 마 · 영수증을 · 우리 · 반품할지도 몰라 · 그거"
+      },
+      {
+        "key": "ev:give-away",
+        "en": "give away",
+        "ko": "거저 주다, 나눠 주다",
+        "example": "We gave away half our furniture before the move.",
+        "situations": [
+          "이사 전 짐 정리",
+          "나눔·기부 얘기"
+        ],
+        "detail": "내 소유에서 멀리(away) 공짜로 내보내는 그림. 중고 나눔, 기부, 행사 경품(giveaway)까지 전부 이 표현이야. 비밀을 무심코 흘린다(don't give it away)는 뜻도 같은 그림에서 나와.",
+        "exampleKo": "이사 전에 가구 절반을 나눔했어.",
+        "questionEn": "You had too much furniture before moving, so you posted it free online. What did you do?",
+        "termsKo": "",
+        "cueKo": "우리 · 거저 줬어 · 절반을 · 우리 가구의 · 이사 전에"
+      },
+      {
+        "key": "ev:get-away-with",
+        "en": "get away with",
+        "ko": "(벌 안 받고) 모면하다, 그냥 넘어가다",
+        "example": "He parks illegally and always gets away with it.",
+        "situations": [
+          "얌체 행동 불평",
+          "봐주는 분위기 묘사"
+        ],
+        "detail": "잘못을 들고 멀리(away) 도망치는 데 성공한다는 그림. 잘못을 하고도 대가를 안 치르는 상황의 표준 표현으로, 거의 항상 with와 세트야. \"You won't get away with this!\"는 영화 단골 대사고, 일상에선 가벼운 농담조로 더 자주 써.",
+        "exampleKo": "걔는 불법 주차하고도 맨날 안 걸려.",
+        "questionEn": "Your neighbor parks illegally every day and never receives a ticket. How would you describe that?",
+        "termsKo": "",
+        "cueKo": "걔는 · 주차해 · 불법으로 · 그리고 항상 · 모면해 · 그걸"
+      },
+      {
+        "key": "ev:step-away",
+        "en": "step away",
+        "ko": "잠깐 자리를 비우다",
+        "example": "I need to step away for ten minutes — back soon.",
+        "situations": [
+          "회의/콜 중 잠시 이탈",
+          "슬랙 자리비움 공지"
+        ],
+        "detail": "지금 있는 자리에서 멀어진다(away)는 그림. 회의나 키보드 앞에서 잠깐 떠날 때 'stepping away for a few minutes'가 표준 표현이야. 화장실이든 택배든 이유를 안 밝혀도 되는 게 장점. AFK(away from keyboard)의 정중한 문장 버전이라고 생각하면 돼.",
+        "exampleKo": "10분만 자리 비울게요 — 금방 돌아와요.",
+        "questionEn": "Something personal needs your attention for ten minutes during the workday. What do you tell the team chat?",
+        "termsKo": "",
+        "cueKo": "나는 · 자리를 비워야 한다 · 10분 동안 — 돌아온다 · 곧"
+      },
+      {
+        "key": "ev:push-away",
+        "en": "push away",
+        "ko": "(다가오는 사람을) 밀어내다",
+        "example": "Stop pushing away the people who care about you.",
+        "situations": [
+          "위로를 거부하는 사람에게",
+          "상처받기 싫어 거리 두는 친구",
+          "관계 회피 패턴 이야기"
+        ],
+        "detail": "다가오는 사람을 손으로 멀리(away) 밀쳐내는 그림이에요. 물리적이 아니라 정서적으로 — 도와주려는 사람에게 차갑게 굴거나 연락을 끊으며 거리를 만드는 행동을 말하죠. 상처받는 게 두려워 먼저 밀어내는 심리를 묘사할 때 단골이라, open up(마음을 열다)의 정반대 표현으로 기억하면 좋아요.",
+        "exampleKo": "널 아끼는 사람들을 그만 밀어내.",
+        "questionEn": "Since the diagnosis, your friend ignores calls and cancels every visit from people who love him. What's he doing?",
+        "termsKo": "",
+        "cueKo": "그만해 · 밀어내기를 · 그 사람들을 · 너를 아끼는"
+      }
+    ]
+  },
+  {
+    "particle": "along",
+    "coreKo": "같은 길을 나란히 따라가는 그림. get along(나란히 잘 감 = 잘 지냄), go along with(그 의견의 길을 같이 감 = 따름), come along(같이 따라옴/진행이 굴러감).",
+    "items": [
+      {
+        "key": "ev:come-along",
+        "en": "come along",
+        "ko": "같이 가다; (일이) 되어 가다",
+        "example": "We're getting lunch — want to come along?",
+        "situations": [
+          "같이 가자고 끼워주기",
+          "진행 상황 안부"
+        ],
+        "detail": "가는 길을 따라(along) 같이 움직인다는 그림. 이미 가는 무리에 끼어서 같이 가자는 초대가 기본 용법이야. \"How's the renovation coming along?\"처럼 일이 어떻게 되어 가는지 물을 때도 똑같이 써.",
+        "exampleKo": "우리 점심 먹으러 가는데 — 같이 갈래?",
+        "questionEn": "Your team is walking to grab food and a coworker looks interested. What do you ask?",
+        "termsKo": "",
+        "cueKo": "우리 · 먹으러 가 · 점심 · 너도 같이 갈래?"
+      },
+      {
+        "key": "ev:get-along",
+        "en": "get along",
+        "ko": "잘 지내다, 사이가 좋다",
+        "example": "I get along really well with my in-laws.",
+        "situations": [
+          "가족·동료와의 관계 얘기",
+          "룸메이트 적응 안부"
+        ],
+        "detail": "같은 길을 나란히 따라(along) 걷듯 마찰 없이 지낸다는 그림. 사람 사이가 좋다고 할 때 표준 표현이고 거의 항상 with와 같이 써. 반대는 don't get along — fight까지 아니어도 '안 맞는다'는 뉘앙스야.",
+        "exampleKo": "나 시댁 식구들이랑 정말 잘 지내.",
+        "questionEn": "How's your relationship with your new roommate so far?",
+        "termsKo": "",
+        "cueKo": "나 · 잘 지내 · 정말 잘 · 시댁 식구들이랑"
+      },
+      {
+        "key": "ev:get-along-with",
+        "en": "get along with",
+        "ko": "~와 잘 지내다",
+        "example": "Do you get along with your new manager?",
+        "situations": [
+          "새 팀 분위기를 물을 때",
+          "가족/동료와의 관계를 말할 때",
+          "면접에서 협업 성향 답변"
+        ],
+        "detail": "두 사람이 같은 길을 나란히 따라가는(along) 그림이에요. 큰 갈등 없이 원만하게 지내는 일상적 관계를 묻고 답하는 기본 표현이죠. 친한 정도까지는 아니어도 '무난히 잘 지낸다'는 톤이라, 'We get along fine(그럭저럭 잘 지내요)'처럼 적당한 거리감 표현에도 좋아요.",
+        "exampleKo": "새 매니저랑은 잘 지내?",
+        "questionEn": "Your friend just switched teams and you're curious about the relationship between her and the new boss. What do you ask?",
+        "termsKo": "",
+        "cueKo": "너는 · 잘 지내? · 너의 새 매니저와"
+      },
+      {
+        "key": "ev:play-along",
+        "en": "play along",
+        "ko": "장단을 맞춰주다",
+        "example": "Just play along until I explain later.",
+        "situations": [
+          "서프라이즈를 위해 모른 척할 때",
+          "상대 농담에 맞장구칠 때",
+          "어색한 상황을 일단 따라갈 때"
+        ],
+        "detail": "상대가 깔아놓은 연극에 같은 방향으로(along) 발맞춰 연기해주는 그림이에요. 속으로는 다 알거나 동의하지 않아도 일단 맞춰주는 상황 — 서프라이즈 파티, 상사의 썰렁한 농담, 아이의 상상놀이에 딱이죠. go along with가 '결정에 따라가기'라면 play along은 '연기에 동참하기'예요.",
+        "exampleKo": "나중에 설명할 테니까 일단 장단만 맞춰줘.",
+        "questionEn": "You're sneaking your friend to her surprise party and she's getting suspicious. What do you whisper to your accomplice?",
+        "termsKo": "",
+        "cueKo": "그냥 · 맞춰줘 · 내가 설명할 때까지 · 나중에"
+      },
+      {
+        "key": "ev:go-along-with",
+        "en": "go along with",
+        "ko": "(제안·결정에) 동조하다, 따르다",
+        "example": "I'll go along with whatever the team decides.",
+        "situations": [
+          "다수 의견에 따르겠다고 할 때",
+          "마지못해 동의할 때",
+          "합의를 빠르게 끌어낼 때"
+        ],
+        "detail": "남이 정한 방향을 따라 같이 걸어가는(along) 그림이에요. 적극 찬성은 아니지만 반대하지 않고 따르겠다는 '소극적 동의'가 핵심 뉘앙스죠. agree가 생각의 일치라면 go along with는 행동의 동행이라, 'I went along with it to avoid a fight(싸우기 싫어서 그냥 따랐어)'처럼 본심과의 거리를 드러낼 수 있어요.",
+        "exampleKo": "팀이 정하는 대로 따를게요.",
+        "questionEn": "You have mild doubts about the plan but don't think it's worth a debate. What's your position in the meeting?",
+        "termsKo": "",
+        "cueKo": "나는 따를게 · 무엇이든 · 그 팀이 결정하는"
+      }
+    ]
+  },
+  {
+    "particle": "for",
+    "coreKo": "목적을 향해 손을 뻗는 그림. go for(그걸 향해 감 = 선택/시도), fall for(그쪽으로 넘어짐 = 속음/반함), stand for(그것을 위해 섬 = 상징/용납).",
+    "items": [
+      {
+        "key": "ev:root-for",
+        "en": "root for",
+        "ko": "응원하다",
+        "example": "We're all rooting for you tomorrow.",
+        "situations": [
+          "면접/시험 앞둔 사람을 응원할 때",
+          "스포츠 팀을 응원할 때",
+          "누군가의 성공을 바랄 때"
+        ],
+        "detail": "관중석에서 한 팀을 위해(for) 목청껏 소리 지르는 그림이에요. 스포츠에서 출발했지만 면접, 발표, 수술을 앞둔 사람에게 'We're rooting for you(다들 널 응원해)'라고 말하는 게 더 흔하죠. support보다 감정이 실린 적극적 응원이고, cheer for와 거의 같아요.",
+        "exampleKo": "내일 우리 모두 널 응원할게.",
+        "questionEn": "Your teammate has a big final interview tomorrow and looks nervous. What do you say before she leaves?",
+        "termsKo": "",
+        "cueKo": "우리 모두는 · 응원한다 · 너를 · 내일"
+      },
+      {
+        "key": "ev:vouch-for",
+        "en": "vouch for",
+        "ko": "(신원·실력을) 보증하다",
+        "example": "I can vouch for her — we worked together for years.",
+        "situations": [
+          "지인을 추천하며 보증할 때",
+          "제품/맛집의 품질을 보장할 때",
+          "신원 보증이 필요한 상황"
+        ],
+        "detail": "누군가를 위해(for) 내 신용을 담보로 거는 그림이에요. '내가 보증해'라는 말은 그 사람이 잘못되면 내 평판도 깎인다는 뜻이라 가볍지 않은 추천이죠. 채용 추천(referral)에서 'I can vouch for him'이 결정적 한마디가 되고, 음식이나 제품 품질 보증에도 써요.",
+        "exampleKo": "그녀는 내가 보증해 — 몇 년을 같이 일했거든.",
+        "questionEn": "Your manager hesitates to interview your former colleague because no one here knows her. What do you say?",
+        "termsKo": "",
+        "cueKo": "나는 보증할 수 있다 · 그녀를 · 우리는 일했다 · 함께 · 수년간"
+      },
+      {
+        "key": "ev:cover-for",
+        "en": "cover for",
+        "ko": "대신 맡아주다; 감싸주다",
+        "example": "Can you cover for me while I'm at the dentist?",
+        "situations": [
+          "자리 비울 때 업무를 부탁할 때",
+          "동료의 실수를 감싸줄 때",
+          "교대 근무를 바꿀 때"
+        ],
+        "detail": "비어 있는 자리를 위에서 덮어(cover) 가려주는 그림이에요. 자리를 비우는 동안 일을 대신 봐달라는 부탁이 기본이고, 잘못을 들키지 않게 감싸준다는 뜻으로도 쓰죠. 전자는 고마운 부탁, 후자는 거짓말에 가담하는 일이라 문맥 따라 무게가 꽤 달라져요.",
+        "exampleKo": "나 치과 가 있는 동안 내 일 좀 봐줄래?",
+        "questionEn": "You have a doctor's appointment during your support shift. What favor do you ask a teammate?",
+        "termsKo": "",
+        "cueKo": "너 해줄 수 있어 · 대신 맡기를 · 나를 위해 · 내가 치과에 있는 동안"
+      },
+      {
+        "key": "ev:fall-for",
+        "en": "fall for",
+        "ko": "홀딱 반하다; 속아 넘어가다",
+        "example": "I can't believe you fell for that scam.",
+        "situations": [
+          "사기/장난에 속았을 때",
+          "첫눈에 반한 이야기",
+          "피싱 메일 경고"
+        ],
+        "detail": "중심을 잃고 무언가를 향해(for) 넘어지는 그림이라, 사랑에 '빠지다'와 속임수에 '넘어가다' 두 뜻이 다 나와요. fall for someone은 hard와 함께 'I fell hard for her(완전 빠졌어)'처럼 쓰고, fall for a scam/trick은 '낚였다'는 뜻이죠. 둘 다 저항 못 하고 넘어갔다는 공통 그림이에요.",
+        "exampleKo": "네가 그 사기에 넘어갔다니 믿기지가 않아.",
+        "questionEn": "Your smart, careful friend just wired money to an obvious phishing email. What do you say?",
+        "termsKo": "",
+        "cueKo": "나는 못 믿겠어 · 네가 넘어갔다는 걸 · 그 사기에"
+      },
+      {
+        "key": "ev:go-for",
+        "en": "go for",
+        "ko": "시도하다, 노리다 (go for it); ~가 당기다 (could go for)",
+        "example": "I could go for a coffee before the next call.",
+        "situations": [
+          "커피/간식이 당길 때",
+          "도전을 격려할 때 (go for it)",
+          "선택지 중 하나를 노릴 때"
+        ],
+        "detail": "for는 목표물을 향해 손을 뻗는 그림이야. Go for it!은 '해 봐, 질러!' 하고 등 떠미는 응원이고, I could go for a coffee는 '커피가 당기네'라는 일상 표현으로 둘 다 사용 빈도가 엄청나. go with(이미 결정)와 달리 go for는 원하는 걸 향해 움직이는 욕구·시도 쪽이라는 차이만 잡아 둬.",
+        "exampleKo": "다음 콜 전에 커피 한 잔 당기는데.",
+        "questionEn": "It's 3 pm, you're dragging, and there's a café downstairs. What do you suggest?",
+        "termsKo": "",
+        "cueKo": "나는 · 당긴다 · 커피 한 잔이 · 다음 콜 전에"
+      }
+    ]
+  },
+  {
+    "particle": "by",
+    "coreKo": "곁을 스쳐 지나가는 그림. stop by(곁에 잠깐 멈춤 = 들름), get by(스쳐 지나가듯 버팀 = 그럭저럭 삶), stand by(곁에 서 있음 = 대기/지지).",
+    "items": [
+      {
+        "key": "ev:run-by",
+        "en": "run by",
+        "ko": "(결정 전에) ~에게 한번 보여주고 의견을 묻다",
+        "example": "Let me run this by my manager before I confirm.",
+        "situations": [
+          "확정 전 상사 확인",
+          "아이디어 사전 검토 요청"
+        ],
+        "detail": "확정하기 전에 상대 옆을 한번 스쳐 지나가게(by) 해서 반응을 본다는 그림. run X by Y 구조로 'Y에게 X를 한번 보여주고 의견 듣다'야. 'Can I run something by you?'는 동료에게 5분 상담을 여는 마법의 문장. 승인(sign off)까지는 아니고 가벼운 사전 확인이라는 온도가 핵심이야.",
+        "exampleKo": "확정하기 전에 매니저한테 한번 물어볼게요.",
+        "questionEn": "The client wants an answer today, but you need your manager's quick opinion first. What do you say?",
+        "termsKo": "",
+        "cueKo": "하게 해줘 · 내가 · 이걸 보여주고 묻게 · 내 매니저에게 · 내가 확정하기 전에"
+      },
+      {
+        "key": "ev:stop-by",
+        "en": "stop by",
+        "ko": "잠깐 들르다",
+        "example": "Stop by my desk when you get a chance.",
+        "situations": [
+          "사무실에서 잠깐 보자고 할 때",
+          "퇴근길에 가게에 들를 때",
+          "지나는 길에 인사하러 갈 때"
+        ],
+        "detail": "가던 길 옆으로(by) 잠깐 멈췄다 가는 그림이에요. 본 목적지로 가는 중에 '잠깐 들르는' 짧은 방문이 핵심이라, 회사에서 'stop by my desk(내 자리에 잠깐 와)'가 부담 없는 호출이 되죠. drop by, swing by도 같은 뜻으로 번갈아 써요.",
+        "exampleKo": "시간 날 때 내 자리에 잠깐 들러.",
+        "questionEn": "You need a quick word with a coworker, not worth scheduling a meeting. What do you message her?",
+        "termsKo": "",
+        "cueKo": "들러 · 내 자리에 · 네가 기회 있을 때"
+      },
+      {
+        "key": "ev:stand-by",
+        "en": "stand by",
+        "ko": "곁을 지키다, 끝까지 지지하다",
+        "example": "She stood by him through the whole scandal.",
+        "situations": [
+          "어려운 시기에 편이 되어줄 때",
+          "입장을 고수할 때 (stand by my decision)",
+          "위기의 친구/배우자 곁을 지킬 때"
+        ],
+        "detail": "힘든 사람 바로 옆에(by) 떠나지 않고 서 있는 그림이에요. 스캔들, 실직, 투병 같은 시련 속에서 떠나지 않고 지지한다는 묵직한 충성의 표현이죠. 'I stand by my decision(내 결정에는 변함없다)'처럼 자기 말과 결정을 고수한다는 뜻으로도 자주 써요.",
+        "exampleKo": "그 스캔들 내내 그녀는 그의 곁을 지켰어.",
+        "questionEn": "Everyone abandoned the CEO during the crisis except his wife. How do you describe what she did?",
+        "termsKo": "",
+        "cueKo": "그녀는 · 곁을 지켰다 · 그의 · 그 스캔들 내내"
+      },
+      {
+        "key": "ev:get-by",
+        "en": "get by",
+        "ko": "(부족한 잠·돈으로) 그럭저럭 버티다",
+        "example": "I'm getting by on four hours of sleep this week.",
+        "situations": [
+          "바쁜 주간 컨디션 얘기",
+          "빠듯한 예산으로 버티기",
+          "최소한의 영어로 버틴 경험"
+        ],
+        "detail": "by는 넉넉히 통과하진 못해도 옆을 스쳐 간신히 지나가는 그림이야. 잠이 부족해도, 돈이 빠듯해도, 실력이 모자라도 '그럭저럭 버틴다'고 할 때 on 뒤에 버티는 수단을 붙여 써. survive보다 훨씬 가볍고 일상적이며, manage와 비슷하지만 get by는 '최소한으로 간신히'라는 뉘앙스가 더 진해.",
+        "exampleKo": "이번 주는 네 시간 자면서 그럭저럭 버티고 있어.",
+        "questionEn": "You slept four hours every night this week but still function. How are you managing?",
+        "termsKo": "",
+        "cueKo": "나는 · 버티는 중이다 · 네 시간의 잠으로 · 이번 주"
+      }
+    ]
+  },
+  {
+    "particle": "apart",
+    "coreKo": "붙어 있던 것이 조각조각 떨어지는 그림. fall apart(무너짐), take apart(분해), tell apart(떼어놓고 봄 = 구별).",
+    "items": [
+      {
+        "key": "ev:fall-apart",
+        "en": "fall apart",
+        "ko": "(물건·계획·사람이) 허물어지다, 무너지다",
+        "example": "My old backpack is falling apart.",
+        "situations": [
+          "낡은 물건 묘사",
+          "계획·멘탈 붕괴 얘기"
+        ],
+        "detail": "붙어 있던 조각들이 따로따로(apart) 떨어져 나가는 그림. 물건이 낡아 허물어지는 것, 계획·관계가 와해되는 것, 사람 멘탈이 무너지는 것(I fell apart)까지 다 같은 그림이야. 진행형으로 쓰면 '무너져 가는 중'이라는 생생한 어감이 살아.",
+        "exampleKo": "내 낡은 백팩이 다 허물어져 가.",
+        "questionEn": "The zipper is broken, the strap is torn, and there's a hole. Describe your backpack.",
+        "termsKo": "",
+        "cueKo": "내 낡은 백팩이 · 허물어지고 있어"
+      },
+      {
+        "key": "ev:tell-apart",
+        "en": "tell apart",
+        "ko": "구별하다",
+        "example": "I can't tell the twins apart.",
+        "situations": [
+          "닮은 사람 구별",
+          "비슷한 물건 비교"
+        ],
+        "detail": "붙어 있는 둘을 떼어서(apart) 따로따로 알아본다는 그림. 쌍둥이, 비슷한 브랜드, 닮은 단어를 구별한다고 할 때 거의 항상 can't와 같이 써. distinguish의 일상 버전이고, tell the difference도 같은 뜻이야.",
+        "exampleKo": "그 쌍둥이를 도저히 구별 못 하겠어.",
+        "questionEn": "The twins look identical to you, even after a year. What's your problem?",
+        "termsKo": "",
+        "cueKo": "나 · 구별 못 해 · 그 쌍둥이를"
+      },
+      {
+        "key": "ev:grow-apart",
+        "en": "grow apart",
+        "ko": "(관계가) 점점 멀어지다",
+        "example": "After college, we just grew apart.",
+        "situations": [
+          "멀어진 옛 친구 얘기",
+          "관계 변화 회고"
+        ],
+        "detail": "한 뿌리에서 자라던 두 가지가 서로 다른 방향으로(apart) 자라며 벌어지는 그림. 싸운 것도 아닌데 자연스럽게 멀어진 관계를 말하는 표현이야. fall apart(무너지다)와 달리 사건 없이 '서서히'라는 게 핵심이야.",
+        "exampleKo": "대학 졸업하고 우린 그냥 멀어졌어.",
+        "questionEn": "You and your best friend from high school barely talk now, but nothing bad happened. Explain.",
+        "termsKo": "",
+        "cueKo": "대학 후에 · 우리 그냥 · 점점 멀어졌어"
+      }
+    ]
+  },
+  {
+    "particle": "기타",
+    "coreKo": "빈도 낮은 입자들 묶음 — forward(앞으로: look forward to), ahead(앞서: get ahead), together(함께: get together), behind(뒤처짐: fall behind) 등. 각 카드의 해설에서 그림을 확인하세요.",
+    "items": [
+      {
+        "key": "ev:get-across",
+        "en": "get across",
+        "ko": "(의도·메시지를) 제대로 전달하다",
+        "example": "I struggled to get my point across in the all-hands.",
+        "situations": [
+          "발표에서 핵심 전달 고민",
+          "언어 장벽 속 의사소통",
+          "설득 실패 회고"
+        ],
+        "detail": "내 머릿속 생각이 상대편 건너편까지(across) 건너가게 만든다는 그림. 말은 했는데 '전달이 됐는지'를 따질 때 쓰는 동사야. get the point/message/idea across 콜로케이션이 기본. explain이 행위라면 get across는 결과(상대가 이해함)에 초점이 있어서, 영어로 일하는 사람의 단골 고민 표현이야.",
+        "exampleKo": "전체 회의에서 제 요점을 제대로 전달하는 게 힘들었어요.",
+        "questionEn": "You explained your idea twice in the meeting, but people still looked confused. What was hard?",
+        "termsKo": "",
+        "cueKo": "나는 · 애먹었다 · 전달하는 데 · 내 요점을 · 전체 회의에서"
+      },
+      {
+        "key": "ev:come-across-as",
+        "en": "come across as",
+        "ko": "~한 인상을 주다",
+        "example": "I don't want to come across as pushy.",
+        "situations": [
+          "메일 톤이 어떻게 보일지 걱정할 때",
+          "면접에서 주는 인상을 점검할 때",
+          "오해받는 게 걱정될 때"
+        ],
+        "detail": "내 모습이 상대 쪽으로(across) 건너가 어떤 인상으로 도착하는 그림이에요. 의도와 무관하게 '상대 눈에 어떻게 비치는가'가 핵심이라, 메일을 보내기 전 'Does this come across as rude?(이거 무례해 보이려나?)' 하고 점검할 때 딱이죠. seem은 내 관찰, come across as는 타인에게 비치는 인상이라는 차이예요.",
+        "exampleKo": "너무 들이대는 인상을 주고 싶지 않아.",
+        "questionEn": "You're rewriting a follow-up email for the third time, worried it sounds too aggressive. What's your concern?",
+        "termsKo": "",
+        "cueKo": "나는 원하지 않아 · 보이기를 · 들이대는 사람으로"
+      },
+      {
+        "key": "ev:come-across",
+        "en": "come across",
+        "ko": "우연히 발견하다, 마주치다",
+        "example": "I came across a neat caching library while reading the docs.",
+        "situations": [
+          "우연히 찾은 툴/글 공유",
+          "코드 읽다 이상한 부분 발견",
+          "옛 자료를 우연히 발견"
+        ],
+        "detail": "across는 길을 가로질러 가다가 뭔가와 딱 마주치는 그림이야. 문서 읽다가, 코드 뒤지다가, 검색하다가 '우연히' 발견했을 때 found보다 그 우연성을 살려 주는 말이지. come across as(~라는 인상을 주다)는 완전히 다른 뜻이니, 뒤에 as가 붙는지로 구분해.",
+        "exampleKo": "문서 읽다가 괜찮은 캐싱 라이브러리를 우연히 발견했어.",
+        "questionEn": "While reading documentation you discovered a useful tool purely by chance. How do you mention it?",
+        "termsKo": "",
+        "cueKo": "나는 · 우연히 마주쳤다 · 하나의 괜찮은 캐싱 라이브러리를 · 읽는 동안 · 그 문서를"
+      },
+      {
+        "key": "ev:look-forward-to",
+        "en": "look forward to",
+        "ko": "기대하다, 고대하다",
+        "example": "I'm really looking forward to the long weekend.",
+        "situations": [
+          "다가올 휴가·약속 얘기",
+          "이메일 마무리 인사"
+        ],
+        "detail": "시선이 앞(forward)의 좋은 일에 가 있다는 그림. 다가올 일이 기대된다는 가장 표준적인 표현이고, to 뒤엔 동명사가 와야 해(looking forward to seeing you). 이메일 마무리 인사로도 매일 쓰는 만능 표현이야.",
+        "exampleKo": "긴 연휴가 정말 기대돼.",
+        "questionEn": "There's a holiday coming next week. How do you feel about it?",
+        "termsKo": "",
+        "cueKo": "나 · 정말 · 기대하고 있어 · 긴 연휴를"
+      },
+      {
+        "key": "ev:move-forward",
+        "en": "move forward",
+        "ko": "(계획을) 진행하다, 앞으로 나아가다",
+        "example": "We decided to move forward with the renovation.",
+        "situations": [
+          "보류하던 계획 확정",
+          "앞으로의 방침 얘기"
+        ],
+        "detail": "멈춰 있던 계획이 앞(forward) 방향으로 움직이기 시작하는 그림. 고민하던 일을 '진행하기로 했다'고 할 때 with와 함께 자주 써. 회의에서 \"moving forward\"(앞으로는)라고 운을 떼는 부사적 용법도 미국 직장 단골이야.",
+        "exampleKo": "리모델링을 진행하기로 결정했어.",
+        "questionEn": "After months of debating the kitchen renovation, you finally signed the contract. What did you decide?",
+        "termsKo": "",
+        "cueKo": "우리 · 결정했어 · 진행하기로 · 리모델링을"
+      },
+      {
+        "key": "ev:get-ahead",
+        "en": "get ahead",
+        "ko": "앞서 나가다, 출세하다",
+        "example": "She works weekends because she wants to get ahead.",
+        "situations": [
+          "커리어 야망 얘기",
+          "경쟁에서 앞서기",
+          "일 미리 쳐내기"
+        ],
+        "detail": "남들보다 앞(ahead) 위치로 이동한다는 그림. 커리어에서 앞서 나가고 싶다는 야망을 말할 때의 표준 표현이야. get ahead of the problem(문제가 터지기 전에 앞질러 대응하다)처럼 of를 붙이면 선제 대응의 뜻이 돼. fall behind(뒤처지다)와 반대쌍으로 외워.",
+        "exampleKo": "그분은 앞서 나가고 싶어서 주말에도 일해요.",
+        "questionEn": "She works every weekend and takes every stretch assignment. What is she trying to do in her career?",
+        "termsKo": "",
+        "cueKo": "그녀는 · 일한다 · 주말마다 · 왜냐하면 그녀는 · 원하니까 · 앞서 나가기를"
+      },
+      {
+        "key": "ev:go-ahead",
+        "en": "go ahead",
+        "ko": "진행하다; (양보하며) 먼저 하세요",
+        "example": "We got approval, so go ahead with the rollout.",
+        "situations": [
+          "승인 후 진행 지시",
+          "발언 순서 양보",
+          "질문 허락"
+        ],
+        "detail": "멈춰 있던 것이 앞으로(ahead) 나아간다는 그림. 승인 후 'go ahead with X'(X를 진행해)가 기본 용법이고, 명사 green light처럼 'give the go-ahead'(승인을 주다)로도 굳어져 있어. 화상회의에서 둘이 동시에 말하면 'Sorry, go ahead'(먼저 하세요)라고 양보하는 게 국룰 멘트야.",
+        "exampleKo": "승인 났으니까 롤아웃 진행하세요.",
+        "questionEn": "The VP just approved the release plan. What do you tell the team waiting to start?",
+        "termsKo": "",
+        "cueKo": "우리는 · 받았다 · 승인을 · 그러니 · 진행해 · 그 롤아웃을"
+      },
+      {
+        "key": "ev:put-together",
+        "en": "put together",
+        "ko": "(자료·팀을) 꾸리다, 만들어 내다",
+        "example": "Can you put together a one-pager for the exec review?",
+        "situations": [
+          "발표 자료/제안서 제작 요청",
+          "TF팀 구성"
+        ],
+        "detail": "흩어진 조각들을 모아 하나로(together) 조립한다는 그림. 발표 덱, 제안서, 일정표, 심지어 팀까지 '구성 요소를 모아 만들어 내는' 모든 것에 써. make보다 '조립·편성'의 과정이 느껴지고, put together a team(팀을 꾸리다)은 리더의 단골 표현이야.",
+        "exampleKo": "임원 리뷰용 한 장짜리 자료 좀 만들어 줄 수 있어요?",
+        "questionEn": "The exec review is Thursday and they want a single summary page. What do you ask your teammate?",
+        "termsKo": "",
+        "cueKo": "너 · 만들어 줄 수 있어? · 한 장짜리 문서를 · 임원 리뷰를 위한"
+      },
+      {
+        "key": "ev:get-together",
+        "en": "get together",
+        "ko": "모이다, 함께 보다",
+        "example": "The whole team gets together every quarter.",
+        "situations": [
+          "팀/가족 모임을 말할 때",
+          "연말 모임을 계획할 때",
+          "흩어진 친구들을 모을 때"
+        ],
+        "detail": "흩어진 사람들이 한자리로(together) 모이는 그림이에요. meet up이 둘의 약속이라면 get together는 여러 명의 모임 느낌이 강하죠. 명사로도 써서 'a small get-together(조촐한 모임)'는 파티보다 가벼운 자리를 가리키는 단골 표현이에요.",
+        "exampleKo": "팀 전체가 분기마다 한 번씩 모여요.",
+        "questionEn": "Your remote team only sees each other on screens. What tradition do you propose to leadership?",
+        "termsKo": "",
+        "cueKo": "그 팀 전체는 · 모인다 · 매 분기마다"
+      },
+      {
+        "key": "ev:get-at",
+        "en": "get at",
+        "ko": "(말하려는 바를) 향하다, 의도하다",
+        "example": "What exactly are you getting at?",
+        "situations": [
+          "상대의 의도가 모호할 때",
+          "돌려 말하는 사람에게 본심을 물을 때",
+          "요지를 설명할 때"
+        ],
+        "detail": "말이 어떤 지점을(at) 향해 더듬더듬 다가가는 그림이에요. 상대가 빙빙 돌려 말할 때 'What are you getting at?(그래서 무슨 말이 하고 싶은 건데?)'이 단골 질문이죠. 약간 추궁하는 톤이 될 수 있으니, 부드럽게는 'what I'm getting at is...(내가 하려는 말은...)'로 내 요지를 짚을 때 쓰세요.",
+        "exampleKo": "정확히 무슨 말이 하고 싶은 거야?",
+        "questionEn": "A colleague keeps hinting about something regarding your project without ever saying it directly. What do you finally ask?",
+        "termsKo": "",
+        "cueKo": "뭘 · 정확히 · 너는 향하고 있어?"
+      },
+      {
+        "key": "ev:snap-at",
+        "en": "snap at",
+        "ko": "쏘아붙이다, 짜증을 내다",
+        "example": "Sorry I snapped at you earlier — rough morning.",
+        "situations": [
+          "짜증 내고 사과할 때",
+          "예민해진 사람을 묘사할 때",
+          "피곤해서 말이 날카로워질 때"
+        ],
+        "detail": "개가 이빨을 딱 하고 무는(snap) 동작이 사람을 향하는(at) 그림이에요. 길게 화내는 게 아니라 한마디를 날카롭게 탁 쏘는 순간적 짜증이죠. lash out이 작정한 공격이라면 snap at은 피곤과 스트레스가 새어 나온 실수에 가까워서, 예문처럼 사과와 함께 자주 등장해요.",
+        "exampleKo": "아까 쏘아붙여서 미안해 — 아침이 좀 힘들었어.",
+        "questionEn": "You were short-tempered toward a teammate this morning because you barely slept. What do you say during lunch?",
+        "termsKo": "",
+        "cueKo": "미안해 · 내가 쏘아붙여서 · 너에게 · 아까 · 힘든 아침이었어"
+      },
+      {
+        "key": "ev:deal-with",
+        "en": "deal with",
+        "ko": "(문제·사람·상황을) 처리하다, 상대하다",
+        "example": "I'll deal with the flaky tests after lunch.",
+        "situations": [
+          "문제 처리를 자원할 때",
+          "까다로운 고객/이슈 대응",
+          "업무 우선순위 정리"
+        ],
+        "detail": "with는 대상과 정면으로 맞붙어 함께 굴리는 그림이야. 버그, 까다로운 고객, 귀찮은 상황까지 '내가 맡아서 처리한다'고 할 때 가장 범용으로 쓰는 동사지. handle과 거의 같지만 deal with는 '귀찮지만 어쩔 수 없이 상대한다'는 뉘앙스도 자주 실려서, I don't want to deal with it 같은 푸념에도 잘 붙어.",
+        "exampleKo": "그 들쑥날쑥한 테스트는 점심 먹고 내가 처리할게.",
+        "questionEn": "Flaky tests keep blocking the pipeline and somebody needs them fixed. How do you volunteer?",
+        "termsKo": "",
+        "cueKo": "내가 · 처리할 거다 · 그 들쑥날쑥한 테스트들을 · 점심 후에"
+      },
+      {
+        "key": "ev:go-with",
+        "en": "go with",
+        "ko": "(선택지를) 고르다, ~로 가다",
+        "example": "Let's just go with option B and move on.",
+        "situations": [
+          "회의에서 최종 결정 내릴 때",
+          "디자인/라이브러리 선택",
+          "식당에서 메뉴 고르기"
+        ],
+        "detail": "with는 고른 선택지와 함께 길을 떠나는 그림이야. 회의에서 'B안으로 가시죠' 하고 결정 내릴 때 choose보다 가볍고 자연스러운 기본 표현이지. go for는 '적극적으로 노려본다'는 시도 쪽이고, go with는 이미 저울질을 끝내고 '이걸로 정한다'는 확정 쪽이라 결이 달라.",
+        "exampleKo": "그냥 B안으로 가고 넘어갑시다.",
+        "questionEn": "Two designs are on the table and the team needs a decision right now. What do you say?",
+        "termsKo": "",
+        "cueKo": "하자 · 그냥 가는 걸 · B안과 함께 · 그리고 넘어가자"
+      },
+      {
+        "key": "ev:fall-behind",
+        "en": "fall behind",
+        "ko": "(일정·진도에서) 뒤처지다",
+        "example": "We fell behind schedule after two engineers left.",
+        "situations": [
+          "일정 지연 보고",
+          "업계 트렌드 못 따라갈 때",
+          "밀린 업무 고백"
+        ],
+        "detail": "대열의 뒤쪽(behind)으로 떨어진다는 그림. 일정, 진도, 트렌드를 못 따라가는 모든 상황에 써. fall behind schedule(일정에 뒤처지다), fall behind on emails(메일이 밀리다)처럼 on으로 대상도 붙어. 반대 동작인 catch up(따라잡다)과 한 세트로 다녀.",
+        "exampleKo": "엔지니어 둘 나가고 나서 일정이 밀렸어요.",
+        "questionEn": "Two engineers quit mid-project and the deadline didn't change. What happened to your progress?",
+        "termsKo": "",
+        "cueKo": "우리는 · 뒤처졌다 · 일정에서 · 두 엔지니어가 · 떠난 후에"
+      },
+      {
+        "key": "ev:set-aside",
+        "en": "set aside",
+        "ko": "(시간·예산을) 따로 떼어두다; (감정을) 접어두다",
+        "example": "I set aside two hours every Friday for deep work.",
+        "situations": [
+          "집중 시간 확보 루틴",
+          "예산 비축",
+          "개인감정 접고 협업"
+        ],
+        "detail": "본 흐름에서 옆으로(aside) 빼서 따로 둔다는 그림. 시간·돈을 특정 용도로 떼어둘 때 쓰고, set aside our differences(이견은 접어두고)처럼 감정·논쟁을 잠시 치우는 데도 써. save가 막연한 저축이라면 set aside는 '용도를 정해 분리해 둠'이라는 의도가 살아 있어.",
+        "exampleKo": "매주 금요일엔 딥워크용으로 두 시간을 빼둬요.",
+        "questionEn": "Meetings keep eating your whole week. How do you protect time for focused work?",
+        "termsKo": "",
+        "cueKo": "나는 · 따로 빼둔다 · 두 시간을 · 매주 금요일 · 딥워크를 위해"
+      },
+      {
+        "key": "ev:stick-to",
+        "en": "stick to",
+        "ko": "(계획·주제·일정에서) 벗어나지 않다, 고수하다",
+        "example": "Let's stick to the agenda, we only have thirty minutes.",
+        "situations": [
+          "회의가 산으로 갈 때",
+          "중간 계획 변경 요구 방어",
+          "루틴/다이어트 유지 얘기"
+        ],
+        "detail": "to는 대상에 딱 달라붙어 떨어지지 않는 그림이야. 회의가 옆길로 샐 때 '아젠다에서 벗어나지 맙시다', 중간에 요구사항이 흔들릴 때 '원래 계획대로 갑시다' 하고 잡아 줄 때 쓰지. stick with는 사람·선택을 '계속 함께 간다'는 유지 쪽이고, stick to는 정해진 선 안에 머문다는 준수 쪽이라 미묘하게 갈려.",
+        "exampleKo": "아젠다대로 갑시다, 30분밖에 없어요.",
+        "questionEn": "The meeting keeps drifting off-topic and time is short. How do you steer it?",
+        "termsKo": "",
+        "cueKo": "하자 · 붙어 있는 걸 · 그 아젠다에 · 우리는 · 가지고 있다 · 겨우 30분을"
+      },
+      {
+        "key": "ev:get-rid-of",
+        "en": "get rid of",
+        "ko": "없애다, 치워 버리다",
+        "example": "We should get rid of the dead code in this module.",
+        "situations": [
+          "데드 코드/레거시 제거 제안",
+          "집 안 물건 정리",
+          "불필요한 프로세스 없애기"
+        ],
+        "detail": "rid는 '~에서 벗어난' 상태고, get rid of는 그 상태를 만들어서 대상을 치워 버린다는 말이야. 데드 코드, 안 쓰는 의존성, 집 안 잡동사니까지 '없애 버리자'고 할 때 remove보다 훨씬 구어적인 기본 표현이지. delete가 파일을 지우는 구체 동작이라면, get rid of는 '존재 자체를 치운다'는 더 넓은 말이야.",
+        "exampleKo": "이 모듈의 데드 코드는 없애 버리는 게 좋겠어.",
+        "questionEn": "Stale feature flags are cluttering the codebase and nobody uses them anymore. What do you propose?",
+        "termsKo": "",
+        "cueKo": "우리는 · 없애야 한다 · 그 데드 코드를 · 이 모듈 안의"
+      },
+      {
+        "key": "ev:look-after",
+        "en": "look after",
+        "ko": "(아이·반려동물·시스템을) 돌보다, 맡아 관리하다",
+        "example": "Can you look after my dog this weekend?",
+        "situations": [
+          "반려동물/아이 돌봄 부탁",
+          "휴가 중 업무 맡아 주기",
+          "서비스 오너십 설명"
+        ],
+        "detail": "after는 대상 뒤를 따라다니며 챙기는 그림이야. 아이, 반려동물, 휴가 간 동료의 업무, 내가 오너인 서비스까지 '맡아서 돌본다'고 할 때 캐나다·영국 영어에서 특히 흔해. take care of와 같은 뜻이고 미국에서는 take care of가 더 일반적이지만, 캐나다 직장에서는 look after가 매일 들리는 수준이야.",
+        "exampleKo": "이번 주말에 우리 개 좀 봐줄 수 있어?",
+        "questionEn": "You're away this weekend and your dog needs someone. What favor do you ask a friend?",
+        "termsKo": "",
+        "cueKo": "할 수 있어 · 너는 · 돌보는 걸 · 내 개를 · 이번 주말에"
       }
     ]
   }
@@ -7012,7 +12101,7 @@ export const COLLOCATION_CARDS: PhraseCard[] = [
     "cueKo": "이 테스트가 · 커버해? · 그 엣지 케이스를 · 리스트가 비어 있는 경우의"
   }
 ];
-export const WORKSHOP_COUNTS = { particles: 58, particleGroups: 11, collocations: 72 };
+export const WORKSHOP_COUNTS = { particles: 387, particleGroups: 17, collocations: 72 };
 export const PREP_GROUPS: ParticleGroup[] = [
   {
     "particle": "under",
@@ -9905,3 +14994,566 @@ export const REASONING_PREP_GROUPS: ParticleGroup[] = [
     ]
   }
 ];
+export const TRAP_CARDS: PhraseCard[] = [
+  {
+    "key": "tr:discuss-the-issue",
+    "en": "discuss the issue",
+    "ko": "그 이슈를 논의하다 — ❌ discuss about",
+    "example": "Let's discuss the issue after the standup.",
+    "situations": [
+      "회의에서 안건을 꺼낼 때",
+      "논의가 필요한 문제를 미룰 때",
+      "팀과 결정을 조율할 때"
+    ],
+    "detail": "한국어가 '~에 대해 논의하다'라서 about이 자동으로 붙는데, discuss는 이미 'talk about'을 한 단어에 담은 타동사예요. 그래서 discuss about은 '대해에 대해'처럼 겹말이 됩니다. discuss = talk about 한 단어 버전, about은 이미 안에 들어있다고 기억하세요.",
+    "exampleKo": "스탠드업 끝나고 그 이슈를 논의하죠.",
+    "questionEn": "The new bug keeps coming up in standup but nobody has talked it through. What should the team do?",
+    "termsKo": "",
+    "cueKo": "논의합시다 · 그 이슈를 · 스탠드업 후에"
+  },
+  {
+    "key": "tr:explain-the-architecture",
+    "en": "explain the architecture",
+    "ko": "아키텍처를 설명하다 — ❌ explain about / explain me",
+    "example": "Can you explain the architecture to the new hire?",
+    "situations": [
+      "신규 입사자를 온보딩할 때",
+      "설계 리뷰에서 구조를 풀어줄 때",
+      "면접에서 시스템을 소개할 때"
+    ],
+    "detail": "'~에 대해 설명하다' 간섭으로 about이, '나에게 설명해줘' 간섭으로 explain me가 튀어나와요. explain은 [explain + 내용 + to + 사람] 구조로, 내용이 먼저 오고 사람은 to 뒤로 갑니다. '설명할 내용 먼저, 사람은 to 뒤'로 기억하세요.",
+    "exampleKo": "신입한테 아키텍처 좀 설명해줄래요?",
+    "questionEn": "Our new teammate is confused about how the services fit together. Can you help?",
+    "termsKo": "",
+    "cueKo": "설명해줄래요 · 그 아키텍처를 · 그 새 입사자에게"
+  },
+  {
+    "key": "tr:mention-the-deadline",
+    "en": "mention the deadline",
+    "ko": "마감일을 언급하다 — ❌ mention about",
+    "example": "Did anyone mention the deadline in the meeting?",
+    "situations": [
+      "회의 내용을 전달받을 때",
+      "누가 무슨 말을 했는지 확인할 때",
+      "지나가듯 나온 정보를 짚을 때"
+    ],
+    "detail": "역시 '~에 대해 언급하다'의 '~에 대해'가 about으로 번역되는 간섭이에요. mention은 discuss처럼 about을 품은 타동사라 목적어가 바로 옵니다. 'mention = briefly say about, about 내장'으로 묶어두면 discuss/mention/explain 세 개가 한 번에 정리돼요.",
+    "exampleKo": "회의에서 마감일 언급한 사람 있었어요?",
+    "questionEn": "I missed today's meeting. Was there any talk of when we need to ship?",
+    "termsKo": "",
+    "cueKo": "언급했나요 · 누군가 · 그 마감일을 · 회의에서"
+  },
+  {
+    "key": "tr:consider-the-edge-cases",
+    "en": "consider the edge cases",
+    "ko": "엣지 케이스를 고려하다 — ❌ consider about",
+    "example": "We should consider the edge cases before merging.",
+    "situations": [
+      "코드 리뷰에서 빠진 부분을 짚을 때",
+      "설계 단계에서 예외를 점검할 때",
+      "결정 전에 옵션을 검토할 때"
+    ],
+    "detail": "'~에 대해 고려하다' 간섭에다 think about이 맞는 표현이다 보니 consider about이 더 자주 나와요. consider는 타동사라 바로 목적어를 받습니다. 'think ABOUT은 맞고, consider는 바로' — 이 둘을 쌍으로 기억하세요.",
+    "exampleKo": "머지하기 전에 엣지 케이스를 고려해야 해요.",
+    "questionEn": "This PR handles the happy path only. What's missing before we merge it?",
+    "termsKo": "",
+    "cueKo": "우리는 고려해야 한다 · 그 엣지 케이스들을 · 머지 전에"
+  },
+  {
+    "key": "tr:answer-the-question",
+    "en": "answer the question",
+    "ko": "질문에 답하다 — ❌ answer to the question",
+    "example": "Let me answer the question directly.",
+    "situations": [
+      "면접에서 두괄식으로 답할 때",
+      "질문 요지를 다시 짚을 때",
+      "회의에서 질문을 받았을 때"
+    ],
+    "detail": "'질문에 답하다'의 '~에' 때문에 to가 붙어요. 동사 answer는 바로 목적어를 받습니다. 헷갈리는 이유가 하나 더 있는데, 명사일 땐 the answer TO the question이 맞거든요. '동사는 to 없음, 명사는 to 있음'으로 정리하세요.",
+    "exampleKo": "그 질문에 바로 답할게요.",
+    "questionEn": "You gave a long background story in the interview. The interviewer looks impatient. What do you say?",
+    "termsKo": "",
+    "cueKo": "제가 답하겠습니다 · 그 질문에 · 직접적으로"
+  },
+  {
+    "key": "tr:contact-the-client",
+    "en": "contact the client",
+    "ko": "고객사에 연락하다 — ❌ contact to the client",
+    "example": "I'll contact the client about the delay today.",
+    "situations": [
+      "고객이나 외부팀에 연락한다고 말할 때",
+      "이슈 공지 담당을 정할 때",
+      "후속 연락을 약속할 때"
+    ],
+    "detail": "'~에게 연락하다'의 '~에게'가 to로 번역되는 전형적인 간섭이에요. contact는 원래 '접촉하다'라는 타동사라 사람·회사가 바로 붙습니다. 'contact = touch — 만지는 데 to가 필요 없다'로 기억하면 안 잊어요.",
+    "exampleKo": "지연 건으로 오늘 고객사에 연락할게요.",
+    "questionEn": "The release slipped two days and the customer doesn't know yet. Who handles it?",
+    "termsKo": "",
+    "cueKo": "제가 연락할게요 · 그 고객에게 · 그 지연에 관해 · 오늘"
+  },
+  {
+    "key": "tr:approach-the-problem",
+    "en": "approach the problem",
+    "ko": "문제에 접근하다 — ❌ approach to the problem (동사일 때)",
+    "example": "Let's approach the problem from the user's side.",
+    "situations": [
+      "문제 풀이 방식을 제안할 때",
+      "면접 코딩 문제를 시작할 때",
+      "관점 전환을 제안할 때"
+    ],
+    "detail": "'~에 접근하다'의 '~에'가 to로 나오는 데다, 명사일 땐 an approach TO the problem이 맞아서 더 헷갈려요. 동사 approach는 바로 목적어입니다. answer와 똑같은 패턴 — '동사는 무전치사, 명사는 to'.",
+    "exampleKo": "그 문제를 사용자 입장에서 접근해보죠.",
+    "questionEn": "We've been stuck on this design for a week. Any ideas for a different angle?",
+    "termsKo": "",
+    "cueKo": "접근합시다 · 그 문제에 · 사용자 쪽으로부터"
+  },
+  {
+    "key": "tr:attend-the-meeting",
+    "en": "attend the meeting",
+    "ko": "회의에 참석하다 — ❌ attend to the meeting",
+    "example": "I can't attend the meeting tomorrow morning.",
+    "situations": [
+      "회의 불참을 알릴 때",
+      "일정 충돌을 말할 때",
+      "참석 여부를 확인할 때"
+    ],
+    "detail": "'회의에 참석하다'의 '~에' 때문에 to가 붙어요. attend는 타동사라 바로 목적어인데, attend to는 '~을 처리하다/돌보다'라는 전혀 다른 뜻이 돼버려서 의미까지 어긋납니다. '참석은 attend 바로, attend to는 돌보기'로 구분하세요.",
+    "exampleKo": "내일 아침 회의에는 참석 못 해요.",
+    "questionEn": "We scheduled the kickoff at 9 a.m. tomorrow but you have a conflict. What do you tell the team?",
+    "termsKo": "",
+    "cueKo": "저는 참석 못 해요 · 그 회의에 · 내일 아침"
+  },
+  {
+    "key": "tr:enter-the-room",
+    "en": "enter the room",
+    "ko": "방에 들어가다 — ❌ enter into the room",
+    "example": "She entered the room while we were debugging.",
+    "situations": [
+      "상황을 묘사할 때",
+      "회의실에 들어간 장면을 말할 때",
+      "시장 진입(enter the market)을 말할 때"
+    ],
+    "detail": "'~에 들어가다'의 '~에'가 into로 번역돼요. enter는 in을 이미 품은 타동사라 물리적 공간은 바로 목적어입니다. 단 enter into a contract(계약을 맺다)처럼 추상적 관계엔 into가 맞아서 헷갈리죠. '공간은 enter 바로, 계약만 enter into'.",
+    "exampleKo": "우리가 디버깅하는 중에 그분이 방에 들어왔어요.",
+    "questionEn": "Describe the moment your manager walked in during the incident call.",
+    "termsKo": "",
+    "cueKo": "그녀가 들어왔다 · 그 방에 · 우리가 디버깅하는 동안"
+  },
+  {
+    "key": "tr:join-the-company",
+    "en": "join the company",
+    "ko": "회사에 입사하다 — ❌ join in / join to the company",
+    "example": "I joined the company three years ago as a backend developer.",
+    "situations": [
+      "면접에서 자기소개할 때",
+      "경력 시작점을 말할 때",
+      "팀 합류를 말할 때"
+    ],
+    "detail": "'회사에 들어가다'의 '~에' 때문에 to나 in이 끼어들어요. join은 타동사라 바로 목적어 — join the company, join the team, join the call 전부 동일합니다. 면접 첫 문장 단골이니 통째로 입에 박아두세요. 'join은 손잡기, 전치사 없이 바로 잡는다'.",
+    "exampleKo": "3년 전에 백엔드 개발자로 입사했습니다.",
+    "questionEn": "Tell me briefly about your career so far.",
+    "termsKo": "",
+    "cueKo": "저는 합류했습니다 · 그 회사에 · 3년 전 · 백엔드 개발자로서"
+  },
+  {
+    "key": "tr:access-the-database",
+    "en": "access the database",
+    "ko": "DB에 접근하다 — ❌ access to the database (동사일 때)",
+    "example": "Only the API server can access the database directly.",
+    "situations": [
+      "아키텍처를 설명할 때",
+      "권한·보안 설계를 말할 때",
+      "장애 원인으로 접근 경로를 짚을 때"
+    ],
+    "detail": "'~에 접근하다'의 '~에'에다, 명사형 have access TO가 익숙해서 동사에도 to가 따라붙는 게 함정이에요. 동사 access는 바로 목적어입니다. 개발자 영어에서 정말 자주 틀리는 표현이라 가성비 최고예요. 'have access TO / access 바로' 쌍으로 기억하세요.",
+    "exampleKo": "API 서버만 DB에 직접 접근할 수 있어요.",
+    "questionEn": "How do you keep services from talking to the data layer however they want?",
+    "termsKo": "",
+    "cueKo": "오직 그 API 서버만 · 접근할 수 있다 · 그 데이터베이스에 · 직접"
+  },
+  {
+    "key": "tr:participate-in-the-project",
+    "en": "participate in the project",
+    "ko": "프로젝트에 참여하다 — ❌ participate the project",
+    "example": "I participated in the migration project last year.",
+    "situations": [
+      "면접에서 프로젝트 경험을 말할 때",
+      "프로젝트 이력을 소개할 때",
+      "참여 범위를 설명할 때"
+    ],
+    "detail": "attend(전치사 없음)를 배우고 나면 이번엔 반대로 participate에서 in을 빼먹어요. 한국어는 둘 다 '~에 참석/참여하다'로 같은데 영어는 동사마다 달라서 생기는 혼란입니다. participate는 자동사라 in 필수. 'attend는 바로, participate는 IN' — 쌍으로 묶어 외우세요.",
+    "exampleKo": "작년에 마이그레이션 프로젝트에 참여했어요.",
+    "questionEn": "Which past team effort are you most proud of, and what was your role?",
+    "termsKo": "",
+    "cueKo": "저는 참여했습니다 · 그 마이그레이션 프로젝트에 · 작년에"
+  },
+  {
+    "key": "tr:reply-to-the-email",
+    "en": "reply to the email",
+    "ko": "이메일에 답장하다 — ❌ reply the email / reply him",
+    "example": "I'll reply to the email right after lunch.",
+    "situations": [
+      "답장 예정을 말할 때",
+      "메일 처리 순서를 말할 때",
+      "리뷰 코멘트에 응답한다고 할 때"
+    ],
+    "detail": "answer는 바로 목적어인데 reply는 자동사라 to가 필수 — 한국어로는 둘 다 '답하다'라 제일 자주 섞이는 쌍이에요. answer the question / reply TO the email처럼 짝 문장으로 통째 기억하는 게 빠릅니다. 'answer 바로, reply TO'.",
+    "exampleKo": "점심 먹고 바로 그 메일에 답장할게요.",
+    "questionEn": "The client sent a long message this morning and it's still sitting in your inbox. What's your plan?",
+    "termsKo": "",
+    "cueKo": "저는 답장할게요 · 그 이메일에 · 바로 점심 후에"
+  },
+  {
+    "key": "tr:listen-to-the-feedback",
+    "en": "listen to the feedback",
+    "ko": "피드백을 듣다 — ❌ listen the feedback / listen music",
+    "example": "We listened to the feedback and simplified the flow.",
+    "situations": [
+      "사용자 피드백 반영을 말할 때",
+      "회고에서 개선 과정을 말할 때",
+      "리뷰 의견을 수용했다고 할 때"
+    ],
+    "detail": "'음악을 듣다, 피드백을 듣다'의 '~을' 때문에 to가 빠져요. listen은 자동사라 대상 앞에 to가 필수인데, hear는 바로 목적어라 더 헷갈립니다. 'hear는 그냥 들리는 것(바로), listen TO는 귀를 기울여 향하는 것' — 방향이 있으니 to가 필요하다고 그림으로 기억하세요.",
+    "exampleKo": "피드백을 듣고 플로우를 단순화했어요.",
+    "questionEn": "Users said the signup flow felt confusing. How did your team respond?",
+    "termsKo": "",
+    "cueKo": "우리는 귀 기울였다 · 그 피드백에 · 그리고 단순화했다 · 그 플로우를"
+  },
+  {
+    "key": "tr:wait-for-the-response",
+    "en": "wait for the response",
+    "ko": "응답을 기다리다 — ❌ wait the response",
+    "example": "We're still waiting for the response from the vendor.",
+    "situations": [
+      "블로커 상황을 보고할 때",
+      "비동기 호출 동작을 설명할 때",
+      "외부 의존을 말할 때"
+    ],
+    "detail": "'~을 기다리다'라서 바로 목적어처럼 느껴지지만 wait는 자동사, 대상엔 for가 필수예요. 격식체 await는 반대로 바로 목적어라(await your reply) 한 번 더 꼬입니다. 'wait FOR, await는 바로 — 짧은 쪽이 for를 데려간다'로 기억하세요.",
+    "exampleKo": "아직 벤더 응답을 기다리고 있어요.",
+    "questionEn": "Why is the integration task blocked this week?",
+    "termsKo": "",
+    "cueKo": "우리는 아직 기다리는 중 · 그 응답을 · 그 벤더로부터의"
+  },
+  {
+    "key": "tr:search-for-the-root-cause",
+    "en": "search for the root cause",
+    "ko": "근본 원인을 찾다 — ❌ search the root cause",
+    "example": "We searched for the root cause all night.",
+    "situations": [
+      "장애 회고를 말할 때",
+      "디버깅 과정을 설명할 때",
+      "로그 분석을 말할 때"
+    ],
+    "detail": "'~을 찾다'의 '~을' 때문에 for가 빠져요. search + 목적어는 '그 장소를 뒤지다'라는 뜻이라 search the root cause는 의미 자체가 어긋납니다. 찾는 대상엔 for — search the logs FOR errors처럼 쓰면 둘의 차이가 한 문장에 보여요. '뒤지는 곳은 바로, 찾는 건 FOR'.",
+    "exampleKo": "밤새 근본 원인을 찾아 헤맸어요.",
+    "questionEn": "Walk me through what your team did the night of the big outage.",
+    "termsKo": "",
+    "cueKo": "우리는 찾아 헤맸다 · 그 근본 원인을 · 밤새"
+  },
+  {
+    "key": "tr:ask-him",
+    "en": "ask him",
+    "ko": "그에게 물어보다 — ❌ ask to him",
+    "example": "Ask him before you change the schema.",
+    "situations": [
+      "담당자 확인을 권할 때",
+      "질문을 다른 사람에게 돌릴 때",
+      "승인 절차를 말할 때"
+    ],
+    "detail": "'~에게 묻다'의 '~에게'가 to로 번역돼요. ask는 사람을 바로 목적어로 받습니다 — ask him a question, ask him to review처럼 부탁할 때도 사람이 먼저예요. 'ask는 사람부터 잡는다'로 기억하세요.",
+    "exampleKo": "스키마 바꾸기 전에 그분한테 물어보세요.",
+    "questionEn": "I want to rename a core table but the DBA owns it. What should I do first?",
+    "termsKo": "",
+    "cueKo": "물어보세요 · 그에게 · 당신이 바꾸기 전에 · 그 스키마를"
+  },
+  {
+    "key": "tr:call-the-client",
+    "en": "call the client",
+    "ko": "고객에게 전화하다 — ❌ call to the client",
+    "example": "I'll call the client and explain the situation.",
+    "situations": [
+      "전화 연락을 자청할 때",
+      "긴급 커뮤니케이션을 말할 때",
+      "후속 조치를 말할 때"
+    ],
+    "detail": "'~에게 전화하다'의 '~에게' 간섭으로 to가 붙어요. call은 타동사라 사람이 바로 옵니다 — call to라고 하면 '~을 향해 외치다'에 가까운 어색한 말이 돼요. 연락 동사(call, contact, email, text)는 전부 같은 패턴이니 묶어서 '연락 동사는 사람 바로'로 기억하세요.",
+    "exampleKo": "제가 고객에게 전화해서 상황을 설명할게요.",
+    "questionEn": "Email isn't working — the customer is upset and needs to hear from us now. What do you do?",
+    "termsKo": "",
+    "cueKo": "제가 전화할게요 · 그 고객에게 · 그리고 설명할게요 · 그 상황을"
+  },
+  {
+    "key": "tr:tell-me",
+    "en": "tell me",
+    "ko": "나에게 말해주다 — ❌ say me / He said me",
+    "example": "He told me the deploy failed last night.",
+    "situations": [
+      "전달받은 내용을 말할 때",
+      "정보 출처를 밝힐 때",
+      "보고 경로를 설명할 때"
+    ],
+    "detail": "'나에게 말했다'를 직역하면 said me가 튀어나와요. say는 내용만 받고(say that...), 사람에게 전달할 땐 tell이 사람을 바로 받습니다(tell me that...). 굳이 say에 사람을 붙이려면 say TO me지만, 거의 항상 tell이 자연스러워요. '듣는 사람이 보이면 tell, 따옴표면 say'.",
+    "exampleKo": "그가 어젯밤 배포가 실패했다고 알려줬어요.",
+    "questionEn": "How did you first find out the release went wrong?",
+    "termsKo": "",
+    "cueKo": "그가 말해줬다 · 나에게 · 그 배포가 실패했다고 · 어젯밤"
+  },
+  {
+    "key": "tr:agree-with-you",
+    "en": "agree with you",
+    "ko": "당신 의견에 동의하다 — ❌ agree you / I'm agree",
+    "example": "I agree with you on the caching approach.",
+    "situations": [
+      "회의에서 동의를 표할 때",
+      "부분 동의를 표현할 때",
+      "토론에서 입장을 밝힐 때"
+    ],
+    "detail": "'동의하다'가 상태처럼 느껴져서 I'm agree가 나오고, '~에 동의하다'를 직역하다 전치사를 빼먹기도 해요. agree는 동사고, 사람엔 with, 주제엔 on, 제안 수락엔 to를 씁니다. 회의 필수 문형이니 'I agree WITH 사람 ON 주제'로 통째 외우세요.",
+    "exampleKo": "캐싱 접근에 대해선 당신 의견에 동의해요.",
+    "questionEn": "Your teammate proposed adding Redis in front of the database. What's your take?",
+    "termsKo": "",
+    "cueKo": "저는 동의합니다 · 당신에게 · 그 캐싱 접근에 대해서는"
+  },
+  {
+    "key": "tr:emphasize-the-point",
+    "en": "emphasize the point",
+    "ko": "그 점을 강조하다 — ❌ emphasize on",
+    "example": "I want to emphasize the importance of testing.",
+    "situations": [
+      "발표에서 핵심을 강조할 때",
+      "면접에서 가치관을 말할 때",
+      "리뷰 문화에 대해 말할 때"
+    ],
+    "detail": "'~에 대해 강조하다'의 간섭에다 명사형 put emphasis ON이 맞는 표현이라 동사에도 on이 따라붙어요. 동사 emphasize는 바로 목적어입니다. stress도 똑같은 패턴이에요. 'emphasis(명사)는 ON, emphasize(동사)는 바로'.",
+    "exampleKo": "테스트의 중요성을 강조하고 싶어요.",
+    "questionEn": "If you could leave the junior devs with one habit, what would it be?",
+    "termsKo": "",
+    "cueKo": "저는 강조하고 싶어요 · 그 중요성을 · 테스트의"
+  },
+  {
+    "key": "tr:depend-on-the-requirements",
+    "en": "depend on the requirements",
+    "ko": "요구사항에 달려 있다 — ❌ depend of / depend to",
+    "example": "The right design depends on the requirements.",
+    "situations": [
+      "'상황에 따라 다르다'고 답할 때",
+      "기술 선택 기준을 말할 때",
+      "의존 관계를 설명할 때"
+    ],
+    "detail": "'~에 달려 있다'의 '~에'가 to로 새고, '~의 여부'라는 느낌 때문에 of도 자주 나와요. depend는 무조건 on — 위에 얹혀(on) 기대고 있다는 그림입니다. It depends ON ...은 면접 만능 문형이니 입에 붙여두세요. '기대는 건 항상 ON'.",
+    "exampleKo": "맞는 설계는 요구사항에 달려 있죠.",
+    "questionEn": "Is a microservices architecture always better than a monolith?",
+    "termsKo": "",
+    "cueKo": "그 올바른 설계는 · 달려 있다 · 그 요구사항에"
+  },
+  {
+    "key": "tr:consist-of-three-services",
+    "en": "consist of three services",
+    "ko": "세 서비스로 구성되다 — ❌ consist with / is consisted of",
+    "example": "The system consists of three services and a queue.",
+    "situations": [
+      "시스템 구성을 소개할 때",
+      "아키텍처 개요를 말할 때",
+      "팀 구성을 설명할 때"
+    ],
+    "detail": "'~으로 구성되다'가 한국어에서 수동처럼 들려서 is consisted of가 나오고, 도구·재료의 '~로'(펜으로 = with a pen)가 with로 번역돼 consist with도 섞여요. consist는 능동·자동사로만 쓰고 짝 전치사는 of 고정입니다. 수동 느낌으로 말하고 싶으면 is composed of / is made up of가 따로 있어요. 'consists of는 능동 그대로'.",
+    "exampleKo": "이 시스템은 서비스 세 개와 큐 하나로 구성돼요.",
+    "questionEn": "Give me a one-sentence overview of your backend's main components.",
+    "termsKo": "",
+    "cueKo": "그 시스템은 · 구성된다 · 세 개의 서비스로 · 그리고 큐 하나로"
+  },
+  {
+    "key": "tr:lack-experience",
+    "en": "lack experience",
+    "ko": "경험이 부족하다 — ❌ We lack of experience (동사일 때)",
+    "example": "We lack experience with Kubernetes, so we kept it simple.",
+    "situations": [
+      "기술 선택의 이유를 말할 때",
+      "팀의 약점을 솔직히 인정할 때",
+      "리스크를 설명할 때"
+    ],
+    "detail": "명사 덩어리 a lack OF experience가 익숙해서 동사로 쓸 때도 of가 끼어들어요. 동사 lack은 타동사라 바로 목적어입니다. 'lack of는 명사 덩어리, lack 동사는 바로' — 참고로 be lacking IN이라는 제3의 형태도 있지만 동사 lack 바로가 제일 깔끔해요.",
+    "exampleKo": "쿠버네티스 경험이 부족해서 단순하게 갔어요.",
+    "questionEn": "Why did your team choose plain VMs instead of a fancy orchestration setup?",
+    "termsKo": "",
+    "cueKo": "우리는 부족하다 · 경험이 · 쿠버네티스에 대한 · 그래서 우리는 유지했다 · 그것을 단순하게"
+  },
+  {
+    "key": "tr:resemble-the-old-design",
+    "en": "resemble the old design",
+    "ko": "기존 디자인과 닮다 — ❌ resemble with / resemble to",
+    "example": "The new layout resembles the old design too much.",
+    "situations": [
+      "디자인 비교 의견을 말할 때",
+      "두 시스템의 유사성을 말할 때",
+      "차별화 부족을 짚을 때"
+    ],
+    "detail": "'~와 닮다'의 '~와'가 with로 번역되는 간섭이에요. resemble은 타동사라 바로 목적어입니다. similar TO(형용사)와 섞여서 resemble to도 나오는데 둘은 품사가 달라요. 'similar TO는 형용사라 to 필요, resemble은 동사라 바로'.",
+    "exampleKo": "새 레이아웃이 기존 디자인이랑 너무 비슷해요.",
+    "questionEn": "We paid for a redesign, but honestly I can't see much difference. Thoughts?",
+    "termsKo": "",
+    "cueKo": "그 새 레이아웃은 · 닮았다 · 그 기존 디자인을 · 너무 많이"
+  },
+  {
+    "key": "tr:different-from",
+    "en": "different from",
+    "ko": "~와 다르다 — ❌ different with (different than은 미국 구어에선 OK)",
+    "example": "Our approach is different from what the docs suggest.",
+    "situations": [
+      "차이점을 설명할 때",
+      "기존 방식과 비교할 때",
+      "면접에서 자기 방식의 특징을 말할 때"
+    ],
+    "detail": "'~와 다르다'의 '~와' 때문에 different with가 1순위 함정이에요. 표준은 different FROM — 다르다는 건 서로 멀어지는 그림이라 from이 맞습니다. 미국 구어에선 different than도 통용되지만 with만은 절대 아니에요. '다르면 멀어진다 → FROM'.",
+    "exampleKo": "우리 접근은 문서에서 권하는 방식과 달라요.",
+    "questionEn": "You didn't follow the official guide for this setup. Why?",
+    "termsKo": "",
+    "cueKo": "우리 접근은 · 다르다 · 그것으로부터 · 문서가 제안하는"
+  },
+  {
+    "key": "tr:married-to",
+    "en": "married to",
+    "ko": "~와 결혼한 — ❌ married with / marry with her",
+    "example": "She's married to a frontend developer at a startup.",
+    "situations": [
+      "스몰토크에서 가족 얘기할 때",
+      "동료를 소개할 때",
+      "근황을 말할 때"
+    ],
+    "detail": "'~와 결혼하다'의 '~와'가 with로 직행하는 고전 함정이에요. 동사는 marry her(바로), 상태는 be married TO입니다. married with children은 '아이가 딸린'이라는 전혀 다른 뜻이 돼버려요. '결혼은 한 사람에게 묶이는(to) 것'으로 기억하세요.",
+    "exampleKo": "그분은 스타트업 프론트엔드 개발자와 결혼했어요.",
+    "questionEn": "How's your teammate doing? I heard there was a wedding recently.",
+    "termsKo": "",
+    "cueKo": "그녀는 · 결혼한 상태다 · 한 프론트엔드 개발자에게 · 스타트업의"
+  },
+  {
+    "key": "tr:graduate-from-university",
+    "en": "graduate from university",
+    "ko": "대학을 졸업하다 — ❌ graduate university",
+    "example": "I graduated from university in 2018 with a CS degree.",
+    "situations": [
+      "면접에서 자기소개할 때",
+      "학력을 말할 때",
+      "경력 타임라인을 말할 때"
+    ],
+    "detail": "한국어는 '대학을(목적어) 졸업하다'라서 from이 통째로 빠져요. 영어는 학교 '에서 나오는' 그림이라 from이 필수입니다. 미국 구어에선 생략하는 사람도 있지만 면접에선 from을 넣는 게 안전해요. '졸업은 학교로부터 나오는 것 → FROM'.",
+    "exampleKo": "2018년에 CS 전공으로 대학을 졸업했습니다.",
+    "questionEn": "Walk me through your background, starting with your education.",
+    "termsKo": "",
+    "cueKo": "저는 졸업했습니다 · 대학으로부터 · 2018년에 · CS 학위와 함께"
+  },
+  {
+    "key": "tr:go-home",
+    "en": "go home",
+    "ko": "집에 가다 — ❌ go to home (go to there, come to here도 ❌)",
+    "example": "Let's deploy in the morning and go home now.",
+    "situations": [
+      "야근을 끝낼 때",
+      "퇴근을 제안할 때",
+      "이동 계획을 말할 때"
+    ],
+    "detail": "'집에 가다'의 '~에' 때문에 to가 붙어요. home/here/there/abroad는 명사가 아니라 부사라서 '~에'가 이미 단어 안에 들어 있습니다 — go home, come here, go there. 'home에는 이미 to가 산다'로 기억하면 here/there까지 한 번에 해결돼요.",
+    "exampleKo": "배포는 아침에 하고 지금은 집에 가죠.",
+    "questionEn": "It's 11 p.m. and the release is risky. What do you suggest to the team?",
+    "termsKo": "",
+    "cueKo": "배포합시다 · 아침에 · 그리고 갑시다 · 집에 · 지금"
+  },
+  {
+    "key": "tr:arrive-at-the-office",
+    "en": "arrive at the office",
+    "ko": "사무실에 도착하다 — ❌ arrive to the office",
+    "example": "I arrived at the office before the client call.",
+    "situations": [
+      "도착 시간을 말할 때",
+      "지각 사유를 설명할 때",
+      "출장 일정을 말할 때"
+    ],
+    "detail": "'~에 도착하다'의 '~에'에 go TO의 관성이 더해져 arrive to가 나와요. arrive는 이동이 끝난 '지점'을 찍는 동사라 점이면 at(사무실, 역), 면이면 in(도시, 나라)을 씁니다. 'arrive는 핀 꽂기 — AT/IN, 화살표(to)가 아니다'.",
+    "exampleKo": "고객 콜 전에 사무실에 도착했어요.",
+    "questionEn": "Were you in time for this morning's customer meeting?",
+    "termsKo": "",
+    "cueKo": "저는 도착했다 · 그 사무실에 · 그 고객 콜 전에"
+  },
+  {
+    "key": "tr:reach-the-goal",
+    "en": "reach the goal",
+    "ko": "목표에 도달하다 — ❌ reach to the goal",
+    "example": "We finally reached the goal of 99.9% uptime.",
+    "situations": [
+      "목표 달성을 보고할 때",
+      "합의에 도달했다고 말할 때",
+      "수치 목표를 말할 때"
+    ],
+    "detail": "'~에 도달하다'의 '~에'가 to로 새요. reach는 손이 닿는 그림의 타동사라 바로 목적어 — reach the goal, reach a conclusion. 단 '연락하다'는 reach out TO라서 거기서만 to가 등장합니다. '닿으면 바로 잡고, reach out할 때만 to'.",
+    "exampleKo": "마침내 가동률 99.9% 목표를 달성했어요.",
+    "questionEn": "Your reliability push lasted two quarters. How did it end up?",
+    "termsKo": "",
+    "cueKo": "우리는 마침내 도달했다 · 그 목표에 · 99.9% 가동률이라는"
+  },
+  {
+    "key": "tr:near-the-station",
+    "en": "near the station",
+    "ko": "역에서 가깝다 — ❌ near from / near to the station",
+    "example": "The new office is near the station, ten minutes away.",
+    "situations": [
+      "사무실 위치를 말할 때",
+      "통근 거리를 말할 때",
+      "스몰토크로 동네 얘기할 때"
+    ],
+    "detail": "'역에서 가깝다'의 '~에서' 때문에 from이 붙어요 — far FROM의 짝처럼 느껴져서 더 그렇죠. near는 그 자체가 전치사라 명사가 바로 옵니다. 'far FROM은 맞지만 near FROM은 없다 — near는 혼자 다 한다'.",
+    "exampleKo": "새 사무실은 역에서 가까워요, 10분 거리예요.",
+    "questionEn": "What's the commute like to the new office?",
+    "termsKo": "",
+    "cueKo": "그 새 사무실은 · 가깝다 · 그 역에 · 10분 거리"
+  },
+  {
+    "key": "tr:next-week",
+    "en": "next week",
+    "ko": "다음 주에 — ❌ on next week / in last year",
+    "example": "The release is next week, not this Friday.",
+    "situations": [
+      "일정을 말할 때",
+      "마감 시점을 정정할 때",
+      "작년 일을 말할 때 (last year)"
+    ],
+    "detail": "'다음 주에'의 '~에' 때문에 on/in이 붙어요. next/last/this/every가 붙은 시간 표현은 그 자체로 부사구라 전치사 금지입니다 — next week, last year, this Monday, every morning. 'next/last/this/every가 오면 전치사는 비켜'.",
+    "exampleKo": "릴리스는 이번 주 금요일이 아니라 다음 주예요.",
+    "questionEn": "When exactly is the launch happening?",
+    "termsKo": "",
+    "cueKo": "그 릴리스는 · 다음 주다 · 이번 금요일이 아니라"
+  },
+  {
+    "key": "tr:borrow-from-lend-to",
+    "en": "borrow from / lend to",
+    "ko": "빌리다(받아옴) / 빌려주다(내어줌) — ❌ 한국어 '빌리다' 하나로 방향 뭉개기",
+    "example": "I borrowed a laptop from IT until mine gets fixed.",
+    "situations": [
+      "장비를 빌릴 때",
+      "동료에게 빌려준다고 할 때",
+      "리소스 공유를 말할 때"
+    ],
+    "detail": "한국어는 '빌리다/빌려주다'가 한 글자 차이라 방향 감각이 뭉개지는데, 영어는 borrow(내가 받음)와 lend(내가 줌)가 완전히 다른 동사예요. 받아오면 borrow A from B, 내어주면 lend A to B로 전치사까지 세트입니다. 'borrow는 들여오고(from), lend는 내보낸다(to)'.",
+    "exampleKo": "제 노트북 고칠 때까지 IT팀에서 한 대 빌렸어요.",
+    "questionEn": "Your machine died right before the demo. How did you manage?",
+    "termsKo": "",
+    "cueKo": "저는 빌렸다 · 노트북 한 대를 · IT팀으로부터 · 제 것이 고쳐질 때까지"
+  },
+  {
+    "key": "tr:bring-it-to-the-meeting",
+    "en": "bring it to the meeting",
+    "ko": "(이쪽·목적지로) 가져오다/가져가다 — ❌ bring/take 방향 혼동",
+    "example": "I'll bring my laptop to the meeting room.",
+    "situations": [
+      "회의에 물건을 챙겨갈 때",
+      "데모 장비를 옮길 때",
+      "동료에게 가져다 달라고 할 때"
+    ],
+    "detail": "한국어 '가져가다/가져오다'는 말하는 사람 위치 기준인데, 영어는 대화의 중심(듣는 사람·함께 갈 목적지) 기준이라 방향이 자주 뒤집혀요. 우리가 함께 있을 곳으로 향하면 bring, 거기서 다른 데로 떠나보내면 take입니다. 그래서 같이 갈 회의엔 take가 아니라 bring it to the meeting이 자연스러워요. '내 쪽·우리 쪽이면 bring, 떠나보내면 take'.",
+    "exampleKo": "회의실에 제 노트북 가져갈게요.",
+    "questionEn": "We'll need to show the prototype live in the demo room. Can you handle that?",
+    "termsKo": "",
+    "cueKo": "제가 가져갈게요 · 제 노트북을 · 그 회의실로"
+  }
+];
+export const TRAP_COUNT = 35;
