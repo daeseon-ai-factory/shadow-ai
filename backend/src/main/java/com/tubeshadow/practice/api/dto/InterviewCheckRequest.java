@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
  */
 public record InterviewCheckRequest(
         @NotBlank @Size(max = 3000) String question,
-        @NotBlank @Size(max = 1000) String answer
+        @NotBlank @Size(max = 1000) String answer,
+        Boolean precision // true = also surface preposition/article slips (opt-in; default lenient-only)
 ) {
 }

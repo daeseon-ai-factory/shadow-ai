@@ -9,6 +9,7 @@ import com.tubeshadow.practice.api.dto.InterviewCheckResponse;
 import com.tubeshadow.practice.api.dto.MockNextResponse;
 import com.tubeshadow.practice.prompt.ComposePrompt;
 import com.tubeshadow.practice.prompt.InterviewPrompt;
+import com.tubeshadow.practice.prompt.PrecisionPrompt;
 import com.tubeshadow.practice.prompt.MockInterviewPrompt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,11 +56,17 @@ public class CompositionService {
      * is understandable — imperfect or short English still counts; only a real error fails.
      */
     public InterviewCheckResponse interviewCheck(String question, String answer) {
+        return interviewCheck(question, answer, false);
+    }
+
+    /** precision=true also surfaces preposition/article slips (opt-in; pass bar stays lenient). */
+    public InterviewCheckResponse interviewCheck(String question, String answer, boolean precision) {
         if (!ai.isConfigured()) {
             throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED",
                     "AI가 설정되지 않았습니다 (API 키 필요)");
         }
-        String raw = ai.complete(InterviewPrompt.SYSTEM, InterviewPrompt.userMessage(question, answer));
+        String system = precision ? PrecisionPrompt.SYSTEM : InterviewPrompt.SYSTEM;
+        String raw = ai.complete(system, InterviewPrompt.userMessage(question, answer));
         try {
             JsonNode n = objectMapper.readTree(stripFence(raw));
             return new InterviewCheckResponse(

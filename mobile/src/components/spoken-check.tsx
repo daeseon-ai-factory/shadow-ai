@@ -20,7 +20,10 @@ export function SpokenCheck({
   onChecked?: (answer: string) => void; // mock interview: continue to the follow-up after grading
 }) {
   const [text, setText] = useState('');
-  const check = useMutation({ mutationFn: () => practiceApi.interviewCheck(question, text.trim()) });
+  // Precision mode: same lenient pass bar, but the grader also lists preposition/article slips —
+  // the errors a Korean speaker can't hear in their own speech. Opt-in per check.
+  const [precision, setPrecision] = useState(false);
+  const check = useMutation({ mutationFn: () => practiceApi.interviewCheck(question, text.trim(), precision) });
   const fb = check.data;
 
   return (
@@ -46,6 +49,16 @@ export function SpokenCheck({
           ) : null}
         </View>
       ) : null}
+      <View style={styles.checkRow}>
+        <Pressable
+          style={[styles.precChip, precision && styles.precChipOn]}
+          onPress={() => setPrecision((v) => !v)}
+        >
+          <ThemedText type="small" style={precision ? styles.precOnText : styles.precText}>
+            🔬 {t('mic.precision')}
+          </ThemedText>
+        </Pressable>
+      </View>
       <Pressable
         style={[styles.btn, (!text.trim() || check.isPending) && styles.disabled]}
         disabled={!text.trim() || check.isPending}
@@ -93,6 +106,11 @@ const styles = StyleSheet.create({
   },
   btnText: { color: '#208AEF', fontWeight: '700' },
   nextBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
+  checkRow: { flexDirection: 'row', justifyContent: 'flex-end' },
+  precChip: { borderRadius: 999, borderWidth: 1, borderColor: '#9ca3af77', paddingHorizontal: 12, paddingVertical: 6 },
+  precChipOn: { borderColor: '#7c3aed', backgroundColor: '#7c3aed18' },
+  precText: { color: '#6b7280' },
+  precOnText: { color: '#7c3aed', fontWeight: '700' },
   nextText: { color: '#fff', fontWeight: '700' },
   disabled: { opacity: 0.5 },
 });

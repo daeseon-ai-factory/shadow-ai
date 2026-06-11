@@ -63,8 +63,8 @@ export const practiceApi = {
   composeCheck: (target: string, gloss: string, sentence: string) =>
     apiClient.post<ComposeFeedback>("/api/practice/compose/check", { target, gloss, sentence }),
   // Lenient grade of a spoken explanation — `question` is the code/topic, `answer` is what the learner said.
-  interviewCheck: (question: string, answer: string) =>
-    apiClient.post<InterviewFeedback>("/api/practice/interview/check", { question, answer }),
+  interviewCheck: (question: string, answer: string, precision?: boolean) =>
+    apiClient.post<InterviewFeedback>("/api/practice/interview/check", { question, answer, precision }),
   // Next interviewer question in the AI mock interview (opener on empty history, else a follow-up).
   mockNext: (history: MockTurn[], seed?: number) =>
     apiClient.post<MockNext>("/api/practice/interview/mock", { history, seed }),

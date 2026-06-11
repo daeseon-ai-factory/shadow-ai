@@ -134,7 +134,7 @@ public class PracticeController {
     @Operation(summary = "인터뷰 답변 AI 채점 (관대) — 핵심만 맞으면 통과, 억지 교정 X")
     public ApiResponse<InterviewCheckResponse> interviewCheck(@CurrentUser AuthenticatedUser user,
                                                               @Valid @RequestBody InterviewCheckRequest request) {
-        return ApiResponse.ok(compositionService.interviewCheck(request.question(), request.answer()));
+        return ApiResponse.ok(compositionService.interviewCheck(request.question(), request.answer(), Boolean.TRUE.equals(request.precision())));
     }
 
     @PostMapping("/compose/transforms")
