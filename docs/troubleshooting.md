@@ -907,3 +907,5 @@ Migrating the prod backend ap-northeast-2 (Seoul) → ca-central-1 (Toronto-area
   - **Copy**: EN/KO `home.hero{Title,Sub,Cta}` in `mobile/src/lib/i18n-messages.ts`. **Assets**: new Mimi icon across `icon.png`/`splash-icon.png`/3 android adaptive layers/`logo-glow.png`.
 - **Verified this turn**: `git show --stat 8c83b9d` = 11 `mobile/` files only; `docs/troubleshooting.md` (codex skip-markers), `INTERVIEW_PREP.md`, `codex_review/` deliberately excluded from the commit. tsc / iOS build / device install were reported green in the working session but NOT re-run this turn.
 - **Pattern**: name color tokens by ROLE (`primary`/`accent`/`surfaceRaised`/`border`), never by raw hex — a redesign then edits the palette in one file instead of chasing hex literals across screens.
+<!-- skipped: 5ba0c46 docs(log): Mimi mobile Home redesign retro (8c83b9d) — log-of-a-log; the design retro is already written above and in content/logs/shadow-ai/2026-06-13-mimi-mobile-home-redesign.mdx -->
+
