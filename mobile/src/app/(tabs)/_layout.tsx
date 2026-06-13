@@ -1,24 +1,43 @@
-import { Text } from 'react-native';
+import { StyleSheet, View, type ColorValue } from 'react-native';
 import { Tabs } from 'expo-router';
+import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 
+import { useTheme } from '@/hooks/use-theme';
 import { t } from '@/lib/i18n';
 
-// Bottom tab bar. No @expo/vector-icons in this project, so icons are plain emoji
-// rendered as <Text> (the callback `color` is ignored by multicolor glyphs, so we
-// distinguish the active tab with opacity instead).
+type SymbolName = SymbolViewProps['name'];
+
 const tabIcon =
-  (emoji: string) =>
-  ({ focused }: { focused: boolean }) => (
-    <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>
+  (name: SymbolName) =>
+  ({ focused, color }: { focused: boolean; color: ColorValue }) => (
+    <View style={[styles.iconShell, focused && styles.iconShellActive]}>
+      <SymbolView name={name} size={20} weight={focused ? 'bold' : 'regular'} tintColor={color} />
+    </View>
   );
 
 export default function TabsLayout() {
+  const theme = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
-        tabBarActiveTintColor: '#208AEF',
-        tabBarInactiveTintColor: '#9ca3af',
+        headerStyle: { backgroundColor: theme.background },
+        headerShadowVisible: false,
+        headerTitleStyle: { color: theme.text, fontWeight: '800' },
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.textSecondary,
+        tabBarStyle: {
+          backgroundColor: theme.surfaceRaised,
+          borderTopColor: theme.border,
+          height: 74,
+          paddingTop: 8,
+          paddingBottom: 12,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '700',
+        },
       }}
     >
       {/* Home draws its own SafeAreaView + "Mimi" title — no native header. */}
@@ -27,16 +46,22 @@ export default function TabsLayout() {
         options={{
           headerShown: false,
           title: t('nav.home'),
-          tabBarIcon: tabIcon('🏠'),
+          tabBarIcon: tabIcon({ ios: 'house.fill', android: 'home', web: 'home' }),
         }}
       />
       <Tabs.Screen
         name="videos"
-        options={{ title: t('nav.videos'), tabBarIcon: tabIcon('🎬') }}
+        options={{
+          title: t('nav.videos'),
+          tabBarIcon: tabIcon({ ios: 'play.rectangle.fill', android: 'smart_display', web: 'smart_display' }),
+        }}
       />
       <Tabs.Screen
         name="review"
-        options={{ title: t('nav.review'), tabBarIcon: tabIcon('🔁') }}
+        options={{
+          title: t('nav.review'),
+          tabBarIcon: tabIcon({ ios: 'arrow.triangle.2.circlepath', android: 'sync', web: 'sync' }),
+        }}
       />
       <Tabs.Screen
         name="practice"
@@ -44,17 +69,36 @@ export default function TabsLayout() {
           // Header keeps the specific "Pattern drill" title; the tab reads the shorter "Practice".
           title: t('nav.practice'),
           tabBarLabel: t('nav.practiceTab'),
-          tabBarIcon: tabIcon('🏋️'),
+          tabBarIcon: tabIcon({ ios: 'bolt.fill', android: 'bolt', web: 'bolt' }),
         }}
       />
       <Tabs.Screen
         name="interview"
-        options={{ title: t('nav.interview'), tabBarIcon: tabIcon('🎤') }}
+        options={{
+          title: t('nav.interview'),
+          tabBarIcon: tabIcon({ ios: 'mic.fill', android: 'mic', web: 'mic' }),
+        }}
       />
       <Tabs.Screen
         name="settings"
-        options={{ title: t('nav.settings'), tabBarIcon: tabIcon('⚙️') }}
+        options={{
+          title: t('nav.settings'),
+          tabBarIcon: tabIcon({ ios: 'gearshape.fill', android: 'settings', web: 'settings' }),
+        }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  iconShell: {
+    width: 34,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconShellActive: {
+    backgroundColor: '#E1EFFF',
+  },
+});
