@@ -1,0 +1,32 @@
+---
+title: "Mimi mobile gets a face — Home redesign, a named color system, and native tab icons"
+date: "2026-06-13"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "public"
+language: "en"
+summary: "The Mimi mobile app moved from placeholder Expo art and an emoji tab bar to a branded Home screen, a role-named light/dark color system, and SF Symbols tab icons — a visual rebrand with no behavior change, committed mobile-only."
+tags: ["mobile", "expo", "react-native", "design-system", "product"]
+---
+
+Mimi (the mobile client) had been running on Expo's stock scaffolding: placeholder icon art, an emoji tab bar, and a Home tab that read like a prototype. This batch is a pure visual rebrand — no logic, no new screens, no data changes — just making the app look like a product. It landed as commit `8c83b9d` (11 files, 358 insertions / 77 deletions), staged mobile-only so unrelated working-tree churn (codex's practice-bank edits, an `INTERVIEW_PREP.md`, a `codex_review/` dir) stayed out of it.
+
+### A color system instead of scattered hex
+
+The most load-bearing change is the smallest-looking one: `mobile/src/constants/theme.ts` went from a thin palette to a **role-named token set** for both light and dark — `primary` / `primaryStrong` / `primarySoft`, `accent` / `accentSoft`, `coral`, `surfaceRaised`, `border`, `textSecondary`. Screens now reference a *role* (`theme.primary`, `theme.surfaceRaised`, `theme.border`) rather than a raw value. That's what makes the rest of the redesign cheap: the Home rewrite reads tokens, so a future palette change is one file, not a hunt for hex codes across components.
+
+### Home, rebuilt around a warm-up-then-shadow flow
+
+`mobile/src/app/(tabs)/index.tsx` carries most of the diff (+307 LOC). It now has a branded header, an account card, a primary-colored **hero with a CTA that routes to `/gym`** — pushing the user into the one-sentence warm-up before shadowing — then a row of `QuickCard`s and an icon-based tool grid (`GridCard` + `SectionLabel`). The hero copy is real i18n, not hardcoded: `home.hero{Title,Sub,Cta}` added to `mobile/src/lib/i18n-messages.ts` in EN ("Speak from clips" / "Start today") and KO ("클립으로 바로 말하기" / "오늘 시작").
+
+### Native iconography over text glyphs
+
+The tab bar (`mobile/src/app/(tabs)/_layout.tsx`) dropped emoji for `expo-symbols` `SymbolView` (SF Symbols), with `weight` flipping `regular`→`bold` on focus. Quick/grid cards declare per-platform icon names (`{ ios: 'play.rectangle.fill', android: 'smart_display', web: 'smart_display' }`), so iOS gets real SF Symbols and other platforms fall back by name. `themed-text.tsx` got matching title/subtitle typography tweaks. The asset PNGs — `icon.png`, `splash-icon.png`, the three Android adaptive layers, and `logo-glow.png` — were swapped for the new Mimi icon.
+
+### What's verified vs. reported
+
+Verified *this turn*: `git show --stat 8c83b9d` lists exactly 11 `mobile/` files and nothing else; `git diff` confirms each change described above. The TypeScript check (`tsc --noEmit`), the iOS Release build, and the device install were reported green in the working session, but I did **not** re-run them in the turn that wrote this entry, so I'm not claiming them as freshly verified here. Auto-launch on the phone failed for a mundane reason — the device was locked — not a build problem.
+
+### Takeaway
+
+Name color tokens by **role**, never by value. The palette expansion looks like the boring part of a redesign, but it's the part that makes every screen edit afterward a one-liner against `theme.*` instead of a find-and-replace across hex literals — and it's what let the Home rewrite stay focused on layout instead of color bookkeeping.

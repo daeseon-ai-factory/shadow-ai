@@ -892,3 +892,18 @@ Migrating the prod backend ap-northeast-2 (Seoul) → ca-central-1 (Toronto-area
 - **Fix** (commit `1ec0a82`): a `jikdok-cues` workflow generated a dedicated `cueKo` for ALL 502 production items across 12 banks — Korean words in ENGLISH word order, chunked with " · " (e.g. "If the cache misses, we fall back to the DB." → `"만약 캐시가 미스나면 · 우리는 · 폴백한다 · DB로"`) — each bank verified by an order-fidelity pass (left→right must map 1:1 onto the English). Mappers now cue with `cueKo` and keep `exampleKo` for the reveal. 502/502 merged, 0 mismatches.
 - **Also in this commit — the argumentation layer**: 8 function groups / 67 moves (claim, support, concede-counter, hedge, conditional, judgment, agree-disagree, prioritize-conclude — "That's true to a point, but…", "I'd push back on that", "X buys us Y at the cost of Z"), dual-lens verified (1 fix), exposed as orange chips in the 실무 연습장 and merged into the daily-30 mix. This is the functional layer the user correctly identified as missing for "내 생각을 논증" — vocabulary banks alone don't argue.
 - **Pattern**: in a language-learning pipeline, every Korean string needs a declared ROLE — cue (English word order, chunked), translation (natural), explanation (natural, rich). Reusing one field for another role silently breaks the method; give each role its own field and verify each against its own rule.
+<!-- skipped: 2d2b1e8 docs(log): per-role Korean fields — jikdok cue rebuild + argumentation layer (1ec0a82) [no-log] -->
+<!-- skipped: 26c3f90 feat(practice): precision check mode — opt-in 🔬 toggle surfaces preposition/article/verb-pattern slips in the learner's OWN spoken answers (lenient pass bar unchanged); PrecisionPrompt + precision flag through core api [no-log] -->
+
+---
+
+### Mimi mobile Home redesign + native tab icons (design decision)
+
+- **Context**: Mimi (mobile) shipped on Expo's stock scaffolding — placeholder icon art, emoji tab bar, prototype-looking Home. This batch is a visual rebrand only (no behavior change), committed mobile-only as `8c83b9d` (11 files, 358+/77−).
+- **Decisions**:
+  - **Color tokens by role, not value** (`mobile/src/constants/theme.ts`): expanded light/dark into a named set — `primary`/`primaryStrong`/`primarySoft`, `accent`/`accentSoft`, `coral`, `surfaceRaised`, `border`, `textSecondary`. Screens reference roles, so a future palette swap is one file.
+  - **Home** (`mobile/src/app/(tabs)/index.tsx`, +307 LOC): branded header, account card, primary-colored hero whose CTA routes to `/gym` (warm-up-then-shadow flow), `QuickCard`s + icon `GridCard` grid.
+  - **Tab icons** (`mobile/src/app/(tabs)/_layout.tsx`): emoji → `expo-symbols` `SymbolView` (SF Symbols), `weight` regular→bold on focus; per-platform icon names so non-iOS falls back by name.
+  - **Copy**: EN/KO `home.hero{Title,Sub,Cta}` in `mobile/src/lib/i18n-messages.ts`. **Assets**: new Mimi icon across `icon.png`/`splash-icon.png`/3 android adaptive layers/`logo-glow.png`.
+- **Verified this turn**: `git show --stat 8c83b9d` = 11 `mobile/` files only; `docs/troubleshooting.md` (codex skip-markers), `INTERVIEW_PREP.md`, `codex_review/` deliberately excluded from the commit. tsc / iOS build / device install were reported green in the working session but NOT re-run this turn.
+- **Pattern**: name color tokens by ROLE (`primary`/`accent`/`surfaceRaised`/`border`), never by raw hex — a redesign then edits the palette in one file instead of chasing hex literals across screens.
