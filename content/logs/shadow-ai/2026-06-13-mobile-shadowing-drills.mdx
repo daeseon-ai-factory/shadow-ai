@@ -1,0 +1,61 @@
+---
+title: "Mobile shadowing: three active drills + STT pronunciation feedback"
+date: "2026-06-13"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The mobile player mined rich per-clip data (chunked translation, practice scenario, transcript) and rendered it as read-only boxes. Turned it into active drills on the three pillars of fluency — listen, reorder, produce — plus opt-in STT pronunciation feedback. Zero new backend/AI/migration."
+tags: ["mobile", "expo", "react-native", "shadowing", "stt"]
+---
+
+## The gap
+
+The backend already AI-mines, per clip: a natural Korean translation, a 직독직해
+`chunkedTranslation` (`{en, ko}` in English word order), a real-world
+`practiceScenario` (situation + sample response), vocabulary, key expressions — and
+the clip carries a `transcript`. The **web** surfaced some of this as drills; the
+**mobile** player rendered it all as read-only boxes. So the learner read, but never
+*did*. The owner's need was concrete: think in English, **English word order**,
+**listen properly**, and use English **in real situations** — and the data for all
+three was already sitting unused on every analyzed clip.
+
+## The three drills + feedback (`52e8f51`)
+
+Every one reuses data the clip already has — no new backend, AI, dependency, or
+migration.
+
+- **Listen / decode — `DictationDrill`**: the transcript stays hidden; loop the
+  audio, type what you hear, then a word-level **LCS diff** (shared `lib/word-diff.ts`)
+  reveals the transcript with the words your ear dropped in red.
+- **Order / reorder — `ChunkLadder`**: the `chunkedTranslation` array is the answer
+  key *by index*. Shuffled English chunks; a tap is accepted only when its original
+  index equals the next empty rung — so a Korean-SOV order is **physically
+  unbuildable**. Solve → replay the clip audio. A Blind pass hides the Korean; 3
+  Blind clears persist per-clip mastery (SecureStore) and later open into Blind.
+- **Speak / produce — `ScenarioQuiz`**: read the mined Korean situation, type an
+  English response, compare against the sample.
+- **Pronunciation — `ShadowFeedback`**: the record panel could only record + play
+  back. Now an opt-in button sends the take to the **existing** transcribe endpoint
+  (`practiceApi.transcribe`, built for the interview feature), diffs the STT text
+  against the clip transcript, and marks the mangled words. One paid STT call per tap,
+  never automatic.
+- **Review**: the SRS screen embeds `ChunkLadder` as an active-retrieval task; mastery
+  is shared with the player via the same SecureStore key.
+
+## Verified vs not
+
+- **Verified**: `tsc --noEmit` exit 0; i18n EN/KO key parity; Metro bundle clean
+  (1255 modules); iOS Release `Build Succeeded` 0 errors + `devicectl` install
+  `✔ Complete 100%`; `git show --name-only 52e8f51` = 9 `mobile/` files only.
+- **NOT verified**: on-device runtime (taps/SecureStore/audio). STT needs
+  `OPENAI_API_KEY` on the backend (`tubeshadow.transcription.api-key`) or it 503s; the
+  shared `TranscriptionClient` prompt is biased toward CS/interview jargon, so
+  general-clip transcription may skew slightly.
+
+## Pattern
+
+When the data already exists, "advancing" the app is mostly **surfacing it as
+something the learner actively does**, not adding pipelines: a hidden transcript →
+dictation, a chunked translation → unbuildable-if-wrong word-order puzzle, an existing
+STT endpoint → pronunciation feedback.
