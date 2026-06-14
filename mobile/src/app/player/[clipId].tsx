@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import YoutubePlayer, { type YoutubeIframeRef } from 'react-native-youtube-iframe';
-import { analysisApi, clipsApi, type ClipAnalysis } from '@shadow-ai/core';
+import { analysisApi, clipsApi, videosApi, type ClipAnalysis } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -39,6 +39,8 @@ export default function ClipPlayerScreen() {
   const [playing, setPlaying] = useState(false);
   const [loop, setLoop] = useState(true);
   const [tab, setTab] = useState<DrillTab>('decode');
+  // A chosen sentence sub-segment to loop, or null for the whole clip.
+  const [activeSeg, setActiveSeg] = useState<{ startMs: number; endMs: number } | null>(null);
 
   const clip = useQuery({
     queryKey: ['clip', clipId],
@@ -54,44 +56,62 @@ export default function ClipPlayerScreen() {
     refetchInterval: (q) => (q.state.data?.status === 'PENDING' ? 3000 : false),
   });
 
-  const startSec = clip.data ? Math.floor(clip.data.startMs / 1000) : 0;
-  const endMs = clip.data ? clip.data.endMs : 0;
+  // Parent video's sentence-level timing — lets us split the clip into smaller A–B loops.
+  const videoQuery = useQuery({
+    queryKey: ['video', clip.data?.videoId],
+    queryFn: () => videosApi.get(clip.data!.videoId),
+    enabled: !!token && !!clip.data?.videoId,
+  });
+
+  // Active loop window: the chosen sentence sub-segment, or the whole clip when null.
+  const clipStartMs = clip.data?.startMs ?? 0;
+  const clipEndMs = clip.data?.endMs ?? 0;
+  const loopStartMs = activeSeg?.startMs ?? clipStartMs;
+  const loopEndMs = activeSeg?.endMs ?? clipEndMs;
+  const loopStartSec = loopStartMs / 1000;
 
   // Enforce the segment boundary + loop by polling position. The YouTube IFrame's `end` param
   // fires PAUSED (not ENDED) at a mid-video boundary, so relying on onChangeState('ended') never
   // re-loops a short clip. Polling getCurrentTime is what the web player does.
   useEffect(() => {
-    if (!playing || !endMs) return;
+    if (!playing || !loopEndMs) return;
     const id = setInterval(async () => {
       const t = await playerRef.current?.getCurrentTime?.();
-      if (typeof t === 'number' && t * 1000 >= endMs) {
+      if (typeof t === 'number' && t * 1000 >= loopEndMs) {
         if (loop) {
-          playerRef.current?.seekTo(startSec, true);
+          playerRef.current?.seekTo(loopStartSec, true);
         } else {
           setPlaying(false);
         }
       }
     }, 250);
     return () => clearInterval(id);
-  }, [playing, loop, endMs, startSec]);
+  }, [playing, loop, loopEndMs, loopStartSec]);
 
   const onState = useCallback(
     (state: string) => {
       // Natural end of the source video — re-seek if looping.
       if (state === 'ended') {
         if (loop) {
-          playerRef.current?.seekTo(startSec, true);
+          playerRef.current?.seekTo(loopStartSec, true);
           setPlaying(true);
         } else {
           setPlaying(false);
         }
       }
     },
-    [loop, startSec],
+    [loop, loopStartSec],
   );
 
   const replay = () => {
-    playerRef.current?.seekTo(startSec, true);
+    playerRef.current?.seekTo(loopStartSec, true);
+    setPlaying(true);
+  };
+
+  // Loop just one sentence (or the whole clip when null), seeking there immediately.
+  const selectSeg = (seg: { startMs: number; endMs: number } | null) => {
+    setActiveSeg(seg);
+    playerRef.current?.seekTo((seg?.startMs ?? clipStartMs) / 1000, true);
     setPlaying(true);
   };
 
@@ -127,6 +147,11 @@ export default function ClipPlayerScreen() {
   const chunks = analysis.data?.chunkedTranslation ?? [];
   const scenario = analysis.data?.practiceScenario;
   const analysisPending = analysis.isPending || analysis.data?.status === 'PENDING';
+
+  // Sentences of the parent video that fall inside this clip → tappable sub-loops (clamped to the clip).
+  const subs = (videoQuery.data?.sentences ?? [])
+    .filter((s) => s.endMs > c.startMs && s.startMs < c.endMs)
+    .map((s) => ({ startMs: Math.max(s.startMs, c.startMs), endMs: Math.min(s.endMs, c.endMs) }));
 
   const TABS: { key: DrillTab; label: string }[] = [
     { key: 'decode', label: t('player.tabDecode') },
@@ -172,7 +197,7 @@ export default function ClipPlayerScreen() {
             width={playerWidth}
             play={playing}
             videoId={c.youtubeId}
-            initialPlayerParams={{ start: startSec, rel: false, modestbranding: true }}
+            initialPlayerParams={{ start: Math.floor(clipStartMs / 1000), rel: false, modestbranding: true }}
             onChangeState={onState}
           />
         </View>
@@ -194,6 +219,26 @@ export default function ClipPlayerScreen() {
           <ThemedText type="small" numberOfLines={1}>
             {c.name || c.videoTitle} · {ms(c.startMs)}–{ms(c.endMs)}
           </ThemedText>
+
+          {/* Split the clip into sentence-sized A–B loops; tap one to drill just that line. */}
+          {subs.length > 1 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.segRow}
+              keyboardShouldPersistTaps="handled"
+            >
+              <SegChip label={t('player.segAll')} active={activeSeg === null} onPress={() => selectSeg(null)} />
+              {subs.map((s, i) => (
+                <SegChip
+                  key={i}
+                  label={String(i + 1)}
+                  active={activeSeg?.startMs === s.startMs && activeSeg?.endMs === s.endMs}
+                  onPress={() => selectSeg(s)}
+                />
+              ))}
+            </ScrollView>
+          ) : null}
         </View>
 
         {/* Mode tabs — pick one drill at a time instead of an endless stack. */}
@@ -219,6 +264,17 @@ export default function ClipPlayerScreen() {
         </KeyboardAvoidingView>
       </SafeAreaView>
     </ThemedView>
+  );
+}
+
+/** A sentence sub-loop chip in the player header. */
+function SegChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  return (
+    <Pressable style={[styles.segChip, active && styles.segChipActive]} onPress={onPress}>
+      <ThemedText style={[styles.segChipText, active && styles.segChipTextActive]} numberOfLines={1}>
+        {label}
+      </ThemedText>
+    </Pressable>
   );
 }
 
@@ -314,6 +370,19 @@ const styles = StyleSheet.create({
   playerWrap: { backgroundColor: '#000' },
   playerWrapPortrait: { alignItems: 'center' },
   header: { paddingHorizontal: 16, paddingTop: 12, gap: 8 },
+  segRow: { gap: 8, paddingVertical: 2, paddingRight: 16 },
+  segChip: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#9ca3af',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    minWidth: 38,
+    alignItems: 'center',
+  },
+  segChipActive: { backgroundColor: '#208AEF', borderColor: '#208AEF' },
+  segChipText: { fontWeight: '600', color: '#6b7280' },
+  segChipTextActive: { color: '#fff' },
   controls: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   primaryBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
