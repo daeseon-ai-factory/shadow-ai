@@ -5,6 +5,7 @@ import { Redirect, router, useFocusEffect } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { reviewApi, analysisApi, REVIEW_QUALITY, type ReviewQueueItem } from '@shadow-ai/core';
 
+import { ChunkLadder } from '@/components/chunk-ladder';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
@@ -108,6 +109,13 @@ export default function ReviewScreen() {
               {koPrompt ?? clip.name ?? t('review.recallThisClip')}
             </ThemedText>
           </View>
+
+          {/* Active retrieval: rebuild the clip's English in English word order before revealing.
+              Self-validating, so the grade you give yourself is honest. Mastery persists per-clip
+              (shared with the player), so a clip you've mastered opens straight into Blind here too. */}
+          {!revealed && analysis.data?.chunkedTranslation && analysis.data.chunkedTranslation.length >= 2 ? (
+            <ChunkLadder chunks={analysis.data.chunkedTranslation} clipId={clip.id} />
+          ) : null}
 
           {!revealed ? (
             <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>

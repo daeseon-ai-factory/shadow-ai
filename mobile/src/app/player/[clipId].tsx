@@ -1,5 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Dimensions, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +17,10 @@ import { analysisApi, clipsApi, type ClipAnalysis } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { ChunkLadder } from '@/components/chunk-ladder';
+import { DictationDrill } from '@/components/dictation-drill';
 import { RecordPanel } from '@/components/record-panel';
+import { ScenarioQuiz } from '@/components/scenario-quiz';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
@@ -17,12 +29,16 @@ function ms(msVal: number) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
+// The learning modes, in pedagogical order: hear it → see the order → produce it → say it → reference.
+type DrillTab = 'decode' | 'reorder' | 'produce' | 'shadow' | 'analysis';
+
 export default function ClipPlayerScreen() {
   const token = useAuthStore((s) => s.token);
   const { clipId } = useLocalSearchParams<{ clipId: string }>();
   const playerRef = useRef<YoutubeIframeRef>(null);
   const [playing, setPlaying] = useState(false);
   const [loop, setLoop] = useState(true);
+  const [tab, setTab] = useState<DrillTab>('decode');
 
   const clip = useQuery({
     queryKey: ['clip', clipId],
@@ -101,28 +117,67 @@ export default function ClipPlayerScreen() {
   const screenW = Dimensions.get('window').width;
   const screenH = Dimensions.get('window').height;
   const portrait = c.videoOrientation === 'PORTRAIT';
-  // Portrait (Shorts) is 9:16; cap its height to ~55% of the screen so it doesn't overflow.
+  // Pinned at the top now, so cap portrait (Shorts) harder (~42% height) to leave room for the
+  // drill below; landscape stays 16:9.
   const playerWidth = portrait
-    ? Math.min(screenW, Math.round(screenH * 0.55 * (9 / 16)))
+    ? Math.min(screenW, Math.round(screenH * 0.42 * (9 / 16)))
     : screenW;
   const height = portrait ? Math.round(playerWidth * (16 / 9)) : Math.round(screenW * (9 / 16));
+
+  const chunks = analysis.data?.chunkedTranslation ?? [];
+  const scenario = analysis.data?.practiceScenario;
+  const analysisPending = analysis.isPending || analysis.data?.status === 'PENDING';
+
+  const TABS: { key: DrillTab; label: string }[] = [
+    { key: 'decode', label: t('player.tabDecode') },
+    { key: 'reorder', label: t('player.tabReorder') },
+    { key: 'produce', label: t('player.tabProduce') },
+    { key: 'shadow', label: t('player.tabShadow') },
+    { key: 'analysis', label: t('player.tabAnalysis') },
+  ];
+
+  const renderTab = () => {
+    switch (tab) {
+      case 'decode':
+        return c.transcript ? (
+          <DictationDrill embedded transcript={c.transcript} onReplayAudio={replay} />
+        ) : (
+          <TabMessage text={t('player.tabEmpty')} />
+        );
+      case 'reorder':
+        if (chunks.length >= 2) {
+          return <ChunkLadder embedded chunks={chunks} clipId={c.id} onReplayAudio={replay} />;
+        }
+        return <TabMessage text={analysisPending ? t('player.tabPending') : t('player.tabEmpty')} />;
+      case 'produce':
+        if (scenario) return <ScenarioQuiz scenario={scenario} />;
+        return <TabMessage text={analysisPending ? t('player.tabPending') : t('player.tabEmpty')} />;
+      case 'shadow':
+        return <RecordPanel clipId={c.id} targetTranscript={c.transcript} />;
+      case 'analysis':
+        return <AnalysisSection data={analysis.data} pending={analysis.isPending} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={['bottom']}>
-        <ScrollView contentContainerStyle={styles.container}>
-          <View style={[styles.playerWrap, portrait && styles.playerWrapPortrait]}>
-            <YoutubePlayer
-              ref={playerRef}
-              height={height}
-              width={playerWidth}
-              play={playing}
-              videoId={c.youtubeId}
-              initialPlayerParams={{ start: startSec, rel: false, modestbranding: true }}
-              onChangeState={onState}
-            />
-          </View>
+        {/* Pinned header — the video never scrolls away while you drill below. */}
+        <View style={[styles.playerWrap, portrait && styles.playerWrapPortrait]}>
+          <YoutubePlayer
+            ref={playerRef}
+            height={height}
+            width={playerWidth}
+            play={playing}
+            videoId={c.youtubeId}
+            initialPlayerParams={{ start: startSec, rel: false, modestbranding: true }}
+            onChangeState={onState}
+          />
+        </View>
 
+        <View style={styles.header}>
           <View style={styles.controls}>
             <Pressable style={styles.primaryBtn} onPress={() => setPlaying((p) => !p)}>
               <ThemedText style={styles.primaryText}>{playing ? t('player.pause') : t('player.play')}</ThemedText>
@@ -130,34 +185,49 @@ export default function ClipPlayerScreen() {
             <Pressable style={styles.secondaryBtn} onPress={replay}>
               <ThemedText style={styles.secondaryText}>{t('player.replaySegment')}</ThemedText>
             </Pressable>
-            <Pressable
-              style={[styles.loopBtn, loop && styles.loopOn]}
-              onPress={() => setLoop((l) => !l)}
-            >
+            <Pressable style={[styles.loopBtn, loop && styles.loopOn]} onPress={() => setLoop((l) => !l)}>
               <ThemedText style={loop ? styles.primaryText : styles.secondaryText}>
                 {loop ? t('player.loopOn') : t('player.loopOff')}
               </ThemedText>
             </Pressable>
           </View>
-
-          <ThemedText type="subtitle">{c.name || c.videoTitle}</ThemedText>
-          <ThemedText type="small">
-            {c.videoTitle} · {ms(c.startMs)}–{ms(c.endMs)}
+          <ThemedText type="small" numberOfLines={1}>
+            {c.name || c.videoTitle} · {ms(c.startMs)}–{ms(c.endMs)}
           </ThemedText>
+        </View>
 
-          <RecordPanel clipId={c.id} />
+        {/* Mode tabs — pick one drill at a time instead of an endless stack. */}
+        <View style={styles.tabBar}>
+          {TABS.map((td) => {
+            const active = tab === td.key;
+            return (
+              <Pressable key={td.key} style={styles.tab} onPress={() => setTab(td.key)}>
+                <ThemedText style={[styles.tabLabel, active && styles.tabLabelActive]}>{td.label}</ThemedText>
+                <View style={[styles.tabUnderline, active && styles.tabUnderlineActive]} />
+              </Pressable>
+            );
+          })}
+        </View>
 
-          {c.transcript ? (
-            <View style={styles.box}>
-              <ThemedText type="smallBold">{t('player.transcript')}</ThemedText>
-              <ThemedText>{c.transcript}</ThemedText>
-            </View>
-          ) : null}
-
-          <AnalysisSection data={analysis.data} pending={analysis.isPending} />
-        </ScrollView>
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+            {renderTab()}
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </ThemedView>
+  );
+}
+
+/** Empty / pending placeholder shown inside a tab when that drill's data isn't available. */
+function TabMessage({ text }: { text: string }) {
+  return (
+    <View style={styles.tabMsg}>
+      <ThemedText type="small" style={styles.tabMsgText}>{text}</ThemedText>
+    </View>
   );
 }
 
@@ -170,7 +240,7 @@ function AnalysisSection({ data, pending }: { data?: ClipAnalysis; pending: bool
       </View>
     );
   }
-  if (!data || data.status === 'FAILED') return null;
+  if (!data || data.status === 'FAILED') return <TabMessage text={t('player.tabEmpty')} />;
   if (data.status === 'PENDING') {
     return (
       <View style={styles.box}>
@@ -241,16 +311,31 @@ const styles = StyleSheet.create({
   gap: { gap: 12 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   error: { color: '#dc2626' },
-  container: { padding: 16, gap: 12 },
-  playerWrap: { marginHorizontal: -16, backgroundColor: '#000' },
-  playerWrapPortrait: { marginHorizontal: 0, alignItems: 'center', borderRadius: 12, overflow: 'hidden' },
+  playerWrap: { backgroundColor: '#000' },
+  playerWrapPortrait: { alignItems: 'center' },
+  header: { paddingHorizontal: 16, paddingTop: 12, gap: 8 },
   controls: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  primaryBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 12, paddingHorizontal: 18, alignItems: 'center' },
+  primaryBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
-  secondaryBtn: { borderRadius: 10, paddingVertical: 12, paddingHorizontal: 18, borderWidth: 1, borderColor: '#9ca3af' },
+  secondaryBtn: { borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, borderWidth: 1, borderColor: '#9ca3af' },
   secondaryText: { fontWeight: '600' },
-  loopBtn: { borderRadius: 10, paddingVertical: 12, paddingHorizontal: 18, borderWidth: 1, borderColor: '#9ca3af' },
+  loopBtn: { borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, borderWidth: 1, borderColor: '#9ca3af' },
   loopOn: { backgroundColor: '#208AEF', borderColor: '#208AEF' },
+  tabBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    marginTop: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#9ca3af',
+  },
+  tab: { flex: 1, alignItems: 'center', paddingTop: 10, gap: 8 },
+  tabLabel: { fontWeight: '600', color: '#9ca3af' },
+  tabLabelActive: { color: '#208AEF' },
+  tabUnderline: { height: 2, alignSelf: 'stretch', backgroundColor: 'transparent' },
+  tabUnderlineActive: { backgroundColor: '#208AEF' },
+  content: { padding: 16, gap: 12 },
+  tabMsg: { padding: 24, alignItems: 'center' },
+  tabMsgText: { color: '#9ca3af', textAlign: 'center' },
   box: {
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
