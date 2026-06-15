@@ -1,0 +1,16 @@
+# OPTIONAL: NCP managed PostgreSQL instead of on-box Postgres in docker-compose.
+# Costs more, but gives managed backups/HA. To enable: rename this file to
+# `postgresql.tf`. Args are from the ncloud_postgresql provider docs.
+
+resource "ncloud_postgresql" "main" {
+  service_name       = "${var.name_prefix}-pg"
+  server_name_prefix = "${var.name_prefix}pg" # 3-20 chars, letters/numbers/hyphens
+  user_name          = "mimi"                  # 4-16 chars
+  user_password      = var.db_password         # set via: export TF_VAR_db_password=...
+  vpc_no             = ncloud_vpc.main.id
+  subnet_no          = ncloud_subnet.main.id
+  client_cidr        = var.subnet_cidr # restrict access to the VPC subnet
+  database_name      = "mimi"
+  # Optional (defaults are sensible): product_code, engine_version_code,
+  # data_storage_type_code, ha (default true), backup (default true), port (5432).
+}

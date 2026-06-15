@@ -1,0 +1,83 @@
+---
+title: "Five things that bit during the Naver Cloud (Seoul) migration"
+date: "2026-06-15"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "The AWS→NCP move worked, but five NCP/Caddy specifics each cost a debugging loop: KVM block-storage args, a 10GB boot disk, NCP's root-password SSH model, ACME failing on a stale DNS then a CAA lock, and a pot-provider port mismatch. Symptoms + fixes."
+tags: ["troubleshoot", "ncp", "terraform", "caddy", "acme", "docker"]
+---
+
+Each of these is verified against the actual error output during the migration.
+
+## 1. NCP block storage on a KVM server needs `volume_type`
+
+- **Symptom**: `terraform apply` on `ncloud_block_storage` →
+  ```
+  Status: 400 Bad Request
+  "returnMessage": "Parameter is invalid. KVM not support getHypervisorCode by computeNo"
+  ```
+- **Cause**: gen3 NCP servers are KVM; the provider's default block-storage path is the
+  XEN one. `disk_detail_type` is XEN-only.
+- **Fix**: for KVM, set `hypervisor_type = "KVM"` **and** `volume_type` (one of
+  `FB1/CB1/FB2/CB2`) and a `zone` matching the server. `CB1` worked.
+
+## 2. The boot disk is only 10 GB — Postgres can't even init
+
+- **Symptom**: the `db` container crash-looped:
+  ```
+  initdb: error: could not create directory "/var/lib/postgresql/data/pg_wal": No space left on device
+  ```
+  `df -h /` → `/dev/vda2 9.8G 9.3G 0 100%`.
+- **Cause**: the Ubuntu base image's root disk is **10 GB**. A 1.19 GB Java image + a
+  2 GB swapfile + other images filled it; `initdb` had nowhere to write WAL.
+- **Fix**: attach a **50 GB block storage** volume, move Docker's data-root there
+  (`/etc/docker/daemon.json` → `"data-root": "/data/docker"`, `rsync` the existing dir so
+  images are preserved) and move the swapfile to `/data`. Root dropped to ~79%.
+
+## 3. NCP SSH isn't key-direct — the login key decrypts a root password
+
+- **Symptom**: `ssh -i <loginkey> root@box` → `Permission denied (publickey,password)`,
+  even though Terraform "generated" the login key.
+- **Cause**: NCP's login key is **not installed into `authorized_keys`**; it's used to
+  **decrypt the server's root password**. So pubkey auth fails by design.
+- **Fix**: `data "ncloud_root_password"` (takes `server_instance_no` + `private_key`)
+  returns the root password; use it once (via `expect` + `ssh-copy-id`) to inject your
+  *own* public key into `authorized_keys`, then SSH key-based from then on.
+
+## 4. Caddy ACME failed twice — stale DNS, then a CAA lock
+
+- **Symptom (a)**:
+  ```
+  challenge failed ... "detail":"3.98.13.13: Invalid response from
+  https://api.mimi.daeseon.ai/.well-known/acme-challenge/...: 401"
+  ```
+  `3.98.13.13` is the **old AWS ALB** — Let's Encrypt was still resolving the domain to
+  AWS while DNS propagated. **Fix**: wait for propagation, then `docker compose restart
+  caddy` to retry against the box.
+- **Symptom (b)**, after DNS pointed at the box:
+  ```
+  challenge failed ... "type":"urn:...:error:caa","detail":"CAA record for
+  mimi.daeseon.ai prevents issuance"
+  ```
+- **Cause**: `dig CAA mimi.daeseon.ai` → `0 issue "amazon.com"` — a CAA record (left from
+  the AWS ACM setup) that allows **only Amazon** to issue certs, blocking Let's Encrypt.
+- **Fix**: remove the `amazon.com` CAA in Cloudflare (or add `letsencrypt.org`). With CAA
+  cleared, Caddy got a production Let's Encrypt cert in ~5 seconds.
+
+## 5. pot-provider port mismatch (4416 vs 4417)
+
+- **Symptom**: would have silently broken YouTube transcript import — the backend's
+  default `YT_DLP_POT_PROVIDER_BASE_URL` is `http://localhost:4417`, but the
+  `bgutil-ytdlp-pot-provider` image listens on **4416**.
+- **Fix**: in docker-compose, set `YT_DLP_POT_PROVIDER_BASE_URL=http://pot-provider:4416`
+  (service name + the image's real port). Caught by reading the image port against the
+  config default rather than trusting the default.
+
+## Pattern
+
+A cross-provider migration's cost isn't the happy path — it's the per-provider
+specifics: KVM vs XEN resource args, default disk sizes, the provider's SSH/credential
+model, and CAA/DNS records left behind by the *previous* provider. Budget a debugging
+loop for each, and read the literal error — every one of these named its own cause.

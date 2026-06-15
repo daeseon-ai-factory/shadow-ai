@@ -1,0 +1,65 @@
+# Mimi backend on one Seoul box. Secrets come from ./.env (chmod 600, never committed).
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: tubeshadow
+      POSTGRES_USER: tubeshadow_admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tubeshadow_admin -d tubeshadow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # POToken sidecar — required for free yt-dlp YouTube transcript fetch. Listens on 4416.
+  pot-provider:
+    image: brainicism/bgutil-ytdlp-pot-provider:1.3.1
+    restart: always
+
+  backend:
+    image: mimi-backend:latest
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      AI_PROVIDER: gemini
+      DATABASE_URL: jdbc:postgresql://db:5432/tubeshadow
+      DATABASE_USERNAME: tubeshadow_admin
+      DATABASE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY} # also enables STT pronunciation feedback (prod never had it)
+      RECORDING_STORAGE: local
+      RECORDING_STORAGE_DIR: /data/recordings
+      RECORDING_S3_BUCKET: unused # placeholder; S3 bean not loaded when storage=local
+      AWS_REGION: ca-central-1
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      RATE_LIMIT_TRUSTED_PROXIES: 172.16.0.0/12 # trust Caddy on the docker network
+      YT_DLP_POT_PROVIDER_BASE_URL: http://pot-provider:4416
+    volumes:
+      - recordings:/data/recordings
+
+  caddy:
+    image: caddy:2
+    restart: always
+    depends_on: [backend]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  recordings:
+  caddy_data:
+  caddy_config:

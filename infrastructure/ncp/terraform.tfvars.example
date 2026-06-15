@@ -1,0 +1,15 @@
+# Copy to terraform.tfvars (gitignored) and fill in.
+# Access/secret keys are NOT here — they come from env:
+#   export NCLOUD_ACCESS_KEY=...   NCLOUD_SECRET_KEY=...
+
+region           = "KR"        # Seoul
+zone             = "KR-2"      # confirm zones in the console
+allowed_ssh_cidr = "1.2.3.4/32" # ← your real IP/32
+
+# Look these up in the NCP console (Server create flow). The examples below are
+# placeholders and will NOT apply as-is — replace with current codes:
+server_image_number = "" # Ubuntu 22.04 LTS image number
+server_spec_code    = "" # ~2 vCPU / 4 GB spec code
+
+# Only if you enable postgresql.tf.optional — prefer: export TF_VAR_db_password=...
+# db_password = ""

@@ -1,0 +1,10 @@
+.terraform/
+terraform.tfvars
+*.tfstate
+*.tfstate.*
+*.pem
+# SSH keys generated for box access — NEVER commit the private key
+mimi-ops
+mimi-ops.pub
+mimi-key*
+crash.log
