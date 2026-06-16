@@ -1,0 +1,26 @@
+---
+title: "Phrasal verbs are a system, not a list: the particle workshop"
+date: "2026-06-10"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "Instead of drilling 'kick off' and 'roll back' as isolated flashcards, the new workshop groups phrasal verbs by particle and teaches each particle's core spatial image first — so unseen phrasal verbs become guessable. Plus 72 real dev collocations, and the Practice tab finally shows all its tools."
+tags: ["language-learning", "interview-prep", "content-generation", "ux"]
+---
+
+A frustrated-but-precise piece of user feedback set this batch: *"kick off나 roll back 이런 전치사를 전치사 개별모음으로 묶고… 실제 실무 콜로케이션 제대로."* Two asks hiding in there: treat phrasal-verb particles as a **system**, and add the verb+noun pairings engineers actually say.
+
+## The particle insight
+
+Phrasal verbs are the single biggest "sounds native vs. sounds translated" gap for ESL engineers — and the standard way to learn them (flashcards per verb) throws away their structure. The particle carries a spatial image: **off** is "something attached detaching — triggering or cutting away" (kick off, sign off, back off, kill off); **out** is "from inside to outside, expanded or exhausted" (factor out, fan out, max out, stub out); **up** is "into existence/completeness" (spin up, stand up, free up, queue up). Learn the image once and unseen combinations become guessable.
+
+So the workshop has eleven particle groups. Each group carries a `coreKo` — the particle's image explained in two Korean sentences — and opening a particle drills its whole family: 58 newly-authored gap-filling verbs merged with the 44 phrasal cards that already existed (matched by token, so "spin up" lands in *up* and "back out" in *out*). The trick that makes it pedagogy instead of taxonomy: the coreKo rides in every card's glossary slot, so every rep re-imprints the system, not just the item.
+
+## Collocations and the tab fix
+
+The collocation bank is 72 verb+noun pairings from real engineering speech — merge a branch, drain the queue, rotate the credentials, page the on-call — each with the full annotation set (Korean nuance explanation, example translation, an eliciting question that doesn't give the answer away, and a concept glossary line where needed).
+
+Both banks went through the standing dual-lens verification (native-speaker naturalness, then Korean/technical accuracy). Ten corrections, two of which would have actively taught wrong mental models: "dial down the log level" inverts direction (lowering the level *increases* output — fixed to "로그 양"), and a "tire rotation" metaphor for credential rotation (tire rotation swaps positions; it doesn't replace anything — exactly the wrong picture for key replacement).
+
+And one plain UX bug from the same feedback: the Practice tab had been rendering a single tool (the pattern drill) while five others hid behind home-screen cards. It's now the menu it should have been — six tools plus the new workshop, every section visible.

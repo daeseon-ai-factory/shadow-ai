@@ -46,7 +46,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
             registry.addInterceptor(compose).addPathPatterns(
                     "/api/practice/compose/check",
                     "/api/practice/compose/transforms",
-                    "/api/practice/compose/transform-check");
+                    "/api/practice/compose/transform-check",
+                    "/api/practice/interview/check",
+                    "/api/practice/interview/mock",
+                    "/api/practice/transcribe");
         }
     }
 }

@@ -1,0 +1,50 @@
+---
+title: "Mobile shadowing: split a clip into sentence A–B loops"
+date: "2026-06-13"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "Shadowing wants to drill one short line on repeat, but the player could only loop the whole clip. Reused the video's already-stored sentence timestamps to split a clip into tappable sentence chips, each an A–B loop. Zero new backend."
+tags: ["mobile", "expo", "shadowing"]
+---
+
+## The ask
+
+The owner asked whether the player could **split a segment into smaller pieces** —
+the core shadowing move is to loop one short line until it sticks, then advance. The
+player looped only the whole `[startMs, endMs]` clip, and `clip.transcript` is a flat
+string with no timing, so on the surface there was nothing to split by.
+
+## The data was already there
+
+The catch: the player saw flat text, but the **video** stores timed structure.
+`VideoResponse` exposes `transcriptSegments` (1–3s cues) and `sentences` (merged,
+each a `TranscriptSegment { startMs, endMs, text }`), already served by
+`videosApi.get`. A clip is just a window of its parent video, so the sentences whose
+timing overlaps `[clip.startMs, clip.endMs]` *are* the sub-segments — no new backend,
+AI, or migration.
+
+## The fix (`86b7fa0`)
+
+- Fetch the parent video, filter `sentences` to the clip window, clamp each to the
+  clip bounds → a list of sub-segments.
+- Render them as a horizontal chip strip in the pinned header: `Full · 1 · 2 · 3 …`
+  (only when a clip holds 2+ sentences).
+- Generalised the loop from a single clip `[start, end]` to an **active window**:
+  tapping a chip sets that sentence as the loop, seeks there, and plays; "Full"
+  restores the whole clip. The dictation / record "replay" buttons inherit the active
+  window, so 🔁 replays just the sentence you're drilling.
+
+## Honest edge
+
+The chips only appear when the parent video has sentence timing. Clips imported before
+that pipeline existed have no `sentences`, so they fall back to whole-clip looping —
+a per-clip data gap, not a feature break. Build + install verified; on-device loop
+accuracy not yet checked.
+
+## Pattern
+
+"There's no data for this" is often "the data lives one level up." The clip had no
+timing; its video did. Before adding a pipeline, check whether a parent/related entity
+already carries what you need.

@@ -42,3 +42,18 @@ export function buildSession<T extends Keyed>(all: T[], states: SrsCard[], today
   const { due, fresh } = partition(all, states, today);
   return [...shuffle(due), ...shuffle(fresh).slice(0, NEW_PER_DAY)];
 }
+
+/** A focused HARD-CAPPED daily set of `target` cards — due reviews first (retention of what's
+ *  already learned), then new cards to fill up to `target`. For the "오늘의 30" loop: never more
+ *  than `target` a day, so it stays doable but relentless. */
+export function buildDailySession<T extends Keyed>(
+  all: T[],
+  states: SrsCard[],
+  today: string,
+  target = 30,
+): T[] {
+  const { due, fresh } = partition(all, states, today);
+  const reviews = shuffle(due).slice(0, target);
+  const newCards = shuffle(fresh).slice(0, Math.max(0, target - reviews.length));
+  return shuffle([...reviews, ...newCards]);
+}

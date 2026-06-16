@@ -7,6 +7,10 @@ import com.tubeshadow.practice.api.dto.ComposeCheckRequest;
 import com.tubeshadow.practice.api.dto.ComposeFeedback;
 import com.tubeshadow.practice.api.dto.GradeRequest;
 import com.tubeshadow.practice.api.dto.GradeResponse;
+import com.tubeshadow.practice.api.dto.InterviewCheckRequest;
+import com.tubeshadow.practice.api.dto.InterviewCheckResponse;
+import com.tubeshadow.practice.api.dto.MockNextRequest;
+import com.tubeshadow.practice.api.dto.MockNextResponse;
 import com.tubeshadow.practice.api.dto.PracticeCardResponse;
 import com.tubeshadow.practice.api.dto.PracticeProgressResponse;
 import com.tubeshadow.practice.api.dto.PracticeRepRequest;
@@ -15,7 +19,10 @@ import com.tubeshadow.practice.api.dto.SentenceTransformSetResponse;
 import com.tubeshadow.practice.api.dto.TransformCheckRequest;
 import com.tubeshadow.practice.api.dto.TransformCheckResponse;
 import com.tubeshadow.practice.api.dto.TransformGenerateRequest;
+import com.tubeshadow.practice.api.dto.TranscribeResponse;
 import com.tubeshadow.practice.application.CompositionService;
+import com.tubeshadow.practice.infrastructure.TranscriptionClient;
+import com.tubeshadow.practice.prompt.MockInterviewPrompt;
 import com.tubeshadow.practice.application.PracticeProgressService;
 import com.tubeshadow.practice.application.PracticeSrsService;
 import com.tubeshadow.practice.application.SeedService;
@@ -24,6 +31,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -46,15 +56,17 @@ public class PracticeController {
     private final CompositionService compositionService;
     private final TransformService transformService;
     private final SeedService seedService;
+    private final TranscriptionClient transcriptionClient;
 
     public PracticeController(PracticeProgressService service, PracticeSrsService srsService,
                              CompositionService compositionService, TransformService transformService,
-                             SeedService seedService) {
+                             SeedService seedService, TranscriptionClient transcriptionClient) {
         this.service = service;
         this.srsService = srsService;
         this.compositionService = compositionService;
         this.transformService = transformService;
         this.seedService = seedService;
+        this.transcriptionClient = transcriptionClient;
     }
 
     @GetMapping("/progress")
@@ -95,6 +107,34 @@ public class PracticeController {
     public ApiResponse<ComposeFeedback> composeCheck(@CurrentUser AuthenticatedUser user,
                                                      @Valid @RequestBody ComposeCheckRequest request) {
         return ApiResponse.ok(compositionService.check(request.target(), request.gloss(), request.sentence()));
+    }
+
+    @PostMapping(value = "/transcribe", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "음성 전사 (Whisper) — 개발 용어 정확 인식")
+    public ApiResponse<TranscribeResponse> transcribe(@CurrentUser AuthenticatedUser user,
+                                                      @RequestParam("file") MultipartFile file) throws IOException {
+        return ApiResponse.ok(new TranscribeResponse(
+                transcriptionClient.transcribe(file.getBytes(), file.getOriginalFilename())));
+    }
+
+    @PostMapping("/interview/mock")
+    @Operation(summary = "AI 모의면접 — 빈 history면 오프닝, 아니면 마지막 답변에 대한 follow-up 질문")
+    public ApiResponse<MockNextResponse> mockNext(@CurrentUser AuthenticatedUser user,
+                                                  @Valid @RequestBody MockNextRequest request) {
+        List<MockInterviewPrompt.Turn> turns = request.history() == null
+                ? List.of()
+                : request.history().stream()
+                    .map(h -> new MockInterviewPrompt.Turn(h.role(), h.text()))
+                    .toList();
+        long seed = request.seed() != null ? request.seed() : System.nanoTime();
+        return ApiResponse.ok(compositionService.mockNext(turns, seed));
+    }
+
+    @PostMapping("/interview/check")
+    @Operation(summary = "인터뷰 답변 AI 채점 (관대) — 핵심만 맞으면 통과, 억지 교정 X")
+    public ApiResponse<InterviewCheckResponse> interviewCheck(@CurrentUser AuthenticatedUser user,
+                                                              @Valid @RequestBody InterviewCheckRequest request) {
+        return ApiResponse.ok(compositionService.interviewCheck(request.question(), request.answer(), Boolean.TRUE.equals(request.precision())));
     }
 
     @PostMapping("/compose/transforms")

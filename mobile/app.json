@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "ai.daeseon.mimi",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "Allow Mimi to recognize your spoken English so it can check your interview answers."
+      }
     },
     "android": {
       "package": "ai.daeseon.mimi",
@@ -42,7 +45,13 @@
           "microphonePermission": "Allow Mimi to use the microphone to record your shadowing practice."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-speech-recognition",
+        {
+          "speechRecognitionPermission": "Allow Mimi to recognize your spoken English so it can check your interview answers."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

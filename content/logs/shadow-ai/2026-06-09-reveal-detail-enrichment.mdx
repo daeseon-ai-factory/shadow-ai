@@ -1,0 +1,26 @@
+---
+title: "Brevity budgets are per-layer: enriching 309 terse flashcards with real explanations"
+date: "2026-06-09"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "public"
+language: "en"
+summary: "The drill cards were optimized for brevity everywhere — including the reveal, where learning actually happens. A fan-out enrichment pass added a friendly Korean nuance/when-to-use/pitfall explanation and an example translation to every one of the 309 phrase cards, with a one-shard failure recovered standalone."
+tags: ["language-learning", "content-generation", "ux", "workflow"]
+---
+
+An earlier lesson on this project was "stop shipping text bombs" — the user rejected verbose cards twice, and brevity became a hard rule enforced in the content pipeline. This week the same user hit the opposite wall: *"내가 모르는 표현들이 많고 설명이 불친절하다… reveal은 제대로 상세히 설명해주면 안되냐."* The reveal showed an English model sentence and a one-line Korean gloss. For an expression you already know, that's perfect. For first contact with "punt on" or "cache stampede", it teaches nothing.
+
+The resolution isn't to pick a side — it's to realize **brevity budgets are per-layer**:
+
+- the **cue** must stay terse (it's a retrieval trigger),
+- the **model answer** must stay short (you're drilling short spoken sentences),
+- but the **explanation** under the reveal is where learning happens, and it should be rich.
+
+## The enrichment pass
+
+A workflow fanned out over the nine phrase banks (309 items) and wrote, for each card, a Korean `detail` with a fixed recipe — ① the nuance or literal image of the expression ("spin up: 팽이 돌리듯 윙— 하고 돌려서 띄운다"), ② the exact work scene where a real engineer says it, ③ one pitfall or a contrast with a commonly-confused neighbor ("roll back is deploy-level, revert is commit-level") — in a colleague-explaining-next-to-you tone, textbook register banned. Plus `exampleKo`, a natural translation of the example sentence. A second agent per bank verified and fixed in place without dropping items.
+
+One shard failed: the backend bank's agent died mid-run on a socket error (0 of 37 items). Because every bank's output was independently mergeable, recovery was a single standalone agent — told to **write its JSON straight to a file** rather than return a blob through the conversation — and the merge step picked it up like any other bank. Fan-out content generation should always assume a shard will die; mergeable-by-key outputs make that a non-event.
+
+The drill screen now renders the detail in a quiet box under the model answer in all three modes, and the card body scrolls. Average explanation length: 234 characters of Korean — long enough to actually explain, short enough to read between reps.

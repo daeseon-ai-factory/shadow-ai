@@ -79,6 +79,13 @@ tubeshadow:
     # gemini-2.5-flash free tier: generous quota for personal study.
     # Stable alias: gemini-flash-latest. Override with GEMINI_MODEL env var.
     model: ${GEMINI_MODEL:gemini-2.5-flash}
+  transcription:
+    # Speech-to-text — OpenAI gpt-4o-transcribe by default (low hallucination, dev-jargon accurate).
+    # OpenAI-compatible, so pointing base-url/path/model at Groq whisper-large-v3 swaps providers.
+    api-key: ${OPENAI_API_KEY:}
+    base-url: ${TRANSCRIBE_BASE_URL:https://api.openai.com}
+    path: ${TRANSCRIBE_PATH:/v1/audio/transcriptions}
+    model: ${TRANSCRIBE_MODEL:gpt-4o-transcribe}
   youtube:
     oembed-url: https://www.youtube.com/oembed
     yt-dlp-binary: ${YT_DLP_BINARY:yt-dlp}

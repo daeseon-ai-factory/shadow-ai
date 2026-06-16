@@ -11,6 +11,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest, recordingsApi } from '@shadow-ai/core';
 
+import { ShadowFeedback } from '@/components/shadow-feedback';
 import { ThemedText } from '@/components/themed-text';
 import { t } from '@/lib/i18n';
 
@@ -18,8 +19,9 @@ import { t } from '@/lib/i18n';
  * Record yourself shadowing the clip, upload to the account, play your take back.
  * Uses expo-audio for capture; the upload is RN FormData ({ uri, name, type }) — not the
  * web Blob path — sent through core's apiRequest so the JWT + base URL come from one place.
+ * When the clip has a transcript, ShadowFeedback offers an opt-in STT grade of the take.
  */
-export function RecordPanel({ clipId }: { clipId: string }) {
+export function RecordPanel({ clipId, targetTranscript }: { clipId: string; targetTranscript?: string | null }) {
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const state = useAudioRecorderState(recorder);
   const [lastUri, setLastUri] = useState<string | null>(null);
@@ -101,6 +103,11 @@ export function RecordPanel({ clipId }: { clipId: string }) {
         >
           <ThemedText style={styles.playText}>{t('record.play')}</ThemedText>
         </Pressable>
+      )}
+
+      {lastUri && !upload.isPending && (
+        // key={lastUri}: a fresh take resets the feedback so an old grade never lingers.
+        <ShadowFeedback key={lastUri} uri={lastUri} target={targetTranscript} />
       )}
     </View>
   );

@@ -31,6 +31,11 @@ function resolveBaseUrl(): string {
 
 let configured = false;
 
+// The resolved backend base URL — for direct uploads (expo-file-system) that bypass the JSON client.
+export function getApiBaseUrl(): string {
+  return resolveBaseUrl();
+}
+
 export function bootstrapApi() {
   if (configured) return;
   const baseUrl = resolveBaseUrl();

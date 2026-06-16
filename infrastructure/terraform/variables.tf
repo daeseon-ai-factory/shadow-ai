@@ -141,6 +141,13 @@ variable "gemini_api_key" {
   default     = ""
 }
 
+variable "groq_api_key" {
+  description = "Groq API key (free tier) — hosts Whisper for the interview mic's speech-to-text. Empty = transcription off; add it later and re-apply."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
 variable "openai_api_key" {
   description = "OpenAI API key. Optional fallback in the AI provider order (gemini -> openai -> claude)."
   type        = string

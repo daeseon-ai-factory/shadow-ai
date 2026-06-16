@@ -1,0 +1,74 @@
+---
+title: "Moving the backend AWS (Toronto) → Naver Cloud (Seoul): one box, ~10x cheaper"
+date: "2026-06-15"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The Mimi backend was on AWS ECS in ca-central-1 (Toronto) — wrong on cost (~$50–65/mo) and latency (~180ms) for a Korea-targeted service. Migrated it to a single Naver Cloud (Seoul) box running everything in docker-compose behind Caddy, cut over DNS, and tore AWS down. Cost dropped to roughly a credit-covered ~₩50k/mo."
+tags: ["infra", "migration", "ncp", "terraform", "docker", "caddy", "aws"]
+---
+
+## Why move at all
+
+The product is **Korea-targeted**, but the backend was sitting in AWS `ca-central-1`
+(Toronto): ALB + Fargate + RDS, **~$50–65/mo**, and **~180ms** to Korean users. Both
+the bill and the latency pointed the same way — get to Seoul. The owner's instinct
+("왜 이리 비싸, 사용자 1명인데") was right that a 24/7 JVM box costs real money, but the
+honest fix wasn't "rewrite off Java" — it was "stop paying for three managed services
+(ALB + RDS + Fargate) and run one box."
+
+## Target shape
+
+One **Naver Cloud (Seoul)** server, `c2-g3` (2 vCPU / 4 GB) + a 50 GB data volume,
+running **docker-compose**: `backend` (the existing Spring Boot image) + `pot-provider`
+(YouTube POToken sidecar) + `postgres` + **Caddy** (reverse proxy, automatic TLS). No
+managed LB, no managed DB — trade managed-service resilience for ~10x lower cost. The
+whole thing is Terraform (`infrastructure/ncp/`, provider `NaverCloudPlatform/ncloud`).
+
+## How it went
+
+- **Provisioned with Terraform** — VPC + public subnet + ACG (firewall) + server +
+  public IP, all from verified `ncloud_*` resources. Image/spec codes (`ubuntu-22.04`
+  = `23214590`, `c2-g3`) were looked up live via the provider's data sources rather
+  than guessed.
+- **Pulled the existing image, didn't rebuild** — the box `docker login`'d to ECR with
+  a short-lived token and pulled `tubeshadow:latest` directly (cloud-to-cloud, faster
+  than re-uploading a 1.19 GB image from a laptop).
+- **Fresh start, no data migration** — at ~1 user the existing data was disposable, so
+  we skipped the painful part: the RDS was `publicly_accessible = false` in private
+  subnets, so it couldn't be `pg_dump`'d from outside the VPC anyway. Empty Postgres +
+  Flyway migrating on boot = clean schema, zero dump/restore.
+- **Recordings s3 → local** — flipped `RECORDING_STORAGE=local` so the backend writes to
+  a box volume instead of S3; the S3 bean isn't even loaded, so no AWS SDK/keys needed.
+- **DNS cutover on Cloudflare** — `api.mimi.daeseon.ai` A record → the box IP, grey
+  cloud (Caddy does TLS). AWS kept running as a rollback net until the box was verified.
+- **Tore AWS down** — `terraform destroy` removed 55 resources; the old ALB now returns
+  nothing; the bill stops.
+
+## Verified
+
+- `curl https://api.mimi.daeseon.ai/api/health` → **200**, `ssl_verify_result=0` (valid
+  production Let's Encrypt cert), served from the Seoul box.
+- `docker compose ps` → `backend` + `db` healthy, `caddy` + `pot-provider` up.
+- AWS: `Destroy complete! Resources: 55 destroyed`; `terraform state list` → 0; old ALB
+  IP `3.98.13.13` → connection refused.
+
+## Honest state / TODO
+
+- **Single box = single point of failure.** Acceptable at this stage; the mitigations
+  matter now that there's no AWS fallback: a daily on-box `pg_dump` is in place
+  (`/etc/cron.d/mimi-backup`), but **off-box backup (Cloudflare R2) is still TODO** — an
+  on-box backup dies with the box.
+- **STT (pronunciation feedback) is still off** — `OPENAI_API_KEY` was never set (prod
+  never had it either); set it to enable.
+- **Anthropic/Claude fallback off** — `ANTHROPIC_API_KEY` not carried over; Gemini is the
+  active AI provider, so core analysis works.
+
+## Pattern
+
+When a service is mis-located for its audience, the migration usually fixes **cost and
+latency together** — they point the same way. And the cheapest correct shape for an
+early-stage solo backend is often "**collapse the managed services into one box**"
+(ALB+RDS+Fargate → a VM + docker-compose + Caddy), not a language rewrite. The managed
+services, not the runtime, were the bill.

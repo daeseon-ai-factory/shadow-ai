@@ -5,9 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tubeshadow.analysis.infrastructure.AiAnalysisClient;
 import com.tubeshadow.common.exception.BusinessException;
 import com.tubeshadow.practice.api.dto.ComposeFeedback;
+import com.tubeshadow.practice.api.dto.InterviewCheckResponse;
+import com.tubeshadow.practice.api.dto.MockNextResponse;
 import com.tubeshadow.practice.prompt.ComposePrompt;
+import com.tubeshadow.practice.prompt.InterviewPrompt;
+import com.tubeshadow.practice.prompt.PrecisionPrompt;
+import com.tubeshadow.practice.prompt.MockInterviewPrompt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * "영작" check: send the learner's sentence + target to the configured AI provider and parse the
@@ -40,6 +47,56 @@ public class CompositionService {
                     n.path("better").asText(""));
         } catch (Exception ex) {
             throw new BusinessException(HttpStatus.BAD_GATEWAY, "COMPOSE_PARSE_FAILED",
+                    "AI 응답 파싱 실패");
+        }
+    }
+
+    /**
+     * Lenient grade of a spoken interview answer (explain a concept/code). Passes when the core idea
+     * is understandable — imperfect or short English still counts; only a real error fails.
+     */
+    public InterviewCheckResponse interviewCheck(String question, String answer) {
+        return interviewCheck(question, answer, false);
+    }
+
+    /** precision=true also surfaces preposition/article slips (opt-in; pass bar stays lenient). */
+    public InterviewCheckResponse interviewCheck(String question, String answer, boolean precision) {
+        if (!ai.isConfigured()) {
+            throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED",
+                    "AI가 설정되지 않았습니다 (API 키 필요)");
+        }
+        String system = precision ? PrecisionPrompt.SYSTEM : InterviewPrompt.SYSTEM;
+        String raw = ai.complete(system, InterviewPrompt.userMessage(question, answer));
+        try {
+            JsonNode n = objectMapper.readTree(stripFence(raw));
+            return new InterviewCheckResponse(
+                    n.path("ok").asBoolean(false),
+                    n.path("score").asInt(0),
+                    n.path("feedback").asText(""),
+                    n.path("better").asText(""));
+        } catch (Exception ex) {
+            throw new BusinessException(HttpStatus.BAD_GATEWAY, "INTERVIEW_PARSE_FAILED",
+                    "AI 응답 파싱 실패");
+        }
+    }
+
+    /**
+     * Next interviewer question in the mock-interview loop — an opener on an empty history,
+     * otherwise a follow-up digging into the candidate's last answer. One short question per call.
+     */
+    public MockNextResponse mockNext(List<MockInterviewPrompt.Turn> history, long seed) {
+        if (!ai.isConfigured()) {
+            throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED",
+                    "AI가 설정되지 않았습니다 (API 키 필요)");
+        }
+        String raw = ai.complete(MockInterviewPrompt.SYSTEM, MockInterviewPrompt.userMessage(history, seed));
+        try {
+            JsonNode n = objectMapper.readTree(stripFence(raw));
+            String q = n.path("question").asText("");
+            if (q.isBlank()) throw new IllegalStateException("empty question");
+            return new MockNextResponse(q);
+        } catch (Exception ex) {
+            throw new BusinessException(HttpStatus.BAD_GATEWAY, "MOCK_PARSE_FAILED",
                     "AI 응답 파싱 실패");
         }
     }

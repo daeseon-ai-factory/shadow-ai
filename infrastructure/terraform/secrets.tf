@@ -57,6 +57,16 @@ resource "aws_secretsmanager_secret_version" "gemini_api_key" {
   secret_string = var.gemini_api_key
 }
 
+resource "aws_secretsmanager_secret" "groq_api_key" {
+  count = var.groq_api_key != "" ? 1 : 0
+  name  = "${var.project}/groq-api-key"
+}
+resource "aws_secretsmanager_secret_version" "groq_api_key" {
+  count         = var.groq_api_key != "" ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.groq_api_key[0].id
+  secret_string = var.groq_api_key
+}
+
 resource "aws_secretsmanager_secret" "openai_api_key" {
   count = var.openai_api_key != "" ? 1 : 0
   name  = "${var.project}/openai-api-key"

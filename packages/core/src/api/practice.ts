@@ -32,6 +32,28 @@ export interface ComposeFeedback {
   better: string;
 }
 
+// Lenient verdict on a spoken interview/code explanation — passes when the CORE is understandable.
+export interface InterviewFeedback {
+  ok: boolean;
+  score: number;
+  feedback: string;
+  better: string;
+}
+
+// Whisper transcript of an uploaded audio clip (dev-jargon-aware).
+export interface TranscribeResult {
+  text: string;
+}
+
+// One turn of the AI mock interview; empty history asks for the opening question.
+export interface MockTurn {
+  role: "interviewer" | "candidate";
+  text: string;
+}
+export interface MockNext {
+  question: string;
+}
+
 export const practiceApi = {
   progress: (localDate: string) =>
     apiClient.get<PracticeProgress>("/api/practice/progress", { query: { localDate } }),
@@ -40,4 +62,16 @@ export const practiceApi = {
     apiClient.post<GradeResult>("/api/practice/srs/grade", { cardKey, correct, localDate }),
   composeCheck: (target: string, gloss: string, sentence: string) =>
     apiClient.post<ComposeFeedback>("/api/practice/compose/check", { target, gloss, sentence }),
+  // Lenient grade of a spoken explanation — `question` is the code/topic, `answer` is what the learner said.
+  interviewCheck: (question: string, answer: string, precision?: boolean) =>
+    apiClient.post<InterviewFeedback>("/api/practice/interview/check", { question, answer, precision }),
+  // Next interviewer question in the AI mock interview (opener on empty history, else a follow-up).
+  mockNext: (history: MockTurn[], seed?: number) =>
+    apiClient.post<MockNext>("/api/practice/interview/mock", { history, seed }),
+  // Upload an audio clip → Whisper transcript. `file` is a React Native file descriptor.
+  transcribe: (file: { uri: string; name: string; type: string }) => {
+    const form = new FormData();
+    form.append("file", file as unknown as Blob);
+    return apiClient.post<TranscribeResult>("/api/practice/transcribe", form);
+  },
 };

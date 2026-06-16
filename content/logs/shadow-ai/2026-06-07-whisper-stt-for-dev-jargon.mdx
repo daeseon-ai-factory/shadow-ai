@@ -1,0 +1,44 @@
+---
+title: "On-device speech recognition can't do dev jargon — moving the interview mic to Whisper"
+date: "2026-06-07"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "The interview-prep mic went through a crash, an AirPods audio-session interruption, and a dictionary-biasing dead-end before the real fix landed: Apple's on-device recognizer simply cannot transcribe terms like 'idempotency', so we record and send to Whisper large-v3 (Groq free tier) instead."
+tags: ["speech-to-text", "whisper", "expo", "ios", "groq"]
+---
+
+The goal was small: in the Opendoor interview-prep drills, let the learner **speak** their answer instead of typing it. Speaking is the whole point — you're practicing to explain code out loud in English. Getting there took four tries, and the first three were all the wrong altitude.
+
+## Try 1 — it crashed on the first tap
+
+Tapping **Speak** killed the app instantly. Cause: iOS aborts any app that touches the speech-recognition API without an `NSSpeechRecognitionUsageDescription` string in `Info.plist`. The `expo-speech-recognition` config plugin's `speechRecognitionPermission` option *looked* like it set this, but `PlistBuddy -c "Print :NSSpeechRecognitionUsageDescription"` on the built `Mimi.app/Info.plist` showed only the microphone key. Fix: set it directly in `app.json` under `ios.infoPlist`, which core prebuild always applies.
+
+## Try 2 — "Audio session was interrupted"
+
+Now it ran, then died immediately with that on-screen error. I had over-configured the audio session: `categoryOptions = [allowBluetooth, allowBluetoothA2DP, defaultToSpeaker]`. On `playAndRecord`, `allowBluetooth` routes the **mic input** over Bluetooth HFP while `allowBluetoothA2DP` wants **stereo output** over A2DP — iOS can't do both on AirPods at once and fires an interruption. The library's documented default is just `[defaultToSpeaker, allowBluetooth]`. Dropping A2DP fixed it.
+
+## Try 3 — it works, but it can't hear "idempotency"
+
+The mic transcribed fine — until a technical term showed up. "deque" became "deck", "idempotency" came out as noise. The instinct is to blame your accent. It isn't your accent. `SFSpeechRecognizer` is a **general phonetic model**, and the `contextualStrings` hint API (I fed it a ~120-term CS/backend dictionary) only *re-ranks candidates the acoustic model already considered*. It can't conjure a low-frequency word the model never had as a candidate. There's a ceiling, and dev jargon is above it.
+
+## Try 4 — record, then transcribe with Whisper
+
+The right altitude was: stop using on-device recognition for this at all. Record the audio (`expo-audio`), upload it, and transcribe with **Whisper large-v3**, an LLM-grade model that handles jargon and accents in stride. Whisper is OpenAI's open model; you can run it cheaply or for free in several places. The landscape I weighed:
+
+| Option | Cost | Jargon accuracy |
+| --- | --- | --- |
+| iOS on-device (what we had) | free | low |
+| Whisper via **Groq** | free tier | high |
+| Whisper via Cloudflare Workers AI | free tier | high |
+| OpenAI `gpt-4o-transcribe` (ChatGPT-voice grade) | ~$0.006/min | highest |
+| Google / AWS / Deepgram | per-minute | high |
+
+We started with **Groq** (free, fast, OpenAI-compatible). The backend `GroqTranscriptionClient` posts the audio as multipart to `/openai/v1/audio/transcriptions` with a Whisper `prompt` listing the CS vocabulary, behind a new rate-limited `POST /api/practice/transcribe`. `MicInput` became dead simple: tap to record, tap to stop, upload, show the transcript — and because the recorder just uses the system mic, AirPods are picked up automatically with no audio-session category to fight. The Groq key is wired through Terraform exactly like the Gemini key (`groq_api_key` var → conditional Secrets Manager secret → ECS env → IAM read).
+
+The one deliberate design choice: the transcribe call is **provider-agnostic**. Groq's endpoint is OpenAI-compatible, so upgrading to `gpt-4o-transcribe` later is a base-url and key swap — no app change.
+
+## The lesson
+
+On-device phonetic STT is great for everyday speech and a dead end for domain vocabulary. Hint lists re-rank; they don't teach the model new words. If your users speak jargon — code, medicine, law — you need an LLM-grade transcriber, and you should put it behind a swappable, OpenAI-compatible interface from day one so "which model" stays a one-line decision.

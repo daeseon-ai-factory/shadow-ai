@@ -69,20 +69,20 @@ class VideoImportServiceTest {
     }
 
     @Test
-    void existingUnavailableVideoRetriesTranscriptOnImport() {
+    void existingUnavailableVideoIsNotReScrapedOnImport() {
+        // UNAVAILABLE means we already tried and YouTube had no captions (or blocked us).
+        // Re-importing must NOT server-scrape again — re-scraping a popular no-caption video on
+        // every import would hammer YouTube and invite rate-limits (see recoverIfNeeded). It stays
+        // UNAVAILABLE unless a DEVICE supplies client segments (covered by importWithClientSegments).
         Video existing = Video.createNew("abcdefghijk", "Existing");
         existing.markTranscriptUnavailable();
         when(repo.findByYoutubeId("abcdefghijk")).thenReturn(Optional.of(existing));
-        when(transcript.fetch("abcdefghijk")).thenReturn(
-                List.of(new TranscriptSegment(0, 1000, "now-available")));
-        when(repo.save(any(Video.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Video result = service.importByUrl("https://youtu.be/abcdefghijk");
 
-        assertThat(result.getTranscriptStatus()).isEqualTo(Video.TranscriptStatus.READY);
-        assertThat(result.getTranscriptSegments()).hasSize(1);
-        verify(meta, never()).fetch(any()); // metadata is NOT refetched
-        verify(transcript, times(1)).fetch("abcdefghijk");
+        assertThat(result.getTranscriptStatus()).isEqualTo(Video.TranscriptStatus.UNAVAILABLE);
+        verify(transcript, never()).fetch(any()); // NOT re-scraped
+        verify(meta, never()).fetch(any());       // metadata is NOT refetched
     }
 
     @Test

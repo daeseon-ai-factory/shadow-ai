@@ -1,0 +1,47 @@
+---
+title: "Mobile clip player: pin the video, tab the drills"
+date: "2026-06-13"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "public"
+language: "en"
+summary: "The clip player had grown into a wall of ~8 stacked cards — to do a drill you scrolled the video off-screen, in a shadowing app where the video is the point. Repinned the video as a fixed header and put the drills behind Listen/Order/Speak/Shadow/Notes tabs."
+tags: ["mobile", "expo", "ux", "shadowing"]
+---
+
+## The smell
+
+After the active drills landed (`52e8f51`), the player was honest but unusable: video
+→ controls → title → record → dictation → chunk-order → scenario → analysis, all
+stacked in one `ScrollView`. Three concrete problems, surfaced by the owner — *"저
+ui가 너무 사용성이 떨어져보이지않니"*:
+
+1. **Endless scroll** — scenario and analysis sections were always expanded, so the
+   screen was a long wall.
+2. **The video scrolled away** — to reach a drill you lost sight of the clip you were
+   supposed to be hearing. In a shadowing app that's backwards.
+3. **No "what do I do now"** — the listen → reorder → produce flow was implied by
+   stacking order, never guided.
+
+## The fix (`52e8f51`)
+
+Picked "video pinned + drill tabs" over a guided step-wizard or a tidy accordion (the
+owner chose it from three ASCII mockups). The video now lives in a **fixed header**
+that never scrolls, with a tab bar below — `Listen / Order / Speak / Shadow / Notes` —
+and only the active drill renders, in its own scroll area. Two follow-through details:
+
+- Drills take an `embedded` prop so, as the sole content of a tab, they open straight
+  into the exercise instead of behind a "tap to start" button (one less tap).
+- Tabs with no data yet show a placeholder ("Analyzing… ready soon" / "Not available
+  for this clip") instead of a blank pane, so a still-analyzing clip reads as pending,
+  not broken.
+
+Portrait (Shorts) video is capped harder (~42% height) now that it's pinned, to leave
+room for the drill beneath it.
+
+## Pattern
+
+In a media-centric learning screen, the media is not a section — it's the **frame**.
+Pin it and switch the work beside/below it, rather than stacking the work in a scroll
+that pushes the media out of view. The redesign was zero new data — pure layout —
+which is the cheapest kind of "advancement" when the features already exist.

@@ -1,0 +1,43 @@
+---
+title: "Migrating prod to Toronto — and recovering a terraform state I killed mid-write"
+date: "2026-06-08"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "public"
+language: "en"
+summary: "Moving the backend from Seoul to ca-central-1 to cut mic latency turned into an incident: I SIGKILLed a stuck terraform apply, truncated the state file to zero bytes, and had to re-import 49 orphaned AWS resources back into state instead of deleting and rebuilding."
+tags: ["terraform", "aws", "migration", "incident", "state-recovery"]
+---
+
+The Whisper mic worked, but transcription took ~3 seconds. The user is in Toronto; the backend was in Seoul (`ap-northeast-2`); the speech-to-text provider (Groq) is in the US. So every recording went Toronto → Seoul → US → Seoul → Toronto. The fix was obvious: move the backend to `ca-central-1` (Montreal, ~15ms from Toronto). What should have been a clean `terraform destroy` + region change + `apply` became a lesson in how to break — and recover — local terraform state.
+
+## The plan, and the first snag
+
+Destroy the Seoul stack (the infra is designed spin-up/tear-down — `skip_final_snapshot = true`, data accepted as lost), flip `aws_region` to `ca-central-1`, re-apply. The ACM cert was a non-event: AWS uses the **same deterministic DNS-validation CNAME per domain**, so the validation record the user added for the Seoul cert (still in Cloudflare) auto-validated the new ca-central-1 cert with zero DNS work.
+
+Then the full `apply` hung. For 36 minutes one line repeated: `aws_s3_bucket.recordings: Still creating... [36m41s elapsed]`. The recordings bucket name is globally unique and account-scoped — *identical* to the bucket I'd just destroyed in Seoul. S3 won't recreate a freshly-deleted name: `CreateBucket` returns `OperationAborted: A conflicting conditional operation is currently in progress` and terraform retries forever. (`head-bucket` even returned 404 the whole time, which is a lie — the name is "being released," not free.) The task definition and ECS service depend on the bucket, so the whole deploy was wedged behind it.
+
+## The mistake
+
+To unstick it, I killed terraform. Not gracefully — `pkill -9`, mid-state-write. That truncated `terraform.tfstate` to **zero bytes**. The `.backup` only held the 2-resource state from an earlier targeted apply, while ~49 resources were live in AWS. Orphaned: a full VPC, RDS, ALB, ECS cluster, secrets, IAM — real, billed, and invisible to terraform.
+
+My first instinct — `aws rds delete-db-instance`, `aws ecs delete-cluster` to clean up and start fresh — was (correctly) blocked by the safety classifier: destroying a production database out-of-band, on guessed identifiers, is exactly what a guard should stop.
+
+## The recovery: import, don't delete
+
+The right move was non-destructive: **`terraform import` every orphan back into state**, so the state matched reality, then let `apply` finish only the genuinely-missing pieces. Two things made it tractable:
+
+1. The resources were tagged with their index (`tubeshadow-public-0/1`, `tubeshadow-private-0/1`), so the `count`-indexed imports (`aws_subnet.public[0]`, etc.) mapped to the right AWS IDs reliably.
+2. Because terraform had *created* these resources from this exact config minutes earlier, the config matched reality perfectly — so after importing, `terraform plan` showed **0 to destroy, 0 to replace**. No drift.
+
+One wall first: every single import — even `aws_vpc.main` — failed with `Invalid count argument`. The culprit was `aws_route_table_association`, whose `count = length(aws_subnet.public)` depends on a resource not yet in state; terraform can't evaluate the count, and that aborts the *entire* import operation, not just that resource. Fixing it to count off a static input (`count = length(var.public_subnet_cidrs)`) unblocked everything. 31 imports later, `plan` was clean.
+
+The finishing `apply` tripped once more — `EntityAlreadyExists` on an IAM role named `GitHubActionsDeploy` that my import search (`tubeshadow*deploy*`) hadn't matched. Imported it, re-applied. `Apply complete. 1 added, 0 changed, 0 destroyed.` Health 200, transcribe endpoint live, in Toronto.
+
+## What I'd tattoo on my wrist
+
+- **Never `SIGKILL` terraform mid-apply.** It writes state non-atomically during a run; a hard kill truncates it. Use TaskStop / SIGINT, and know that stopping the wrapper may leave the terraform child alive.
+- **When state is lost but resources live, import — don't delete.** Deleting + rebuilding is slower, more destructive, and (here) blocked. Import is non-destructive and, if the config still matches, drift-free.
+- **`count = length(<another_resource>)` makes a config un-importable.** Count off a static var or local so the graph is always evaluable.
+- **S3 and Secrets Manager hold a deleted *name* for a while.** Any region migration (or fast delete/recreate) should use region- or random-suffixed names. The recordings bucket is now `...-${var.aws_region}`.
+- **zsh will betray you in deploy scripts.** `$ECR:latest` becomes `${ECR:l}atest` (a lowercase modifier → a bogus repo name), and unquoted `$VAR` doesn't word-split. Run multi-arg-variable AWS scripts under `bash`.

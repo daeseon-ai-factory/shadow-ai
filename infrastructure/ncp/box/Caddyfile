@@ -1,0 +1,4 @@
+# Auto HTTPS (Let's Encrypt) once api.mimi.daeseon.ai's DNS points at this box.
+api.mimi.daeseon.ai {
+	reverse_proxy backend:8080
+}

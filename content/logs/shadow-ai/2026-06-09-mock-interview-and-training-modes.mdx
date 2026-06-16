@@ -1,0 +1,28 @@
+---
+title: "From flashcards to a live AI interviewer — four training modes in one pass"
+date: "2026-06-09"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "The drill app got its missing layer: an AI mock interviewer that digs into your spoken answers, a connector-cloze chaining drill, a speed round, weak-card repair, and a 60-second speech mode — plus a fix for category drills that silently hid most of their cards behind SRS pacing."
+tags: ["interview-prep", "language-learning", "llm", "product"]
+---
+
+A blunt question set the direction: *"냉정하게, 카드만 달달 외우면 면접 영어가 되냐?"* The honest answer was no — flashcards build the reflex layer (chunks surfacing without translating in your head), but they don't train **live assembly**: chaining those chunks into answers while an interviewer pushes back. So this batch added the layers above the cards.
+
+## The four modes
+
+**AI mock interview.** The model plays the interviewer. One new endpoint (`POST /api/practice/interview/mock`) takes the dialog history and returns strict JSON `{question}` — an opener on an empty history (a session seed varies the topic), otherwise a follow-up that digs into the candidate's *last answer*: a why, a tradeoff, a what-breaks-at-scale. The phone screen drives the loop: question → answer **by voice** (the existing mic → Whisper-grade transcription) → the existing lenient grader → next follow-up. Five questions per session. All the pieces already existed — the transcription path, the lenient `interview/check`, the gemini-first `complete()` plumbing — so the whole feature is one prompt class, two DTOs, one service method, one screen.
+
+**Chaining.** The methodology here is "drill short sentences, connect them logically" — and the connective tissue deserved its own drill. Each connector card carries a real 2-sentence example ("We deploy to staging. Once that's done, we run smoke tests."); the chaining drill blanks the connector out (`___`) and you speak the full chain. One regex, no new content, and it reuses the connector's SRS key so mastery tracking stays unified.
+
+**Speed round & weak-card repair.** An 8-second countdown that auto-reveals the answer when it expires (pressure without trapping you), and a scope that collects only cards you've missed twice or more — the SRS data was already there (`lapseCount`), nobody was reading it.
+
+**60-second speech.** Twenty-two explain-this topics (idempotency, N+1, circuit breakers…), a countdown, and the lenient grader pointed at a structure-focused question string — "judge only whether the core is understandable and logically connected." Zero backend change: the instruction rides inside the existing `question` parameter.
+
+## The bug worth writing down
+
+The user opened the 44-item phrasal-verb deck and saw a dozen cards: *"왜 카드 전체가 아니고 일부만 보이냐."* Every drill was built with the SRS session builder — due cards plus at most 12 new per day. That's exactly right for the daily loop and exactly wrong for a category tile, where the intent is "let me drill this bank." Category drills now show the whole bank shuffled; only the hard-capped "오늘의 30개" keeps SRS pacing.
+
+The general lesson: a pacing policy is a property of the *entry point*, not the engine. And when you cap a list, cap it loudly — a silent cap reads as "this is everything," which is worse than no cap.

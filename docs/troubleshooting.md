@@ -736,3 +736,176 @@ react-hooks/use-memo  Error: Expected the first argument to be an inline functio
 - **Cause**: the `videos` table is a GLOBAL cache (`youtube_id` UNIQUE, no `user_id`), so there was literally no "videos this user imported" concept. Clips were the only per-user artifact; the library listed clips, not videos. Import → clip was a one-shot funnel (`import.tsx` `setVideo` was transient component state, first tap fired `makeClip` → `router.replace('/player/...')`).
 - **Fix** (ed58caf, Phase 1): added a `library` domain — `V20 library_videos` join table (`user_id`+`video_id`, UNIQUE, idempotent/race-safe save) as the per-user layer over the global cache; `LibraryVideoController` (POST save / GET my-videos with `clipCount` / DELETE); `VideoController` auto-saves every import. Mobile: `videos.tsx` (My Videos list) + `video/[id].tsx` (player + full scrollable transcript, tap-a-line-to-seek+play, active-line highlight via `getCurrentTime` polling, Sentences/Full toggle, "Clip this line"); `import.tsx` now routes to `/video/[id]` instead of forcing a clip.
 - **Pattern**: a global resource cache (videos+transcripts shared across users for scale) and a per-user library are *different concerns* — don't conflate them. The shared cache stays keyed by content (`youtube_id`); ownership/recency/"my stuff" goes in a thin per-user join table. Trying to fake a library out of the derived artifact (clips) is what made the UX a dead-end.
+<!-- skipped: decb557 docs(log): narrative — mobile TubeShad-style video library flow (ed58caf) [no-log] -->
+<!-- skipped: c2d2205 feat(mobile): tap a transcript line to LOOP it on the video screen — small UX add (reuses the existing clip-player loop pattern: getCurrentTime poll + seek-back-on-end) on video/[id].tsx, no backend/schema change; the Phase-1 architecture it builds on is logged in ed58caf / 2026-06-07-mobile-video-library-tubeshad-flow.mdx -->
+<!-- skipped: cec9b6b chore(log): mark c2d2205 routine — small loop-line UX add on the logged Phase-1 base [no-log] -->
+<!-- skipped: ded87ba feat(mobile): playback speed control on the video screen (0.5x–1.5x) for shadowing [no-log] -->
+
+---
+
+## Shadowing loop on the video screen: single-line / A-B range / auto-advance (one poll, three modes)
+
+- **Context (UX)**: user wanted TubeShad-grade shadowing on the imported-video screen — repeat a line, repeat an A-B range, and auto-walk line-by-line N times each. ("문장 반복", "A-B 구간이랑 자동 다음 줄도 넣자".)
+- **Design**: one loop model = a line-index range `{a, b}` (single line when `a===b`) plus `autoAdvance` + `reps`. A single `setInterval(getCurrentTime, 200ms)` drives everything (the IFrame fires PAUSED not ENDED at a mid-video boundary, so polling is the reliable re-seek). Two branches: auto OFF → when position passes `lines[b].endMs`, seek back to `lines[a].startMs` (whole-block repeat); auto ON → repeat `lines[cursor]` until `repCount >= reps`, then advance `cursor` (wrapping `b→a`) — the line-by-line drill. Live values read via refs (`loopRef/autoRef/repsRef/cursorRef/repCountRef`) so the interval doesn't re-subscribe on every state change. Plus a playback-rate row (0.5–1.5×) via the library's `playbackRate` prop. Commits c2d2205 (line loop), ded87ba (speed), ee8d78f (A-B + auto).
+- **Pattern**: when an interval must react to fast-changing UI state, keep ONE interval keyed on a stable dep (here `playing`) and read mutable values through refs — don't put the changing values in the effect deps or you thrash the timer. Model the three loop UX modes as one range + flags, not three code paths.
+<!-- skipped: f257aa3 docs(log): narrative — video shadowing loop modes (ee8d78f) [no-log] -->
+<!-- skipped: b38adaf chore(log): hook marker [no-log] -->
+
+---
+
+## Claude Code 400 "no low surrogate in string" mid-session (CLI/harness, not app code)
+
+- **Symptom**: while working, the CLI started repeatedly failing every request with:
+  ```
+  API Error: 400 The request body is not valid JSON: no low surrogate in string: line 1 column 1627829 (char 1627828)
+  ```
+- **Cause**: a UTF-16 surrogate-pair error in the request the CLI serializes to the Anthropic API — NOT the project's code. Emoji (and other astral-plane chars) are stored as two code units (a high + low surrogate). In a very long session (~1.6M-char request body) the harness truncates large tool outputs; a truncation landed in the *middle* of an emoji, leaving a lone high surrogate. JSON can't encode a lone surrogate → 400. The broken string is now in the conversation history, so it re-serializes and fails on every subsequent turn.
+- **Contributing factors (this session)**: many emoji in replies (🎉🔁🎙) + huge tool outputs pulled into context (workflow result JSON, a 45 KB handoff doc, Metro bundle dumps). The truncation point split an emoji.
+- **Fix**: nothing to change in the repo — it's a harness/context-serialization edge case. Recover by dropping the corrupted history: `/compact` (summarize → replaces the raw broken string, keeps continuity) or a fresh session / `/clear` (all work was committed: b38adaf). Prevention: avoid echoing very large blobs (full bundles, whole exported docs) into the chat, and go lighter on emoji in long sessions, so a truncation can't split a surrogate pair.
+- **Pattern**: a "no low/high surrogate" JSON error is always a *lone UTF-16 surrogate*, almost always from a string truncated at a non-codepoint boundary — look for where text got cut (log/tool-output truncation), not for a logic bug.
+
+---
+
+## Interview-prep feature kept ballooning into "text bombs" — fix was code-centric + enforced-short answers
+
+- **Context (UX)**: building an Opendoor interview-English drill into the Mimi mobile app, the authored content kept growing too verbose. The first LLD cards shipped a problem essay + a multi-paragraph design narration + follow-up Q&A; the "explain a concept" cards were text-only definitions. User reaction, repeatedly: *"페어프로그래밍 뭔 텍스트가 저리 많냐"*, *"핵심만 말하게 되는걸 원한다"*, *"코드가 있으면 그걸 영어로 풀어 설명하는것만"*.
+- **Fix**: collapse everything to ONE code-centric flow — show real Java → say the CORE in English → reveal a 1–2 sentence model answer + 2–3 key points. Regenerated the technical deck (46 cards: ds/algo/pattern/method/design) with a HARD brevity rule in the authoring prompt AND an adversarial verify pass told to REJECT/rewrite any answer over two sentences; the card `answer` schema was capped at `maxLength: 280`. Deleted the heavy LLD walkthrough screen (`interview-lld-run.tsx`) and the text-only CS cards. Commit `21400b9`.
+- **AI check**: added a deliberately *lenient* grader (`POST /api/practice/interview/check`, `InterviewPrompt.SYSTEM`) — pass if the core is understandable, ignore speech-to-text noise, do NOT nitpick or "improve" a working answer. A grader that force-corrects every utterance makes the learner quit.
+- **Deploy note**: the phone (dev build on a physical device) hits `api.mimi.daeseon.ai` (prod), not the Mac's Metro — so backend changes (the new AI-check endpoint) need a real ECS deploy (`backend/**` → `main` → GitHub Actions OIDC). Local AWS creds were a *different account* than prod (no `tubeshadow-cluster`/secrets visible), so the Gemini key must be set in the prod account's Secrets Manager (`tubeshadow/gemini-api-key`) by the owner — the task def + `gemini-2.5-flash` free-tier config were already wired.
+- **Pattern**: for "say it concisely" learning tools, brevity must be ENFORCED in the content pipeline (schema `maxLength` + a verifier whose job is to cut), not merely requested — models drift long, and a long model answer silently teaches the learner to ramble. When the user says "text bomb" twice, stop adding and start deleting.
+
+---
+
+## Interview mic: iOS speech recognition can't transcribe dev jargon — switched to Whisper
+
+- **Symptom** (physical iPhone, Release build): the spoken-answer mic failed three ways in sequence. (1) tapping **Speak** hard-crashed the app; (2) after fixing that, recognition died instantly showing `Audio session was interrupted`; (3) after fixing that it ran but mis-transcribed technical terms — user: *"idempotency를 못 알아듣는다"*, *"개발용어를 똑바로 인식못하는거냐"*.
+- **Causes (verified)**:
+  - Crash = missing `NSSpeechRecognitionUsageDescription` in Info.plist. iOS aborts an app that touches speech recognition with no usage string. The `expo-speech-recognition` plugin's `speechRecognitionPermission` option did NOT land the key — verified by `PlistBuddy -c "Print :NSSpeechRecognitionUsageDescription"` on the built `Mimi.app/Info.plist` (only the mic key was present). Fixed by adding it to `app.json` `ios.infoPlist` directly (core prebuild always applies that). Commit `ae6b966`.
+  - "Audio session was interrupted" = `iosCategory.categoryOptions` was `[allowBluetooth, allowBluetoothA2DP, defaultToSpeaker]`. On `playAndRecord`, `allowBluetooth` (HFP mic-in) + `allowBluetoothA2DP` (stereo out) make iOS fight over the AirPods route → interruption. The library's documented default is `[defaultToSpeaker, allowBluetooth]` (no A2DP). Dropped A2DP. Commit `fe5803d`.
+  - Jargon misrecognition = `SFSpeechRecognizer` is a general phonetic model; `contextualStrings` (commit `2a2bb4e`, ~120-term dictionary) only re-ranks what the acoustic model already considered, so it can't reliably produce dense low-frequency terms like "idempotency". Not the user's accent — the model's ceiling.
+- **Fix**: stop using on-device recognition here. Record with `expo-audio` → upload → transcribe with **Whisper large-v3 via Groq** (free tier, OpenAI-compatible multipart). Backend `GroqTranscriptionClient` + `POST /api/practice/transcribe` (rate-limited) with a Whisper `prompt` listing CS/backend vocabulary; `MicInput` rewritten to record→`practiceApi.transcribe`→transcript (AirPods used automatically by the recorder, no audio-session category to fight); terraform `groq_api_key` var + conditional secret + ECS env + IAM, mirroring `gemini_api_key`. Commit `bd11584`. (Deploy + the user's Groq key still pending at time of writing.)
+- **Pattern**: on-device phonetic STT (Apple/Android built-in) handles everyday English but fundamentally can't transcribe domain jargon — hint lists (`contextualStrings`) re-rank, they don't add vocabulary the acoustic model can't hear. For technical speech you need an LLM-grade transcriber (Whisper / gpt-4o-transcribe). Keep the call provider-agnostic (OpenAI-compatible endpoint) so the model is one base-url/key swap.
+
+<!-- override-trigger: cba606c docs(log): interview-English code-explain pivot + lenient AI check (21400b9) [no-log] — false positive: cba606c IS the docs(log) commit that logs feature 21400b9 (the entry above + the mdx both reference 21400b9). The "pivot" keyword is only in this log commit's own subject describing the already-logged work; logging a log-of-a-log is recursive. -->
+
+<!-- skipped: 0a5aa82 chore(log): mark cba606c routine — log-of-a-log false positive [no-log] -->
+<!-- skipped: 6152625 chore: add missing imports in CompositionService (interview-check compile fix) [no-log] -->
+<!-- skipped: 5eee252 fix(interview): abort speech recognition on MicInput unmount (mic stayed hot after swipe-back) [no-log] -->
+<!-- skipped: ae6b966 fix(mobile): add NSSpeechRecognitionUsageDescription (mic Speak crashed — missing iOS permission string) [no-log] -->
+<!-- skipped: fe5803d fix(interview): mic 'audio session interrupted' with AirPods — drop allowBluetoothA2DP (HFP/A2DP route conflict on playAndRecord); friendlier error [no-log] -->
+<!-- skipped: 2a2bb4e feat(interview): bias mic STT toward dev jargon — contextualStrings dictionary (~120 CS/backend terms) + Apple network recognizer for accuracy [no-log] -->
+<!-- skipped: a33b853 fix(interview): native multipart upload for Whisper mic — RN fetch FormData rejects file-URI parts ('Unsupported FormDataPart'); use expo-file-system uploadAsync + stage-tagged diagnostic errors [no-log] -->
+
+---
+
+## Region migration Seoul→ca-central-1: a SIGKILL wiped terraform state, plus import/S3 gotchas
+
+Migrating the prod backend ap-northeast-2 (Seoul) → ca-central-1 (Toronto-area) for lower mic latency. Four issues hit in sequence:
+
+- **S3 bucket hung the apply for 36 min.** `terraform apply` sat on `aws_s3_bucket.recordings: Still creating... [36m41s elapsed]` while everything else finished. Cause: the bucket name `${project}-recordings-${account_id}` is GLOBALLY unique and identical to the just-destroyed Seoul bucket; S3 rejects `CreateBucket` for a freshly-deleted name with `OperationAborted: A conflicting conditional operation is currently in progress` and terraform retries indefinitely (`head-bucket` returns 404 during this window — misleading). The task def + ECS service `depends_on` the bucket (RECORDING_S3_BUCKET env), so they were blocked too. **Fix:** region-suffix the name → `...-${var.aws_region}` (fresh name = instant). `s3.tf`, commit `cdba49f`.
+
+- **SIGKILL on terraform truncated the state to 0 bytes (self-inflicted, worst one).** To unstick the apply I `pkill -9`'d terraform mid-state-write → `terraform.tfstate` = **0 bytes**; `.backup` held only the 2-resource pre-apply state while ~49 resources existed in AWS = orphaned. Manual `aws rds/ecs delete...` cleanup was (correctly) blocked by the safety classifier. **Fix:** non-destructive recovery — `terraform import` all 49 orphans back into state (they were tagged with their index, e.g. `tubeshadow-public-0/1`, so indexed imports mapped reliably); `terraform plan` then showed **0 to destroy/replace** = clean; `apply` created only the 3 truly-missing (bucket, task def, service).
+
+- **`terraform import` blocked GLOBALLY by "Invalid count argument".** Every import (even `aws_vpc.main`) failed because `aws_route_table_association` had `count = length(aws_subnet.public)` — a not-yet-in-state dependency makes count unknown during import, which aborts the whole operation. **Fix:** count off a static var, `count = length(var.public_subnet_cidrs)`. `network.tf`, commit `cdba49f`.
+
+- **`EntityAlreadyExists` IAM role on the finishing apply.** `aws_iam_role.github_deploy`'s real name is `GitHubActionsDeploy`; my import query searched `tubeshadow*deploy*` and missed it, so terraform tried to create it → 409. **Fix:** `terraform import aws_iam_role.github_deploy GitHubActionsDeploy` + re-apply.
+
+- **Result:** ca-central-1 fully terraform-managed, `/api/health` 200, transcribe live. ACM needed ZERO DNS work — ACM reuses the SAME deterministic DNS-validation CNAME per domain, so the existing Cloudflare record auto-validated the new-region cert; only the `api.mimi.daeseon.ai` CNAME repoint was manual.
+- **Patterns:** (1) NEVER `SIGKILL` terraform mid-apply — it truncates local state; use TaskStop/SIGINT and recover via `import`, not delete. (2) `count = length(<resource>)` makes the whole config un-`import`able — count off a static var/local. (3) S3 + Secrets Manager hold a deleted NAME for a while; a region migration must use region/random-suffixed names. (4) zsh quirks bite: `$ECR:latest`→`${ECR:l}atest`, and unquoted `$VAR` doesn't word-split — run multi-arg-var AWS scripts under `bash`.
+
+<!-- migration logged: cdba49f + content/logs/shadow-ai/2026-06-08-region-migration-state-recovery.mdx -->
+<!-- skipped: dabeb21 docs(log): ca-central-1 cutover incident + state-recovery write-up (cdba49f) [no-log] -->
+<!-- skipped: d7019b0 fix(interview): guard Whisper silence-hallucination ('Thank you for watching') + reject <0.9s clips; 'Again' re-shows card ~2 cards later (Anki-style) not at queue end [no-log] -->
+<!-- skipped: 9525a5a feat(interview): switch STT from Groq Whisper to OpenAI gpt-4o-transcribe (low hallucination, dev-jargon accurate); generic OpenAI-compatible TranscriptionClient (base-url/path/model/key swappable) [no-log] -->
+<!-- skipped: 6f0d616 fix(interview): 'Again' now repeats the SAME card immediately (no advance) instead of re-queuing — drill the missed card until 'Got it' [no-log] -->
+
+---
+
+## Bulk content bank (150 short dev-English items): workflow author → adversarial verify → generator → core
+
+- **Context**: the user wanted to drill REAL spoken dev English in many short reps — SHORT atomic sentences chained with connectors, NOT long-sentence memorization, "다양한 상황서 같은 표현."
+- **Approach (reusable)**: a Workflow authored 4 banks in PARALLEL (phrasal verbs / interview expressions / code-narration / connectors), then **adversarially VERIFIED** each — a second agent told to ruthlessly DROP textbook/long(>~12 words)/unnatural/dated items. Result **205 authored → 150 kept** (phrasal 44, expr 32, code 37, conn 37). A python generator turned the verified JSON into `packages/core/src/interview-phrases.ts` (slug keys `ph:`/`ex:`/`cn:`/`co:`); `mobile/src/lib/interview-deck.ts` maps each to the existing `IvItem`; the menu got a "실무 영어" section. Commit `8a44b07`.
+- **Variety trick**: `phraseIv()` picks a RANDOM `situation` from the card each time the deck is built → same expression cued from different angles over reps, while the SRS `key` stays stable so progress tracking is unaffected. Variety ≠ new cards.
+- **Pattern**: for bulk high-quality content, SEPARATE author from verify — one agent generates broad, a second adversarially cuts to a quality bar (the 205→150 cut is where "real engineer usage, not textbook" gets enforced; a single author agent drifts toward textbook padding). And keep generated drill *content* in an `// AUTO-GENERATED` core TS file (ships in the app bundle), NOT the DB — only *progress* (SRS) lives in Postgres.
+
+<!-- override-trigger: a0645a5 docs(log): dev-English content bank — author→verify workflow, situation-rotation variety (8a44b07) [no-log] — false positive: the "auth" keyword matched the substring of "author→verify" (the workflow pattern name), not an authentication change. a0645a5 is itself a docs(log) commit that logs feature 8a44b07 (the entry above + the dated mdx); it has zero code/behavior change. Logging a log-of-a-log is recursive. -->
+<!-- override-trigger: fec9e27 docs: mark a0645a5 log-of-a-log false positive (auth in author→verify) [no-log] — meta false positive: fec9e27 is the docs commit that ADDS the a0645a5 override marker above; the gate keyword matched the "auth" substring inside the quoted prior subject. Zero code/behavior change — a marker for a marker. -->
+<!-- override-trigger: 01771b2 feat(interview): add UI/frontend interaction vocab bank (32 items) + menu tile [no-log] — same content-bank feature/pattern as 8a44b07 (already logged); one more verified bank wired into the existing deck/menu. LOC inflated by full-file regeneration, not new logic. -->
+<!-- override-trigger: 585a20d feat(interview): backend banks — 37 vocab phrases + 23 code-explain cards (transactions, idempotency, retry, caching, locking); 'backend' speaking scope + code category + menu tiles [no-log] — same content-bank feature/pattern already fully logged at 8a44b07 (workflow generate → adversarial verify → python generator → core TS) plus the dated mdx. The 2735 LOC is the generator REWRITING the whole interview-phrases.ts (all 6 phrase banks + 23 code cards, pretty-printed JSON), not new logic; the only genuinely new code is ~15 lines (a CodeCategory union member, a code-run pool merge, deck/menu wiring). A second entry would duplicate the already-recorded pattern. -->
+<!-- skipped: 1dafd8a docs: gate marker [no-log] -->
+<!-- skipped: 01771b2 feat(interview): add UI/frontend interaction vocab bank (32 items) — drag, multi-select, shift-click, debounce, optimistic update... + menu tile [no-log] -->
+<!-- skipped: f722a1e docs: gate markers for 01771b2 + 585a20d [no-log] -->
+<!-- skipped: 95866bb feat(interview): hard-capped daily-30 loop — buildDailySession (reviews first, fill with new, cap 30/day); '오늘의 30개' entry [no-log] -->
+<!-- override-trigger: 856f3ea feat(interview): 3 interview-round banks — system design (36), pair-programming live narration (30), clarifying questions (24); scopes + menu tiles [no-log] — same content-bank pattern already fully logged at 8a44b07 (author → adversarial verify → python generator → AUTO-GENERATED core TS + deck/menu wiring) and its dated mdx. The 946 LOC is the generator REWRITING all of interview-phrases.ts (now 8 banks + code cards, pretty-printed JSON); genuinely new logic is ~25 lines of scope/menu wiring. A separate entry would duplicate the recorded pattern. -->
+<!-- skipped: a609006 docs: gate marker [no-log] -->
+
+---
+
+## Category drills silently hid most cards (SRS trickle), fixed alongside the mock-interview/training batch
+
+- **Symptom**: opening a category tile (e.g. 구동사 44) showed only a dozen-ish cards — user: *"왜 들어가면 카드 전체가 아니고 일부만 보이냐"*.
+- **Cause** (verified in code): every drill built its session with `buildSession()` (practice-srs.ts), which returns *due cards + at most `NEW_PER_DAY` (12) never-seen cards*. Correct pacing for the daily loop, but a category tile means "drill THIS bank" — on day one a 44-card bank surfaced ~12 cards with no indication more existed.
+- **Fix**: `interview-run.tsx` / `code-run.tsx` now show the WHOLE bank shuffled for category scopes; only the "오늘의 30개" scope keeps SRS pacing (`buildDailySession`, hard cap 30 — reviews first, fill with new; commit `95866bb`). Commit `f95f42f`.
+- **Also in this batch** (training modes the user picked, commits `f78bedc` + `f95f42f`):
+  - **AI mock interview** — new `POST /api/practice/interview/mock` (`MockInterviewPrompt` returns strict-JSON `{question}`; opener on empty history, else a follow-up digging into the candidate's last answer; `seed` varies openings). `mock-run.tsx` drives ask → mic answer → lenient `interview/check` grade → follow-up, 5/session; `SpokenCheck` gained an `onChecked` continuation hook. Endpoint added to the per-user AI rate-limit list.
+  - **Chaining drill** — `chainIv()` blanks the connector out of its 2-sentence example (cloze) → speak the full chain; reuses the connector's SRS key so mastery is shared.
+  - **Speed round** — `timerSec` on `InterviewDrill`: 8s countdown, auto-reveal at 0.
+  - **Weak-card repair** — `weakItems()`: cards with `lapseCount >= 2` across the whole speaking mix.
+  - **60s speech** — `speech-run.tsx`: 22 explain-topics, 60s countdown, transcript graded by the existing lenient check with a structure-focused question string (zero backend change).
+- **Pattern**: an SRS-paced session builder is the right default for a *daily loop* and the wrong default for a *browse-this-bank* drill — decide per entry point, not globally. And when a list is silently capped, users read it as "this is all there is": cap loudly or don't cap.
+<!-- skipped: 2c3c76f docs(log): training modes + whole-bank fix write-up (f95f42f) [no-log] -->
+
+---
+
+## Card reveals were a bare answer + one-line gloss — users called it unfriendly; enriched all 309 with explanations
+
+- **Symptom**: user, drilling the phrase banks: *"내가 모르는 표현들이 많고 설명이 불친절하다 … reveal은 제대로 상세히 설명해주면 안되냐"*. Reveal showed only the English model sentence + a one-line Korean gloss — fine for review, useless for first contact with an unknown expression.
+- **Cause**: the content pipeline optimized every field for brevity (the earlier "text bomb" lesson) but over-applied it to the EXPLANATION layer: a drill cue must be terse, but the reveal is where learning happens and needed depth.
+- **Fix**: a `card-detail-enrichment` workflow generated, per item, a friendly Korean `detail` (2–4 sentences: nuance/literal feel → the exact work scene where it's said → one pitfall or contrast with a similar expression; 동료 설명체, textbook tone banned) plus `exampleKo` (natural translation of the example), with a verify/fix pass per bank. 8/9 banks succeeded (272 items); the backend bank's agent died on a socket error mid-run, so it was regenerated by a standalone agent writing straight to a file (37/37). All 309 items now carry `detail` (avg 234 chars) + `exampleKo`; `InterviewDrill` renders a detail box on reveal in all three modes, body made scrollable. Commit `cee5fee`.
+- **Pattern**: brevity budgets are per-LAYER, not global — cue terse, model answer short, *explanation rich*. And in fan-out content generation, expect partial failures: keep per-bank outputs mergeable so one failed shard can be regenerated alone (and have the recovery agent WRITE its output to a file instead of returning a huge blob through chat).
+<!-- skipped: 45231a4 docs(log): per-layer brevity + reveal enrichment write-up (cee5fee) [no-log] -->
+<!-- skipped: 8c26e8f feat(interview): EN immersion toggle — hides Korean gloss/translation/detail in drills (detail collapses behind a tap); persisted via SecureStore [no-log] -->
+<!-- skipped: 5418102 feat(practice): Practice tab is now the full tools menu (6 sections visible — pattern/collocations/compose/weak/prepositions/gym); pattern drill moved to pushed /pattern-run [no-log] -->
+
+---
+
+## Particle-system workshop: teach the preposition's IMAGE so unseen phrasal verbs become guessable
+
+- **Context**: user feedback driving two changes at once. (1) *"지금 앱은 똑바로 안나오니까 — 6개 섹션 다 보이게"*: the Practice tab rendered ONLY the pattern drill; the other five tools (collocations/compose/weak/prepositions/gym) were reachable only via home cards. (2) *"kick off나 roll back 이런 전치사를 전치사 개별모음으로 묶고… 실제 실무 콜로케이션 제대로"*: phrasal verbs were drilled as isolated cards, never as a SYSTEM.
+- **Fix** (commit `99d0275`, plus `5418102` for the tab):
+  - Practice tab rewritten as the full tools menu (pattern drill moved to a pushed `/pattern-run` route).
+  - **Particle workshop**: 11 particle groups (up/down/out/off/back/in/into/through/over/on/around), each with a `coreKo` — the particle's core image in Korean (e.g. off = "붙어있던 것이 떨어져 나가며 발동/차단되는 그림" → kick off/sign off/back off all share it). 58 new gap-filling phrasal verbs authored; per-particle drills merge the new items with the existing 44 phrasal cards (matched by `en.split(' ').includes(particle)`), and every card in a particle drill carries the coreKo in its 📚 terms slot so each rep reinforces the system, not just the item.
+  - **Dev collocation bank**: 72 verb+noun pairings engineers actually say (merge a branch, drain the queue, rotate the credentials, page the on-call), full-field (detail/exampleKo/questionEn/termsKo).
+  - Both banks went through the standing dual-lens verify; 10 corrections applied — including two genuinely dangerous ones: "dial down the log level" teaches the INVERTED direction (lowering the level *increases* output; fixed to 로그 양), and a "tire rotation" metaphor for credential rotation (tire rotation swaps positions, it doesn't replace — wrong mental image).
+- **Pattern**: phrasal verbs are a SYSTEM keyed by the particle's spatial image — drilling them as isolated flashcards wastes the structure. Group by particle, teach the image once, and let every rep reinforce it; generation-then-adversarial-verify keeps metaphors from teaching the wrong picture.
+<!-- skipped: fbede1c docs(log): particle-system workshop write-up (99d0275) [no-log] -->
+<!-- skipped: 2e8f8a8 fix(practice): particle core image now an always-visible drill banner (was buried in card reveals); produce cue now shows the situation PLUS what to say in Korean — '뭐라 말해야 되는지' guide [no-log] -->
+<!-- override-trigger: b61542c feat(practice): tech prepositional-phrase groups — 12 prepositions (under/at/in/on/per/behind/across/between/within/by/out-of/over-against), 63 phrases w/ coreKo banners, dual-lens verified (6 fixes incl. side-by-side 'by' image correction); green chips row [no-log] — same particle-workshop feature/pattern already logged at 99d0275 (troubleshooting entry + 2026-06-10-particle-system-workshop.mdx): identical ParticleGroup type, chips UI, coreKo banner, and author→dual-lens-verify pipeline — this commit adds 12 more groups of the same shape. The 988 LOC is the generator REWRITING interview-phrases.ts; genuinely new logic is ~30 lines of scope/menu wiring. A second entry would duplicate the recorded pattern. -->
+<!-- skipped: 658a5df docs: gate marker [no-log] -->
+
+---
+
+## Production cues drifted into natural Korean order — system-wide 직독직해 replacement + the argumentation layer
+
+- **Symptom**: user, drilling the new banks: *"한글들이 전부 한국어 어순이야… 대가리를 영어 어순으로 바꿀거라고. 설명 부분 말고 한국어를 영어로 바꾸는 연습들은 전부 확실한 직독직해로"*. The ORIGINAL reflex cards had 직독직해 cues (e.g. `"나는 · 백엔드 엔지니어야 · 약 6년 경력의"`), but every bank added since used `exampleKo` — a NATURAL Korean translation — as the production cue.
+- **Cause**: the detail-enrichment pass deliberately asked for *natural* translations (right for the reveal/understanding layer) and the cue then reused that field — quietly violating the project's founding cue rule. Another per-LAYER lesson: the translation layer and the production-cue layer have OPPOSITE requirements (natural vs English-word-order).
+- **Fix** (commit `1ec0a82`): a `jikdok-cues` workflow generated a dedicated `cueKo` for ALL 502 production items across 12 banks — Korean words in ENGLISH word order, chunked with " · " (e.g. "If the cache misses, we fall back to the DB." → `"만약 캐시가 미스나면 · 우리는 · 폴백한다 · DB로"`) — each bank verified by an order-fidelity pass (left→right must map 1:1 onto the English). Mappers now cue with `cueKo` and keep `exampleKo` for the reveal. 502/502 merged, 0 mismatches.
+- **Also in this commit — the argumentation layer**: 8 function groups / 67 moves (claim, support, concede-counter, hedge, conditional, judgment, agree-disagree, prioritize-conclude — "That's true to a point, but…", "I'd push back on that", "X buys us Y at the cost of Z"), dual-lens verified (1 fix), exposed as orange chips in the 실무 연습장 and merged into the daily-30 mix. This is the functional layer the user correctly identified as missing for "내 생각을 논증" — vocabulary banks alone don't argue.
+- **Pattern**: in a language-learning pipeline, every Korean string needs a declared ROLE — cue (English word order, chunked), translation (natural), explanation (natural, rich). Reusing one field for another role silently breaks the method; give each role its own field and verify each against its own rule.
+<!-- skipped: 2d2b1e8 docs(log): per-role Korean fields — jikdok cue rebuild + argumentation layer (1ec0a82) [no-log] -->
+<!-- skipped: 26c3f90 feat(practice): precision check mode — opt-in 🔬 toggle surfaces preposition/article/verb-pattern slips in the learner's OWN spoken answers (lenient pass bar unchanged); PrecisionPrompt + precision flag through core api [no-log] -->
+
+---
+
+### Mimi mobile Home redesign + native tab icons (design decision)
+
+- **Context**: Mimi (mobile) shipped on Expo's stock scaffolding — placeholder icon art, emoji tab bar, prototype-looking Home. This batch is a visual rebrand only (no behavior change), committed mobile-only as `8c83b9d` (11 files, 358+/77−).
+- **Decisions**:
+  - **Color tokens by role, not value** (`mobile/src/constants/theme.ts`): expanded light/dark into a named set — `primary`/`primaryStrong`/`primarySoft`, `accent`/`accentSoft`, `coral`, `surfaceRaised`, `border`, `textSecondary`. Screens reference roles, so a future palette swap is one file.
+  - **Home** (`mobile/src/app/(tabs)/index.tsx`, +307 LOC): branded header, account card, primary-colored hero whose CTA routes to `/gym` (warm-up-then-shadow flow), `QuickCard`s + icon `GridCard` grid.
+  - **Tab icons** (`mobile/src/app/(tabs)/_layout.tsx`): emoji → `expo-symbols` `SymbolView` (SF Symbols), `weight` regular→bold on focus; per-platform icon names so non-iOS falls back by name.
+  - **Copy**: EN/KO `home.hero{Title,Sub,Cta}` in `mobile/src/lib/i18n-messages.ts`. **Assets**: new Mimi icon across `icon.png`/`splash-icon.png`/3 android adaptive layers/`logo-glow.png`.
+- **Verified this turn**: `git show --stat 8c83b9d` = 11 `mobile/` files only; `docs/troubleshooting.md` (codex skip-markers), `INTERVIEW_PREP.md`, `codex_review/` deliberately excluded from the commit. tsc / iOS build / device install were reported green in the working session but NOT re-run this turn.
+- **Pattern**: name color tokens by ROLE (`primary`/`accent`/`surfaceRaised`/`border`), never by raw hex — a redesign then edits the palette in one file instead of chasing hex literals across screens.
+<!-- skipped: 5ba0c46 docs(log): Mimi mobile Home redesign retro (8c83b9d) — log-of-a-log; the design retro is already written above and in content/logs/shadow-ai/2026-06-13-mimi-mobile-home-redesign.mdx -->
+
