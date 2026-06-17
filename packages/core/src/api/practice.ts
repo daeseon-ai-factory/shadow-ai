@@ -32,6 +32,14 @@ export interface ComposeFeedback {
   better: string;
 }
 
+// Lenient verdict on a scenario answer — responding to a real-world situation in English.
+export interface ScenarioFeedback {
+  ok: boolean; // understandable AND appropriate for the situation
+  fits: boolean; // does it actually respond to the situation
+  feedback: string;
+  better: string;
+}
+
 // Lenient verdict on a spoken interview/code explanation — passes when the CORE is understandable.
 export interface InterviewFeedback {
   ok: boolean;
@@ -62,6 +70,9 @@ export const practiceApi = {
     apiClient.post<GradeResult>("/api/practice/srs/grade", { cardKey, correct, localDate }),
   composeCheck: (target: string, gloss: string, sentence: string) =>
     apiClient.post<ComposeFeedback>("/api/practice/compose/check", { target, gloss, sentence }),
+  // Lenient grade of a scenario answer — respond to a real-world situation; sample is one good option.
+  scenarioCheck: (situation: string, koreanHint: string, sample: string, answer: string) =>
+    apiClient.post<ScenarioFeedback>("/api/practice/scenario/check", { situation, koreanHint, sample, answer }),
   // Lenient grade of a spoken explanation — `question` is the code/topic, `answer` is what the learner said.
   interviewCheck: (question: string, answer: string, precision?: boolean) =>
     apiClient.post<InterviewFeedback>("/api/practice/interview/check", { question, answer, precision }),

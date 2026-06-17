@@ -7,6 +7,7 @@ import { clipsApi, reviewApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { EmptyState } from '@/components/empty-state';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
@@ -85,9 +86,19 @@ export default function LibraryScreen() {
             onRefresh={() => clips.refetch()}
             refreshing={clips.isFetching}
             ListEmptyComponent={
-              <ThemedText type="small" style={styles.empty}>
-                {q ? t('library.emptySearch') : t('library.empty')}
-              </ThemedText>
+              q ? (
+                <ThemedText type="small" style={styles.empty}>
+                  {t('library.emptySearch')}
+                </ThemedText>
+              ) : (
+                <EmptyState
+                  icon={{ ios: 'scissors', android: 'content_cut', web: 'content_cut' }}
+                  title={t('library.empty')}
+                  body={t('videos.emptyBody')}
+                  primary={{ label: t('videos.import'), onPress: () => router.push('/import') }}
+                  secondary={{ label: t('videos.emptyDiscover'), onPress: () => router.push('/discover') }}
+                />
+              )
             }
             renderItem={({ item }) => (
               <Pressable

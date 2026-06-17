@@ -27,6 +27,9 @@ export default function VideoDetailScreen() {
   const [currentMs, setCurrentMs] = useState(0);
   const [mode, setMode] = useState<'sentences' | 'full'>('sentences');
   const [rate, setRate] = useState(1); // playback speed — 0.5x..1.5x for shadowing
+  // Speed + A-B/auto/reps are power-user controls — collapsed by default so the screen reads like a
+  // script you tap through, not a mixing desk.
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // --- Shadowing loop model ---------------------------------------------------------------
   // loop = a line-index range [a, b] to repeat. Single line → a === b. null → free play.
@@ -254,6 +257,20 @@ export default function VideoDetailScreen() {
           </View>
         </View>
 
+        {/* Advanced controls (speed, A-B range, auto-advance) are tucked behind a toggle. */}
+        <Pressable
+          style={styles.advToggle}
+          onPress={() => setShowAdvanced((v) => !v)}
+          accessibilityRole="button"
+          accessibilityLabel={t('video.advanced')}
+        >
+          <ThemedText type="small" style={styles.advToggleText}>
+            {t('video.advanced')}  {showAdvanced ? '⌃' : '⌄'}
+          </ThemedText>
+        </Pressable>
+
+        {showAdvanced && (
+        <>
         {/* Playback speed — slow down for shadowing, speed up to skim */}
         <View style={styles.speedRow}>
           {[0.5, 0.75, 1, 1.25, 1.5].map((r) => (
@@ -304,6 +321,8 @@ export default function VideoDetailScreen() {
             </Pressable>
           )}
         </View>
+        </>
+        )}
 
         <ThemedText type="small" style={styles.hint}>
           {t('video.tapToPlay')}
@@ -331,6 +350,8 @@ export default function VideoDetailScreen() {
             const active = index === activeIndex;
             const inRange = loop != null && index >= loop.a && index <= loop.b;
             const isA = arming === 'B' && armA === index;
+            // Only the line you're focused on shows a clip action — no button-per-row clutter.
+            const focused = active || (loop != null && loop.a === loop.b && loop.a === index);
             return (
               <View
                 style={[
@@ -345,15 +366,17 @@ export default function VideoDetailScreen() {
                     {active && inRange ? '🔁  ' : isA ? 'Ⓐ  ' : ''}{item.text}
                   </ThemedText>
                 </Pressable>
-                <Pressable
-                  style={styles.clipBtn}
-                  disabled={makeClip.isPending}
-                  onPress={() => makeClip.mutate(item)}
-                >
-                  <ThemedText type="small" style={styles.clipBtnText}>
-                    {t('video.clipLine')}
-                  </ThemedText>
-                </Pressable>
+                {focused && (
+                  <Pressable
+                    style={styles.clipBtn}
+                    disabled={makeClip.isPending}
+                    onPress={() => makeClip.mutate(item)}
+                  >
+                    <ThemedText type="small" style={styles.clipBtnText}>
+                      {t('video.clipLine')}
+                    </ThemedText>
+                  </Pressable>
+                )}
               </View>
             );
           }}
@@ -399,6 +422,8 @@ const styles = StyleSheet.create({
   toggleItem: { paddingVertical: 8, paddingHorizontal: 14 },
   toggleOn: { backgroundColor: '#208AEF' },
   toggleOnText: { color: '#fff', fontWeight: '700' },
+  advToggle: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 14 },
+  advToggleText: { color: '#6b7280', fontWeight: '700' },
   speedRow: {
     flexDirection: 'row',
     justifyContent: 'center',

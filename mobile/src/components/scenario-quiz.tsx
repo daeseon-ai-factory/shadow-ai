@@ -1,24 +1,44 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
-import type { PracticeScenario } from '@shadow-ai/core';
+import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useMutation } from '@tanstack/react-query';
+import { practiceApi, ApiError, type PracticeScenario } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { t } from '@/lib/i18n';
 
 /**
- * Output practice on the learner's OWN clip — the input→output bridge the mobile player
- * was missing (the web already has this as ScenarioQuiz). The AI mined a real-world Korean
- * situation + a sample English response into ClipAnalysis.practiceScenario at analysis time;
- * this surfaces it: read the situation, type an English response that uses the clip's
- * expression, then reveal the sample. Pure client-side — no AI call, no cost.
+ * Output practice on the learner's OWN clip — the input→output bridge. The AI mined a real-world
+ * Korean situation + a sample English response into ClipAnalysis.practiceScenario; the learner reads
+ * the situation, writes an English response, and gets a LENIENT AI verdict (does it work in the
+ * situation — a different-but-valid answer passes). If grading is unavailable it degrades to just
+ * revealing the sample, so the drill is never a dead end.
  */
 export function ScenarioQuiz({ scenario }: { scenario?: PracticeScenario | null }) {
   const [draft, setDraft] = useState('');
-  const [checked, setChecked] = useState(false);
+
+  const check = useMutation({
+    mutationFn: (answer: string) =>
+      practiceApi.scenarioCheck(
+        scenario!.situation,
+        scenario!.koreanHint ?? '',
+        scenario!.sampleResponse ?? '',
+        answer,
+      ),
+  });
 
   if (!scenario) return null;
 
   const trimmed = draft.trim();
+  const fb = check.data;
+  // Even if grading fails (e.g. offline), still reveal the sample — never strand the learner.
+  const done = fb != null || check.isError;
+  const errorMessage =
+    check.error instanceof ApiError ? check.error.message : check.error ? t('scenario.checkFailed') : null;
+
+  const reset = () => {
+    setDraft('');
+    check.reset();
+  };
 
   return (
     <View style={styles.box}>
@@ -33,26 +53,47 @@ export function ScenarioQuiz({ scenario }: { scenario?: PracticeScenario | null 
         ) : null}
       </View>
 
-      {!checked ? (
+      {!done ? (
         <>
           <TextInput
             style={styles.input}
             placeholder={t('scenario.placeholder')}
             placeholderTextColor="#9ca3af"
             multiline
+            editable={!check.isPending}
             value={draft}
             onChangeText={setDraft}
           />
           <Pressable
-            style={[styles.checkBtn, trimmed.length === 0 && styles.disabled]}
-            disabled={trimmed.length === 0}
-            onPress={() => setChecked(true)}
+            style={[styles.checkBtn, (trimmed.length === 0 || check.isPending) && styles.disabled]}
+            disabled={trimmed.length === 0 || check.isPending}
+            onPress={() => check.mutate(trimmed)}
           >
-            <ThemedText style={styles.checkText}>{t('scenario.check')}</ThemedText>
+            {check.isPending ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <ThemedText style={styles.checkText}>{t('scenario.check')}</ThemedText>
+            )}
           </Pressable>
         </>
       ) : (
         <View style={styles.result}>
+          {fb ? (
+            <View style={[styles.fbBox, fb.ok ? styles.fbOk : styles.fbWork]}>
+              <ThemedText type="smallBold">
+                {fb.ok ? t('scenario.good') : t('scenario.needsWork')}
+              </ThemedText>
+              {fb.feedback ? <ThemedText type="small">{fb.feedback}</ThemedText> : null}
+              {fb.better ? (
+                <ThemedText style={styles.better}>{t('scenario.betterLabel', { text: fb.better })}</ThemedText>
+              ) : null}
+            </View>
+          ) : (
+            <ThemedText type="small" style={styles.error}>
+              {errorMessage}
+            </ThemedText>
+          )}
+
           <View style={styles.section}>
             <ThemedText type="small" style={styles.label}>{t('scenario.yourAnswer')}</ThemedText>
             <ThemedText>{trimmed}</ThemedText>
@@ -61,7 +102,7 @@ export function ScenarioQuiz({ scenario }: { scenario?: PracticeScenario | null 
             <ThemedText type="small" style={styles.label}>{t('scenario.sample')}</ThemedText>
             <ThemedText style={styles.sample}>{scenario.sampleResponse}</ThemedText>
           </View>
-          <Pressable style={styles.retryBtn} onPress={() => { setDraft(''); setChecked(false); }}>
+          <Pressable style={styles.retryBtn} onPress={reset}>
             <ThemedText style={styles.retryText}>{t('scenario.retry')}</ThemedText>
           </Pressable>
         </View>
@@ -105,7 +146,12 @@ const styles = StyleSheet.create({
   },
   disabled: { opacity: 0.5 },
   checkText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  error: { color: '#dc2626' },
   result: { gap: 12 },
+  fbBox: { borderRadius: 12, borderWidth: 1, padding: 14, gap: 6 },
+  fbOk: { borderColor: '#10b98155', backgroundColor: '#10b98111' },
+  fbWork: { borderColor: '#f59e0b55', backgroundColor: '#f59e0b11' },
+  better: { fontStyle: 'italic' },
   section: { gap: 4 },
   label: { color: '#6b7280', textTransform: 'uppercase', fontSize: 11 },
   sample: { fontWeight: '600', fontSize: 15, lineHeight: 22 },

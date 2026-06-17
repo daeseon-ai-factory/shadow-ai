@@ -59,9 +59,6 @@ export default function RootLayout() {
             <Stack.Screen name="player/[clipId]" options={{ headerShown: true, title: t('nav.clip') }} />
             {/* Drills run as full-screen pushes so iOS swipe-back works; their own header handles exit. */}
             <Stack.Screen name="interview-run" options={{ headerShown: false }} />
-            <Stack.Screen name="code-run" options={{ headerShown: false }} />
-            <Stack.Screen name="speech-run" options={{ headerShown: false }} />
-            <Stack.Screen name="mock-run" options={{ headerShown: false }} />
             <Stack.Screen name="pattern-run" options={{ headerShown: true, title: t('nav.practice') }} />
           </Stack>
         )}

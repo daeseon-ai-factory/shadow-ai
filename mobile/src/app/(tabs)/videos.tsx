@@ -16,6 +16,7 @@ import { libraryApi, type LibraryVideoResponse } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { EmptyState } from '@/components/empty-state';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
@@ -94,9 +95,13 @@ export default function VideosScreen() {
               </Pressable>
             )}
             ListEmptyComponent={
-              <ThemedText type="small" style={styles.empty}>
-                {t('videos.empty')}
-              </ThemedText>
+              <EmptyState
+                icon={{ ios: 'play.rectangle.on.rectangle', android: 'video_library', web: 'video_library' }}
+                title={t('videos.emptyTitle')}
+                body={t('videos.emptyBody')}
+                primary={{ label: t('videos.import'), onPress: () => router.push('/import') }}
+                secondary={{ label: t('videos.emptyDiscover'), onPress: () => router.push('/discover') }}
+              />
             }
           />
         )}

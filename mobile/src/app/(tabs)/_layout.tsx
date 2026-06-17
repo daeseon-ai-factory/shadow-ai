@@ -46,13 +46,13 @@ export default function TabsLayout() {
         options={{
           headerShown: false,
           title: t('nav.home'),
-          tabBarIcon: tabIcon({ ios: 'house.fill', android: 'home', web: 'home' }),
+          tabBarIcon: tabIcon({ ios: 'sun.max.fill', android: 'light_mode', web: 'light_mode' }),
         }}
       />
       <Tabs.Screen
         name="videos"
         options={{
-          title: t('nav.videos'),
+          title: t('nav.library'),
           tabBarIcon: tabIcon({ ios: 'play.rectangle.fill', android: 'smart_display', web: 'smart_display' }),
         }}
       />
@@ -63,27 +63,13 @@ export default function TabsLayout() {
           tabBarIcon: tabIcon({ ios: 'arrow.triangle.2.circlepath', android: 'sync', web: 'sync' }),
         }}
       />
-      <Tabs.Screen
-        name="practice"
-        options={{
-          // Header keeps the specific "Pattern drill" title; the tab reads the shorter "Practice".
-          title: t('nav.practice'),
-          tabBarLabel: t('nav.practiceTab'),
-          tabBarIcon: tabIcon({ ios: 'bolt.fill', android: 'bolt', web: 'bolt' }),
-        }}
-      />
-      <Tabs.Screen
-        name="interview"
-        options={{
-          title: t('nav.interview'),
-          tabBarIcon: tabIcon({ ios: 'mic.fill', android: 'mic', web: 'mic' }),
-        }}
-      />
+      {/* Practice is a hub reached from Today, not a primary tab — hidden from the bar, still routable. */}
+      <Tabs.Screen name="practice" options={{ href: null, title: t('nav.practiceTab') }} />
       <Tabs.Screen
         name="settings"
         options={{
           title: t('nav.settings'),
-          tabBarIcon: tabIcon({ ios: 'gearshape.fill', android: 'settings', web: 'settings' }),
+          tabBarIcon: tabIcon({ ios: 'person.fill', android: 'person', web: 'person' }),
         }}
       />
     </Tabs>
