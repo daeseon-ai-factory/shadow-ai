@@ -6,6 +6,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { reviewApi, analysisApi, REVIEW_QUALITY, type ReviewQueueItem } from '@shadow-ai/core';
 
 import { ChunkLadder } from '@/components/chunk-ladder';
+import { ErrorState } from '@/components/error-state';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
@@ -67,8 +68,8 @@ export default function ReviewScreen() {
   }
   if (queue.isError) {
     return (
-      <ThemedView style={styles.center}>
-        <ThemedText style={styles.error}>{(queue.error as Error).message}</ThemedText>
+      <ThemedView style={styles.flex}>
+        <ErrorState message={(queue.error as Error).message} onRetry={() => queue.refetch()} />
       </ThemedView>
     );
   }
