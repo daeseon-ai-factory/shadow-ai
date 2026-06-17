@@ -963,3 +963,4 @@ Narrative: `content/logs/shadow-ai/2026-06-16-mobile-4tab-restructure.mdx`.
 - **Pattern**: gate first-run UX on the signup path, not a global launch check — a flag-based global gate would bounce existing accounts (which never completed the new flow) into onboarding. Routing only fresh signups avoids punishing current users.
 
 Narrative: `content/logs/shadow-ai/2026-06-16-mobile-onboarding.mdx`.
+<!-- skipped: d46eee6 docs(log): first-run onboarding retro (b4ece81) -->
