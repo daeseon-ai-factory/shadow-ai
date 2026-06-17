@@ -107,7 +107,7 @@ export default function TodayScreen() {
               <View style={styles.heroText}>
                 <ThemedText style={styles.heroKicker}>{t('today.todayKicker')}</ThemedText>
                 <ThemedText style={styles.heroTitle}>{primary.title}</ThemedText>
-                <ThemedText style={styles.heroSub} numberOfLines={1}>
+                <ThemedText style={styles.heroSub} numberOfLines={2}>
                   {primary.sub}
                 </ThemedText>
               </View>
