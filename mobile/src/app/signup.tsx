@@ -29,7 +29,8 @@ export default function SignupScreen() {
       authApi.signup({ email: email.trim(), password, displayName: displayName.trim() }),
     onSuccess: async (res) => {
       await signIn(res.accessToken);
-      router.replace('/');
+      // Fresh accounts go through onboarding once; returning logins skip straight to Today.
+      router.replace('/onboarding');
     },
   });
 
