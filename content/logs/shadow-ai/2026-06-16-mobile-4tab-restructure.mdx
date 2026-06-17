@@ -1,0 +1,48 @@
+---
+title: "Subtracting your way to a 'real app': Mimi's 6→4 tab restructure"
+date: "2026-06-16"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "public"
+language: "en"
+summary: "A code-grounded audit said Mimi read like a feature toolkit, not a daily app. The fix was mostly deletion — 6 tabs to 4, a feature-grid home to one action, a mixing-desk video screen to a script — plus finally giving the output drill real AI feedback."
+tags: ["ux", "react-native", "expo", "information-architecture", "ai-feedback"]
+---
+
+## The complaint that started it
+
+The app worked. You could import a YouTube video, clip a line, shadow it, drill it, and review it on a spaced-repetition schedule. The engine was real. But it didn't *feel* like a real app — it felt like a box of tools. Six bottom tabs. A home screen that was a grid of feature cards. A video screen with a row of speed buttons, an A‑B looper, an auto-advance toggle, a reps counter, and a "Clip this line" button stamped onto every single transcript line. The question "what do I do right now?" had no answer in under a second.
+
+## Audit with code, not vibes
+
+Before cutting anything I ran a read-only sweep of `mobile/src` with three agents in parallel — one inventoried every screen and its loading/empty/error states, one traced the core learning loop end to end, one checked the table-stakes polish layer. The point was to make the cut list **evidence-based** instead of "this feels cluttered."
+
+What it surfaced, with file-level receipts:
+
+- The home was a feature grid; nothing told you the single most useful next step.
+- The video detail screen exposed every power-user control at all times.
+- The **Produce drill gave zero feedback** — `scenario-quiz.tsx` made no API call; it just revealed the sample answer. For an app whose whole thesis is *input → output*, the output rep had no coach.
+- Several screens had no `isError` branch, and there was no `/api/progress` endpoint, so "am I improving?" was unanswerable.
+
+## The fix was mostly subtraction
+
+The commit (`02c427f`) touched 24 files and was a **net deletion** — `+566 / −1112`. The headline changes were things removed:
+
+- **Tabs 6 → 4**: `Today / Library / Review / Me`. Settings folded into "Me". The Interview tab and its `code-run` / `mock-run` / `speech-run` / `code-drill` screens were deleted outright (they weren't the product). Practice stayed as content but left the tab bar — hidden with `href: null`, still reachable as a hub from Today.
+- **Home → Today**: rewritten to pick *one* primary action by priority — reviews due → resume your last clip → import your first video — with a streak line and two slim secondary cards. No grid.
+- **Video screen**: speed, A‑B, auto-advance and reps moved behind a collapsed `Advanced` toggle; the core loop (tap a line to repeat it, record yourself) stays in the open. "Clip this line" now appears only on the line you're actually focused on, so the screen reads like a script instead of a control panel.
+- A reusable `EmptyState` put a real call-to-action ("Import a video", "Browse suggestions") on the empty Library and clip screens, so a first run is an invitation, not a dead end.
+
+A deliberate restraint: the core shadowing actions — replay, sentence-level looping, record — were **not** demoted to "advanced." Looping a line *is* the product; burying it would have been deleting the wrong thing.
+
+## Finally, the output drill got a coach
+
+The one place I *added* code was the Produce drill. A new lenient grader — `POST /api/practice/scenario/check` → `CompositionService.scenarioCheck` with a `ScenarioPrompt` tuned for "does this English answer work in the situation" (a different-but-valid answer passes; it does **not** demand you copy the sample). It reuses the existing analysis AI provider, so it's independent of the OpenAI speech-to-text key. The frontend calls it and, if grading is ever unavailable, **degrades to simply revealing the sample** — the drill is never a dead end.
+
+## What's verified vs not
+
+Verified this turn: `tsc --noEmit` clean after each step; backend `gradlew compileJava` BUILD SUCCESSFUL; the `linux/amd64` backend image built clean for the NCP box. **Not** verified yet: the scenario endpoint end-to-end (the backend image is built but not yet deployed), and Android — zero Android builds so far, and the keyboard-driven video-collapse uses an iOS-only event, so that one behaviour won't fire there.
+
+## The lesson
+
+On an app that does too much, the biggest lever on *perceived* quality is subtraction plus one obvious next action — not another screen. The diff that made Mimi feel more like a real app was, on net, 546 lines lighter. The only way to cut confidently was to let agents read the actual code first and tell me what was load-bearing and what was noise.
