@@ -981,3 +981,28 @@ Narrative: `content/logs/shadow-ai/2026-06-16-mobile-progress-resume-practice.md
 <!-- skipped: 29c8735 feat(mobile): Me-tab progress stats + accurate Today resume — narrated in this entry -->
 <!-- skipped: 879c552 feat(mobile): declutter Practice hub — narrated in this entry -->
 <!-- skipped: 4232eeb docs(log): progress stats + resume + practice declutter retro — log commit -->
+<!-- skipped: 0014b99 chore(log): silence hook for log commit 4232eeb [no-log] -->
+
+---
+
+### Floundering post-mortem: ~5 doomed builds to a locked phone before pivoting to the simulator (process)
+
+- **Symptom** (literal, repeated across the session):
+  ```
+  ✖ Connecting to: Daeseon’s iPhone
+  CommandError: Cannot launch Mimi on Daeseon’s iPhone because the device is locked.
+  ```
+  and later, when finally trying the simulator:
+  ```
+  Error: osascript -e tell app "System Events" to count processes whose name is "Simulator" exited with non-zero code: 1
+  brew install idb-companion → Warning: No available formula with the name "idb-companion".
+  ```
+- **What happened**: to "show the user the changes," I ran `expo run:ios --device <iphone-udid>` (Release) **5+ times** (`b49cpmm1s`, `beyoytrwk`, `b3dcyzb2f`, `bqcwpmhw5`, `b2gjr9s9w`). Each *built fine* but the install/launch failed because the physical phone kept auto-locking / going `unavailable`. I kept retrying the **same** path (sometimes salvaging with `xcrun devicectl device install`) instead of stepping back. The pivot to the iOS Simulator only happened when the **user asked "왜 시뮬 안 써?"** — i.e. the user, not me, broke the tunnel-vision.
+- **Honest cause** (the user explicitly asked: did the AI hide a stronger method, or did the user err? — neither):
+  1. **My tunnel-vision** — the global instruction "Builds (mobile)… build apps yourself when I ask to see changes; verify a device install actually completed" anchored me on the *physical device*, and I never re-evaluated when lock-friction made it obviously the wrong tool. Nothing was hidden — the simulator was always available; I just didn't switch.
+  2. **Real, non-fault environment limits** discovered during the late pivot: `idb-companion` was **removed from Homebrew** (formula gone); osascript/System Events UI automation is **not permitted** in this environment (that's literally why `expo run:ios` *for the simulator* also failed — its launch step shells out to osascript); and custom-scheme deep links (`mimi://settings`) pop an **"Open in Mimi?" confirmation** that can't be dismissed without tap automation.
+- **What actually works (the bypass)**: `xcrun simctl` talks to CoreSimulator directly and needs **no** osascript — `simctl install booted <app>` + `simctl launch booted ai.daeseon.mimi` + `simctl io booted screenshot out.png` got a real screenshot of the running app. This verified (sim `Build Succeeded`, 0 errors): the app launches, **the 4-tab bar (Today · Library · Review · Me) renders**, and Today shows the single "Import your first video" action — plus a tiny bug: the Today subtitle truncates (`…shado`).
+- **Still blocked in this env**: navigating *past* the launch screen (other tabs) needs tap automation. idb (companion gone), osascript (no permission), and deep-link dialogs (un-tappable) all dead-end. So multi-screen visual QA needs the real phone **or** an XCUITest harness.
+- **Pattern**: when a verification path fails twice on an **external dependency you don't control** (a locked phone, a flaky device tunnel), stop retrying it and switch to the one you **do** control (the simulator + `xcrun simctl io screenshot`). And prefer `simctl` over `expo run:ios` for sim screenshots — the latter's osascript launch step fails in permission-restricted shells even though the build is fine.
+
+Narrative: `content/logs/shadow-ai/2026-06-17-locked-phone-floundering-postmortem.mdx`.
