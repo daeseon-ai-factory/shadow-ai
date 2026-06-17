@@ -1,0 +1,32 @@
+---
+title: "Progress you can feel, a resume that's actually where you left off"
+date: "2026-06-16"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "public"
+language: "en"
+summary: "Three retention refinements: a 'what I've built' stats card (no new backend), a Continue button that resumes the clip you actually last opened, and a Practice tab that stops dumping everything on first view."
+tags: ["ux", "react-native", "retention", "expo"]
+---
+
+## Three small things that make an app feel less like a toolbox
+
+After the big restructure, the audit (and a second-opinion review) pointed at the next layer: the app still didn't give you a sense of *advancement*, the "Continue" action was subtly wrong, and one tab was still overwhelming. None of these needed new infrastructure.
+
+### 1. Progress without a progress endpoint
+
+The instinct is to build `/api/progress`. But the data already exists: the review streak, the SRS card states (a card in box ≥ 5 is "mastered"), and the clip count. So the Me tab got a "Your learning" card — **day streak · clips · mastered · learning** — aggregated client-side from three endpoints we already call. Zero backend. The lesson: progress UI is usually a *view* problem, not a *data* problem.
+
+### 2. "Continue" that means what it says
+
+Today's primary action could be "Continue," but it was resuming the *newest-created* clip — not the one you last opened. If you went back to an older clip yesterday, Today forgot. Fixed with a tiny SecureStore record (`last-clip.ts`): the player writes the clip you open, and Today reads it (re-reading on focus, so coming back from a clip updates it), falling back to the newest clip only when there's no history.
+
+A hooks-order bug surfaced here and is worth noting: I first placed `useLastClip()` *after* Today's early `return` for the loading state. React's rules-of-hooks forbid that — a hook after a conditional return runs inconsistently between renders. `tsc` is happy, but it's a real bug; moved the call up with the other hooks.
+
+### 3. Practice that doesn't shout
+
+The Practice tab opened with six tool cards followed by three rows of phrasal chips (preposition, argument, and particle systems — dozens of chips). It read as "here is everything, good luck." Now it leads with **three recommended sessions** (weak spots, pattern drill, sentence gym) and tucks the full toolbox + the advanced workshop chips behind a single "More practice" toggle. Same features, far less first-view noise.
+
+## Status
+
+`tsc` clean throughout. Not yet verified on a device — the phone was locked the whole session, so these ride along in the next build with the onboarding and scenario-feedback work.

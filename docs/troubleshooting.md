@@ -964,3 +964,19 @@ Narrative: `content/logs/shadow-ai/2026-06-16-mobile-4tab-restructure.mdx`.
 
 Narrative: `content/logs/shadow-ai/2026-06-16-mobile-onboarding.mdx`.
 <!-- skipped: d46eee6 docs(log): first-run onboarding retro (b4ece81) -->
+<!-- skipped: 0aba1c0 chore(log): silence hook for log commit d46eee6 [no-log] -->
+
+---
+
+### Progress stats, accurate resume, decluttered Practice (UX)
+
+- **Gaps** (from the audit + a codex review): (1) no sense of advancement — the only progress signal was Today's streak line; (2) Today's "Continue" pointed at the *newest-created* clip, not the one you actually last opened; (3) the Practice tab dumped 6 tool cards + three rows of phrasal chips (prep / argument / particle systems) on first view.
+- **Fix**:
+  - `29c8735` — Me tab gained a "Your learning" card (day streak · clips · mastered · learning) computed entirely from existing endpoints (`reviewApi.streak`, `practiceApi.srsStates` with `box>=5`=mastered, `clipsApi.list().total`) — no new backend. Accurate resume: new `mobile/src/lib/last-clip.ts` (SecureStore + `useLastClip` re-reading on focus); the player writes the opened clip; Today prefers it over the newest clip.
+  - `879c552` — Practice leads with 3 recommended sessions (weak / pattern / gym); the rest of the toolbox + the workshop chips collapse behind one "More practice" toggle.
+- **Verified this turn**: `npx tsc --noEmit` exit 0 after each step. Caught + fixed a hooks-order bug mid-edit — `useLastClip()` was first placed after Today's early `return`, which violates rules-of-hooks; moved it up with the other hooks. NOT verified on device (phone was locked/`unavailable` all session — these ship in a later build).
+- **Pattern**: progress UI doesn't need a progress *endpoint* — streak + SRS states + clip count already encode "what I've built"; aggregate them client-side before writing any backend.
+
+Narrative: `content/logs/shadow-ai/2026-06-16-mobile-progress-resume-practice.mdx`.
+<!-- skipped: 29c8735 feat(mobile): Me-tab progress stats + accurate Today resume — narrated in this entry -->
+<!-- skipped: 879c552 feat(mobile): declutter Practice hub — narrated in this entry -->
