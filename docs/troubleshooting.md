@@ -952,3 +952,14 @@ Narratives: `content/logs/shadow-ai/2026-06-15-aws-to-ncp-seoul-migration.mdx` +
 - **Pattern**: the biggest *perceived-quality* lever on a "too many features" app is **subtraction + one clear next action**, not adding screens — here the net diff was −546 LOC and the headline change was deletions (tabs, grid, per-line buttons). Audit with agents reading the actual code before deciding what's cluttered, so the cut list is evidence-based.
 
 Narrative: `content/logs/shadow-ai/2026-06-16-mobile-4tab-restructure.mdx`.
+
+---
+
+### First-run onboarding for fresh signups (feature)
+
+- **Gap** (same audit): a brand-new account landed straight on an empty Today with no orientation and no first action. Verified: `signup.tsx` `onSuccess` did `router.replace('/')` with nothing in between.
+- **Fix** (`b4ece81`): new `mobile/src/app/onboarding.tsx` — 3-step intro (welcome → how-it-works loop → daily-minutes goal) ending in an "Import my first video" CTA → `/import`. `mobile/src/lib/onboarding.ts` persists a done-flag + goal in SecureStore (`onboarding.v1.*`). `signup.tsx` now routes fresh signups to `/onboarding`; returning logins still go to `/`. Registered in the root Stack (`gestureEnabled:false`). i18n `onboard.*` (en+ko).
+- **Verified this turn**: `npx tsc --noEmit` exit 0. NOT verified: on-device runtime (needs a fresh signup to trigger; the dev's own existing account skips it by design). Build 7 (already in TestFlight review) predates this — onboarding ships in a later build.
+- **Pattern**: gate first-run UX on the signup path, not a global launch check — a flag-based global gate would bounce existing accounts (which never completed the new flow) into onboarding. Routing only fresh signups avoids punishing current users.
+
+Narrative: `content/logs/shadow-ai/2026-06-16-mobile-onboarding.mdx`.

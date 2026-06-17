@@ -1,0 +1,26 @@
+---
+title: "A first-run that doesn't dump you on an empty screen"
+date: "2026-06-16"
+project: "shadow-ai"
+kind: "ux-retro"
+visibility: "public"
+language: "en"
+summary: "New signups were landing straight on an empty home with nothing to tap. Added a 3-step onboarding — gated on the signup path so it never bounces existing users."
+tags: ["ux", "onboarding", "react-native", "expo"]
+---
+
+## The gap
+
+The audit was blunt about it: sign up, and you're dropped on an empty Today screen with no idea what Mimi even is or what to do first. The code confirmed it — `signup.tsx` went straight from "account created" to `router.replace('/')` with nothing in between. For an app whose value only appears once you've imported a video and clipped a line, that empty first screen is where a new user quietly leaves.
+
+## The fix
+
+A small first-run flow (`onboarding.tsx`): three steps — a one-line "what this is," the loop drawn as four rows (import → clip → listen/order/write/speak → review), and a daily-minutes goal (5 / 15 / 30) — ending in a single strong CTA, **Import my first video**, that hands straight off to the real import screen. A "Skip" and a "Just look around" exit are always there so it never feels like a wall.
+
+## The one design decision worth noting
+
+How to *trigger* onboarding matters more than the screens. The tempting approach is a global launch gate: "on app open, if not onboarded, show onboarding." That's wrong here — every *existing* account (which never completed a flow that didn't exist yet) would get bounced into onboarding on their next launch. So instead it's gated on the **signup path**: only a fresh signup routes to `/onboarding`; a returning login goes straight to Today. The done-flag in SecureStore is just there to keep it from re-showing within a session.
+
+## Status
+
+`tsc` clean. Not yet verified on a device — by design my own existing account skips it, so seeing it live needs a fresh signup. Build 7 was already in TestFlight review before this landed, so onboarding rides along in a later build.
