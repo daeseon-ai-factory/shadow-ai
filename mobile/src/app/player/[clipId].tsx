@@ -22,6 +22,7 @@ import { DictationDrill } from '@/components/dictation-drill';
 import { RecordPanel } from '@/components/record-panel';
 import { ScenarioQuiz } from '@/components/scenario-quiz';
 import { useAuthStore } from '@/lib/auth-store';
+import { setLastClip } from '@/lib/last-clip';
 import { t } from '@/lib/i18n';
 
 function ms(msVal: number) {
@@ -106,6 +107,11 @@ export default function ClipPlayerScreen() {
     },
     [loop, loopStartSec],
   );
+
+  // Remember this as the last-opened clip so Today's "Continue" resumes here.
+  useEffect(() => {
+    if (clip.data) setLastClip({ id: clip.data.id, name: clip.data.name || clip.data.videoTitle || '' });
+  }, [clip.data?.id, clip.data?.name, clip.data?.videoTitle]);
 
   // Drive the video collapse/expand off the keyboard, animated so it doesn't snap.
   useEffect(() => {
