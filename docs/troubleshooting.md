@@ -1007,3 +1007,6 @@ Narrative: `content/logs/shadow-ai/2026-06-16-mobile-progress-resume-practice.md
 
 Narrative: `content/logs/shadow-ai/2026-06-17-locked-phone-floundering-postmortem.mdx`.
 <!-- skipped: ecba8d1 docs(log): floundering post-mortem — log commit -->
+<!-- skipped: 4fc646d chore(log): silence hook for log commit ecba8d1 [no-log] -->
+<!-- skipped: 224120f fix(mobile): Today subtitle wraps to 2 lines (was truncating) [no-log] -->
+<!-- skipped: 72f74b5 feat(mobile): ErrorState retry on video + discover too [no-log] -->
