@@ -980,3 +980,4 @@ Narrative: `content/logs/shadow-ai/2026-06-16-mobile-onboarding.mdx`.
 Narrative: `content/logs/shadow-ai/2026-06-16-mobile-progress-resume-practice.mdx`.
 <!-- skipped: 29c8735 feat(mobile): Me-tab progress stats + accurate Today resume — narrated in this entry -->
 <!-- skipped: 879c552 feat(mobile): declutter Practice hub — narrated in this entry -->
+<!-- skipped: 4232eeb docs(log): progress stats + resume + practice declutter retro — log commit -->
