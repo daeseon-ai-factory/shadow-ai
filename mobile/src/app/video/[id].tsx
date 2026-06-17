@@ -15,6 +15,7 @@ import { clipsApi, videosApi, type TranscriptSegment } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { ErrorState } from '@/components/error-state';
 import { LineRecorder } from '@/components/line-recorder';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
@@ -196,8 +197,8 @@ export default function VideoDetailScreen() {
   }
   if (video.isError || !video.data) {
     return (
-      <ThemedView style={styles.center}>
-        <ThemedText style={styles.error}>{t('video.notFound')}</ThemedText>
+      <ThemedView style={styles.flex}>
+        <ErrorState message={t('video.notFound')} onRetry={() => video.refetch()} />
       </ThemedView>
     );
   }
