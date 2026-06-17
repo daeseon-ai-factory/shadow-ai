@@ -14,6 +14,8 @@ import com.tubeshadow.practice.api.dto.MockNextResponse;
 import com.tubeshadow.practice.api.dto.PracticeCardResponse;
 import com.tubeshadow.practice.api.dto.PracticeProgressResponse;
 import com.tubeshadow.practice.api.dto.PracticeRepRequest;
+import com.tubeshadow.practice.api.dto.ScenarioCheckRequest;
+import com.tubeshadow.practice.api.dto.ScenarioFeedback;
 import com.tubeshadow.practice.api.dto.SeedCandidateResponse;
 import com.tubeshadow.practice.api.dto.SentenceTransformSetResponse;
 import com.tubeshadow.practice.api.dto.TransformCheckRequest;
@@ -107,6 +109,14 @@ public class PracticeController {
     public ApiResponse<ComposeFeedback> composeCheck(@CurrentUser AuthenticatedUser user,
                                                      @Valid @RequestBody ComposeCheckRequest request) {
         return ApiResponse.ok(compositionService.check(request.target(), request.gloss(), request.sentence()));
+    }
+
+    @PostMapping("/scenario/check")
+    @Operation(summary = "상황 영작 AI 채점 (관대) — 상황에 맞으면 통과, 모범답안 강요 X")
+    public ApiResponse<ScenarioFeedback> scenarioCheck(@CurrentUser AuthenticatedUser user,
+                                                       @Valid @RequestBody ScenarioCheckRequest request) {
+        return ApiResponse.ok(compositionService.scenarioCheck(
+                request.situation(), request.koreanHint(), request.sample(), request.answer()));
     }
 
     @PostMapping(value = "/transcribe", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

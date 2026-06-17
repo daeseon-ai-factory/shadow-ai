@@ -908,4 +908,47 @@ Migrating the prod backend ap-northeast-2 (Seoul) → ca-central-1 (Toronto-area
 - **Verified this turn**: `git show --stat 8c83b9d` = 11 `mobile/` files only; `docs/troubleshooting.md` (codex skip-markers), `INTERVIEW_PREP.md`, `codex_review/` deliberately excluded from the commit. tsc / iOS build / device install were reported green in the working session but NOT re-run this turn.
 - **Pattern**: name color tokens by ROLE (`primary`/`accent`/`surfaceRaised`/`border`), never by raw hex — a redesign then edits the palette in one file instead of chasing hex literals across screens.
 <!-- skipped: 5ba0c46 docs(log): Mimi mobile Home redesign retro (8c83b9d) — log-of-a-log; the design retro is already written above and in content/logs/shadow-ai/2026-06-13-mimi-mobile-home-redesign.mdx -->
+<!-- skipped: b3a17df chore(log): silence hook for log commit 5ba0c46 — bookkeeping-of-bookkeeping; one-line skip-marker commit, nothing to narrate -->
 
+---
+
+### Mobile shadowing: three active drills + STT feedback + tabbed player (feature/design)
+
+- **Context**: the mobile clip player AI-mined rich per-clip data (chunkedTranslation, practiceScenario, transcript) but rendered it as read-only stacked boxes — the learner read, never *did*. Committed mobile-only as `52e8f51` (9 files, +959/−41); codex's `docs/troubleshooting.md`/`INTERVIEW_PREP.md`/`codex_review/` excluded.
+- **What shipped** (zero new backend/AI/migration — reuses existing data): **DictationDrill** (decode — hidden transcript, type-what-you-hear, word-level LCS diff in shared `lib/word-diff.ts`); **ChunkLadder** (reorder — index-validated so Korean-SOV order is unbuildable; Blind pass + SecureStore mastery); **ScenarioQuiz** (produce — mined situation → English response → sample); **ShadowFeedback** (record take → existing `practiceApi.transcribe` STT → diff vs transcript, opt-in, 1 paid call/tap); **player redesign** (video pinned + Listen/Order/Speak/Shadow/Notes tabs, no endless scroll); **review** embeds ChunkLadder as active retrieval (mastery shared with player).
+- **Verified this turn**: `tsc --noEmit` exit 0; i18n EN/KO parity; Metro bundle clean (1255 modules); iOS Release `Build Succeeded` 0 errors + `devicectl` install `✔ Complete 100%`. NOT verified: on-device runtime (taps/SecureStore/audio); STT needs `OPENAI_API_KEY` on backend or it 503s.
+- **Pattern**: when the data already exists, "advancing" the app is mostly surfacing it as something the learner actively *does* — a hidden transcript → dictation, a chunked translation → unbuildable-if-wrong word-order puzzle, an existing STT endpoint → pronunciation feedback. Zero new pipeline.
+- **Sentence sub-loops** (`86b7fa0`): the parent video already stores sentence-level timing (`videosApi.get → sentences`), so a clip splits into tappable A–B loops (`Full · 1 · 2 · 3…`) by filtering sentences to the clip window; the player's loop logic was generalised from one `[start,end]` to an active window. No new backend.
+- **Aside (not a bug)**: app spun forever + phone Safari couldn't reach the backend while the Mac hit both ALB nodes in ~74ms — phone held the **old Seoul IP in DNS cache** after the Seoul→ca-central-1 move; reboot fixed it. Mac-works/phone-doesn't = client DNS smell, not a rebuild target.
+
+Narratives (split by theme for the blog timeline): `content/logs/shadow-ai/2026-06-13-mobile-shadowing-drills.mdx` (drills + STT), `…-mobile-tabbed-player.mdx` (player UX), `…-mobile-sentence-subloops.mdx` (sub-loops).
+
+<!-- skipped: 2d1e395 docs(log): split mobile shadowing logs — drills+STT / tabbed player / sentence sub-loops (52e8f51, 86b7fa0) [no-log] -->
+
+---
+
+### AWS ca-central-1 → NCP Seoul migration (infra)
+
+- **Context**: Korea-targeted service on AWS Toronto (~$50–65/mo, ~180ms). Migrated to one NCP Seoul box (c2-g3 + 50GB volume) running backend+pot-provider+Postgres+Caddy via docker-compose; fresh start (no data migration), recordings s3→local, Cloudflare DNS cutover, AWS `terraform destroy` (55 resources). Committed as `3ce34bb` (infra IaC + docs, no secrets).
+- **Gotchas** (full symptoms in the mdx below): NCP block storage on KVM needs `hypervisor_type=KVM`+`volume_type=CB1` (else `400 KVM not support getHypervisorCode`); 10GB boot disk → `initdb: No space left on device` → +50GB volume, move docker data-root/swap to `/data`; NCP SSH = login key decrypts root password (`ncloud_root_password`) not direct key; Caddy ACME failed on stale DNS (hit old ALB 3.98.13.13) then CAA `0 issue "amazon.com"` blocking LE → removed CAA; pot-provider listens on 4416 not the backend default 4417.
+- **Verified**: `curl https://api.mimi.daeseon.ai/api/health` 200 + valid LE cert; AWS `Destroy complete: 55 destroyed`.
+- **TODO**: off-box backup (R2); STT `OPENAI_API_KEY`; Anthropic fallback key.
+
+Narratives: `content/logs/shadow-ai/2026-06-15-aws-to-ncp-seoul-migration.mdx` + `…-ncp-migration-gotchas.mdx`.
+<!-- override-trigger: 335f635 fix(ci): stale test + deprecate deploy.yml — part of the AWS→NCP migration cleanup, narrated in content/logs/shadow-ai/2026-06-15-aws-to-ncp-seoul-migration.mdx -->
+
+---
+
+### Mobile app restructure: 4-tab IA + single-action Today + decluttered video + scenario AI feedback (UX/feature)
+
+- **Problem** (from a code-grounded audit, not vibes): a 3-agent read-only sweep of `mobile/src` found the app read like a "feature toolkit, not a daily app" — 6 bottom tabs (incl. codex's Interview/Practice), a home that was a grid of feature cards, a video screen that looked like a mixing desk (always-on speed/A-B/auto/reps + a "Clip this line" button on *every* transcript line), and the Produce drill (`scenario-quiz`) gave **zero feedback** — it only revealed the sample. Verified gaps: `scenario-quiz.tsx` made no API call; `/api/progress` didn't exist; several screens had no `isError` branch.
+- **Fix** (`02c427f`, 24 files, +566/−1112 — net deletion because removal was most of the win):
+  - Tabs **6→4** (`Today / Library / Review / Me`): `(tabs)/_layout.tsx` — Settings→"Me", Practice hidden via `href:null` (still routable as a hub from Today), Interview tab + `code-run`/`mock-run`/`speech-run`/`code-drill` deleted.
+  - Home → **Today** (`(tabs)/index.tsx` rewritten): one primary action chosen by priority — reviews due (`reviewApi.streak`) → resume last clip (`clipsApi.list size:1`, default sort `newest`) → import — plus a streak line and two slim cards. No feature grid.
+  - **Video screen** (`video/[id].tsx`): speed/A-B/auto/reps moved behind a collapsed `Advanced` toggle; "Clip this line" now renders only on the focused/active line.
+  - Reusable **`EmptyState`** with action CTAs wired into `videos.tsx` + `library.tsx` empty states.
+  - **Scenario AI feedback**: new `POST /api/practice/scenario/check` → `CompositionService.scenarioCheck` + `ScenarioPrompt` (lenient grade — a different-but-valid answer passes; reuses the existing analysis AI provider, NOT the OpenAI STT key) + `ScenarioFeedback`/`ScenarioCheckRequest` DTOs, behind the compose rate-limit interceptor; frontend `scenario-quiz.tsx` calls it and **degrades to revealing the sample on error** so it's never a dead end.
+- **Verified this turn**: `npx tsc --noEmit` exit 0 (mobile, after each step); `./gradlew compileJava` `BUILD SUCCESSFUL` exit 0; `docker build --platform linux/amd64 -t mimi-backend:latest` exit 0. NOT verified: on-device runtime of the new screens; the scenario endpoint end-to-end (backend not yet deployed — image built, deploy pending); Android (0 builds — `keyboardWillShow`-based video-collapse is iOS-only, icons map to Material Symbols on Android per `expo-symbols`).
+- **Pattern**: the biggest *perceived-quality* lever on a "too many features" app is **subtraction + one clear next action**, not adding screens — here the net diff was −546 LOC and the headline change was deletions (tabs, grid, per-line buttons). Audit with agents reading the actual code before deciding what's cluttered, so the cut list is evidence-based.
+
+Narrative: `content/logs/shadow-ai/2026-06-16-mobile-4tab-restructure.mdx`.

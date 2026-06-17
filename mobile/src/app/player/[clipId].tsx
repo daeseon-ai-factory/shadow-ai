@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
-  KeyboardAvoidingView,
-  Platform,
+  Keyboard,
+  LayoutAnimation,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -41,6 +41,10 @@ export default function ClipPlayerScreen() {
   const [tab, setTab] = useState<DrillTab>('decode');
   // A chosen sentence sub-segment to loop, or null for the whole clip.
   const [activeSeg, setActiveSeg] = useState<{ startMs: number; endMs: number } | null>(null);
+  // Collapse the pinned video while the keyboard is up — a fixed video left the typing drills
+  // cramped between the video and the keyboard. The WebView stays mounted (height → 0), so audio
+  // keeps playing for listen-while-you-type and the video doesn't reload on every focus.
+  const [kbOpen, setKbOpen] = useState(false);
 
   const clip = useQuery({
     queryKey: ['clip', clipId],
@@ -102,6 +106,22 @@ export default function ClipPlayerScreen() {
     },
     [loop, loopStartSec],
   );
+
+  // Drive the video collapse/expand off the keyboard, animated so it doesn't snap.
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardWillShow', () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setKbOpen(true);
+    });
+    const hide = Keyboard.addListener('keyboardWillHide', () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setKbOpen(false);
+    });
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   const replay = () => {
     playerRef.current?.seekTo(loopStartSec, true);
@@ -190,7 +210,13 @@ export default function ClipPlayerScreen() {
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={['bottom']}>
         {/* Pinned header — the video never scrolls away while you drill below. */}
-        <View style={[styles.playerWrap, portrait && styles.playerWrapPortrait]}>
+        <View
+          style={[
+            styles.playerWrap,
+            portrait && styles.playerWrapPortrait,
+            kbOpen && styles.playerWrapCollapsed,
+          ]}
+        >
           <YoutubePlayer
             ref={playerRef}
             height={height}
@@ -254,14 +280,17 @@ export default function ClipPlayerScreen() {
           })}
         </View>
 
-        <KeyboardAvoidingView
+        {/* automaticallyAdjustKeyboardInsets: iOS auto-insets + scrolls the focused input
+            above the keyboard, so the pinned video no longer hides what you're typing. */}
+        <ScrollView
           style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets
+          keyboardDismissMode="interactive"
         >
-          <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            {renderTab()}
-          </ScrollView>
-        </KeyboardAvoidingView>
+          {renderTab()}
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -369,6 +398,8 @@ const styles = StyleSheet.create({
   error: { color: '#dc2626' },
   playerWrap: { backgroundColor: '#000' },
   playerWrapPortrait: { alignItems: 'center' },
+  // Keyboard up: clip the video to nothing (WebView stays mounted) so the drill gets the room.
+  playerWrapCollapsed: { height: 0, overflow: 'hidden' },
   header: { paddingHorizontal: 16, paddingTop: 12, gap: 8 },
   segRow: { gap: 8, paddingVertical: 2, paddingRight: 16 },
   segChip: {
