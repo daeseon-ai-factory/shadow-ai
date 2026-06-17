@@ -1006,3 +1006,4 @@ Narrative: `content/logs/shadow-ai/2026-06-16-mobile-progress-resume-practice.md
 - **Pattern**: when a verification path fails twice on an **external dependency you don't control** (a locked phone, a flaky device tunnel), stop retrying it and switch to the one you **do** control (the simulator + `xcrun simctl io screenshot`). And prefer `simctl` over `expo run:ios` for sim screenshots — the latter's osascript launch step fails in permission-restricted shells even though the build is fine.
 
 Narrative: `content/logs/shadow-ai/2026-06-17-locked-phone-floundering-postmortem.mdx`.
+<!-- skipped: ecba8d1 docs(log): floundering post-mortem — log commit -->
