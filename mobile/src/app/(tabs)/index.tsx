@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuthStore } from '@/lib/auth-store';
+import { useLastClip } from '@/lib/last-clip';
 import { t } from '@/lib/i18n';
 
 type SymbolName = SymbolViewProps['name'];
@@ -31,6 +32,7 @@ export default function TodayScreen() {
     queryFn: () => clipsApi.list({ size: 1 }),
     enabled: !!token,
   });
+  const lastClip = useLastClip();
 
   if (!hydrated) {
     return (
@@ -44,6 +46,10 @@ export default function TodayScreen() {
   const due = streak.data?.dueToday ?? 0;
   const streakDays = streak.data?.streakDays ?? 0;
   const recentClip = recent.data?.items?.[0];
+  // Prefer the clip you last opened; fall back to your newest clip.
+  const resume =
+    lastClip ??
+    (recentClip ? { id: recentClip.id, name: recentClip.name || recentClip.videoTitle || '' } : null);
   const settling = streak.isPending || recent.isPending;
 
   // The one action that matters most right now.
@@ -55,12 +61,12 @@ export default function TodayScreen() {
           sub: t('today.reviewSub'),
           onPress: () => router.push('/review'),
         }
-      : recentClip
+      : resume
         ? {
             icon: { ios: 'play.fill', android: 'play_arrow', web: 'play_arrow' },
             title: t('today.resumeCta'),
-            sub: recentClip.name || recentClip.videoTitle || t('today.resumeSub'),
-            onPress: () => router.push(`/player/${recentClip.id}`),
+            sub: resume.name || t('today.resumeSub'),
+            onPress: () => router.push(`/player/${resume.id}`),
           }
         : {
             icon: { ios: 'plus', android: 'add', web: 'add' },
@@ -101,7 +107,7 @@ export default function TodayScreen() {
               <View style={styles.heroText}>
                 <ThemedText style={styles.heroKicker}>{t('today.todayKicker')}</ThemedText>
                 <ThemedText style={styles.heroTitle}>{primary.title}</ThemedText>
-                <ThemedText style={styles.heroSub} numberOfLines={1}>
+                <ThemedText style={styles.heroSub} numberOfLines={2}>
                   {primary.sub}
                 </ThemedText>
               </View>

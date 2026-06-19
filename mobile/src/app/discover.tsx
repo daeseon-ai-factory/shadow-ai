@@ -6,6 +6,7 @@ import { collectionsApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { ErrorState } from '@/components/error-state';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
@@ -25,7 +26,7 @@ export default function DiscoverScreen() {
         {collections.isPending ? (
           <ActivityIndicator style={styles.mt} />
         ) : collections.isError ? (
-          <ThemedText style={styles.error}>{(collections.error as Error).message}</ThemedText>
+          <ErrorState message={(collections.error as Error).message} onRetry={() => collections.refetch()} />
         ) : (
           <FlatList
             data={collections.data ?? []}

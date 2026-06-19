@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, T
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { authApi, ApiError } from '@shadow-ai/core';
+import { authApi, ApiError, reviewApi, practiceApi, clipsApi } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -20,6 +20,14 @@ export default function SettingsScreen() {
   const [newPassword, setNewPassword] = useState('');
 
   const me = useQuery({ queryKey: ['me'], queryFn: () => authApi.me(), enabled: !!token });
+  // "What I've built" stats — all from existing endpoints, no new backend.
+  const streak = useQuery({ queryKey: ['streak'], queryFn: () => reviewApi.streak(), enabled: !!token });
+  const srs = useQuery({ queryKey: ['srs'], queryFn: () => practiceApi.srsStates(), enabled: !!token });
+  const clipCount = useQuery({
+    queryKey: ['clips', 'count'],
+    queryFn: () => clipsApi.list({ size: 1 }),
+    enabled: !!token,
+  });
 
   // Seed the name field once the profile loads.
   useEffect(() => {
@@ -73,11 +81,32 @@ export default function SettingsScreen() {
     );
   };
 
+  const srsList = srs.data ?? [];
+  const stats = [
+    { n: streak.data?.streakDays ?? 0, label: t('me.streakDays') },
+    { n: clipCount.data?.total ?? 0, label: t('me.clips') },
+    { n: srsList.filter((s) => s.box >= 5).length, label: t('me.mastered') },
+    { n: srsList.length, label: t('me.seen') },
+  ];
+
   return (
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.container}>
-          <ThemedText type="title">{t('settings.title')}</ThemedText>
+          <ThemedText type="title">{t('nav.settings')}</ThemedText>
+
+          {/* What I've built — a sense of advancement, from existing data. */}
+          <View style={styles.statsCard}>
+            <ThemedText type="smallBold" style={styles.statsTitle}>{t('me.statsTitle')}</ThemedText>
+            <View style={styles.statsGrid}>
+              {stats.map((s) => (
+                <View key={s.label} style={styles.statTile}>
+                  <ThemedText style={styles.statNum}>{s.n}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">{s.label}</ThemedText>
+                </View>
+              ))}
+            </View>
+          </View>
 
           {me.data && (
             <View style={styles.box}>
@@ -209,6 +238,17 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   container: { padding: 24, gap: 16 },
+  statsCard: {
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    padding: 16,
+    gap: 12,
+  },
+  statsTitle: { opacity: 0.7 },
+  statsGrid: { flexDirection: 'row', justifyContent: 'space-between' },
+  statTile: { alignItems: 'center', gap: 2, flex: 1 },
+  statNum: { fontSize: 24, lineHeight: 28, fontWeight: '900', color: '#208AEF' },
   box: {
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,

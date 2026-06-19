@@ -952,3 +952,61 @@ Narratives: `content/logs/shadow-ai/2026-06-15-aws-to-ncp-seoul-migration.mdx` +
 - **Pattern**: the biggest *perceived-quality* lever on a "too many features" app is **subtraction + one clear next action**, not adding screens — here the net diff was −546 LOC and the headline change was deletions (tabs, grid, per-line buttons). Audit with agents reading the actual code before deciding what's cluttered, so the cut list is evidence-based.
 
 Narrative: `content/logs/shadow-ai/2026-06-16-mobile-4tab-restructure.mdx`.
+
+---
+
+### First-run onboarding for fresh signups (feature)
+
+- **Gap** (same audit): a brand-new account landed straight on an empty Today with no orientation and no first action. Verified: `signup.tsx` `onSuccess` did `router.replace('/')` with nothing in between.
+- **Fix** (`b4ece81`): new `mobile/src/app/onboarding.tsx` — 3-step intro (welcome → how-it-works loop → daily-minutes goal) ending in an "Import my first video" CTA → `/import`. `mobile/src/lib/onboarding.ts` persists a done-flag + goal in SecureStore (`onboarding.v1.*`). `signup.tsx` now routes fresh signups to `/onboarding`; returning logins still go to `/`. Registered in the root Stack (`gestureEnabled:false`). i18n `onboard.*` (en+ko).
+- **Verified this turn**: `npx tsc --noEmit` exit 0. NOT verified: on-device runtime (needs a fresh signup to trigger; the dev's own existing account skips it by design). Build 7 (already in TestFlight review) predates this — onboarding ships in a later build.
+- **Pattern**: gate first-run UX on the signup path, not a global launch check — a flag-based global gate would bounce existing accounts (which never completed the new flow) into onboarding. Routing only fresh signups avoids punishing current users.
+
+Narrative: `content/logs/shadow-ai/2026-06-16-mobile-onboarding.mdx`.
+<!-- skipped: d46eee6 docs(log): first-run onboarding retro (b4ece81) -->
+<!-- skipped: 0aba1c0 chore(log): silence hook for log commit d46eee6 [no-log] -->
+
+---
+
+### Progress stats, accurate resume, decluttered Practice (UX)
+
+- **Gaps** (from the audit + a codex review): (1) no sense of advancement — the only progress signal was Today's streak line; (2) Today's "Continue" pointed at the *newest-created* clip, not the one you actually last opened; (3) the Practice tab dumped 6 tool cards + three rows of phrasal chips (prep / argument / particle systems) on first view.
+- **Fix**:
+  - `29c8735` — Me tab gained a "Your learning" card (day streak · clips · mastered · learning) computed entirely from existing endpoints (`reviewApi.streak`, `practiceApi.srsStates` with `box>=5`=mastered, `clipsApi.list().total`) — no new backend. Accurate resume: new `mobile/src/lib/last-clip.ts` (SecureStore + `useLastClip` re-reading on focus); the player writes the opened clip; Today prefers it over the newest clip.
+  - `879c552` — Practice leads with 3 recommended sessions (weak / pattern / gym); the rest of the toolbox + the workshop chips collapse behind one "More practice" toggle.
+- **Verified this turn**: `npx tsc --noEmit` exit 0 after each step. Caught + fixed a hooks-order bug mid-edit — `useLastClip()` was first placed after Today's early `return`, which violates rules-of-hooks; moved it up with the other hooks. NOT verified on device (phone was locked/`unavailable` all session — these ship in a later build).
+- **Pattern**: progress UI doesn't need a progress *endpoint* — streak + SRS states + clip count already encode "what I've built"; aggregate them client-side before writing any backend.
+
+Narrative: `content/logs/shadow-ai/2026-06-16-mobile-progress-resume-practice.mdx`.
+<!-- skipped: 29c8735 feat(mobile): Me-tab progress stats + accurate Today resume — narrated in this entry -->
+<!-- skipped: 879c552 feat(mobile): declutter Practice hub — narrated in this entry -->
+<!-- skipped: 4232eeb docs(log): progress stats + resume + practice declutter retro — log commit -->
+<!-- skipped: 0014b99 chore(log): silence hook for log commit 4232eeb [no-log] -->
+
+---
+
+### Floundering post-mortem: ~5 doomed builds to a locked phone before pivoting to the simulator (process)
+
+- **Symptom** (literal, repeated across the session):
+  ```
+  ✖ Connecting to: Daeseon’s iPhone
+  CommandError: Cannot launch Mimi on Daeseon’s iPhone because the device is locked.
+  ```
+  and later, when finally trying the simulator:
+  ```
+  Error: osascript -e tell app "System Events" to count processes whose name is "Simulator" exited with non-zero code: 1
+  brew install idb-companion → Warning: No available formula with the name "idb-companion".
+  ```
+- **What happened**: to "show the user the changes," I ran `expo run:ios --device <iphone-udid>` (Release) **5+ times** (`b49cpmm1s`, `beyoytrwk`, `b3dcyzb2f`, `bqcwpmhw5`, `b2gjr9s9w`). Each *built fine* but the install/launch failed because the physical phone kept auto-locking / going `unavailable`. I kept retrying the **same** path (sometimes salvaging with `xcrun devicectl device install`) instead of stepping back. The pivot to the iOS Simulator only happened when the **user asked "왜 시뮬 안 써?"** — i.e. the user, not me, broke the tunnel-vision.
+- **Honest cause** (the user explicitly asked: did the AI hide a stronger method, or did the user err? — neither):
+  1. **My tunnel-vision** — the global instruction "Builds (mobile)… build apps yourself when I ask to see changes; verify a device install actually completed" anchored me on the *physical device*, and I never re-evaluated when lock-friction made it obviously the wrong tool. Nothing was hidden — the simulator was always available; I just didn't switch.
+  2. **Real, non-fault environment limits** discovered during the late pivot: `idb-companion` was **removed from Homebrew** (formula gone); osascript/System Events UI automation is **not permitted** in this environment (that's literally why `expo run:ios` *for the simulator* also failed — its launch step shells out to osascript); and custom-scheme deep links (`mimi://settings`) pop an **"Open in Mimi?" confirmation** that can't be dismissed without tap automation.
+- **What actually works (the bypass)**: `xcrun simctl` talks to CoreSimulator directly and needs **no** osascript — `simctl install booted <app>` + `simctl launch booted ai.daeseon.mimi` + `simctl io booted screenshot out.png` got a real screenshot of the running app. This verified (sim `Build Succeeded`, 0 errors): the app launches, **the 4-tab bar (Today · Library · Review · Me) renders**, and Today shows the single "Import your first video" action — plus a tiny bug: the Today subtitle truncates (`…shado`).
+- **Still blocked in this env**: navigating *past* the launch screen (other tabs) needs tap automation. idb (companion gone), osascript (no permission), and deep-link dialogs (un-tappable) all dead-end. So multi-screen visual QA needs the real phone **or** an XCUITest harness.
+- **Pattern**: when a verification path fails twice on an **external dependency you don't control** (a locked phone, a flaky device tunnel), stop retrying it and switch to the one you **do** control (the simulator + `xcrun simctl io screenshot`). And prefer `simctl` over `expo run:ios` for sim screenshots — the latter's osascript launch step fails in permission-restricted shells even though the build is fine.
+
+Narrative: `content/logs/shadow-ai/2026-06-17-locked-phone-floundering-postmortem.mdx`.
+<!-- skipped: ecba8d1 docs(log): floundering post-mortem — log commit -->
+<!-- skipped: 4fc646d chore(log): silence hook for log commit ecba8d1 [no-log] -->
+<!-- skipped: 224120f fix(mobile): Today subtitle wraps to 2 lines (was truncating) [no-log] -->
+<!-- skipped: 72f74b5 feat(mobile): ErrorState retry on video + discover too [no-log] -->

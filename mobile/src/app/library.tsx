@@ -8,6 +8,7 @@ import { clipsApi, reviewApi } from '@shadow-ai/core';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { EmptyState } from '@/components/empty-state';
+import { ErrorState } from '@/components/error-state';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 
@@ -77,7 +78,7 @@ export default function LibraryScreen() {
         {clips.isPending ? (
           <ActivityIndicator style={styles.mt} />
         ) : clips.isError ? (
-          <ThemedText style={styles.error}>{(clips.error as Error).message}</ThemedText>
+          <ErrorState message={(clips.error as Error).message} onRetry={() => clips.refetch()} />
         ) : (
           <FlatList
             data={clips.data?.items ?? []}
