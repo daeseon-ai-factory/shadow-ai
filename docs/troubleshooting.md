@@ -1021,3 +1021,4 @@ Narrative: `content/logs/shadow-ai/2026-06-17-locked-phone-floundering-postmorte
 - **Pattern**: when AI writes the code, the human's real work shifts from *authoring* to *defending* — and an interview tests understanding, not authorship. Build the learning scaffold (what/why/trade-off + spoken-English answers + active recall) directly from the real files so studying it converts AI artifacts into genuine, defensible understanding. Honesty rule for the owner: never claim a story you can't defend.
 
 Narrative: `content/logs/shadow-ai/2026-06-19-private-learn-hub.mdx`.
+<!-- skipped: 38937c1 docs(log): private /learn study hub retro — log commit -->
