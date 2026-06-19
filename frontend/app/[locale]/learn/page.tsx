@@ -87,8 +87,9 @@ export default function LearnPage() {
       </div>
 
       <p className="mb-5 rounded-xl bg-muted/50 p-3 text-sm leading-relaxed text-muted-foreground">
-        목표 = <b>면접에서 방어 가능</b>. 각 토픽: <b>뭐냐 → 왜 → 트레이드오프 → 용어 → 면접 질문</b>.
-        질문은 <b>답 보기 전에 소리 내서</b> 먼저 답해봐 (그래야 박힘). 외운 건 ✓ 체크.
+        목표 = <b>면접에서 영어로 방어 가능</b>. 각 토픽: <b>뭐냐 → 왜 → 트레이드오프 → 용어 → 🎤 면접 질문</b>.
+        면접은 <b>영어로 설명</b>하는 거니까 — 질문 보면 <b>답 펴기 전에 영어로 소리 내서</b> 답해봐.
+        펴면 나오는 <b>“🇬🇧 In the interview, say:”</b> 가 실제로 말할 문장(한글은 ↳로 이해용). 외운 건 ✓.
       </p>
 
       {GROUPS.map((g) => (
@@ -221,15 +222,24 @@ function DrillCard({ drill }: { drill: Drill }) {
   const [show, setShow] = useState(false);
   return (
     <div className="rounded-lg border bg-background p-3">
-      <p className="font-medium">Q. {drill.q}</p>
+      <p className="font-semibold leading-snug">🎤 {drill.qEn}</p>
+      <p className="mt-0.5 text-xs text-muted-foreground">{drill.q}</p>
       {show ? (
-        <p className="mt-2 rounded-md bg-primary/10 p-2 text-sm leading-relaxed">{drill.a}</p>
+        <div className="mt-2 space-y-2">
+          <div className="rounded-md bg-primary/10 p-2.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+              🇬🇧 In the interview, say:
+            </span>
+            <p className="mt-1 text-sm leading-relaxed">{drill.aEn}</p>
+          </div>
+          <p className="px-1 text-xs leading-relaxed text-muted-foreground">↳ {drill.a}</p>
+        </div>
       ) : (
         <button
           onClick={() => setShow(true)}
           className="mt-2 text-sm font-semibold text-primary underline-offset-2 hover:underline"
         >
-          답 보기 →
+          답 보기 (먼저 영어로 말해봐) →
         </button>
       )}
     </div>
