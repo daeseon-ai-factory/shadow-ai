@@ -1010,3 +1010,14 @@ Narrative: `content/logs/shadow-ai/2026-06-17-locked-phone-floundering-postmorte
 <!-- skipped: 4fc646d chore(log): silence hook for log commit ecba8d1 [no-log] -->
 <!-- skipped: 224120f fix(mobile): Today subtitle wraps to 2 lines (was truncating) [no-log] -->
 <!-- skipped: 72f74b5 feat(mobile): ErrorState retry on video + discover too [no-log] -->
+
+---
+
+### Private /learn study hub — making an AI-built codebase interview-defensible (tooling/copy)
+
+- **Context**: most of this codebase's hard engineering (the AWS→NCP migration, the multi-AI fallback, the POToken debugging) was AI-generated. A portfolio you can't *defend* under a senior's 5-level "why" is a liability, not an asset. So the owner needs to learn it cold — and, being a working-holiday job-seeker in Toronto, **explain it in English**.
+- **Fix** (`6645354` hub + `485f4ae` English, 16 topics): new Next.js route `frontend/app/[locale]/learn/page.tsx` + content `frontend/lib/learn-content.ts`. Mobile-first (studied on phone/tablet all day), password-gated (`NEXT_PUBLIC_LEARN_PASS`, default `mimi` — client-side, casual-block only), localStorage progress + reveal-on-tap cards. Each topic: 뭐냐 / 왜 / 트레이드오프 / 용어 / interview "why" drills. Each drill carries a **Korean** answer (understand) **and an English model answer** in real senior-engineer register (`aEn` — "In the interview, say:"), since the interview output is spoken English. Companion docs `docs/STACK-FROM-ZERO.md` (terms from zero) + `docs/STUDY-GUIDE.md` (code deep-dive + the why-gauntlet). Deployed to `mimi.daeseon.ai/learn` via Vercel.
+- **Verified this turn**: `npx tsc --noEmit` clean (frontend); `curl https://mimi.daeseon.ai/en/learn` → 200 after each push (`000f0ca`, `0f5b55d`). Deploy required a `git stash` dance because a large uncommitted lint/a11y pass on `mobile/` blocked `checkout main`.
+- **Pattern**: when AI writes the code, the human's real work shifts from *authoring* to *defending* — and an interview tests understanding, not authorship. Build the learning scaffold (what/why/trade-off + spoken-English answers + active recall) directly from the real files so studying it converts AI artifacts into genuine, defensible understanding. Honesty rule for the owner: never claim a story you can't defend.
+
+Narrative: `content/logs/shadow-ai/2026-06-19-private-learn-hub.mdx`.

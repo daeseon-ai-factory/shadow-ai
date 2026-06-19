@@ -1,0 +1,32 @@
+---
+title: "A private study hub to defend an AI-built codebase — in English"
+date: "2026-06-19"
+project: "shadow-ai"
+kind: "tech-retro"
+visibility: "unlisted"
+language: "en"
+summary: "Most of the hard engineering here was AI-generated. A portfolio you can't defend under a senior's 'why' is a liability — so I built a mobile-first, English-first, active-recall study hub straight from the real files."
+tags: ["learning", "portfolio", "nextjs", "honesty"]
+---
+
+## The uncomfortable premise
+
+A lot of this codebase's hard parts — the AWS→NCP migration, the multi-provider AI fallback, the POToken silent-failure debugging — were AI-generated. That's the honest reality of building with an AI pair in 2026. But an interview doesn't test *who typed the code*; it tests whether you understand it and can survive five levels of "why." A portfolio you can't defend is worse than no portfolio, because the gap gets exposed live.
+
+So the real work shifts: from *authoring* to *defending*. And since this is for a working-holiday job search in Toronto, defending means **explaining it in English, out loud.**
+
+## What I built
+
+A private `/learn` route in the Next.js app (`mimi.daeseon.ai/learn`), mobile-first because the plan is to study on a phone and tablet all day. It's password-gated (casual-block, not military-grade — it's study notes), tracks progress in localStorage, and every topic is a tap-to-expand card.
+
+Sixteen topics — language, Spring, DB/ORM, JWT, the three hard stories, React Native, Next, Docker, Caddy, NCP/Terraform, Cloudflare — each laid out the same way: **what it is (with an analogy) → why we chose it → the trade-off → the terms → the interview "why" questions.**
+
+The key move is the drill cards. Each interview question carries two answers: a Korean one to *understand* the content, and an **English model answer in real senior-engineer register** — the actual sentences to say. Not textbook English. Things like the POToken story: *"That was the tricky part — it was a silent failure. The tell was that it worked from my home IP and only failed from the datacenter IP. Same code, different network."* You read the question, answer out loud in English first, then reveal and compare.
+
+## The honesty rule, baked in
+
+The footer of the hub says it plainly: *never claim a story you can't defend.* The product/business decisions — targeting Korea, migrating for cost, going public — are genuinely the owner's. The deep engineering becomes the owner's the moment they can whiteboard it and explain the trade-offs. The hub exists to make that conversion real, fast, from the actual files.
+
+## Note
+
+`tsc` clean, deploys to Vercel. Shipping it required a `git stash` dance because a large uncommitted lint/accessibility pass on the mobile app was blocking the branch switch — worth remembering that a dirty working tree turns a one-line merge into a four-step shuffle.
