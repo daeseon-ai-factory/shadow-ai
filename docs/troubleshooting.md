@@ -1056,3 +1056,23 @@ Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
 
 Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
 <!-- skipped: bf0314a docs(log): tactile polish retro (3ac0f8d) [no-log] -->
+<!-- skipped: 8c57160 docs(log): build 10 to TestFlight + eas-cli flag fix (f404516) [no-log] -->
+
+---
+
+## Apple rejected build 10: ITMS-90683 missing NSPhotoLibraryUsageDescription
+
+- **Symptom**: hours after build 10 submitted cleanly, App Store Connect emailed a rejection:
+```
+ITMS-90683: Missing purpose string in Info.plist - Your app's code references one or
+more APIs that access sensitive user data... should contain a NSPhotoLibraryUsageDescription
+key with a user-facing purpose string... If you're using external libraries or SDKs, they may
+reference APIs that require a purpose string. While your app might not use these APIs, a
+purpose string is still required.
+```
+- **Cause** (verified by grepping `node_modules`): `expo-image` ships `ios/Loaders/PhotoLibraryAssetLoader.swift`, which links the Photo Library API (`PHPhotoLibrary`). Apple's static scanner flags the symbol in the compiled binary regardless of whether Mimi ever opens a photo picker (it never does — `expo-image` is used only for remote thumbnail URLs). The app had `NSSpeechRecognitionUsageDescription` + `NSMicrophoneUsageDescription` but no photo-library string. Ironically `scripts/release-ios.sh` had a guard that *forbade* `NSPhotoLibraryUsageDescription` as an "unused risky permission" — exactly backwards for this dependency.
+- **Fix** (`8df55c4`): add `NSPhotoLibraryUsageDescription` to `mobile/app.json` `ios.infoPlist` with an honest string ("Mimi's image component can request photo-library access. Mimi never opens, uploads, or stores your photos."), and flip the release-script guard from forbidding that key to *requiring* it (the NSFaceID / UIBackgroundModes / FOREGROUND_SERVICE forbid-list stays). Rebuilt as build 11 via the same `eas build … --auto-submit-with-profile production` path.
+- **Verified this turn**: `node -e "JSON.parse(...)"` → app.json valid; build 11 re-run log shows `✔ Incremented buildNumber from 10 to 11` and reused remote credentials. **NOT yet verified**: build 11's final submit + that the purpose string actually clears ITMS-90683 — that's confirmed only when Apple finishes processing build 11 without a new rejection email.
+- **Pattern**: "you might not use these APIs, a purpose string is still required" — a transitive SDK symbol, not your own code, can force an Info.plist usage string. A minimal-permissions guard that *blocks* such strings will hard-reject the build; the guard should require the strings the linked SDKs demand and forbid only the ones nothing references.
+
+Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.

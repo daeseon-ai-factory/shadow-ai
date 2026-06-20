@@ -78,3 +78,24 @@ So the honest status flips: the haptics and skeletons are now in a real binary
 machine. Whether they *feel* right is the next thing to confirm — but now it's
 confirmable, which is the whole point of getting it onto a device.
 
+## Postscript 2: Apple bounced build 10 (ITMS-90683)
+
+"Submitted ✔" is not "accepted." A few hours later App Store Connect emailed a
+rejection: `ITMS-90683: Missing purpose string` — the binary references the Photo
+Library API with no `NSPhotoLibraryUsageDescription` in Info.plist. We don't have a
+photo picker, so this was confusing until I grepped `node_modules`: `expo-image`
+ships a `PhotoLibraryAssetLoader.swift` that links `PHPhotoLibrary`, and Apple's
+scanner flags the symbol whether or not the app path is reachable. "While your app
+might not use these APIs, a purpose string is still required" — their words.
+
+The extra irony: my own release script had a guard that *forbade*
+`NSPhotoLibraryUsageDescription` as an unused-permission risk. Exactly backwards
+for a transitive SDK symbol. Fixed both — added an honest purpose string (we never
+open or store photos) and flipped the guard to *require* the key — and shipped
+build 11.
+
+Lesson, again: every green checkmark in this pipeline is a local maximum.
+type-checks ✓ isn't "renders," "Submitted ✓" isn't "accepted," and "accepted"
+won't be "feels right" until it's in a hand. Each step only earns the next one the
+chance to fail differently.
+
