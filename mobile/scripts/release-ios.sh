@@ -55,8 +55,15 @@ curl -fsSI "$PRIVACY_URL" >/dev/null
 curl -fsSI "$TERMS_URL" >/dev/null
 
 say_step "Checking App Store review-risk config"
-if grep -En "NSFaceIDUsageDescription|NSPhotoLibraryUsageDescription|UIBackgroundModes|FOREGROUND_SERVICE_MEDIA_PLAYBACK" app.json >/dev/null; then
+# NSPhotoLibraryUsageDescription is intentionally REQUIRED here: expo-image links the
+# Photo Library API (PhotoLibraryAssetLoader.swift), so Apple's static scanner rejects the
+# binary (ITMS-90683) unless the purpose string is present — even though we never pick photos.
+if grep -En "NSFaceIDUsageDescription|UIBackgroundModes|FOREGROUND_SERVICE_MEDIA_PLAYBACK" app.json >/dev/null; then
   printf "Risky unused permission config is still present in app.json.\n" >&2
+  exit 1
+fi
+if ! grep -q "NSPhotoLibraryUsageDescription" app.json; then
+  printf "Missing NSPhotoLibraryUsageDescription — Apple rejects the build (ITMS-90683) without it.\n" >&2
   exit 1
 fi
 

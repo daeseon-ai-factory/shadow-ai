@@ -12,9 +12,9 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSSpeechRecognitionUsageDescription": "Allow Mimi to recognize your spoken English so it can check your interview answers.",
-        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone.",
-        "ITSAppUsesNonExemptEncryption": false,
-        "NSPhotoLibraryUsageDescription": "Mimi accesses photos only to display images within the app."
+        "NSMicrophoneUsageDescription": "Allow Mimi to use the microphone to record your shadowing practice.",
+        "NSPhotoLibraryUsageDescription": "Mimi's image component can request photo-library access. Mimi never opens, uploads, or stores your photos.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -28,9 +28,7 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.FOREGROUND_SERVICE",
-        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "web": {
@@ -39,7 +37,12 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store",
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": false
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -51,7 +54,9 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow Mimi to use the microphone to record your shadowing practice."
+          "microphonePermission": "Allow Mimi to use the microphone to record your shadowing practice.",
+          "enableBackgroundPlayback": false,
+          "enableBackgroundRecording": false
         }
       ],
       "expo-localization",
