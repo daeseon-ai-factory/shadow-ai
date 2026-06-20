@@ -1022,3 +1022,16 @@ Narrative: `content/logs/shadow-ai/2026-06-17-locked-phone-floundering-postmorte
 
 Narrative: `content/logs/shadow-ai/2026-06-19-private-learn-hub.mdx`.
 <!-- skipped: 38937c1 docs(log): private /learn study hub retro — log commit -->
+<!-- skipped: efe7a42 chore(log): silence hook for log commit 38937c1 [no-log] -->
+
+---
+
+## Mobile felt flat — bare spinners, no physical feedback, dead-end on denied mic
+
+- **Symptom**: loading states across the app were bare centered `ActivityIndicator`s; taps and drill outcomes had no haptic feedback (the app felt "디지털 종이"); and a denied microphone permission silently `return`ed from `start()` with no way back — iOS never re-prompts once denied, so the Speak feature was a permanent dead end for anyone who tapped "Don't Allow".
+- **Cause** (verified by reading the files): `index.tsx`/`review.tsx`/`videos.tsx`/`player/[clipId].tsx` rendered `<ActivityIndicator/>` for query `isPending`; no `expo-haptics` dependency existed; `record-panel.tsx` `start()` had `if (!perm.granted) return;` with no recovery path.
+- **Fix** (`3ac0f8d`): new `mobile/src/components/skeleton.tsx` (`Skeleton` + `SkeletonCards`, an opacity-looped `Animated.View`) replaces spinners on Library/Clips, Review queue, the player (16:9 block + cards) and the analysis section. New `mobile/src/lib/haptics.ts` wraps `expo-haptics` (`tap`/`light`/`success`/`error`, all fire-and-forget `.catch(()=>{})`); wired into Today CTA + mini-cards, Review grades, dictation check (success when fully matched), chunk-ladder (success on rung complete, error on wrong order), scenario verdict (success/light on ok, error on grading failure), and record start/stop. `record-panel.tsx` denied path now fires `haptic.error()` + an `Alert` that deep-links to iOS Settings via `Linking.openSettings()` (+4 `record.micDenied*` i18n keys, en/ko). A11y `maxFontSizeMultiplier` caps from the earlier pass rode along on Today.
+- **Verified this turn**: `npx tsc --noEmit` → `TSC_EXIT=0` (mobile). **NOT verified**: nothing rendered/run on a device this turn — skeletons only show during the network-fetch window, and haptics have **no Taptic Engine on the simulator**, so both are only confirmable on a real device after a native rebuild (`expo-haptics` is a native module). TestFlight build 10 pending.
+- **Pattern**: a native-module feature (haptics) added between TestFlight builds is invisible until the next native build — `tsc` green ≠ "it works on the phone". State that gap plainly instead of implying it's verified.
+
+Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
