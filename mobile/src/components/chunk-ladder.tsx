@@ -4,6 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import type { ChunkPair } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
+import { haptic } from '@/lib/haptics';
 import { t } from '@/lib/i18n';
 
 /**
@@ -84,6 +85,7 @@ export function ChunkLadder({
       setPlaced(next);
       setTray((tr) => tr.filter((x) => x !== origIdx));
       setWrongIdx(null);
+      (next.length === n ? haptic.success : haptic.tap)();
       if (next.length === n) {
         onReplayAudio?.();
         if (stage === 'blind') {
@@ -95,6 +97,7 @@ export function ChunkLadder({
     } else {
       // Wrong order — reject. The slot does not fill, so a Korean-order solve is impossible.
       setWrongIdx(origIdx);
+      haptic.error();
     }
   };
 
@@ -108,7 +111,12 @@ export function ChunkLadder({
 
   if (!expanded) {
     return (
-      <Pressable style={styles.buildBtn} onPress={() => setExpanded(true)}>
+      <Pressable
+        style={styles.buildBtn}
+        onPress={() => setExpanded(true)}
+        accessibilityRole="button"
+        accessibilityLabel={t('chunkLadder.build')}
+      >
         <ThemedText style={styles.buildText}>
           {t('chunkLadder.build')} · {t('chunkLadder.preview', { n })}
         </ThemedText>
@@ -136,7 +144,12 @@ export function ChunkLadder({
               ) : null}
               {isFilled ? (
                 isLast ? (
-                  <Pressable style={[styles.slot, styles.slotFilled]} onPress={undoLast}>
+                  <Pressable
+                    style={[styles.slot, styles.slotFilled]}
+                    onPress={undoLast}
+                    accessibilityRole="button"
+                    accessibilityLabel={ch.en}
+                  >
                     <ThemedText style={styles.slotEn}>{ch.en}</ThemedText>
                   </Pressable>
                 ) : (
@@ -161,6 +174,8 @@ export function ChunkLadder({
               key={origIdx}
               style={[styles.chip, wrongIdx === origIdx && styles.chipWrong]}
               onPress={() => place(origIdx)}
+              accessibilityRole="button"
+              accessibilityLabel={items[origIdx].en}
             >
               <ThemedText style={styles.chipEn}>{items[origIdx].en}</ThemedText>
             </Pressable>
@@ -170,10 +185,20 @@ export function ChunkLadder({
         <View style={styles.doneRow}>
           <ThemedText type="smallBold" style={styles.solved}>✓ {t('chunkLadder.solved')}</ThemedText>
           <View style={styles.btnRow}>
-            <Pressable style={styles.secondaryBtn} onPress={() => reset('blind')}>
+            <Pressable
+              style={styles.secondaryBtn}
+              onPress={() => reset('blind')}
+              accessibilityRole="button"
+              accessibilityLabel={t('chunkLadder.blind')}
+            >
               <ThemedText style={styles.secondaryText}>{t('chunkLadder.blind')}</ThemedText>
             </Pressable>
-            <Pressable style={styles.secondaryBtn} onPress={() => reset(stage)}>
+            <Pressable
+              style={styles.secondaryBtn}
+              onPress={() => reset(stage)}
+              accessibilityRole="button"
+              accessibilityLabel={t('chunkLadder.again')}
+            >
               <ThemedText style={styles.secondaryText}>{t('chunkLadder.again')}</ThemedText>
             </Pressable>
           </View>
@@ -181,7 +206,12 @@ export function ChunkLadder({
       )}
 
       {!embedded ? (
-        <Pressable onPress={() => setExpanded(false)}>
+        <Pressable
+          style={styles.ghostBtn}
+          onPress={() => setExpanded(false)}
+          accessibilityRole="button"
+          accessibilityLabel={t('chunkLadder.showLiteral')}
+        >
           <ThemedText type="small" style={styles.ghost}>{t('chunkLadder.showLiteral')}</ThemedText>
         </Pressable>
       ) : null}
@@ -193,8 +223,10 @@ const styles = StyleSheet.create({
   buildBtn: {
     backgroundColor: '#208AEF',
     borderRadius: 10,
+    minHeight: 48,
     paddingVertical: 14,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   buildText: { color: '#fff', fontWeight: '700', fontSize: 16 },
   box: {
@@ -211,7 +243,7 @@ const styles = StyleSheet.create({
   gloss: { flex: 1, color: '#6b7280', fontSize: 13 },
   slot: {
     flex: 1,
-    minHeight: 38,
+    minHeight: 40,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -226,8 +258,10 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: '#9ca3af77',
+    minHeight: 40,
     paddingHorizontal: 12,
     paddingVertical: 8,
+    justifyContent: 'center',
   },
   chipWrong: { borderColor: '#dc2626', backgroundColor: '#dc262611' },
   chipEn: { fontFamily: 'Menlo', fontSize: 14 },
@@ -236,12 +270,15 @@ const styles = StyleSheet.create({
   btnRow: { flexDirection: 'row', gap: 10 },
   secondaryBtn: {
     borderRadius: 10,
+    minHeight: 44,
     paddingVertical: 10,
     paddingHorizontal: 16,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#9ca3af',
   },
   secondaryText: { fontWeight: '600' },
+  ghostBtn: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   ghost: { color: '#9ca3af', textAlign: 'center', marginTop: 2 },
 });

@@ -10,9 +10,11 @@ import { ThemedView } from '@/components/themed-view';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuthStore } from '@/lib/auth-store';
 import { useLastClip } from '@/lib/last-clip';
+import { haptic } from '@/lib/haptics';
 import { t } from '@/lib/i18n';
 
 type SymbolName = SymbolViewProps['name'];
+const SCREENSHOT_DISPLAY_NAME = process.env.EXPO_PUBLIC_SCREENSHOT_DISPLAY_NAME;
 
 /**
  * Today — the home screen leads with ONE action, not a grid of features. We pick the single most
@@ -83,11 +85,13 @@ export default function TodayScreen() {
       <SafeAreaView style={styles.flex} edges={['top']}>
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.head}>
-            <ThemedText style={[styles.eyebrow, { color: theme.primary }]}>Mimi</ThemedText>
-            <ThemedText type="title" style={styles.greeting}>
-              {me.data ? t('today.hi', { name: me.data.displayName }) : t('today.hiPlain')}
+            <ThemedText style={[styles.eyebrow, { color: theme.primary }]} maxFontSizeMultiplier={1.4}>
+              Mimi
             </ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
+            <ThemedText type="title" style={styles.greeting} maxFontSizeMultiplier={1.25}>
+              {me.data ? t('today.hi', { name: SCREENSHOT_DISPLAY_NAME || me.data.displayName }) : t('today.hiPlain')}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" maxFontSizeMultiplier={1.5}>
               {streakText}
             </ThemedText>
           </View>
@@ -100,14 +104,21 @@ export default function TodayScreen() {
           ) : (
             <Pressable
               style={[styles.hero, { backgroundColor: theme.primary }]}
-              onPress={primary.onPress}
+              onPress={() => {
+                haptic.light();
+                primary.onPress();
+              }}
               accessibilityRole="button"
               accessibilityLabel={primary.title}
             >
               <View style={styles.heroText}>
-                <ThemedText style={styles.heroKicker}>{t('today.todayKicker')}</ThemedText>
-                <ThemedText style={styles.heroTitle}>{primary.title}</ThemedText>
-                <ThemedText style={styles.heroSub} numberOfLines={2}>
+                <ThemedText style={styles.heroKicker} maxFontSizeMultiplier={1.2}>
+                  {t('today.todayKicker')}
+                </ThemedText>
+                <ThemedText style={styles.heroTitle} maxFontSizeMultiplier={1.25}>
+                  {primary.title}
+                </ThemedText>
+                <ThemedText style={styles.heroSub} numberOfLines={2} maxFontSizeMultiplier={1.35}>
                   {primary.sub}
                 </ThemedText>
               </View>
@@ -143,14 +154,17 @@ function MiniCard({ icon, title, onPress }: { icon: SymbolName; title: string; o
   return (
     <Pressable
       style={[styles.mini, { borderColor: theme.border, backgroundColor: theme.surfaceRaised }]}
-      onPress={onPress}
+      onPress={() => {
+        haptic.tap();
+        onPress();
+      }}
       accessibilityRole="button"
       accessibilityLabel={title}
     >
       <View style={[styles.miniIcon, { backgroundColor: theme.primarySoft }]}>
         <SymbolView name={icon} size={20} weight="bold" tintColor={theme.primary} />
       </View>
-      <ThemedText type="smallBold">{title}</ThemedText>
+      <ThemedText type="smallBold" maxFontSizeMultiplier={1.4}>{title}</ThemedText>
     </Pressable>
   );
 }

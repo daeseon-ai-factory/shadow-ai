@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router, useFocusEffect } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -7,6 +7,8 @@ import { reviewApi, analysisApi, REVIEW_QUALITY, type ReviewQueueItem } from '@s
 
 import { ChunkLadder } from '@/components/chunk-ladder';
 import { ErrorState } from '@/components/error-state';
+import { SkeletonCards } from '@/components/skeleton';
+import { haptic } from '@/lib/haptics';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuthStore } from '@/lib/auth-store';
@@ -61,8 +63,8 @@ export default function ReviewScreen() {
   if (!token) return <Redirect href="/login" />;
   if (queue.isPending) {
     return (
-      <ThemedView style={styles.center}>
-        <ActivityIndicator />
+      <ThemedView style={styles.flex}>
+        <SkeletonCards count={3} height={120} />
       </ThemedView>
     );
   }
@@ -78,15 +80,32 @@ export default function ReviewScreen() {
   const done = pos >= total;
 
   if (total === 0 || done) {
+    const finished = done && total > 0;
     return (
       <ThemedView style={styles.flex}>
         <SafeAreaView style={[styles.flex, styles.center]}>
-          <ThemedText type="title">{total === 0 ? t('review.nothingDue') : t('review.reviewDone')}</ThemedText>
-          <ThemedText type="small">
-            {total === 0 ? t('review.nothingDueSub') : t('review.reviewedCount', { n: total })}
+          <ThemedText style={styles.doneEmoji}>{finished ? '🎉' : '☕'}</ThemedText>
+          <ThemedText type="title" style={styles.doneTitle}>
+            {finished ? t('review.reviewDone') : t('review.nothingDue')}
           </ThemedText>
-          <Pressable style={styles.primaryBtn} onPress={() => router.replace('/')}>
+          <ThemedText type="small" themeColor="textSecondary" style={styles.doneTitle}>
+            {finished ? t('review.reviewedCount', { n: total }) : t('review.nothingDueSub')}
+          </ThemedText>
+          <Pressable
+            style={styles.primaryBtn}
+            onPress={() => router.replace('/')}
+            accessibilityRole="button"
+            accessibilityLabel={t('review.home')}
+          >
             <ThemedText style={styles.primaryText}>{t('review.home')}</ThemedText>
+          </Pressable>
+          <Pressable
+            style={styles.doneSecondary}
+            onPress={() => router.replace('/practice')}
+            accessibilityRole="button"
+            accessibilityLabel={t('review.morePractice')}
+          >
+            <ThemedText style={styles.doneSecondaryText}>{t('review.morePractice')}</ThemedText>
           </Pressable>
         </SafeAreaView>
       </ThemedView>
@@ -119,7 +138,12 @@ export default function ReviewScreen() {
           ) : null}
 
           {!revealed ? (
-            <Pressable style={styles.primaryBtn} onPress={() => setRevealed(true)}>
+            <Pressable
+              style={styles.primaryBtn}
+              onPress={() => setRevealed(true)}
+              accessibilityRole="button"
+              accessibilityLabel={t('review.reveal')}
+            >
               <ThemedText style={styles.primaryText}>{t('review.reveal')}</ThemedText>
             </Pressable>
           ) : (
@@ -132,6 +156,8 @@ export default function ReviewScreen() {
               <Pressable
                 style={styles.linkBtn}
                 onPress={() => router.push(`/player/${clip.id}`)}
+                accessibilityRole="button"
+                accessibilityLabel={t('review.openClip')}
               >
                 <ThemedText style={styles.linkText}>{t('review.openClip')}</ThemedText>
               </Pressable>
@@ -142,7 +168,12 @@ export default function ReviewScreen() {
                     key={g.label}
                     style={[styles.gradeBtn, { backgroundColor: g.color }]}
                     disabled={respond.isPending}
-                    onPress={() => respond.mutate(g.quality)}
+                    onPress={() => {
+                      (pos >= total - 1 ? haptic.success : haptic.tap)();
+                      respond.mutate(g.quality);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={t(g.labelKey)}
                   >
                     <ThemedText style={styles.gradeText}>{t(g.labelKey)}</ThemedText>
                   </Pressable>
@@ -160,7 +191,6 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, padding: 24 },
   container: { padding: 24, gap: 16 },
-  error: { color: '#dc2626' },
   gap: { gap: 12 },
   promptBox: {
     borderRadius: 12,
@@ -181,16 +211,24 @@ const styles = StyleSheet.create({
   },
   answer: { fontSize: 18, textAlign: 'center' },
   gradeRow: { flexDirection: 'row', gap: 8 },
-  gradeBtn: { flex: 1, borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
+  gradeBtn: { flex: 1, minHeight: 48, borderRadius: 10, paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
   gradeText: { color: '#fff', fontWeight: '700' },
   primaryBtn: {
     backgroundColor: '#208AEF',
     borderRadius: 10,
+    minWidth: 112,
+    minHeight: 48,
     paddingVertical: 14,
+    paddingHorizontal: 20,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 8,
   },
   primaryText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  linkBtn: { paddingVertical: 8, alignItems: 'center' },
+  doneEmoji: { fontSize: 56, marginBottom: 4 },
+  doneTitle: { textAlign: 'center' },
+  doneSecondary: { minHeight: 44, paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center' },
+  doneSecondaryText: { color: '#208AEF', fontWeight: '700', fontSize: 15 },
+  linkBtn: { minHeight: 44, paddingVertical: 8, alignItems: 'center', justifyContent: 'center' },
   linkText: { color: '#208AEF', fontWeight: '600' },
 });

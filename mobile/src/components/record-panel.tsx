@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet, View } from 'react-native';
 import {
   AudioModule,
   RecordingPresets,
@@ -13,6 +13,7 @@ import { apiRequest, recordingsApi } from '@shadow-ai/core';
 
 import { ShadowFeedback } from '@/components/shadow-feedback';
 import { ThemedText } from '@/components/themed-text';
+import { haptic } from '@/lib/haptics';
 import { t } from '@/lib/i18n';
 
 /**
@@ -46,7 +47,16 @@ export function RecordPanel({ clipId, targetTranscript }: { clipId: string; targ
 
   const start = async () => {
     const perm = await AudioModule.requestRecordingPermissionsAsync();
-    if (!perm.granted) return;
+    if (!perm.granted) {
+      haptic.error();
+      // Recovery: once denied, iOS won't re-prompt — the only way back is the Settings app.
+      Alert.alert(t('record.micDeniedTitle'), t('record.micDeniedBody'), [
+        { text: t('record.micDeniedCancel'), style: 'cancel' },
+        { text: t('record.micDeniedOpen'), onPress: () => Linking.openSettings() },
+      ]);
+      return;
+    }
+    haptic.light();
     await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
     await recorder.prepareToRecordAsync();
     recorder.record();
@@ -54,6 +64,7 @@ export function RecordPanel({ clipId, targetTranscript }: { clipId: string; targ
 
   const stop = async () => {
     const durationMs = state.durationMillis ?? 0;
+    haptic.success();
     await recorder.stop();
     // Leave record mode so "Play my take" routes to the loudspeaker, not the iOS earpiece.
     await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
@@ -74,13 +85,23 @@ export function RecordPanel({ clipId, targetTranscript }: { clipId: string; targ
       </View>
 
       {state.isRecording ? (
-        <Pressable style={[styles.recBtn, styles.recording]} onPress={stop}>
+        <Pressable
+          style={[styles.recBtn, styles.recording]}
+          onPress={stop}
+          accessibilityRole="button"
+          accessibilityLabel={t('record.stop', { s: Math.floor((state.durationMillis ?? 0) / 1000) })}
+        >
           <ThemedText style={styles.recText}>
             {t('record.stop', { s: Math.floor((state.durationMillis ?? 0) / 1000) })}
           </ThemedText>
         </Pressable>
       ) : (
-        <Pressable style={styles.recBtn} onPress={start}>
+        <Pressable
+          style={styles.recBtn}
+          onPress={start}
+          accessibilityRole="button"
+          accessibilityLabel={t('record.record')}
+        >
           <ThemedText style={styles.recText}>{t('record.record')}</ThemedText>
         </Pressable>
       )}
@@ -100,6 +121,8 @@ export function RecordPanel({ clipId, targetTranscript }: { clipId: string; targ
             player.seekTo(0);
             player.play();
           }}
+          accessibilityRole="button"
+          accessibilityLabel={t('record.play')}
         >
           <ThemedText style={styles.playText}>{t('record.play')}</ThemedText>
         </Pressable>
@@ -125,8 +148,10 @@ const styles = StyleSheet.create({
   recBtn: {
     backgroundColor: '#208AEF',
     borderRadius: 10,
+    minHeight: 48,
     paddingVertical: 14,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   recording: { backgroundColor: '#dc2626' },
   recText: { color: '#fff', fontWeight: '700', fontSize: 16 },
@@ -134,8 +159,10 @@ const styles = StyleSheet.create({
   error: { color: '#dc2626' },
   playBtn: {
     borderRadius: 10,
+    minHeight: 44,
     paddingVertical: 12,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#9ca3af',
   },

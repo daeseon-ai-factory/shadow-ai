@@ -12,6 +12,7 @@
     "expo-device": "~56.0.4",
     "expo-font": "~56.0.5",
     "expo-glass-effect": "~56.0.4",
+    "expo-haptics": "~56.0.3",
     "expo-image": "~56.0.9",
     "expo-linking": "~56.0.13",
     "expo-localization": "~56.0.6",
@@ -47,6 +48,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "release:ios": "bash scripts/release-ios.sh",
+    "release:ios:dry-run": "bash scripts/release-ios.sh --dry-run",
     "lint": "expo lint"
   },
   "private": true
