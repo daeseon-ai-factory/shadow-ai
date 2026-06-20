@@ -61,3 +61,20 @@ right is unconfirmed until build 10 is on a real phone in a real hand. Writing
 this project keeps trying to drill out of me. Green CI is not a working phone.
 
 Next: build 10 to TestFlight, then actually feel it.
+
+## Postscript: build 10 shipped (same day)
+
+Kicked off the release. It died at the very last step — every preflight green
+(tsc, export, frontend build, EAS auth), then the queue command rejected itself:
+`--auto-submit-with-profile cannot also be provided when using --auto-submit`. The
+helper script passed both flags; a newer `eas-cli` made them mutually exclusive.
+Dropped the bare `--auto-submit`, re-ran just the corrected `eas build` (no point
+re-paying the multi-minute preflight that had just passed), and it went the whole
+way: buildNumber auto-incremented 9 → 10, build finished, `✔ Submitted your app to
+Apple App Store Connect!`.
+
+So the honest status flips: the haptics and skeletons are now in a real binary
+(build 10, Apple processing it as I write this), not just type-checking on my
+machine. Whether they *feel* right is the next thing to confirm — but now it's
+confirmable, which is the whole point of getting it onto a device.
+

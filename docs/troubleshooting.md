@@ -1034,4 +1034,25 @@ Narrative: `content/logs/shadow-ai/2026-06-19-private-learn-hub.mdx`.
 - **Verified this turn**: `npx tsc --noEmit` → `TSC_EXIT=0` (mobile). **NOT verified**: nothing rendered/run on a device this turn — skeletons only show during the network-fetch window, and haptics have **no Taptic Engine on the simulator**, so both are only confirmable on a real device after a native rebuild (`expo-haptics` is a native module). TestFlight build 10 pending.
 - **Pattern**: a native-module feature (haptics) added between TestFlight builds is invisible until the next native build — `tsc` green ≠ "it works on the phone". State that gap plainly instead of implying it's verified.
 
+---
+
+## EAS build aborted at the queue step: --auto-submit + --auto-submit-with-profile
+
+- **Symptom**: the iOS release passed every preflight (tsc, `expo export`, frontend build, EAS auth) and died at the final queue step:
+```
+==> Queueing production iOS build and automatic TestFlight upload
+The following errors occurred:
+  --auto-submit-with-profile=production cannot also be provided when using --auto-submit
+  --auto-submit=true cannot also be provided when using --auto-submit-with-profile
+See more help with --help
+    Error: build command failed.
+```
+- **Cause** (verified by reading `mobile/scripts/release-ios.sh`): the script passed **both** `--auto-submit` and `--auto-submit-with-profile production` to `eas-cli build`. A newer eas-cli treats them as mutually exclusive — `--auto-submit-with-profile <name>` already implies auto-submit, so passing the bare `--auto-submit` too is a conflict.
+- **Fix** (`f404516`): drop the bare `--auto-submit` line (and the matching string in the dry-run print); keep only `--auto-submit-with-profile production`. Because all the expensive preflight had just passed, the re-run skipped the script and invoked the corrected `eas-cli build … --auto-submit-with-profile production --non-interactive` directly.
+- **Verified this turn**: re-run reached TestFlight end-to-end — `✔ Incremented buildNumber from 9 to 10`, `✔ Build finished` (App Version 1.0.0, Build 10, Build ID `dc6658b8-2f63-41ab-8370-aead8e89b79f`), `✔ Submitted your app to Apple App Store Connect!` (submission `87a16381-d345-4107-a562-7364679537c3`). Apple-side processing (5–10 min) then pending. Remote credentials (cert + profile, exp 2027-06-15) were reused non-interactively.
+- **Pattern**: when a CLI helper script outlives a `@latest`-pinned dependency, a flag combo that worked before can become a hard error — preflight all-green then a one-line flag conflict at the very end is the tell. Fix the flags, and don't re-pay the multi-minute preflight: run the corrected final command directly.
+
 Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
+
+Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
+<!-- skipped: bf0314a docs(log): tactile polish retro (3ac0f8d) [no-log] -->
