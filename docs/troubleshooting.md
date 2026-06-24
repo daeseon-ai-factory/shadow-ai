@@ -1103,3 +1103,4 @@ direct to a website with information users can use to ask questions and request 
 **Pattern.** A Support URL that 3xx-redirects (even to a valid page) reads as non-functional to App Review — point it at a 200 page directly.
 
 Narrative: `content/logs/shadow-ai/2026-06-24-app-store-support-url.mdx`.
+<!-- skipped: b2832a5 docs(log): App Store 1.5 support-url fix + Vercel CLI file-limit (8a48e9c) -->
