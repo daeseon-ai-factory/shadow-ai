@@ -10,6 +10,15 @@
 
 [**🌐 Frontend → mimi.daeseon.ai**](https://mimi.daeseon.ai) &nbsp;·&nbsp; [**📓 Build log → daeseon.ai/projects/shadow-ai**](https://daeseon.ai/projects/shadow-ai)
 
+<p>
+<img src="frontend/public/screenshots/shot-1.jpeg" alt="Shadow a YouTube video line by line" width="20%" />
+<img src="frontend/public/screenshots/shot-3.jpeg" alt="Speaking practice with a situational prompt" width="20%" />
+<img src="frontend/public/screenshots/shot-7.jpeg" alt="Build-the-order review drill" width="20%" />
+<img src="frontend/public/screenshots/shot-5.jpeg" alt="Spaced-repetition review" width="20%" />
+</p>
+
+<sub><b>Shadow</b> from YouTube · <b>Speak</b> in a scenario · <b>Build</b> the sentence · <b>Review</b> on an SM-2 schedule &nbsp;—&nbsp; native iOS, in App Store review</sub>
+
 ![Java 21](https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white)
 ![Spring Boot 3.3](https://img.shields.io/badge/Spring%20Boot-3.3-6DB33F?logo=springboot&logoColor=white)
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
