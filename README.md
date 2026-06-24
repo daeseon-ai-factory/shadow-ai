@@ -16,6 +16,8 @@
 ![React 19](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![iOS](https://img.shields.io/badge/iOS-Expo%20%2F%20React%20Native-000000?logo=expo&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-multi--stage-2496ED?logo=docker&logoColor=white)
 ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
@@ -23,7 +25,19 @@
 
 ---
 
-> **TL;DR.** A solo-built, full-stack English-learning app — Java/Spring Boot API + Next.js/TypeScript frontend. It has **two halves that feed each other**: (1) *shadow from YouTube* — clip a subtitle range and one LLM call returns a translation, a word-by-word literal gloss, vocabulary, per-preposition notes, and a practice scenario (cached in JSONB, so studying never re-bills the API), then **SM-2** spaced repetition schedules it; (2) the *Practice hub* — daily **Leitner**-spaced drills over 82 sentence patterns, 101 word+preposition collocations, animated preposition diagrams, an **AI composition check**, and a weak-spots dashboard. The LLM provider (Gemini ↔ Claude) and recording storage (local FS ↔ S3/R2) flip **by environment variable alone**. Hardened from a prioritized codebase audit (7 batches), content **accuracy-audited**, and covered by Testcontainers + Vitest + Playwright.
+### ⚡ 30-second tour
+
+- 🧑‍💻 **Solo-built, full-stack, and shipped** — a Java/Spring Boot API, a Next.js/TypeScript web app (**live at [mimi.daeseon.ai](https://mimi.daeseon.ai)**), and a native iOS app (Expo / React Native, in App Store review). One person, three surfaces, end to end.
+- ⚙️ **Transaction-safe async AI pipeline** — clip analysis runs *outside* the DB transaction (`@TransactionalEventListener(AFTER_COMMIT)` + `@Async`), so a slow or throttled LLM call can never pin a connection-pool connection.
+- 🧮 **Two spaced-repetition schedulers, by design** — SM-2 for graded clip review, Leitner for binary drills — each matched to its grading shape, both written as pure, I/O-free functions.
+- 🔐 **Built like production, not a demo** — per-user data isolation at the query layer, JWT revocation on password change, two separate rate limiters, recordings streamed through the backend (never public URLs), and **$0 marginal cost** via a JSONB analysis cache (one LLM call per clip, ever).
+- ✅ **Verified, not vibes** — Testcontainers against real PostgreSQL + Vitest + Playwright E2E, plus a written, anti-hallucination decision log (literal errors, verified causes, commit hashes).
+
+<sub>Want the depth? Keep scrolling — [why this project](#why-this-project) · [architecture](#architecture) · [security](#security--privacy). Prefer to click around? [Live app →](https://mimi.daeseon.ai)</sub>
+
+---
+
+> **The longer story.** A solo-built, full-stack English-learning app — Java/Spring Boot API + Next.js/TypeScript frontend. It has **two halves that feed each other**: (1) *shadow from YouTube* — clip a subtitle range and one LLM call returns a translation, a word-by-word literal gloss, vocabulary, per-preposition notes, and a practice scenario (cached in JSONB, so studying never re-bills the API), then **SM-2** spaced repetition schedules it; (2) the *Practice hub* — daily **Leitner**-spaced drills over 82 sentence patterns, 101 word+preposition collocations, animated preposition diagrams, an **AI composition check**, and a weak-spots dashboard. The LLM provider (Gemini ↔ Claude) and recording storage (local FS ↔ S3/R2) flip **by environment variable alone**. Hardened from a prioritized codebase audit (7 batches), content **accuracy-audited**, and covered by Testcontainers + Vitest + Playwright.
 
 ## Table of contents
 
@@ -67,6 +81,27 @@ The thesis is **friction removal, not feature count**: input → output → repe
 ---
 
 ## Product walkthrough
+
+<div align="center">
+
+<table>
+<tr>
+<td width="25%"><img src="frontend/public/screenshots/shot-1.jpeg" alt="Shadow a YouTube video line by line" /><br/><sub><b>Shadow</b> any YouTube video, line by line</sub></td>
+<td width="25%"><img src="frontend/public/screenshots/shot-8.jpeg" alt="Playback speed and looping controls" /><br/><sub><b>Loop &amp; speed</b> — 0.5–1.5×, A–B repeat</sub></td>
+<td width="25%"><img src="frontend/public/screenshots/shot-3.jpeg" alt="Speaking practice with a situational prompt" /><br/><sub><b>Speak</b> — respond to a situation</sub></td>
+<td width="25%"><img src="frontend/public/screenshots/shot-4.jpeg" alt="Word-by-word translation notes" /><br/><sub><b>직독직해</b> word-by-word notes</sub></td>
+</tr>
+<tr>
+<td width="25%"><img src="frontend/public/screenshots/shot-7.jpeg" alt="Build-the-order review drill" /><br/><sub><b>Build the order</b> — sentence structure</sub></td>
+<td width="25%"><img src="frontend/public/screenshots/shot-5.jpeg" alt="Spaced-repetition review" /><br/><sub><b>Review</b> — SM-2 spaced repetition</sub></td>
+<td width="25%"><img src="frontend/public/screenshots/shot-2.jpeg" alt="Video and clip library" /><br/><sub><b>Library</b> — your videos &amp; clips</sub></td>
+<td width="25%"><img src="frontend/public/screenshots/shot-6.jpeg" alt="Learning progress and streak" /><br/><sub><b>Progress</b> — streak, clips, mastery</sub></td>
+</tr>
+</table>
+
+<sub>Screens from the iOS build (Mimi: English Shadowing).</sub>
+
+</div>
 
 | Flow | What happens |
 |---|---|
