@@ -1076,3 +1076,30 @@ purpose string is still required.
 - **Pattern**: "you might not use these APIs, a purpose string is still required" — a transitive SDK symbol, not your own code, can force an Info.plist usage string. A minimal-permissions guard that *blocks* such strings will hard-reject the build; the guard should require the strings the linked SDKs demand and forbid only the ones nothing references.
 
 Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
+<!-- skipped: f853a84 docs(log): ITMS-90683 photo-library purpose string fix (8df55c4) [no-log] -->
+<!-- skipped: 3c41673 docs(log): case-study page narrative (ed40b09) [no-log] -->
+<!-- skipped: 4e05c64 docs: iOS release checklist/runbook from the v1.0 App Store deploy [no-log] -->
+
+---
+
+## App Store 1.5 rejection: Support URL "does not direct to a website with information users can use to ask questions"
+
+**Symptom.** App Review (Submission 6d47a156, iPad Air 11" M3, v1.0 build 11) rejected on two guidelines, including:
+
+```
+Guideline 1.5 - Safety
+The Support URL provided in App Store Connect, https://mimi.daeseon.ai, does not
+direct to a website with information users can use to ask questions and request support.
+```
+
+**Cause (verified).** The configured Support URL was the bare site root `https://mimi.daeseon.ai`, which returns an HTTP `307` redirect (`curl -sI` → `HTTP/2 307`), not a 200 support page. There was no `/support` route — only `/[locale]/privacy` and `/[locale]/terms` existed under `frontend/app/[locale]/`.
+
+**Fix.** Added a real support page at `frontend/app/[locale]/support/page.tsx` (contact email + FAQ + screenshot tour), deployed to production via Vercel CLI. Verified live: `curl` of `/en/support`, `/ko/support`, `/ja/support` all return `200`. Next manual step: set App Store Connect → version → General Information → Support URL to `https://mimi.daeseon.ai/en/support` and resubmit. Guideline 2.1(b) (business model) is answered separately in `mobile/APP_REVIEW_REPLY_build11.md` — the app is fully free with no IAP; the "FREE" badge is an informational label, not a paywall.
+
+**Vercel CLI gotcha.** First `vercel --prod` failed: `files should NOT have more than 15000 items, received 28569` — the CLI uploaded `node_modules` (36k files) + `.next` (2.4k) because `frontend/` had no `.vercelignore`. Git-integration deploys never hit this (Vercel clones the repo, which gitignores `node_modules`). Worked around with `--archive=tgz`; added `frontend/.vercelignore` (`node_modules`, `.next`, `.vercel`) so future CLI deploys upload only the ~134 source files.
+
+**Commit.** `8a48e9c`
+
+**Pattern.** A Support URL that 3xx-redirects (even to a valid page) reads as non-functional to App Review — point it at a 200 page directly.
+
+Narrative: `content/logs/shadow-ai/2026-06-24-app-store-support-url.mdx`.

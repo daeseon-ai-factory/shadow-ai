@@ -1,0 +1,42 @@
+---
+title: "Clearing an App Store 1.5 rejection: a Support URL that redirects reads as broken"
+date: "2026-06-24"
+project: "shadow-ai"
+kind: "troubleshoot"
+visibility: "public"
+language: "en"
+summary: "Apple rejected v1.0 because the Support URL redirected instead of serving a 200 page. Built a real /support page, hit a Vercel CLI file-count limit on the way, and shipped it."
+tags: ["app-store", "ios", "vercel", "nextjs", "deploy"]
+---
+
+App Review came back on v1.0 (build 11) with two issues. The cheap one was Guideline 1.5:
+
+> The Support URL provided in App Store Connect, https://mimi.daeseon.ai, does not direct to a website with information users can use to ask questions and request support.
+
+The Support URL was the bare site root — and the root returns a `307` redirect, not a support page:
+
+```
+$ curl -sI https://mimi.daeseon.ai | head -1
+HTTP/2 307
+```
+
+The frontend only had `/[locale]/privacy` and `/[locale]/terms`; there was no support route at all. So I added `frontend/app/[locale]/support/page.tsx` — a plain, auth-free page with a contact email, a short FAQ (what the app is, pricing, how to import, how to delete an account, how to report a bug), and a tour built from the real iOS screenshots. English-primary, same as the legal pages.
+
+### The deploy bit me
+
+This branch wasn't on `main`, so instead of the usual GitHub→Vercel auto-deploy I pushed straight from the CLI. `vercel --prod` died instantly:
+
+```json
+{ "status": "error", "reason": "missing_archive",
+  "message": "Invalid request: `files` should NOT have more than 15000 items, received 28569." }
+```
+
+28,569 files because the CLI uploaded the working directory as-is — `node_modules` (36k files) and `.next` (2.4k) included. The Git integration never hits this: Vercel clones the repo, where those are gitignored, and runs `npm install` server-side. The CLI only honors `.vercelignore`, and `frontend/` didn't have one. `--archive=tgz` got it out the door; then I added a `.vercelignore` (`node_modules`, `.next`, `.vercel`) so the next CLI deploy uploads ~134 files instead of 28k.
+
+After deploy, `/en/support`, `/ko/support`, and `/ja/support` all return `200`.
+
+### The other half
+
+Guideline 2.1(b) asked about the business model. The app is fully free — no IAP, no subscription, no paid content. The only thing that could read as a paywall is a "FREE" badge on the account screen, which is just an informational status label and gates nothing. I wrote that up as a reply for App Review (`mobile/APP_REVIEW_REPLY_build11.md`) and bundled the README refresh (real screenshots + a 30-second highlights block) into the same commit.
+
+**Takeaway:** a Support URL that 3xx-redirects — even to a perfectly good page — counts as non-functional to App Review. Point it at a 200 directly. Commit `8a48e9c`.
