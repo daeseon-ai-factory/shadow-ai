@@ -4,6 +4,12 @@
 // Drill content + practice logic
 export * from "./patterns";
 export * from "./collocations";
+export * from "./phrasal-verbs";
+export * from "./particles";
+export * from "./english-patterns";
+export * from "./phrasal-500";
+export * from "./it-patterns";
+export * from "./it-terms";
 export * from "./prepositions-primer";
 export * from "./practice-srs";
 export * from "./practice-cards";

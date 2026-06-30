@@ -1010,3 +1010,155 @@ Narrative: `content/logs/shadow-ai/2026-06-17-locked-phone-floundering-postmorte
 <!-- skipped: 4fc646d chore(log): silence hook for log commit ecba8d1 [no-log] -->
 <!-- skipped: 224120f fix(mobile): Today subtitle wraps to 2 lines (was truncating) [no-log] -->
 <!-- skipped: 72f74b5 feat(mobile): ErrorState retry on video + discover too [no-log] -->
+
+---
+
+### Private /learn study hub — making an AI-built codebase interview-defensible (tooling/copy)
+
+- **Context**: most of this codebase's hard engineering (the AWS→NCP migration, the multi-AI fallback, the POToken debugging) was AI-generated. A portfolio you can't *defend* under a senior's 5-level "why" is a liability, not an asset. So the owner needs to learn it cold — and, being a working-holiday job-seeker in Toronto, **explain it in English**.
+- **Fix** (`6645354` hub + `485f4ae` English, 16 topics): new Next.js route `frontend/app/[locale]/learn/page.tsx` + content `frontend/lib/learn-content.ts`. Mobile-first (studied on phone/tablet all day), password-gated (`NEXT_PUBLIC_LEARN_PASS`, default `mimi` — client-side, casual-block only), localStorage progress + reveal-on-tap cards. Each topic: 뭐냐 / 왜 / 트레이드오프 / 용어 / interview "why" drills. Each drill carries a **Korean** answer (understand) **and an English model answer** in real senior-engineer register (`aEn` — "In the interview, say:"), since the interview output is spoken English. Companion docs `docs/STACK-FROM-ZERO.md` (terms from zero) + `docs/STUDY-GUIDE.md` (code deep-dive + the why-gauntlet). Deployed to `mimi.daeseon.ai/learn` via Vercel.
+- **Verified this turn**: `npx tsc --noEmit` clean (frontend); `curl https://mimi.daeseon.ai/en/learn` → 200 after each push (`000f0ca`, `0f5b55d`). Deploy required a `git stash` dance because a large uncommitted lint/a11y pass on `mobile/` blocked `checkout main`.
+- **Pattern**: when AI writes the code, the human's real work shifts from *authoring* to *defending* — and an interview tests understanding, not authorship. Build the learning scaffold (what/why/trade-off + spoken-English answers + active recall) directly from the real files so studying it converts AI artifacts into genuine, defensible understanding. Honesty rule for the owner: never claim a story you can't defend.
+
+Narrative: `content/logs/shadow-ai/2026-06-19-private-learn-hub.mdx`.
+<!-- skipped: 38937c1 docs(log): private /learn study hub retro — log commit -->
+<!-- skipped: efe7a42 chore(log): silence hook for log commit 38937c1 [no-log] -->
+
+---
+
+## Mobile felt flat — bare spinners, no physical feedback, dead-end on denied mic
+
+- **Symptom**: loading states across the app were bare centered `ActivityIndicator`s; taps and drill outcomes had no haptic feedback (the app felt "디지털 종이"); and a denied microphone permission silently `return`ed from `start()` with no way back — iOS never re-prompts once denied, so the Speak feature was a permanent dead end for anyone who tapped "Don't Allow".
+- **Cause** (verified by reading the files): `index.tsx`/`review.tsx`/`videos.tsx`/`player/[clipId].tsx` rendered `<ActivityIndicator/>` for query `isPending`; no `expo-haptics` dependency existed; `record-panel.tsx` `start()` had `if (!perm.granted) return;` with no recovery path.
+- **Fix** (`3ac0f8d`): new `mobile/src/components/skeleton.tsx` (`Skeleton` + `SkeletonCards`, an opacity-looped `Animated.View`) replaces spinners on Library/Clips, Review queue, the player (16:9 block + cards) and the analysis section. New `mobile/src/lib/haptics.ts` wraps `expo-haptics` (`tap`/`light`/`success`/`error`, all fire-and-forget `.catch(()=>{})`); wired into Today CTA + mini-cards, Review grades, dictation check (success when fully matched), chunk-ladder (success on rung complete, error on wrong order), scenario verdict (success/light on ok, error on grading failure), and record start/stop. `record-panel.tsx` denied path now fires `haptic.error()` + an `Alert` that deep-links to iOS Settings via `Linking.openSettings()` (+4 `record.micDenied*` i18n keys, en/ko). A11y `maxFontSizeMultiplier` caps from the earlier pass rode along on Today.
+- **Verified this turn**: `npx tsc --noEmit` → `TSC_EXIT=0` (mobile). **NOT verified**: nothing rendered/run on a device this turn — skeletons only show during the network-fetch window, and haptics have **no Taptic Engine on the simulator**, so both are only confirmable on a real device after a native rebuild (`expo-haptics` is a native module). TestFlight build 10 pending.
+- **Pattern**: a native-module feature (haptics) added between TestFlight builds is invisible until the next native build — `tsc` green ≠ "it works on the phone". State that gap plainly instead of implying it's verified.
+
+---
+
+## EAS build aborted at the queue step: --auto-submit + --auto-submit-with-profile
+
+- **Symptom**: the iOS release passed every preflight (tsc, `expo export`, frontend build, EAS auth) and died at the final queue step:
+```
+==> Queueing production iOS build and automatic TestFlight upload
+The following errors occurred:
+  --auto-submit-with-profile=production cannot also be provided when using --auto-submit
+  --auto-submit=true cannot also be provided when using --auto-submit-with-profile
+See more help with --help
+    Error: build command failed.
+```
+- **Cause** (verified by reading `mobile/scripts/release-ios.sh`): the script passed **both** `--auto-submit` and `--auto-submit-with-profile production` to `eas-cli build`. A newer eas-cli treats them as mutually exclusive — `--auto-submit-with-profile <name>` already implies auto-submit, so passing the bare `--auto-submit` too is a conflict.
+- **Fix** (`f404516`): drop the bare `--auto-submit` line (and the matching string in the dry-run print); keep only `--auto-submit-with-profile production`. Because all the expensive preflight had just passed, the re-run skipped the script and invoked the corrected `eas-cli build … --auto-submit-with-profile production --non-interactive` directly.
+- **Verified this turn**: re-run reached TestFlight end-to-end — `✔ Incremented buildNumber from 9 to 10`, `✔ Build finished` (App Version 1.0.0, Build 10, Build ID `dc6658b8-2f63-41ab-8370-aead8e89b79f`), `✔ Submitted your app to Apple App Store Connect!` (submission `87a16381-d345-4107-a562-7364679537c3`). Apple-side processing (5–10 min) then pending. Remote credentials (cert + profile, exp 2027-06-15) were reused non-interactively.
+- **Pattern**: when a CLI helper script outlives a `@latest`-pinned dependency, a flag combo that worked before can become a hard error — preflight all-green then a one-line flag conflict at the very end is the tell. Fix the flags, and don't re-pay the multi-minute preflight: run the corrected final command directly.
+
+Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
+
+Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
+<!-- skipped: bf0314a docs(log): tactile polish retro (3ac0f8d) [no-log] -->
+<!-- skipped: 8c57160 docs(log): build 10 to TestFlight + eas-cli flag fix (f404516) [no-log] -->
+
+---
+
+## Apple rejected build 10: ITMS-90683 missing NSPhotoLibraryUsageDescription
+
+- **Symptom**: hours after build 10 submitted cleanly, App Store Connect emailed a rejection:
+```
+ITMS-90683: Missing purpose string in Info.plist - Your app's code references one or
+more APIs that access sensitive user data... should contain a NSPhotoLibraryUsageDescription
+key with a user-facing purpose string... If you're using external libraries or SDKs, they may
+reference APIs that require a purpose string. While your app might not use these APIs, a
+purpose string is still required.
+```
+- **Cause** (verified by grepping `node_modules`): `expo-image` ships `ios/Loaders/PhotoLibraryAssetLoader.swift`, which links the Photo Library API (`PHPhotoLibrary`). Apple's static scanner flags the symbol in the compiled binary regardless of whether Mimi ever opens a photo picker (it never does — `expo-image` is used only for remote thumbnail URLs). The app had `NSSpeechRecognitionUsageDescription` + `NSMicrophoneUsageDescription` but no photo-library string. Ironically `scripts/release-ios.sh` had a guard that *forbade* `NSPhotoLibraryUsageDescription` as an "unused risky permission" — exactly backwards for this dependency.
+- **Fix** (`8df55c4`): add `NSPhotoLibraryUsageDescription` to `mobile/app.json` `ios.infoPlist` with an honest string ("Mimi's image component can request photo-library access. Mimi never opens, uploads, or stores your photos."), and flip the release-script guard from forbidding that key to *requiring* it (the NSFaceID / UIBackgroundModes / FOREGROUND_SERVICE forbid-list stays). Rebuilt as build 11 via the same `eas build … --auto-submit-with-profile production` path.
+- **Verified this turn**: `node -e "JSON.parse(...)"` → app.json valid; build 11 re-run log shows `✔ Incremented buildNumber from 10 to 11` and reused remote credentials. **NOT yet verified**: build 11's final submit + that the purpose string actually clears ITMS-90683 — that's confirmed only when Apple finishes processing build 11 without a new rejection email.
+- **Pattern**: "you might not use these APIs, a purpose string is still required" — a transitive SDK symbol, not your own code, can force an Info.plist usage string. A minimal-permissions guard that *blocks* such strings will hard-reject the build; the guard should require the strings the linked SDKs demand and forbid only the ones nothing references.
+
+Narrative: `content/logs/shadow-ai/2026-06-20-tactile-polish.mdx`.
+<!-- skipped: f853a84 docs(log): ITMS-90683 photo-library purpose string fix (8df55c4) [no-log] -->
+<!-- skipped: 3c41673 docs(log): case-study page narrative (ed40b09) [no-log] -->
+<!-- skipped: 4e05c64 docs: iOS release checklist/runbook from the v1.0 App Store deploy [no-log] -->
+
+---
+
+## App Store 1.5 rejection: Support URL "does not direct to a website with information users can use to ask questions"
+
+**Symptom.** App Review (Submission 6d47a156, iPad Air 11" M3, v1.0 build 11) rejected on two guidelines, including:
+
+```
+Guideline 1.5 - Safety
+The Support URL provided in App Store Connect, https://mimi.daeseon.ai, does not
+direct to a website with information users can use to ask questions and request support.
+```
+
+**Cause (verified).** The configured Support URL was the bare site root `https://mimi.daeseon.ai`, which returns an HTTP `307` redirect (`curl -sI` → `HTTP/2 307`), not a 200 support page. There was no `/support` route — only `/[locale]/privacy` and `/[locale]/terms` existed under `frontend/app/[locale]/`.
+
+**Fix.** Added a real support page at `frontend/app/[locale]/support/page.tsx` (contact email + FAQ + screenshot tour), deployed to production via Vercel CLI. Verified live: `curl` of `/en/support`, `/ko/support`, `/ja/support` all return `200`. Next manual step: set App Store Connect → version → General Information → Support URL to `https://mimi.daeseon.ai/en/support` and resubmit. Guideline 2.1(b) (business model) is answered separately in `mobile/APP_REVIEW_REPLY_build11.md` — the app is fully free with no IAP; the "FREE" badge is an informational label, not a paywall.
+
+**Vercel CLI gotcha.** First `vercel --prod` failed: `files should NOT have more than 15000 items, received 28569` — the CLI uploaded `node_modules` (36k files) + `.next` (2.4k) because `frontend/` had no `.vercelignore`. Git-integration deploys never hit this (Vercel clones the repo, which gitignores `node_modules`). Worked around with `--archive=tgz`; added `frontend/.vercelignore` (`node_modules`, `.next`, `.vercel`) so future CLI deploys upload only the ~134 source files.
+
+**Commit.** `8a48e9c`
+
+**Pattern.** A Support URL that 3xx-redirects (even to a valid page) reads as non-functional to App Review — point it at a 200 page directly.
+
+Narrative: `content/logs/shadow-ai/2026-06-24-app-store-support-url.mdx`.
+<!-- skipped: b2832a5 docs(log): App Store 1.5 support-url fix + Vercel CLI file-limit (8a48e9c) -->
+<!-- skipped: ad01b19 chore(log): mark b2832a5 routine [no-log] -->
+<!-- skipped: a06fe15 docs(readme): hero screenshot strip at the top for instant impact [no-log] -->
+
+---
+
+## iOS simulator build fails on Xcode 26: `cannot link directly with 'SwiftUICore'`
+
+**Symptom.**
+```
+Undefined symbols for architecture arm64:
+  ... cannot link directly with 'SwiftUICore' because product being built is not an allowed client of it
+❌ ld: symbol(s) not found for architecture arm64
+CommandError: Failed to build iOS project. "xcodebuild" exited with error code 65.
+```
+
+**Cause (verified).** Only Xcode 26.6 / iOS-sim SDK 26.5 is installed (`xcodebuild -version`, `xcrun --sdk iphonesimulator --show-sdk-version`); the project was on `expo ~56.0.8`, whose precompiled native modules hit the Xcode 26 linker's new ban on linking the private `SwiftUICore` framework. Not a JS/app-code issue — pure toolchain.
+
+**Fix.** Bumped `expo 56.0.8 → 56.0.12` + `expo install --fix` (pulled @expo/ui, ExpoModulesCore 56.0.17, expo-image/router/etc. to SDK-56-compatible native versions) then a clean pod reinstall (`rm -rf ios/Pods ios/Podfile.lock && pod install`). `expo run:ios` then reached `Build Succeeded` + `Installing` + `Opening on ai.daeseon.mimi`.
+
+**Commit.** `166442f`
+
+**Pattern.** Expo ships Xcode-compatibility fixes in SDK *patch* releases — bump to the latest patch within your SDK before hand-patching the native project.
+
+---
+
+## Multiple Expo apps on one machine: app loads the wrong JS bundle / wrong backend
+
+**Symptom.** Freshly-built Mimi showed a red `[runtime not ready]: Error: Cannot find native module 'ExponentImagePicker'` — a module Mimi doesn't even depend on. Later, login silently failed.
+
+**Cause (verified).** No `expo-dev-client`, so the debug build defaults to Metro on `localhost:8081`, which was a *different* app's Metro (`/Users/.../motivation/mobile`, and that app DOES use expo-image-picker) — Mimi loaded a foreign bundle. The 8083 Metro I started logged **0** bundle requests, confirming the app never used it. Same class of bug for login: the simulator hit `localhost:8080` = another app's backend (`/api/health` → `404`, not Mimi's). `expo-image-picker` is absent from Mimi's package.json/node_modules/Podfile.lock (grep), proving the bundle was foreign.
+
+**Fix.** Pinned the app to Mimi's Metro: `xcrun simctl spawn <udid> defaults write ai.daeseon.mimi RCT_jsLocation localhost:8083`, ran Metro on :8083, and pointed it at the live backend with `EXPO_PUBLIC_API_URL=https://api.mimi.daeseon.ai expo start`. App then bundled `expo-router/entry.js` from 8083 and rendered.
+
+**Pattern.** A no-dev-client debug build grabs whatever sits on :8081 (Metro) / :8080 (backend). With several apps running, pin `RCT_jsLocation` and `EXPO_PUBLIC_API_URL` explicitly.
+
+---
+
+## phrase_500.md parser corrupted `exampleKo` on wrapped ▶ notes
+
+**Symptom.** Generated `packages/core/src/phrasal-500.ts` for "Pass out" had `"exampleKo": "있으니 참고해 주시기 바랍니다"` (a fragment of the nuance note) and the real translation `"선생님이 학생들에게 시험지를 나눠줬어요"` was dropped.
+
+**Cause (verified).** `parse_phrasal_500` stripped only physical lines starting with `▶` as notes, then took `exampleKo = kr[1]` blindly. When a `▶` note wraps onto a second line (no `▶` prefix), that continuation survives as a "Korean line" and becomes `exampleKo`. Found by a 12-agent adversarial review of the session diff.
+
+**Fix.** Rewrote the parser to anchor on the English example line: `gloss` = first Korean before it, `exampleKo` = first Korean after it, `note` = the `▶` line plus its continuation lines. Regenerated; "Pass out" now reads the correct translation.
+
+**Commit.** `a507240`
+
+**Pattern.** For irregular multi-line records, anchor fields positionally around a reliable marker — never pick by `kr[1]`-style fixed index.
+
+---
+
+## Cross-pack learning platform (verb pack + 4 lists, multi-mode, mix/story) — mobile + web
+
+**What.** Turned Mimi from a YouTube-shadowing app into a study platform: a 1,956-entry base-verb pack (frequency-tiered + particle overlay) and four user lists (300 patterns, 502 phrasal verbs, 623 IT chunks, 296 code terms), each drillable in 3 modes (recall / reverse / compose+AI), plus cross-pack AI "mix" (chunks → one sentence) and "story" (chunks → a passage with cloze), and a Today all-pack daily session. Data/SRS/backend shared via `@shadow-ai/core`; built for **both** mobile (Expo) and web (Next.js, 5 locales). Verified: backend tests (mocked AI), mobile + frontend `tsc` 0, `next build` green. Sample audit (50 entries) → ~88% clean, ~2% major-error rate (one being the parser bug above).
+
+**Commits.** `a507240` (core data), `c899975` (backend mix/story), `166442f` (mobile), `1a608b3` (web).
+
+Narrative: `content/logs/shadow-ai/2026-06-30-cross-pack-learning-platform.mdx`.

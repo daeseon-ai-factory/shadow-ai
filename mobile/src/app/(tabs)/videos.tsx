@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -7,27 +7,45 @@ import {
   Pressable,
   RefreshControl,
   StyleSheet,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { libraryApi, type LibraryVideoResponse } from '@shadow-ai/core';
+import { clipsApi, libraryApi, type ClipResponse, type LibraryVideoResponse } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { EmptyState } from '@/components/empty-state';
+import { ErrorState } from '@/components/error-state';
+import { SkeletonCards } from '@/components/skeleton';
 import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
+
+type LibrarySection = 'videos' | 'clips';
+
+function ms(msVal: number) {
+  const s = Math.round(msVal / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
 
 export default function VideosScreen() {
   const token = useAuthStore((s) => s.token);
   const qc = useQueryClient();
+  const [section, setSection] = useState<LibrarySection>('videos');
+  const [clipQuery, setClipQuery] = useState('');
 
   const videos = useQuery({
     queryKey: ['library', 'videos'],
     queryFn: () => libraryApi.list({ page: 0, size: 50 }),
     enabled: !!token,
+  });
+  const clips = useQuery({
+    queryKey: ['clips', 'library-tab', clipQuery],
+    queryFn: () =>
+      clipsApi.list({ page: 0, size: 50, sort: 'newest', q: clipQuery.trim() || undefined }),
+    enabled: !!token && section === 'clips',
   });
 
   const remove = useMutation({
@@ -47,22 +65,53 @@ export default function VideosScreen() {
 
   if (!token) return <Redirect href="/login" />;
 
-  const items = videos.data?.items ?? [];
+  const videoItems = videos.data?.items ?? [];
+  const clipItems = clips.data?.items ?? [];
 
   return (
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={['bottom']}>
         <View style={styles.header}>
-          <Pressable style={styles.importBtn} onPress={() => router.push('/import')}>
+          <Pressable
+            style={styles.importBtn}
+            onPress={() => router.push('/import')}
+            accessibilityRole="button"
+            accessibilityLabel={t('videos.import')}
+          >
             <ThemedText style={styles.importText}>＋ {t('videos.import')}</ThemedText>
           </Pressable>
+          <View style={styles.segment}>
+            <SegmentButton
+              label={t('library.videosTab')}
+              active={section === 'videos'}
+              onPress={() => setSection('videos')}
+            />
+            <SegmentButton
+              label={t('library.clipsTab')}
+              active={section === 'clips'}
+              onPress={() => setSection('clips')}
+            />
+          </View>
         </View>
 
-        {videos.isPending ? (
-          <ActivityIndicator style={styles.mt} />
+        {section === 'clips' ? (
+          <ClipsPane
+            clips={clipItems}
+            query={clipQuery}
+            setQuery={setClipQuery}
+            isPending={clips.isPending}
+            isFetching={clips.isFetching}
+            isError={clips.isError}
+            error={clips.error}
+            onRefresh={() => clips.refetch()}
+          />
+        ) : videos.isPending ? (
+          <SkeletonCards />
+        ) : videos.isError ? (
+          <ErrorState message={(videos.error as Error).message} onRetry={() => videos.refetch()} />
         ) : (
           <FlatList
-            data={items}
+            data={videoItems}
             keyExtractor={(it) => it.video.id}
             contentContainerStyle={styles.list}
             refreshControl={
@@ -73,6 +122,8 @@ export default function VideosScreen() {
                 style={styles.card}
                 onPress={() => router.push(`/video/${item.video.id}`)}
                 onLongPress={() => confirmRemove(item)}
+                accessibilityRole="button"
+                accessibilityLabel={item.video.title}
               >
                 {item.video.thumbnailUrl ? (
                   <Image source={{ uri: item.video.thumbnailUrl }} style={styles.thumb} />
@@ -110,17 +161,152 @@ export default function VideosScreen() {
   );
 }
 
+function SegmentButton({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      style={[styles.segmentItem, active && styles.segmentItemOn]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      accessibilityLabel={label}
+    >
+      <ThemedText style={[styles.segmentText, active && styles.segmentTextOn]}>{label}</ThemedText>
+    </Pressable>
+  );
+}
+
+function ClipsPane({
+  clips,
+  query,
+  setQuery,
+  isPending,
+  isFetching,
+  isError,
+  error,
+  onRefresh,
+}: {
+  clips: ClipResponse[];
+  query: string;
+  setQuery: (value: string) => void;
+  isPending: boolean;
+  isFetching: boolean;
+  isError: boolean;
+  error: unknown;
+  onRefresh: () => void;
+}) {
+  if (isPending) return <SkeletonCards />;
+  if (isError) return <ErrorState message={(error as Error).message} onRetry={onRefresh} />;
+
+  return (
+    <>
+      <TextInput
+        style={styles.search}
+        placeholder={t('library.searchPlaceholder')}
+        placeholderTextColor="#9ca3af"
+        autoCapitalize="none"
+        value={query}
+        onChangeText={setQuery}
+        returnKeyType="search"
+      />
+      <FlatList
+        data={clips}
+        keyExtractor={(c) => c.id}
+        contentContainerStyle={styles.list}
+        refreshControl={<RefreshControl refreshing={isFetching} onRefresh={onRefresh} />}
+        ListEmptyComponent={
+          query ? (
+            <ThemedText type="small" style={styles.empty}>
+              {t('library.emptySearch')}
+            </ThemedText>
+          ) : (
+            <EmptyState
+              icon={{ ios: 'scissors', android: 'content_cut', web: 'content_cut' }}
+              title={t('library.emptyClipsTitle')}
+              body={t('library.emptyClipsBody')}
+              primary={{ label: t('videos.import'), onPress: () => router.push('/import') }}
+              secondary={{ label: t('videos.emptyDiscover'), onPress: () => router.push('/discover') }}
+            />
+          )
+        }
+        renderItem={({ item }) => <ClipRow item={item} />}
+      />
+    </>
+  );
+}
+
+function ClipRow({ item }: { item: ClipResponse }) {
+  return (
+    <Pressable
+      style={styles.clipCard}
+      onPress={() => router.push(`/player/${item.id}`)}
+      accessibilityRole="button"
+      accessibilityLabel={item.name || item.videoTitle}
+    >
+      <View style={styles.clipTop}>
+        <ThemedText type="smallBold" numberOfLines={1} style={styles.flex}>
+          {item.name || item.videoTitle}
+        </ThemedText>
+        <ThemedText type="small">
+          {ms(item.startMs)}-{ms(item.endMs)}
+        </ThemedText>
+      </View>
+      {item.transcript ? (
+        <ThemedText type="small" numberOfLines={2}>
+          {item.transcript}
+        </ThemedText>
+      ) : (
+        <ThemedText type="small" style={styles.muted} numberOfLines={1}>
+          {item.videoTitle}
+        </ThemedText>
+      )}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   mt: { marginTop: 24 },
-  header: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 },
+  header: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8, gap: 12 },
   importBtn: {
     backgroundColor: '#208AEF',
     borderRadius: 10,
+    minHeight: 48,
     paddingVertical: 12,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   importText: { color: '#fff', fontWeight: '700' },
+  segment: {
+    flexDirection: 'row',
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    overflow: 'hidden',
+  },
+  segmentItem: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  segmentItemOn: { backgroundColor: '#208AEF' },
+  segmentText: { fontWeight: '800', color: '#6b7280' },
+  segmentTextOn: { color: '#fff' },
+  search: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 15,
+    color: '#111827',
+    backgroundColor: '#fff',
+  },
   list: { padding: 16, gap: 12 },
   card: {
     flexDirection: 'row',
@@ -128,6 +314,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#9ca3af',
+    minHeight: 88,
     padding: 10,
     alignItems: 'center',
   },
@@ -136,4 +323,14 @@ const styles = StyleSheet.create({
   cardBody: { flex: 1, gap: 3 },
   muted: { color: '#6b7280' },
   empty: { textAlign: 'center', marginTop: 40, paddingHorizontal: 24 },
+  clipCard: {
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#9ca3af',
+    minHeight: 72,
+    padding: 14,
+    gap: 6,
+    justifyContent: 'center',
+  },
+  clipTop: { flexDirection: 'row', gap: 8, alignItems: 'center' },
 });

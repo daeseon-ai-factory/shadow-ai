@@ -1,0 +1,48 @@
+---
+title: "A recruiter-facing case-study page: promoting a shipped app from a web portfolio"
+date: "2026-06-21"
+project: "shadow-ai"
+kind: "business"
+visibility: "public"
+language: "en"
+summary: "Built a public /case-study page for Mimi so the app can be promoted from a web portfolio — live status pills, a browser demo, the system architecture, and the engineering decisions, framed for a backend/working-holiday job search."
+tags: ["portfolio", "career", "web", "next.js"]
+---
+
+The honest tension behind this page: most of Mimi's hard engineering was
+AI-assisted, and an app lives behind the App Store where a recruiter can't just
+click it. So "I shipped an iOS app" risks sounding like a claim you can't show.
+This page is the answer to *show me*.
+
+## What it leads with
+
+Not screenshots — **proof the system is alive**. The hero has three status pills:
+App Store (in review), TestFlight (live), and a **production-backend pill that is
+a real health check** hitting the actual API every 30s. A recruiter loading the
+page sees the backend respond, live. That's a different claim than a pretty
+mockup.
+
+Then it removes the iPhone barrier: a "Try it in your browser" button to the web
+version, so anyone can use the real flow without installing anything.
+
+## What it actually argues
+
+For a backend / working-holiday job search, the portfolio value isn't the UI — it's
+the system. So the page is weighted toward that: a layered Spring Boot backend, a
+provider-fallback AI client (Gemini → OpenAI → Claude), the YouTube-transcript
+POToken debugging, an AWS → NCP cloud migration, and an end-to-end App Store
+release pipeline. Each "engineering decision" card states the trade-off, not just
+the tech name — because the interview tests whether you can defend the choice, not
+whether you can list it.
+
+## The deliberately empty box
+
+There's one dashed placeholder: a screen-recording slot. I can write the page; I
+can't fabricate a demo video of the app running. Leaving an honest "drop a 20–30s
+clip here" box is better than a stock image pretending to be the product. That
+recording is the single highest-leverage thing to add next — a recruiter will
+watch 30 seconds before they read a paragraph.
+
+Lives at `mimi.daeseon.ai/en/case-study` once deployed. Pairs with the private
+`/learn` hub (study notes to *defend* the build) — this page *shows* it, that one
+*prepares you to talk about it*.

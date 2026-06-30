@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PATTERNS } from "@/lib/patterns";
 import { PREPOSITION_PRIMER } from "@/lib/prepositions-primer";
 import { COLLOCATIONS } from "@/lib/collocations";
+import { VERB_PACK, PHRASAL_500, IT_PATTERNS, IT_TERMS, ENGLISH_PATTERNS } from "@shadow-ai/core";
 
 interface Drill {
   href: string;
@@ -16,8 +17,18 @@ interface Drill {
 
 export default function PracticePage() {
   const t = useTranslations("practice");
+  const td = useTranslations("decks");
+  const verbCount = VERB_PACK.reduce((s, g) => s + g.items.length, 0);
 
   const drills: Drill[] = [
+    { href: "/today", title: td("todayTitle"), desc: td("todaySub") },
+    { href: "/story", title: td("storyTitle"), desc: td("storySub") },
+    { href: "/mix", title: td("mixTitle"), desc: td("mixSub") },
+    { href: "/verbs", title: td("verbsTitle"), desc: td("verbsSub"), count: td("count", { n: verbCount }) },
+    { href: "/phrasal-500", title: td("phrasal500Title"), desc: td("phrasal500Sub"), count: td("count", { n: PHRASAL_500.length }) },
+    { href: "/it-patterns", title: td("itPatternsTitle"), desc: td("itPatternsSub"), count: td("count", { n: IT_PATTERNS.length }) },
+    { href: "/it-terms", title: td("itTermsTitle"), desc: td("itTermsSub"), count: td("count", { n: IT_TERMS.length }) },
+    { href: "/english-patterns", title: td("englishPatternsTitle"), desc: td("englishPatternsSub"), count: td("count", { n: ENGLISH_PATTERNS.length }) },
     {
       href: "/gym",
       title: t("gymTitle"),

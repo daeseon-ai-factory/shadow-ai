@@ -13,6 +13,12 @@ import { loadToken } from '@/lib/secure-token';
 // Configure the shared API client once, before any screen renders.
 bootstrapApi();
 
+const SCREENSHOT_FLOW = process.env.EXPO_PUBLIC_SCREENSHOT_FLOW === '1';
+const SCREENSHOT_ROUTE = process.env.EXPO_PUBLIC_SCREENSHOT_ROUTE;
+const SCREENSHOT_ROUTES = ['/', '/videos', '/practice', '/review', '/settings', '/import'] as const;
+const SCREENSHOT_ROUTE_START_MS = 2500;
+const SCREENSHOT_ROUTE_INTERVAL_MS = 8000;
+
 // On any 401 (expired / revoked JWT), sign out and route to login — registered here to keep
 // the query-client module free of an auth-store import cycle.
 setUnauthorizedHandler(() => {
@@ -29,6 +35,19 @@ export default function RootLayout() {
   useEffect(() => {
     loadToken().then((token) => hydrate(token));
   }, [hydrate]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (SCREENSHOT_ROUTE) {
+      const timer = setTimeout(() => router.replace(SCREENSHOT_ROUTE as never), 800);
+      return () => clearTimeout(timer);
+    }
+    if (!SCREENSHOT_FLOW) return;
+    const timers = SCREENSHOT_ROUTES.map((route, index) =>
+      setTimeout(() => router.replace(route as never), SCREENSHOT_ROUTE_START_MS + index * SCREENSHOT_ROUTE_INTERVAL_MS),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [hydrated]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -49,11 +68,18 @@ export default function RootLayout() {
             <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name="gym" options={{ headerShown: true, title: t('nav.gym') }} />
             <Stack.Screen name="collocations" options={{ headerShown: true, title: t('nav.collocations') }} />
+            <Stack.Screen name="verbs" options={{ headerShown: true, title: t('nav.verbs') }} />
+            <Stack.Screen name="english-patterns" options={{ headerShown: true, title: t('nav.dailyPatterns') }} />
+            <Stack.Screen name="phrasal-500" options={{ headerShown: true, title: t('nav.phrasal500') }} />
+            <Stack.Screen name="it-patterns" options={{ headerShown: true, title: t('nav.itPatterns') }} />
+            <Stack.Screen name="it-terms" options={{ headerShown: true, title: t('nav.itTerms') }} />
+            <Stack.Screen name="mix" options={{ headerShown: true, title: t('nav.mix') }} />
+            <Stack.Screen name="story" options={{ headerShown: true, title: t('nav.story') }} />
+            <Stack.Screen name="today" options={{ headerShown: true, title: t('nav.today') }} />
             <Stack.Screen name="compose" options={{ headerShown: true, title: t('nav.compose') }} />
             <Stack.Screen name="weak" options={{ headerShown: true, title: t('nav.weak') }} />
             <Stack.Screen name="prepositions" options={{ headerShown: true, title: t('nav.prepositions') }} />
-            <Stack.Screen name="video/[id]" options={{ headerShown: true, title: t('nav.videos') }} />
-            <Stack.Screen name="library" options={{ headerShown: true, title: t('nav.library') }} />
+            <Stack.Screen name="video/[id]" options={{ headerShown: true, title: t('nav.video') }} />
             <Stack.Screen name="import" options={{ headerShown: true, title: t('nav.import') }} />
             <Stack.Screen name="discover" options={{ headerShown: true, title: t('nav.discover') }} />
             <Stack.Screen name="discover/[slug]" options={{ headerShown: true, title: t('nav.collection') }} />

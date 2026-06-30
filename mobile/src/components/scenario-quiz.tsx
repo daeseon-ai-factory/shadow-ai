@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { practiceApi, ApiError, type PracticeScenario } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
+import { haptic } from '@/lib/haptics';
 import { t } from '@/lib/i18n';
 
 /**
@@ -24,6 +25,8 @@ export function ScenarioQuiz({ scenario }: { scenario?: PracticeScenario | null 
         scenario!.sampleResponse ?? '',
         answer,
       ),
+    onSuccess: (data) => (data.ok ? haptic.success : haptic.light)(),
+    onError: () => haptic.error(),
   });
 
   if (!scenario) return null;
@@ -68,6 +71,8 @@ export function ScenarioQuiz({ scenario }: { scenario?: PracticeScenario | null 
             style={[styles.checkBtn, (trimmed.length === 0 || check.isPending) && styles.disabled]}
             disabled={trimmed.length === 0 || check.isPending}
             onPress={() => check.mutate(trimmed)}
+            accessibilityRole="button"
+            accessibilityLabel={t('scenario.check')}
           >
             {check.isPending ? (
               <ActivityIndicator color="#fff" />
@@ -102,7 +107,12 @@ export function ScenarioQuiz({ scenario }: { scenario?: PracticeScenario | null 
             <ThemedText type="small" style={styles.label}>{t('scenario.sample')}</ThemedText>
             <ThemedText style={styles.sample}>{scenario.sampleResponse}</ThemedText>
           </View>
-          <Pressable style={styles.retryBtn} onPress={reset}>
+          <Pressable
+            style={styles.retryBtn}
+            onPress={reset}
+            accessibilityRole="button"
+            accessibilityLabel={t('scenario.retry')}
+          >
             <ThemedText style={styles.retryText}>{t('scenario.retry')}</ThemedText>
           </Pressable>
         </View>
@@ -141,8 +151,10 @@ const styles = StyleSheet.create({
   checkBtn: {
     backgroundColor: '#208AEF',
     borderRadius: 10,
+    minHeight: 48,
     paddingVertical: 14,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   disabled: { opacity: 0.5 },
   checkText: { color: '#fff', fontWeight: '700', fontSize: 16 },
@@ -157,8 +169,10 @@ const styles = StyleSheet.create({
   sample: { fontWeight: '600', fontSize: 15, lineHeight: 22 },
   retryBtn: {
     borderRadius: 10,
+    minHeight: 44,
     paddingVertical: 12,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#9ca3af',
   },

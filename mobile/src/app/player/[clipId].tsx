@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   Keyboard,
   LayoutAnimation,
@@ -21,6 +20,8 @@ import { ChunkLadder } from '@/components/chunk-ladder';
 import { DictationDrill } from '@/components/dictation-drill';
 import { RecordPanel } from '@/components/record-panel';
 import { ScenarioQuiz } from '@/components/scenario-quiz';
+import { ErrorState } from '@/components/error-state';
+import { Skeleton, SkeletonCards } from '@/components/skeleton';
 import { useAuthStore } from '@/lib/auth-store';
 import { setLastClip } from '@/lib/last-clip';
 import { t } from '@/lib/i18n';
@@ -144,17 +145,21 @@ export default function ClipPlayerScreen() {
   if (!token) return <Redirect href="/login" />;
   if (clip.isPending) {
     return (
-      <ThemedView style={styles.center}>
-        <ActivityIndicator />
+      <ThemedView style={styles.flex}>
+        <Skeleton style={styles.loadingVideo} />
+        <View style={styles.loadingBody}>
+          <SkeletonCards count={3} height={72} />
+        </View>
       </ThemedView>
     );
   }
   if (clip.isError || !clip.data) {
     return (
-      <ThemedView style={styles.center}>
-        <ThemedText style={styles.error}>
-          {clip.error ? (clip.error as Error).message : t('player.clipNotFound')}
-        </ThemedText>
+      <ThemedView style={styles.flex}>
+        <ErrorState
+          message={clip.error ? (clip.error as Error).message : t('player.clipNotFound')}
+          onRetry={() => clip.refetch()}
+        />
       </ThemedView>
     );
   }
@@ -236,13 +241,28 @@ export default function ClipPlayerScreen() {
 
         <View style={styles.header}>
           <View style={styles.controls}>
-            <Pressable style={styles.primaryBtn} onPress={() => setPlaying((p) => !p)}>
+            <Pressable
+              style={styles.primaryBtn}
+              onPress={() => setPlaying((p) => !p)}
+              accessibilityRole="button"
+              accessibilityLabel={playing ? t('player.pause') : t('player.play')}
+            >
               <ThemedText style={styles.primaryText}>{playing ? t('player.pause') : t('player.play')}</ThemedText>
             </Pressable>
-            <Pressable style={styles.secondaryBtn} onPress={replay}>
+            <Pressable
+              style={styles.secondaryBtn}
+              onPress={replay}
+              accessibilityRole="button"
+              accessibilityLabel={t('player.replaySegment')}
+            >
               <ThemedText style={styles.secondaryText}>{t('player.replaySegment')}</ThemedText>
             </Pressable>
-            <Pressable style={[styles.loopBtn, loop && styles.loopOn]} onPress={() => setLoop((l) => !l)}>
+            <Pressable
+              style={[styles.loopBtn, loop && styles.loopOn]}
+              onPress={() => setLoop((l) => !l)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: loop }}
+            >
               <ThemedText style={loop ? styles.primaryText : styles.secondaryText}>
                 {loop ? t('player.loopOn') : t('player.loopOff')}
               </ThemedText>
@@ -278,7 +298,13 @@ export default function ClipPlayerScreen() {
           {TABS.map((td) => {
             const active = tab === td.key;
             return (
-              <Pressable key={td.key} style={styles.tab} onPress={() => setTab(td.key)}>
+              <Pressable
+                key={td.key}
+                style={styles.tab}
+                onPress={() => setTab(td.key)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+              >
                 <ThemedText style={[styles.tabLabel, active && styles.tabLabelActive]}>{td.label}</ThemedText>
                 <View style={[styles.tabUnderline, active && styles.tabUnderlineActive]} />
               </Pressable>
@@ -305,7 +331,12 @@ export default function ClipPlayerScreen() {
 /** A sentence sub-loop chip in the player header. */
 function SegChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   return (
-    <Pressable style={[styles.segChip, active && styles.segChipActive]} onPress={onPress}>
+    <Pressable
+      style={[styles.segChip, active && styles.segChipActive]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+    >
       <ThemedText style={[styles.segChipText, active && styles.segChipTextActive]} numberOfLines={1}>
         {label}
       </ThemedText>
@@ -327,7 +358,7 @@ function AnalysisSection({ data, pending }: { data?: ClipAnalysis; pending: bool
   if (pending) {
     return (
       <View style={styles.box}>
-        <ActivityIndicator />
+        <SkeletonCards count={2} height={56} />
       </View>
     );
   }
@@ -401,7 +432,8 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   gap: { gap: 12 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  error: { color: '#dc2626' },
+  loadingVideo: { width: '100%', aspectRatio: 16 / 9, borderRadius: 0 },
+  loadingBody: { padding: 16, gap: 12, marginTop: 12 },
   playerWrap: { backgroundColor: '#000' },
   playerWrapPortrait: { alignItems: 'center' },
   // Keyboard up: clip the video to nothing (WebView stays mounted) so the drill gets the room.
@@ -412,20 +444,46 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: '#9ca3af',
+    minHeight: 40,
     paddingHorizontal: 14,
     paddingVertical: 6,
     minWidth: 38,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   segChipActive: { backgroundColor: '#208AEF', borderColor: '#208AEF' },
   segChipText: { fontWeight: '600', color: '#6b7280' },
   segChipTextActive: { color: '#fff' },
   controls: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  primaryBtn: { backgroundColor: '#208AEF', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center' },
+  primaryBtn: {
+    backgroundColor: '#208AEF',
+    borderRadius: 10,
+    minHeight: 44,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   primaryText: { color: '#fff', fontWeight: '700' },
-  secondaryBtn: { borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, borderWidth: 1, borderColor: '#9ca3af' },
+  secondaryBtn: {
+    borderRadius: 10,
+    minHeight: 44,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#9ca3af',
+    justifyContent: 'center',
+  },
   secondaryText: { fontWeight: '600' },
-  loopBtn: { borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, borderWidth: 1, borderColor: '#9ca3af' },
+  loopBtn: {
+    borderRadius: 10,
+    minHeight: 44,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#9ca3af',
+    justifyContent: 'center',
+  },
   loopOn: { backgroundColor: '#208AEF', borderColor: '#208AEF' },
   tabBar: {
     flexDirection: 'row',
@@ -434,7 +492,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#9ca3af',
   },
-  tab: { flex: 1, alignItems: 'center', paddingTop: 10, gap: 8 },
+  tab: { flex: 1, minHeight: 44, alignItems: 'center', paddingTop: 10, gap: 8 },
   tabLabel: { fontWeight: '600', color: '#9ca3af' },
   tabLabelActive: { color: '#208AEF' },
   tabUnderline: { height: 2, alignSelf: 'stretch', backgroundColor: 'transparent' },

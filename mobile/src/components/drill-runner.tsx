@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -16,6 +16,7 @@ export interface DrillItem {
   cue: string; // Korean cue to express
   model: string; // English model answer
   note?: string; // gloss shown under the model
+  target?: string; // the chunk to use in compose mode (defaults to model)
 }
 
 /**
@@ -105,7 +106,12 @@ export function DrillRunner({ items, onCheck }: { items: DrillItem[]; onCheck?: 
   return (
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex}>
-        <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets
+          keyboardDismissMode="interactive"
+        >
           <ThemedText type="small">
             {pos + 1} / {queue.length}
             {streak !== null ? `   🔥 ${streak}` : ''}
@@ -152,7 +158,7 @@ export function DrillRunner({ items, onCheck }: { items: DrillItem[]; onCheck?: 
               </View>
             </View>
           )}
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -203,7 +209,7 @@ function InlineCheck({ item, onCheck }: { item: DrillItem; onCheck: DrillCheck }
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, padding: 24 },
-  container: { flex: 1, padding: 24, gap: 18 },
+  container: { flexGrow: 1, padding: 24, gap: 18 },
   gap: { gap: 12 },
   row: { flexDirection: 'row', gap: 12 },
   subtitle: { textTransform: 'uppercase', letterSpacing: 1 },
