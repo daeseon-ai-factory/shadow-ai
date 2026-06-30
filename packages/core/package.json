@@ -8,6 +8,8 @@
     ".": "./src/index.ts",
     "./patterns": "./src/patterns.ts",
     "./collocations": "./src/collocations.ts",
+    "./phrasal-verbs": "./src/phrasal-verbs.ts",
+    "./particles": "./src/particles.ts",
     "./prepositions-primer": "./src/prepositions-primer.ts",
     "./practice-srs": "./src/practice-srs.ts",
     "./practice-cards": "./src/practice-cards.ts",
