@@ -45,6 +45,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
             // and the original compose check), so all must be behind the per-user bill guard.
             registry.addInterceptor(compose).addPathPatterns(
                     "/api/practice/compose/check",
+                    "/api/practice/compose/mix",
+                    "/api/practice/compose/story",
                     "/api/practice/compose/transforms",
                     "/api/practice/compose/transform-check",
                     "/api/practice/scenario/check",

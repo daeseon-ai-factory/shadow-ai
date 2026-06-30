@@ -32,6 +32,21 @@ export interface ComposeFeedback {
   better: string;
 }
 
+// Cross-pack "조합" result: 2-4 chunks combined into ONE coherent sentence (말이 되게).
+export interface MixResult {
+  sentence: string; // the combined English sentence
+  gloss: string; // natural Korean translation
+  usedAll: boolean; // did every chunk fit naturally
+  note: string; // if usedAll is false, what didn't fit
+}
+
+// Daily "스토리 합성" result: today's chunks woven into one short coherent passage (외우기/쉐도잉용).
+export interface StoryResult {
+  story: string; // the short English paragraph
+  gloss: string; // natural Korean translation of the whole paragraph
+  note: string; // if some chunks didn't fit
+}
+
 // Lenient verdict on a scenario answer — responding to a real-world situation in English.
 export interface ScenarioFeedback {
   ok: boolean; // understandable AND appropriate for the situation
@@ -70,6 +85,12 @@ export const practiceApi = {
     apiClient.post<GradeResult>("/api/practice/srs/grade", { cardKey, correct, localDate }),
   composeCheck: (target: string, gloss: string, sentence: string) =>
     apiClient.post<ComposeFeedback>("/api/practice/compose/check", { target, gloss, sentence }),
+  // Cross-pack "조합": combine 2-4 chunks into one coherent sentence (the AI flags when they can't fit).
+  composeMix: (chunks: string[]) =>
+    apiClient.post<MixResult>("/api/practice/compose/mix", { chunks }),
+  // Daily "스토리 합성": weave today's chunks (3-20) into one short coherent passage.
+  composeStory: (chunks: string[]) =>
+    apiClient.post<StoryResult>("/api/practice/compose/story", { chunks }),
   // Lenient grade of a scenario answer — respond to a real-world situation; sample is one good option.
   scenarioCheck: (situation: string, koreanHint: string, sample: string, answer: string) =>
     apiClient.post<ScenarioFeedback>("/api/practice/scenario/check", { situation, koreanHint, sample, answer }),

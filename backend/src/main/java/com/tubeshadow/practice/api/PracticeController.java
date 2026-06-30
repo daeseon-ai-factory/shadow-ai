@@ -5,6 +5,10 @@ import com.tubeshadow.auth.security.CurrentUser;
 import com.tubeshadow.common.web.ApiResponse;
 import com.tubeshadow.practice.api.dto.ComposeCheckRequest;
 import com.tubeshadow.practice.api.dto.ComposeFeedback;
+import com.tubeshadow.practice.api.dto.MixRequest;
+import com.tubeshadow.practice.api.dto.MixResponse;
+import com.tubeshadow.practice.api.dto.StoryRequest;
+import com.tubeshadow.practice.api.dto.StoryResponse;
 import com.tubeshadow.practice.api.dto.GradeRequest;
 import com.tubeshadow.practice.api.dto.GradeResponse;
 import com.tubeshadow.practice.api.dto.InterviewCheckRequest;
@@ -109,6 +113,20 @@ public class PracticeController {
     public ApiResponse<ComposeFeedback> composeCheck(@CurrentUser AuthenticatedUser user,
                                                      @Valid @RequestBody ComposeCheckRequest request) {
         return ApiResponse.ok(compositionService.check(request.target(), request.gloss(), request.sentence()));
+    }
+
+    @PostMapping("/compose/mix")
+    @Operation(summary = "여러 청크 → 말되는 한 문장으로 조합 (AI). 못 합치면 usedAll=false + note")
+    public ApiResponse<MixResponse> composeMix(@CurrentUser AuthenticatedUser user,
+                                               @Valid @RequestBody MixRequest request) {
+        return ApiResponse.ok(compositionService.mix(request.chunks()));
+    }
+
+    @PostMapping("/compose/story")
+    @Operation(summary = "오늘 배운 청크들 → 하나의 짧은 문단으로 합성 (AI). 외우기/쉐도잉용")
+    public ApiResponse<StoryResponse> composeStory(@CurrentUser AuthenticatedUser user,
+                                                   @Valid @RequestBody StoryRequest request) {
+        return ApiResponse.ok(compositionService.story(request.chunks()));
     }
 
     @PostMapping("/scenario/check")

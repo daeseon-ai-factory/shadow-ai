@@ -6,9 +6,13 @@ import com.tubeshadow.analysis.infrastructure.AiAnalysisClient;
 import com.tubeshadow.common.exception.BusinessException;
 import com.tubeshadow.practice.api.dto.ComposeFeedback;
 import com.tubeshadow.practice.api.dto.InterviewCheckResponse;
+import com.tubeshadow.practice.api.dto.MixResponse;
 import com.tubeshadow.practice.api.dto.MockNextResponse;
 import com.tubeshadow.practice.api.dto.ScenarioFeedback;
+import com.tubeshadow.practice.api.dto.StoryResponse;
 import com.tubeshadow.practice.prompt.ComposePrompt;
+import com.tubeshadow.practice.prompt.MixPrompt;
+import com.tubeshadow.practice.prompt.StoryPrompt;
 import com.tubeshadow.practice.prompt.InterviewPrompt;
 import com.tubeshadow.practice.prompt.PrecisionPrompt;
 import com.tubeshadow.practice.prompt.MockInterviewPrompt;
@@ -128,12 +132,63 @@ public class CompositionService {
         }
     }
 
-    /** Tolerate a ```json … ``` markdown fence around the JSON, which some models add. */
+    /**
+     * Cross-pack "조합": combine 2-4 chunks (a frame, a phrasal, a term…) into ONE natural sentence.
+     * The model reports {@code usedAll=false} + a note when the blocks can't honestly fit together,
+     * so the result stays coherent ("말이 되게") rather than a forced mash.
+     */
+    public MixResponse mix(List<String> chunks) {
+        if (!ai.isConfigured()) {
+            throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED",
+                    "AI가 설정되지 않았습니다 (API 키 필요)");
+        }
+        String raw = ai.complete(MixPrompt.SYSTEM, MixPrompt.userMessage(chunks));
+        try {
+            JsonNode n = objectMapper.readTree(stripFence(raw));
+            String sentence = n.path("sentence").asText("");
+            if (sentence.isBlank()) throw new IllegalStateException("empty sentence");
+            return new MixResponse(
+                    sentence,
+                    n.path("gloss").asText(""),
+                    n.path("usedAll").asBoolean(false),
+                    n.path("note").asText(""));
+        } catch (Exception ex) {
+            throw new BusinessException(HttpStatus.BAD_GATEWAY, "MIX_PARSE_FAILED",
+                    "AI 응답 파싱 실패");
+        }
+    }
+
+    /**
+     * Daily "스토리 합성": weave 3-20 chunks the learner studied today into ONE short coherent passage
+     * (3-6 sentences) they can read/shadow/memorize, so the day's items reinforce each other.
+     */
+    public StoryResponse story(List<String> chunks) {
+        if (!ai.isConfigured()) {
+            throw new BusinessException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED",
+                    "AI가 설정되지 않았습니다 (API 키 필요)");
+        }
+        // A paragraph needs a bigger output budget than a one-line verdict.
+        String raw = ai.complete(StoryPrompt.SYSTEM, StoryPrompt.userMessage(chunks), 800);
+        try {
+            JsonNode n = objectMapper.readTree(stripFence(raw));
+            String story = n.path("story").asText("");
+            if (story.isBlank()) throw new IllegalStateException("empty story");
+            return new StoryResponse(story, n.path("gloss").asText(""), n.path("note").asText(""));
+        } catch (Exception ex) {
+            throw new BusinessException(HttpStatus.BAD_GATEWAY, "STORY_PARSE_FAILED",
+                    "AI 응답 파싱 실패");
+        }
+    }
+
+    /**
+     * Tolerate a ```json … ``` markdown fence around the JSON, which some models add — whether the
+     * payload is multi-line (```json\n{…}\n```) or all on one line (```json {…}```). Strips the
+     * opening fence + optional language tag regardless of a trailing newline, then the closing fence.
+     */
     static String stripFence(String s) {
         String t = s == null ? "" : s.trim();
         if (t.startsWith("```")) {
-            int nl = t.indexOf('\n');
-            if (nl >= 0) t = t.substring(nl + 1);
+            t = t.replaceFirst("^```[a-zA-Z]*\\s*", "");
             if (t.endsWith("```")) t = t.substring(0, t.length() - 3);
         }
         return t.trim();
