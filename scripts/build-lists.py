@@ -125,6 +125,8 @@ def main():
     p5 = parse_phrasal_500(os.path.join(DOCS, "phrase_500.md"))
     itp = parse_it_patterns(os.path.join(DOCS, "it_pattern.md"))
     itt = parse_it_terms(os.path.join(DOCS, "it_term.md"))
+    # ai_coding.md uses the same "# category" + "* **en** — ko" shape as it_pattern.md.
+    aic = parse_it_patterns(os.path.join(DOCS, "ai_coding.md"))
 
     head = lambda src, n, extra: (
         f"// AUTO-GENERATED from docs/{src} — DO NOT EDIT BY HAND.\n"
@@ -150,11 +152,17 @@ def main():
         "export interface ItTerm {\n  section: string;\n  en: string; // English term/expression\n  ko: string; // Korean meaning\n}\n",
         "IT_TERMS: ItTerm[]", itt)
 
+    n5 = emit(os.path.join(SRC, "ai-coding.ts"),
+        head("ai_coding.md", len(aic), "Prompting an AI coding assistant: English + Korean, by intent."),
+        "export interface AiCoding {\n  category: string;\n  en: string; // the English prompt you say to the AI\n  ko: string; // Korean meaning\n}\n",
+        "AI_CODING: AiCoding[]", aic)
+
     print(f"english-patterns.ts : {n1}")
     print(f"phrasal-500.ts      : {n2}")
     print(f"it-patterns.ts      : {n3}")
     print(f"it-terms.ts         : {n4}")
-    print(f"TOTAL               : {n1+n2+n3+n4}")
+    print(f"ai-coding.ts        : {n5}")
+    print(f"TOTAL               : {n1+n2+n3+n4+n5}")
 
 
 if __name__ == "__main__":

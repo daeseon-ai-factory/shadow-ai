@@ -10,6 +10,7 @@ export * from "./english-patterns";
 export * from "./phrasal-500";
 export * from "./it-patterns";
 export * from "./it-terms";
+export * from "./ai-coding";
 export * from "./prepositions-primer";
 export * from "./practice-srs";
 export * from "./practice-cards";

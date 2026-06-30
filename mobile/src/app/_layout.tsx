@@ -73,6 +73,7 @@ export default function RootLayout() {
             <Stack.Screen name="phrasal-500" options={{ headerShown: true, title: t('nav.phrasal500') }} />
             <Stack.Screen name="it-patterns" options={{ headerShown: true, title: t('nav.itPatterns') }} />
             <Stack.Screen name="it-terms" options={{ headerShown: true, title: t('nav.itTerms') }} />
+            <Stack.Screen name="ai-coding" options={{ headerShown: true, title: t('nav.aiCoding') }} />
             <Stack.Screen name="mix" options={{ headerShown: true, title: t('nav.mix') }} />
             <Stack.Screen name="story" options={{ headerShown: true, title: t('nav.story') }} />
             <Stack.Screen name="today" options={{ headerShown: true, title: t('nav.today') }} />

@@ -8,6 +8,7 @@ import {
   PHRASAL_500, phrasal500Key,
   IT_PATTERNS, itPatternKey,
   IT_TERMS, itTermKey,
+  AI_CODING, aiCodingKey,
   ENGLISH_PATTERNS, englishPatternKey,
   COLLOCATIONS, collocationKey,
   buildDailySession, localToday, practiceApi, type SrsCard,
@@ -38,6 +39,7 @@ function allItems(): DrillItem[] {
   );
   IT_PATTERNS.forEach((p, i) => out.push({ key: itPatternKey(i), title: p.category, cue: p.ko, model: p.en, target: p.en }));
   IT_TERMS.forEach((p, i) => out.push({ key: itTermKey(i), title: p.section, cue: p.ko, model: p.en, target: p.en }));
+  AI_CODING.forEach((p, i) => out.push({ key: aiCodingKey(i), title: p.category, cue: p.ko, model: p.en, target: p.en }));
   ENGLISH_PATTERNS.forEach((p, i) => out.push({ key: englishPatternKey(i), title: p.category, cue: p.frame, model: p.example }));
   for (const c of COLLOCATIONS)
     c.items.forEach((it, i) =>

@@ -600,6 +600,8 @@
     "itPatternsSub": "開発英語チャンク（分類別）",
     "itTermsTitle": "コード説明用語",
     "itTermsSub": "コード説明の表現",
+    "aiCodingTitle": "AIコーディング指示",
+    "aiCodingSub": "AIにコードを書かせる表現",
     "englishPatternsTitle": "毎日の話すパターン",
     "englishPatternsSub": "日常の文型",
     "mixTitle": "ミックス",
