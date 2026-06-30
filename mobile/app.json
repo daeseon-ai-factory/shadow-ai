@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mimi",
     "slug": "mimi",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mimi",
@@ -65,7 +65,8 @@
         {
           "speechRecognitionPermission": "Allow Mimi to recognize your spoken English so it can check your interview answers."
         }
-      ]
+      ],
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,
