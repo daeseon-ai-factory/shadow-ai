@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PATTERNS } from "@/lib/patterns";
 import { PREPOSITION_PRIMER } from "@/lib/prepositions-primer";
 import { COLLOCATIONS } from "@/lib/collocations";
-import { VERB_PACK, PHRASAL_500, IT_PATTERNS, IT_TERMS, ENGLISH_PATTERNS } from "@shadow-ai/core";
+import { VERB_PACK, PHRASAL_500, IT_PATTERNS, IT_TERMS, AI_CODING, ENGLISH_PATTERNS } from "@shadow-ai/core";
 
 interface Drill {
   href: string;
@@ -28,6 +28,7 @@ export default function PracticePage() {
     { href: "/phrasal-500", title: td("phrasal500Title"), desc: td("phrasal500Sub"), count: td("count", { n: PHRASAL_500.length }) },
     { href: "/it-patterns", title: td("itPatternsTitle"), desc: td("itPatternsSub"), count: td("count", { n: IT_PATTERNS.length }) },
     { href: "/it-terms", title: td("itTermsTitle"), desc: td("itTermsSub"), count: td("count", { n: IT_TERMS.length }) },
+    { href: "/ai-coding", title: td("aiCodingTitle"), desc: td("aiCodingSub"), count: td("count", { n: AI_CODING.length }) },
     { href: "/english-patterns", title: td("englishPatternsTitle"), desc: td("englishPatternsSub"), count: td("count", { n: ENGLISH_PATTERNS.length }) },
     {
       href: "/gym",

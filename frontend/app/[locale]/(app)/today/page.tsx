@@ -8,6 +8,7 @@ import {
   PHRASAL_500, phrasal500Key,
   IT_PATTERNS, itPatternKey,
   IT_TERMS, itTermKey,
+  AI_CODING, aiCodingKey,
   ENGLISH_PATTERNS, englishPatternKey,
   COLLOCATIONS, collocationKey,
   buildDailySession, localToday,
@@ -26,6 +27,7 @@ function allItems(): DeckEntry[] {
   PHRASAL_500.forEach((p, i) => out.push({ key: phrasal500Key(i), title: p.phrasal, cue: p.ko, model: p.example || p.phrasal, note: [p.note, p.exampleKo].filter(Boolean).join("  ·  ") || undefined, target: p.phrasal }));
   IT_PATTERNS.forEach((p, i) => out.push({ key: itPatternKey(i), title: p.category, cue: p.ko, model: p.en, target: p.en }));
   IT_TERMS.forEach((p, i) => out.push({ key: itTermKey(i), title: p.section, cue: p.ko, model: p.en, target: p.en }));
+  AI_CODING.forEach((p, i) => out.push({ key: aiCodingKey(i), title: p.category, cue: p.ko, model: p.en, target: p.en }));
   ENGLISH_PATTERNS.forEach((p, i) => out.push({ key: englishPatternKey(i), title: p.category, cue: p.frame, model: p.example }));
   for (const c of COLLOCATIONS)
     c.items.forEach((it, i) => out.push({ key: collocationKey(c.id, i), title: c.anchor, subtitle: c.gloss, cue: it.cue, model: it.model, target: c.anchor }));

@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router, type Href } from 'expo-router';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
-import { PATTERNS, COLLOCATIONS, VERB_PACK, ENGLISH_PATTERNS, PHRASAL_500, IT_PATTERNS, IT_TERMS, PARTICLE_GROUPS, PREP_GROUPS, REASONING_PREP_GROUPS, ARGUMENT_GROUPS, TRAP_CARDS, WORKSHOP_COUNTS } from '@shadow-ai/core';
+import { PATTERNS, COLLOCATIONS, VERB_PACK, ENGLISH_PATTERNS, PHRASAL_500, IT_PATTERNS, IT_TERMS, AI_CODING, PARTICLE_GROUPS, PREP_GROUPS, REASONING_PREP_GROUPS, ARGUMENT_GROUPS, TRAP_CARDS, WORKSHOP_COUNTS } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -94,6 +94,12 @@ export default function PracticeMenuScreen() {
       title: t('home.itTerms'),
       sub: t('home.itTermsSub', { n: IT_TERMS.length }),
       icon: { ios: 'chevron.left.forwardslash.chevron.right', android: 'terminal', web: 'terminal' },
+    },
+    {
+      href: '/ai-coding',
+      title: t('home.aiCoding'),
+      sub: t('home.aiCodingSub', { n: AI_CODING.length }),
+      icon: { ios: 'sparkles', android: 'auto_awesome', web: 'auto_awesome' },
     },
     {
       href: '/collocations',
