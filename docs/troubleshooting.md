@@ -1162,3 +1162,26 @@ CommandError: Failed to build iOS project. "xcodebuild" exited with error code 6
 **Commits.** `a507240` (core data), `c899975` (backend mix/story), `166442f` (mobile), `1a608b3` (web).
 
 Narrative: `content/logs/shadow-ai/2026-06-30-cross-pack-learning-platform.mdx`.
+
+---
+
+## EAS Build "included build credits" exhausted during a TestFlight release
+
+**Symptom.** During `mobile/scripts/release-ios.sh` → `eas build --profile production --auto-submit-with-profile production`, EAS printed:
+
+```
+You've reached your included build credits this billing period.
+New builds are blocked until your billing period resets. Upgrade your plan to continue building.: https://expo.dev/accounts/daeseonyoo/settings/billing
+```
+
+**Cause (verified).** The Expo account's included EAS Build credits for the billing period are used up. Despite the message, build `8290f933` still ran to completion: `eas build:view 8290f933` reported `Status: finished` with an `.ipa` artifact, and an App Store Connect `GET /v1/builds` query reported build `12` (v1.1.0) `processingState=VALID`. **Hypothesis (not verified):** EAS lets an already-queued build finish and only blocks *subsequently* submitted new builds. Verified by `build:view` + the ASC API, not by reading EAS billing internals.
+
+**Fix / workaround.** This release needed no fix — it completed and reached TestFlight. For the NEXT build, three options: (1) wait for the billing period to reset, (2) upgrade the EAS plan, or (3) `eas build --platform ios --profile production --local` (builds on the Mac, consumes no EAS credits) then `eas submit --platform ios --profile production --path <ipa>` (submission is free).
+
+Side note for verifying the upload without the EAS CLI (`submission:view`/`submission:list` don't exist in eas-cli 20.x): mint an ES256 ASC API JWT with `cryptography` and query `GET https://api.appstoreconnect.apple.com/v1/builds?filter[app]=<ascAppId>`. The python.org Python 3.11 lacks a CA bundle (`CERTIFICATE_VERIFY_FAILED`), so sign the JWT in Python but make the HTTPS call with `curl` (system CA).
+
+**Commit.** `789fdc5`
+
+**Pattern.** EAS "build credits exhausted" blocks *new* cloud builds, not submissions or local builds — `eas build --local` + `eas submit` is the zero-credit escape hatch.
+
+<!-- skipped: cd759a8 docs(log): TestFlight 1.1.0 release + EAS build-credit wall (789fdc5) -->

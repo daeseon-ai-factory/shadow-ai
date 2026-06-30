@@ -1,0 +1,45 @@
+---
+title: "Shipping Mimi 1.1.0 to TestFlight — and the EAS build-credit wall"
+date: "2026-06-30"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "Cut Mimi 1.1.0 (the cross-pack study platform) to TestFlight through the existing eas build --auto-submit pipeline, verified the build VALID straight from the App Store Connect API, and hit the EAS included-build-credits wall on the way out."
+tags: ["expo", "eas", "testflight", "ios", "release"]
+---
+
+With the cross-pack study platform merged to `main`, the next move was to get 1.1.0 in front of real devices. Two steps: a development build to my own phone first, then a TestFlight cut.
+
+## Phone first
+
+The iPhone 16 Pro Max was USB-connected. First attempt at `expo run:ios --device <id>` failed with `No device UDID or name matching ...` — I'd passed the **CoreDevice GUID** from `xcrun devicectl list devices`, but `expo run:ios` wants the **iOS UDID** (`00008140-...`, from `xcrun xctrace list devices`). With the right UDID it built, signed, and installed cleanly (`Build Succeeded` → `Installing` → `Complete 100%`). On a real device `Device.isDevice` is true, so the app pointed itself at the production backend automatically — no localhost trap.
+
+## TestFlight cut
+
+Bumped `app.json` `version` 1.0.0 → **1.1.0** (a minor, since this is a big feature drop and 1.0.0 is already on the Store), then ran the existing `mobile/scripts/release-ios.sh`. That script is a wall of gates before it spends a cent: production backend health, legal-URL reachability, App-Store review-risk config, `tsc --noEmit`, an `expo export` dry run, and a local `next build` of the legal site. All green, then `eas build --profile production --auto-submit-with-profile production`.
+
+`appVersionSource: remote` + `autoIncrement` meant EAS owned the build number (it minted **12**). Because `ITSAppUsesNonExemptEncryption: false` is in `app.json`, there was no manual export-compliance prompt to clear.
+
+## The credit wall
+
+Mid-flight, EAS printed:
+
+```
+You've reached your included build credits this billing period.
+New builds are blocked until your billing period resets. Upgrade your plan to continue building.
+```
+
+But the build I'd just queued (`8290f933`) kept going — `in progress` → `finished` in about five minutes, with an `.ipa` artifact. So the message blocks the *next* build, not the in-flight one. The escape hatch for next time, written up in `docs/troubleshooting.md`: `eas build --local` builds on the Mac and burns no EAS credits, and `eas submit` is free.
+
+## Verifying without guessing
+
+I didn't want to *claim* it reached TestFlight — I wanted App Store Connect to say so. `eas-cli` 20.x has no `submission:view`, so I went to the source: an ES256 ASC API token and `GET /v1/builds`. Two snags — the local scratchpad had a stray `inspect.py` shadowing the stdlib (ran from a clean dir), and the python.org Python 3.11 had no CA bundle (`CERTIFICATE_VERIFY_FAILED`), so I signed the JWT in Python but made the HTTPS call with `curl`. A short poll later:
+
+```
+build#  processingState  uploadedDate
+   12        VALID        2026-06-30T12:33:47-07:00
+   11        VALID        2026-06-20
+```
+
+Build 12, v1.1.0, **VALID** — authoritative confirmation it processed and is live in TestFlight. Shipped on `feat/mobile-app` (`789fdc5`).
