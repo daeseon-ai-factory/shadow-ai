@@ -1183,3 +1183,5 @@ Side note for verifying the upload without the EAS CLI (`submission:view`/`submi
 **Commit.** `789fdc5`
 
 **Pattern.** EAS "build credits exhausted" blocks *new* cloud builds, not submissions or local builds — `eas build --local` + `eas submit` is the zero-credit escape hatch.
+
+<!-- skipped: cd759a8 docs(log): TestFlight 1.1.0 release + EAS build-credit wall (789fdc5) -->
