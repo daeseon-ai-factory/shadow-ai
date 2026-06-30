@@ -3,15 +3,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import {
-  COLLOCATIONS,
-  COLLOCATION_DOMAINS,
-  collocationKey,
-  buildSession,
-  localToday,
-  practiceApi,
-  type SrsCard,
-} from '@shadow-ai/core';
+import { partition, shuffle, localToday, NEW_PER_DAY, practiceApi, type SrsCard } from '@shadow-ai/core';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -21,27 +13,21 @@ import { useAuthStore } from '@/lib/auth-store';
 import { t } from '@/lib/i18n';
 import { applyMode, composeOnCheck, modeLabel, type DeckMode } from '@/lib/drill-modes';
 
-type Filter = 'all' | (typeof COLLOCATION_DOMAINS)[number];
-const FILTERS: Filter[] = ['all', ...COLLOCATION_DOMAINS];
+export type { DeckMode };
 
-function itemsFor(filter: Filter): DrillItem[] {
-  const cols = filter === 'all' ? COLLOCATIONS : COLLOCATIONS.filter((c) => c.domain === filter);
-  return cols.flatMap((c) =>
-    c.items.map((it, i) => ({
-      key: collocationKey(c.id, i),
-      title: c.anchor,
-      subtitle: c.gloss,
-      cue: it.cue,
-      model: it.model,
-      target: c.anchor, // compose mode: write your own sentence using the anchor chunk
-    })),
-  );
-}
-
-export default function CollocationDrillScreen() {
+export function DeckScreen({
+  title,
+  subtitle,
+  build,
+  modes = ['recall'],
+}: {
+  title: string;
+  subtitle: string;
+  build: () => DrillItem[];
+  modes?: DeckMode[];
+}) {
   const token = useAuthStore((s) => s.token);
-  const [filter, setFilter] = useState<Filter>('all');
-  const [mode, setMode] = useState<DeckMode>('recall');
+  const [mode, setMode] = useState<DeckMode>(modes[0]);
   const [started, setStarted] = useState(false);
 
   const srs = useQuery({
@@ -50,10 +36,14 @@ export default function CollocationDrillScreen() {
     enabled: !!token,
   });
 
+  // Same card keys regardless of mode (one SRS state per item). Reverse only swaps what's shown.
   const session = useMemo<DrillItem[]>(() => {
     if (!srs.data) return [];
-    return buildSession(applyMode(itemsFor(filter), mode), srs.data as SrsCard[], localToday());
-  }, [filter, mode, srs.data]);
+    const items = applyMode(build(), mode);
+    const { due, fresh } = partition(items, srs.data as SrsCard[], localToday());
+    return [...shuffle(due), ...fresh.slice(0, NEW_PER_DAY)];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [srs.data, mode]);
 
   if (!token) return <Redirect href="/login" />;
   if (srs.isPending) {
@@ -74,7 +64,7 @@ export default function CollocationDrillScreen() {
   if (started) {
     return (
       <DrillRunner
-        key={`${filter}:${mode}:${session.map((e) => e.key).join(',')}`}
+        key={`${mode}:${session.map((e) => e.key).join(',')}`}
         items={session}
         onCheck={mode === 'compose' ? composeOnCheck : undefined}
       />
@@ -85,52 +75,35 @@ export default function CollocationDrillScreen() {
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex}>
         <View style={styles.container}>
-          <ThemedText type="title">{t('collocations.title')}</ThemedText>
-          <ThemedText type="small">
-            {t('collocations.subtitle')}
-          </ThemedText>
+          <ThemedText type="title">{title}</ThemedText>
+          <ThemedText type="small">{subtitle}</ThemedText>
 
-          <View style={styles.chips}>
-            {FILTERS.map((f) => (
-              <Pressable
-                key={f}
-                style={[styles.chip, filter === f && styles.chipActive]}
-                onPress={() => setFilter(f)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: filter === f }}
-              >
-                <ThemedText style={filter === f ? styles.chipTextActive : styles.chipText}>
-                  {f === 'all' ? t('collocations.filterAll') : f === 'dev' ? t('collocations.filterDev') : t('collocations.filterGeneral')}
-                </ThemedText>
-              </Pressable>
-            ))}
-          </View>
+          {modes.length > 1 ? (
+            <View style={styles.chips}>
+              {modes.map((m) => (
+                <Pressable
+                  key={m}
+                  style={[styles.chip, mode === m && styles.chipActive]}
+                  onPress={() => setMode(m)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: mode === m }}
+                >
+                  <ThemedText style={mode === m ? styles.chipTextActive : styles.chipText}>{modeLabel(m)}</ThemedText>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
 
-          <View style={styles.chips}>
-            {(['recall', 'reverse', 'compose'] as DeckMode[]).map((m) => (
-              <Pressable
-                key={m}
-                style={[styles.chip, mode === m && styles.chipActive]}
-                onPress={() => setMode(m)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: mode === m }}
-              >
-                <ThemedText style={mode === m ? styles.chipTextActive : styles.chipText}>{modeLabel(m)}</ThemedText>
-              </Pressable>
-            ))}
-          </View>
-
-          <ThemedText type="small">{t('collocations.due', { n: session.length })}</ThemedText>
-
+          <ThemedText type="small">{t('verbs.due', { n: session.length })}</ThemedText>
           <Pressable
             style={[styles.primaryBtn, session.length === 0 && styles.disabled]}
             disabled={session.length === 0}
             onPress={() => setStarted(true)}
             accessibilityRole="button"
-            accessibilityLabel={session.length === 0 ? t('collocations.allCaughtUp') : t('collocations.beginDrill')}
+            accessibilityLabel={session.length === 0 ? t('verbs.allCaughtUp') : t('verbs.beginDrill')}
           >
             <ThemedText style={styles.primaryText}>
-              {session.length === 0 ? t('collocations.allCaughtUp') : t('collocations.beginDrill')}
+              {session.length === 0 ? t('verbs.allCaughtUp') : t('verbs.beginDrill')}
             </ThemedText>
           </Pressable>
         </View>
