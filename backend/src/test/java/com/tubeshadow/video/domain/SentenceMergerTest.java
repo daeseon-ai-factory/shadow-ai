@@ -45,12 +45,31 @@ class SentenceMergerTest {
     }
 
     @Test
-    void largeGap_breaksTheMerge() {
-        // 500ms gap between speaker pauses → keep separate
+    void longPause_breaksTheMerge() {
+        // a real pause (>= BREAK_GAP_MS) reads as a clause/sentence boundary → keep separate
         var s1 = new TranscriptSegment(0, 1000, "First part");
-        var s2 = new TranscriptSegment(1500, 2000, "second part");
+        var s2 = new TranscriptSegment(2000, 2500, "second part"); // 1000ms gap
         var merged = SentenceMerger.merge(List.of(s1, s2));
         assertThat(merged).hasSize(2);
+    }
+
+    @Test
+    void shortBreathPause_doesNotBreak() {
+        // a 500ms breath used to split lines (the old 300ms cap) — now it stays one line
+        var s1 = new TranscriptSegment(0, 1000, "First part");
+        var s2 = new TranscriptSegment(1500, 2000, "second part"); // 500ms gap
+        var merged = SentenceMerger.merge(List.of(s1, s2));
+        assertThat(merged).hasSize(1);
+    }
+
+    @Test
+    void charCap_splitsLongPunctuationlessRun() {
+        // a long run with no punctuation and tight gaps stays readable, not a wall
+        List<TranscriptSegment> segs = new java.util.ArrayList<>();
+        for (int i = 0; i < 30; i++) segs.add(new TranscriptSegment(i * 400L, i * 400L + 400, "alpha"));
+        var merged = SentenceMerger.merge(segs);
+        assertThat(merged).hasSizeGreaterThan(1);
+        for (var m : merged) assertThat(m.text().length()).isLessThanOrEqualTo(SentenceMerger.MAX_CHARS);
     }
 
     @Test

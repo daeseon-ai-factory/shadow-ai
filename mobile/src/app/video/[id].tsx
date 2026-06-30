@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import YoutubePlayer, { type YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { clipsApi, videosApi, type TranscriptSegment } from '@shadow-ai/core';
@@ -122,7 +123,7 @@ export default function VideoDetailScreen() {
           setCurrentMs(a.startMs);
         }
       }
-    }, 200);
+    }, 100); // tighter poll → the active-line highlight tracks the audio more closely
     return () => clearInterval(handle);
   }, [playing]);
 
@@ -233,7 +234,12 @@ export default function VideoDetailScreen() {
 
         {/* Controls + script-mode toggle */}
         <View style={styles.bar}>
-          <Pressable style={styles.playBtn} onPress={() => setPlaying((p) => !p)}>
+          <Pressable
+            style={styles.playBtn}
+            onPress={() => setPlaying((p) => !p)}
+            accessibilityRole="button"
+            accessibilityLabel={playing ? t('video.pause') : t('video.play')}
+          >
             <ThemedText style={styles.playText}>
               {playing ? t('video.pause') : t('video.play')}
             </ThemedText>
@@ -242,6 +248,8 @@ export default function VideoDetailScreen() {
             <Pressable
               style={[styles.toggleItem, mode === 'sentences' && styles.toggleOn]}
               onPress={() => setMode('sentences')}
+              accessibilityRole="button"
+              accessibilityState={{ selected: mode === 'sentences' }}
             >
               <ThemedText type="small" style={mode === 'sentences' ? styles.toggleOnText : undefined}>
                 {t('video.sentences')}
@@ -250,6 +258,8 @@ export default function VideoDetailScreen() {
             <Pressable
               style={[styles.toggleItem, mode === 'full' && styles.toggleOn]}
               onPress={() => setMode('full')}
+              accessibilityRole="button"
+              accessibilityState={{ selected: mode === 'full' }}
             >
               <ThemedText type="small" style={mode === 'full' ? styles.toggleOnText : undefined}>
                 {t('video.fullScript')}
@@ -265,9 +275,15 @@ export default function VideoDetailScreen() {
           accessibilityRole="button"
           accessibilityLabel={t('video.advanced')}
         >
-          <ThemedText type="small" style={styles.advToggleText}>
-            {t('video.advanced')}  {showAdvanced ? '⌃' : '⌄'}
-          </ThemedText>
+          <ThemedText type="small" style={styles.advToggleText}>{t('video.advanced')}</ThemedText>
+          <SymbolView
+            name={showAdvanced
+              ? { ios: 'chevron.up', android: 'keyboard_arrow_up', web: 'keyboard_arrow_up' }
+              : { ios: 'chevron.down', android: 'keyboard_arrow_down', web: 'keyboard_arrow_down' }}
+            size={16}
+            weight="bold"
+            tintColor="#6b7280"
+          />
         </Pressable>
 
         {showAdvanced && (
@@ -279,6 +295,8 @@ export default function VideoDetailScreen() {
               key={r}
               style={[styles.speedBtn, rate === r && styles.speedOn]}
               onPress={() => setRate(r)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: rate === r }}
             >
               <ThemedText type="small" style={rate === r ? styles.speedOnText : undefined}>
                 {r}×
@@ -292,6 +310,8 @@ export default function VideoDetailScreen() {
           <Pressable
             style={[styles.loopCtl, arming !== 'none' && styles.loopCtlOn]}
             onPress={toggleAB}
+            accessibilityRole="button"
+            accessibilityState={{ selected: arming !== 'none' }}
           >
             <ThemedText type="small" style={arming !== 'none' ? styles.loopCtlOnText : undefined}>
               {arming === 'A' ? t('video.tapA') : arming === 'B' ? t('video.tapB') : 'A–B'}
@@ -300,24 +320,41 @@ export default function VideoDetailScreen() {
           <Pressable
             style={[styles.loopCtl, autoAdvance && styles.loopCtlOn]}
             onPress={() => setAutoAdvance((a) => !a)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: autoAdvance }}
           >
             <ThemedText type="small" style={autoAdvance ? styles.loopCtlOnText : undefined}>
               {t('video.auto')}
             </ThemedText>
           </Pressable>
           <View style={styles.repsBox}>
-            <Pressable style={styles.repsBtn} onPress={() => setReps((r) => Math.max(1, r - 1))}>
+            <Pressable
+              style={styles.repsBtn}
+              onPress={() => setReps((r) => Math.max(1, r - 1))}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.decrease')}
+            >
               <ThemedText style={styles.repsSign}>−</ThemedText>
             </Pressable>
             <ThemedText type="small" style={styles.repsVal}>
               {t('video.reps', { n: reps })}
             </ThemedText>
-            <Pressable style={styles.repsBtn} onPress={() => setReps((r) => Math.min(9, r + 1))}>
+            <Pressable
+              style={styles.repsBtn}
+              onPress={() => setReps((r) => Math.min(9, r + 1))}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.increase')}
+            >
               <ThemedText style={styles.repsSign}>＋</ThemedText>
             </Pressable>
           </View>
           {loop && (
-            <Pressable style={styles.loopCtl} onPress={() => setLoop(null)}>
+            <Pressable
+              style={styles.loopCtl}
+              onPress={() => setLoop(null)}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.clear')}
+            >
               <ThemedText type="small">✕</ThemedText>
             </Pressable>
           )}
@@ -362,7 +399,12 @@ export default function VideoDetailScreen() {
                   isA && styles.lineRowArm,
                 ]}
               >
-                <Pressable style={styles.lineText} onPress={() => onLinePress(index)}>
+                <Pressable
+                  style={styles.lineText}
+                  onPress={() => onLinePress(index)}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.text}
+                >
                   <ThemedText style={active || inRange ? styles.lineActiveText : undefined}>
                     {active && inRange ? '🔁  ' : isA ? 'Ⓐ  ' : ''}{item.text}
                   </ThemedText>
@@ -372,6 +414,8 @@ export default function VideoDetailScreen() {
                     style={styles.clipBtn}
                     disabled={makeClip.isPending}
                     onPress={() => makeClip.mutate(item)}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('video.clipLine')}
                   >
                     <ThemedText type="small" style={styles.clipBtnText}>
                       {t('video.clipLine')}
@@ -395,7 +439,6 @@ export default function VideoDetailScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  error: { color: '#dc2626' },
   playerWrap: { backgroundColor: '#000' },
   playerWrapPortrait: { alignItems: 'center' },
   bar: {
@@ -409,8 +452,11 @@ const styles = StyleSheet.create({
   playBtn: {
     backgroundColor: '#208AEF',
     borderRadius: 10,
+    minHeight: 44,
     paddingVertical: 8,
     paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   playText: { color: '#fff', fontWeight: '700' },
   toggle: {
@@ -420,10 +466,18 @@ const styles = StyleSheet.create({
     borderColor: '#9ca3af',
     overflow: 'hidden',
   },
-  toggleItem: { paddingVertical: 8, paddingHorizontal: 14 },
+  toggleItem: { minHeight: 44, paddingVertical: 8, paddingHorizontal: 14, justifyContent: 'center' },
   toggleOn: { backgroundColor: '#208AEF' },
   toggleOnText: { color: '#fff', fontWeight: '700' },
-  advToggle: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 14 },
+  advToggle: {
+    alignSelf: 'center',
+    minHeight: 44,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   advToggleText: { color: '#6b7280', fontWeight: '700' },
   speedRow: {
     flexDirection: 'row',
@@ -436,8 +490,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#9ca3af',
+    minHeight: 40,
     paddingVertical: 6,
     paddingHorizontal: 12,
+    justifyContent: 'center',
   },
   speedOn: { backgroundColor: '#111827', borderColor: '#111827' },
   speedOnText: { color: '#fff', fontWeight: '700' },
@@ -468,8 +524,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#9ca3af',
+    minHeight: 40,
     paddingVertical: 6,
     paddingHorizontal: 12,
+    justifyContent: 'center',
   },
   loopCtlOn: { backgroundColor: '#208AEF', borderColor: '#208AEF' },
   loopCtlOnText: { color: '#fff', fontWeight: '700' },
@@ -481,7 +539,7 @@ const styles = StyleSheet.create({
     borderColor: '#9ca3af',
     overflow: 'hidden',
   },
-  repsBtn: { paddingVertical: 6, paddingHorizontal: 10 },
+  repsBtn: { minHeight: 40, paddingVertical: 6, paddingHorizontal: 10, justifyContent: 'center' },
   repsSign: { fontSize: 16, fontWeight: '700' },
   repsVal: { minWidth: 44, textAlign: 'center' },
   lineText: { flex: 1 },
@@ -490,8 +548,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#208AEF',
+    minHeight: 36,
     paddingVertical: 5,
     paddingHorizontal: 8,
+    justifyContent: 'center',
   },
   clipBtnText: { color: '#208AEF' },
   empty: { textAlign: 'center', marginTop: 32 },
