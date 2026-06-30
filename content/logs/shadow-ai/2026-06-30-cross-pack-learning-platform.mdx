@@ -1,0 +1,34 @@
+---
+title: "From shadowing app to study platform: a cross-pack drill engine on mobile and web"
+date: "2026-06-30"
+project: "shadow-ai"
+kind: "update"
+visibility: "public"
+language: "en"
+summary: "Added a 1,956-entry base-verb pack plus four study lists, gave every pack recall/reverse/compose modes, and built AI mix + story generators — shared across mobile (Expo) and web (Next.js), with the data/SRS/backend living in one core package."
+tags: ["product", "expo", "nextjs", "spring", "srs", "i18n", "monorepo"]
+---
+
+Mimi started as a YouTube-shadowing tool. This session pushed it toward a general English study platform without forking the codebase, by leaning hard on the monorepo's shared `@shadow-ai/core` package.
+
+## What got built
+
+**Data (one source of truth, two surfaces).** A 1,956-entry base-verb pack — every common phrasal verb / verb+prep pattern, frequency-tiered (T1 daily core / T2 / T3) with a particle/sense overlay (up = completion, off = separation…) — plus four user-authored lists parsed deterministically from `docs/*.md`: 300 daily speaking patterns, 502 conversational phrasal verbs, 623 IT chunks, 296 code-explanation terms. All emitted as typed datasets in core via committed `scripts/build-*.py`, so the markdown stays the editable source and the TS is regenerable.
+
+**Multi-mode drills.** Each pack is drillable three ways on the same card content and the same `practice_card` SRS: *recall* (Korean → English), *reverse* (English → Korean), and *compose* (write your own sentence, AI grades it via the existing `/compose/check`). One mode layer (`drill-modes` / `DeckScreen` on mobile, `DeckDrill` / `DeckPage` on web) covers every pack.
+
+**Cross-pack AI.** Two new Spring endpoints: `/compose/mix` combines 2-4 chunks from different packs into one natural sentence (with a `usedAll` flag so it refuses to force a mash), and `/compose/story` weaves a handful of the day's chunks into a short passage you can shadow and cloze-test. A "Today" screen pools every pack into one interleaved daily session.
+
+**Both clients.** Because data, SRS logic, the typed API, and the backend all live in core (the web's `@/lib/*` are thin re-export shims), porting to the Next.js web app was UI-only: generic drill components, eight pages, and a `decks` i18n namespace across all five locales (en/ko hand-written; ja/zh/es AI-drafted, flagged for native review).
+
+## What fought back
+
+Three environment problems, none in the feature code, ate real time — all written up in `docs/troubleshooting.md`:
+
+- **Xcode 26 / SwiftUICore link error** killed the iOS build until an `expo 56.0.8 → 56.0.12` patch bump + clean pods.
+- **Multiple Expo apps on one machine** — the no-dev-client debug build silently loaded a *different* app's Metro bundle (a phantom `ExponentImagePicker` error) and a different app's backend (login 404). Fixed by pinning `RCT_jsLocation` and `EXPO_PUBLIC_API_URL`.
+- A **12-agent adversarial review** of the diff caught a real data bug: the phrase_500 parser corrupted one Korean translation when a nuance note wrapped to a second line. Rewrote it to anchor fields positionally.
+
+## Honesty notes
+
+The content is *largely* valid but not certified: a 50-entry sample audit came back ~88% clean with ~2% genuine errors — fine for daily use, worth a full pass before a hard launch. The AI mix/story endpoints are built and unit-tested (mocked, zero cost) but need a backend redeploy to work in the apps; ja/zh/es UI strings are machine-drafted. All shipped on `feat/mobile-app` across four commits.

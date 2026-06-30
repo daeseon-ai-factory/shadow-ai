@@ -1104,3 +1104,61 @@ direct to a website with information users can use to ask questions and request 
 
 Narrative: `content/logs/shadow-ai/2026-06-24-app-store-support-url.mdx`.
 <!-- skipped: b2832a5 docs(log): App Store 1.5 support-url fix + Vercel CLI file-limit (8a48e9c) -->
+<!-- skipped: ad01b19 chore(log): mark b2832a5 routine [no-log] -->
+<!-- skipped: a06fe15 docs(readme): hero screenshot strip at the top for instant impact [no-log] -->
+
+---
+
+## iOS simulator build fails on Xcode 26: `cannot link directly with 'SwiftUICore'`
+
+**Symptom.**
+```
+Undefined symbols for architecture arm64:
+  ... cannot link directly with 'SwiftUICore' because product being built is not an allowed client of it
+❌ ld: symbol(s) not found for architecture arm64
+CommandError: Failed to build iOS project. "xcodebuild" exited with error code 65.
+```
+
+**Cause (verified).** Only Xcode 26.6 / iOS-sim SDK 26.5 is installed (`xcodebuild -version`, `xcrun --sdk iphonesimulator --show-sdk-version`); the project was on `expo ~56.0.8`, whose precompiled native modules hit the Xcode 26 linker's new ban on linking the private `SwiftUICore` framework. Not a JS/app-code issue — pure toolchain.
+
+**Fix.** Bumped `expo 56.0.8 → 56.0.12` + `expo install --fix` (pulled @expo/ui, ExpoModulesCore 56.0.17, expo-image/router/etc. to SDK-56-compatible native versions) then a clean pod reinstall (`rm -rf ios/Pods ios/Podfile.lock && pod install`). `expo run:ios` then reached `Build Succeeded` + `Installing` + `Opening on ai.daeseon.mimi`.
+
+**Commit.** `166442f`
+
+**Pattern.** Expo ships Xcode-compatibility fixes in SDK *patch* releases — bump to the latest patch within your SDK before hand-patching the native project.
+
+---
+
+## Multiple Expo apps on one machine: app loads the wrong JS bundle / wrong backend
+
+**Symptom.** Freshly-built Mimi showed a red `[runtime not ready]: Error: Cannot find native module 'ExponentImagePicker'` — a module Mimi doesn't even depend on. Later, login silently failed.
+
+**Cause (verified).** No `expo-dev-client`, so the debug build defaults to Metro on `localhost:8081`, which was a *different* app's Metro (`/Users/.../motivation/mobile`, and that app DOES use expo-image-picker) — Mimi loaded a foreign bundle. The 8083 Metro I started logged **0** bundle requests, confirming the app never used it. Same class of bug for login: the simulator hit `localhost:8080` = another app's backend (`/api/health` → `404`, not Mimi's). `expo-image-picker` is absent from Mimi's package.json/node_modules/Podfile.lock (grep), proving the bundle was foreign.
+
+**Fix.** Pinned the app to Mimi's Metro: `xcrun simctl spawn <udid> defaults write ai.daeseon.mimi RCT_jsLocation localhost:8083`, ran Metro on :8083, and pointed it at the live backend with `EXPO_PUBLIC_API_URL=https://api.mimi.daeseon.ai expo start`. App then bundled `expo-router/entry.js` from 8083 and rendered.
+
+**Pattern.** A no-dev-client debug build grabs whatever sits on :8081 (Metro) / :8080 (backend). With several apps running, pin `RCT_jsLocation` and `EXPO_PUBLIC_API_URL` explicitly.
+
+---
+
+## phrase_500.md parser corrupted `exampleKo` on wrapped ▶ notes
+
+**Symptom.** Generated `packages/core/src/phrasal-500.ts` for "Pass out" had `"exampleKo": "있으니 참고해 주시기 바랍니다"` (a fragment of the nuance note) and the real translation `"선생님이 학생들에게 시험지를 나눠줬어요"` was dropped.
+
+**Cause (verified).** `parse_phrasal_500` stripped only physical lines starting with `▶` as notes, then took `exampleKo = kr[1]` blindly. When a `▶` note wraps onto a second line (no `▶` prefix), that continuation survives as a "Korean line" and becomes `exampleKo`. Found by a 12-agent adversarial review of the session diff.
+
+**Fix.** Rewrote the parser to anchor on the English example line: `gloss` = first Korean before it, `exampleKo` = first Korean after it, `note` = the `▶` line plus its continuation lines. Regenerated; "Pass out" now reads the correct translation.
+
+**Commit.** `a507240`
+
+**Pattern.** For irregular multi-line records, anchor fields positionally around a reliable marker — never pick by `kr[1]`-style fixed index.
+
+---
+
+## Cross-pack learning platform (verb pack + 4 lists, multi-mode, mix/story) — mobile + web
+
+**What.** Turned Mimi from a YouTube-shadowing app into a study platform: a 1,956-entry base-verb pack (frequency-tiered + particle overlay) and four user lists (300 patterns, 502 phrasal verbs, 623 IT chunks, 296 code terms), each drillable in 3 modes (recall / reverse / compose+AI), plus cross-pack AI "mix" (chunks → one sentence) and "story" (chunks → a passage with cloze), and a Today all-pack daily session. Data/SRS/backend shared via `@shadow-ai/core`; built for **both** mobile (Expo) and web (Next.js, 5 locales). Verified: backend tests (mocked AI), mobile + frontend `tsc` 0, `next build` green. Sample audit (50 entries) → ~88% clean, ~2% major-error rate (one being the parser bug above).
+
+**Commits.** `a507240` (core data), `c899975` (backend mix/story), `166442f` (mobile), `1a608b3` (web).
+
+Narrative: `content/logs/shadow-ai/2026-06-30-cross-pack-learning-platform.mdx`.
